@@ -1,0 +1,6 @@
+[run]
+branch = True
+source = notifications
+omit =
+    **/__init__.py
+    **/migrations/*
