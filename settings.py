@@ -26,9 +26,13 @@ INSTALLED_APPS = (
     'django.contrib.messages',
 
     'notifications',
-    'notifications-sql-backend',
     'django_nose',
     'south',
 )
 
 MIDDLEWARE_CLASSES = {}
+
+SOUTH_MIGRATION_MODULES = {
+    'notifications': 'notifications.store.mysql.migrations',
+}
+
