@@ -15,8 +15,8 @@ before_install:
 # command to install dependencies
 install:
     - "pip install coveralls"
-#    - "pip install pep8"
-#    - "pip install pylint==1.2.1"
+    - "pip install pep8"
+    - "pip install pylint==1.2.1"
     - "pip install -r requirements.txt"
     - "pip install -r test_requirements.txt"
 

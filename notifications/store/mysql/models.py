@@ -10,7 +10,7 @@ class NotificationMessage(models.Model):
     Model for a notification message
     """
 
-    class Meta:
+    class Meta(object):
         """
         ORM metadata about this class
         """
