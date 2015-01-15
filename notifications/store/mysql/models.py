@@ -10,7 +10,7 @@ class NotificationMessage(models.Model):
     Model for a notification message
     """
 
-    class Meta:  # pylint: disable=old-style-class
+    class Meta:
         """
         ORM metadata about this class
         """

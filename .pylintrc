@@ -39,7 +39,7 @@ load-plugins=
 # no Warning level messages displayed, use"--disable=all --enable=classes
 # --disable=W"
 # I0011     locally-disabled   (module-level pylint overrides)
-disable=I0011,W0232
+disable=I0011,W0232,too-few-public-methods
 
 
 [REPORTS]
