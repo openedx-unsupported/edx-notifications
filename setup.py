@@ -19,7 +19,7 @@ setup(
         'Programming Language :: Python',
         'Framework :: Django',
     ],
-    packages=['notifications, notifications-sql-backend'],
+    packages=['notifications'],
     dependency_links=[
     ],
     install_requires=[
