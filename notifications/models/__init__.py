@@ -4,4 +4,4 @@ directory. We want our SQL implementation to live in notifications.store.sql so
 lets import everything from there
 """
 
-from notifications.store.mysql.models import *
+from notifications.store.mysql.models import *  # pylint: disable=wildcard-import

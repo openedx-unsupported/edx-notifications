@@ -6,6 +6,12 @@ from django.db import models
 
 
 class NotificationMessage(models.Model):
+    """
+    Model for a notification message
+    """
 
-    class Meta:
+    class Meta:  # pylint: disable=old-style-class
+        """
+        ORM metadata about this class
+        """
         app_label = 'notifications'
