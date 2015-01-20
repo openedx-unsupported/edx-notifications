@@ -2,7 +2,7 @@
 Concrete MySQL implementation of the data provider interface
 """
 
-from notifications.store.data_provider import NotificationDataProviderBase
+from notifications.store.base import NotificationDataProviderBase
 from notifications.data import NotificationMessage
 
 
