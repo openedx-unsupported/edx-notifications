@@ -10,3 +10,5 @@ class NotificationMessage(object):
     """
     The basic notification Msg
     """
+
+    payload = None

@@ -18,18 +18,7 @@ class SQLNotificationMessage(TimeStampedModel):
         ORM metadata about this class
         """
         app_label = 'notifications'  # since we have this models.py file not in the root app directory
-
-
-class SQLNotificationRendering(models.Model):
-    """
-    Describes a rendering of a Notification, e.g. JSON payload, HTML, etc.
-    """
-
-    class Meta(object):
-        """
-        ORM metadata about this class
-        """
-        app_label = 'notifications'  # since we have this models.py file not in the root app directory
+        db_table = 'notifications_notificationmessage'
 
 
 class SQLNotificationUserMap(models.Model):
@@ -42,6 +31,7 @@ class SQLNotificationUserMap(models.Model):
         ORM metadata about this class
         """
         app_label = 'notifications'  # since we have this models.py file not in the root app directory
+        db_table = 'notifications_notificationusermap'
 
     # NOTE: Be sure to add any user (the target) context we might need here
     # including email, First/Last name (to support any personalization)
@@ -57,6 +47,7 @@ class SQLNotificationType(models.Model):
         ORM metadata about this class
         """
         app_label = 'notifications'  # since we have this models.py file not in the root app directory
+        db_table = 'notifications_notificationtype'
 
 
 class SQLNotificationChannel(models.Model):
@@ -70,6 +61,7 @@ class SQLNotificationChannel(models.Model):
         ORM metadata about this class
         """
         app_label = 'notifications'  # since we have this models.py file not in the root app directory
+        db_table = 'notifications_notificationchannel'
 
 
 class SQLNotificationTypeRenderingProvided(models.Model):
@@ -82,6 +74,7 @@ class SQLNotificationTypeRenderingProvided(models.Model):
         ORM metadata about this class
         """
         app_label = 'notifications'  # since we have this models.py file not in the root app directory
+        db_table = 'notifications_notificationtyperenderingprovided'
 
 
 class SQLNotificationUserTypeChannelMap(models.Model):
@@ -94,6 +87,7 @@ class SQLNotificationUserTypeChannelMap(models.Model):
         ORM metadata about this class
         """
         app_label = 'notifications'  # since we have this models.py file not in the root app directory
+        db_table = 'notifications_notificationusertypechannelmap'
 
 
 class SQLDisplayString(models.Model):
@@ -111,4 +105,5 @@ class SQLDisplayString(models.Model):
         ORM metadata about this class
         """
         app_label = 'notifications'  # since we have this models.py file not in the root app directory
+        db_table = 'notifications_displaystring'
         unique_together = (('string_name', 'lang'),)
