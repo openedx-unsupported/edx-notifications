@@ -5,10 +5,13 @@ implicit database-specific bindings that come with any uses of ORMs. Also this h
 with any serialization/deserializations if we separate out services
 """
 
+from .utils import BaseInitializer
 
-class NotificationMessage(object):
+
+class NotificationMessage(BaseInitializer):
     """
     The basic notification Msg
     """
 
+    msg_id = None
     payload = None

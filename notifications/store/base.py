@@ -13,5 +13,11 @@ class NotificationDataProviderBase(object):
     @abc.abstractmethod
     def get_notification_message_by_id(self, msg_id):
         """
-        Returns the notitication message by primary key
+        Returns the notitication message (of NotificationMessage type) by primary key
+        """
+
+    @abc.abstractmethod
+    def save_notification_message(self, msg):
+        """
+        Save (create or update) a notification message (of NotificationMessage type)
         """
