@@ -9,6 +9,7 @@ from notifications.base_data import (
     DictTypedField,
     DateTimeTypedField,
     IntegerTypedField,
+    EnumTypedField,
     BaseDataObject
 )
 
@@ -19,13 +20,23 @@ class NotificationMessageType(BaseDataObject):
     """
 
 
+NOTIFICATION_PRIORITY_NONE = 0
+NOTIFICATION_PRIORITY_LOW = 1
+NOTIFICATION_PRIORITY_MEDIUM = 2
+NOTIFICATION_PRIORITY_HIGH = 3
+NOTIFICATION_PRIORITY_URGENT = 4
+
+
 class NotificationMessage(BaseDataObject):
     """
-    The basic notification Msg
+    The basic Notification Message
     """
 
     # instance of NotificationMessageType, None = unloaded
     msg_type = TypedField(NotificationMessageType)
+
+    # unconstained ID to some user identity service (e.g. auth_user in Django)
+    from_user_id = IntegerTypedField()
 
     # dict containing key/value pairs which comprise the notification data payload
     payload = DictTypedField()
@@ -45,6 +56,18 @@ class NotificationMessage(BaseDataObject):
     #
     # None = never
     expires_secs_after_read = IntegerTypedField()
+
+    #
+    #
+    priority = EnumTypedField(
+        [
+            NOTIFICATION_PRIORITY_NONE,
+            NOTIFICATION_PRIORITY_LOW,
+            NOTIFICATION_PRIORITY_MEDIUM,
+            NOTIFICATION_PRIORITY_HIGH,
+            NOTIFICATION_PRIORITY_URGENT,
+        ]
+    )
 
 
 class NotificationMessageUserMap(BaseDataObject):

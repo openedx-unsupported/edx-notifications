@@ -72,6 +72,32 @@ class DateTimeTypedField(TypedField):
         super(DateTimeTypedField, self).__init__(datetime)
 
 
+class EnumTypedField(StringTypedField):
+    """
+    Specialized subclass of TypedField() which is basically an StringTypedField,
+    but constrains what values can be set on it
+    """
+
+    def __init__(self, allowed_values):
+        """
+        Initializer with constrained values
+        """
+
+        self._allowed_values = allowed_values
+        super(EnumTypedField, self).__init__()
+
+    def assert_value(self, value):
+        """
+        Make sure the value is in the list of allowed_values
+        """
+
+        if value not in self._allowed_values:
+            msg = (
+                "Attempting to set to '{value}'. Allowed values are: '{allowed}'."
+            ).format(value=value, allowed=str(self._allowed_values))
+            raise ValueError(msg)
+
+
 class BaseDataObject(object):
     """
     A base class for all Notification Data Objects
@@ -124,6 +150,9 @@ class BaseDataObject(object):
             # This will raise TypeError if we are attempting to set
             # an attribute of an unexpected type
             existing.assert_type(type(value))
+
+            if hasattr(existing, 'assert_value'):
+                existing.assert_value(value)
         elif not is_existing_typed and value and existing:
             # if field has already been set, then we can't change
             # types (unless from or to None)

@@ -7,6 +7,9 @@ from django.test import TestCase
 from notifications.base_data import (
     BaseDataObject,
     TypedField,
+    IntegerTypedField,
+    DictTypedField,
+    EnumTypedField
 )
 
 from notifications.data import (
@@ -27,9 +30,12 @@ class DataObjectWithTypedFields(BaseDataObject):
     More sophisticated DataObject
     """
 
-    test_int_field = TypedField(int)
-    test_dict_field = TypedField(dict)
+    test_int_field = IntegerTypedField()
+    test_dict_field = DictTypedField()
     test_class_field = TypedField(NotificationMessage)
+    test_enum_field = EnumTypedField(
+        ['foo']
+    )
 
 
 class BaseDataObjectTests(TestCase):
@@ -145,3 +151,15 @@ class BaseDataObjectTests(TestCase):
 
         obj.test_int_field = None
         obj.test_int_field = 200
+
+    def test_bad_enum_value(self):
+        """
+        Make sure we can't set a bad value on an enum field
+        """
+        obj = DataObjectWithTypedFields()
+        obj.test_enum_field = u'foo'  # this is OK
+
+        obj = DataObjectWithTypedFields()
+        # this should not be OK
+        with self.assertRaises(ValueError):
+            obj.test_enum_field = u'bad'
