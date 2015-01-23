@@ -7,8 +7,8 @@ ECHO 'Running test suite'
 coverage run manage.py test --verbosity=3
 coverage report -m
 coverage html
-pep8 --config=.pep8 notifications
-pylint --rcfile=.pylintrc notifications --report=no
+pep8 notifications
+pylint notifications --report=no
 ECHO ''
 ECHO 'View the full coverage report at {CODE_PATH}/edx-notifications/htmlcov/index.html'
 ECHO ''

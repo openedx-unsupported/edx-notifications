@@ -19,4 +19,4 @@ class TestBaseNotificationDataProvider(TestCase):
         """
 
         with self.assertRaises(TypeError):
-            BaseNotificationStoreProvider()
+            BaseNotificationStoreProvider()  # pylint: disable=abstract-class-instantiated

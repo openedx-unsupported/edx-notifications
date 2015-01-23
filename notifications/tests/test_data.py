@@ -4,7 +4,7 @@ Unit tests to exercise code implemented in data.py
 
 from django.test import TestCase
 
-from notifications.data import (
+from notifications.data import (  # pylint: disable=unused-import
     NotificationMessage,
 )
 
