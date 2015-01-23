@@ -90,10 +90,7 @@ class BaseDataObject(object):
 
         for key in kwargs.keys():
             value = kwargs[key]
-            if hasattr(self, key):
-                if getattr(self, key) != value:
-                    self._is_dirty = True
-
+            if key in dir(self):
                 setattr(self, key, value)
             else:
                 raise ValueError(
@@ -110,7 +107,7 @@ class BaseDataObject(object):
         We want our data models to have a schema that is fixed as design time!!!
         """
 
-        if not hasattr(self, attribute):
+        if not attribute in dir(self):
             raise ValueError(
                 (
                     "Attempting to add a new attribute '{name}' that was not part of "
@@ -140,30 +137,13 @@ class BaseDataObject(object):
 
         super(BaseDataObject, self).__setattr__(attribute, value)
 
-    def __getattr__(self, attribute):
+    def __getattribute__(self, attribute):
         """
         Allow for lazy loading of objects
         We assume that the 'id' field is already set
         So we can look it up in the database
         """
 
-        if not hasattr(self, attribute):
-            raise ValueError(
-                (
-                    "Attempting to read an field '{name}' that was not part of "
-                    "the original schema."
-                ).format(name=attribute)
-            )
-
-        value = super(BaseDataObject, self).__getattr__(attribute)
-
-        if isinstance(value, TypedField):
-            # we need to lazy-load this object
-
-            # this is not yet implemented, so blow up
-            raise ValueError(
-                (
-                    "Attempting to read field '{name}' but is has not yet been set!"
-                ).format(name=attribute)
-            )
-
+        value = super(BaseDataObject, self).__getattribute__(attribute)
+        # be sure to add lazy loading
+        return value

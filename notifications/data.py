@@ -58,12 +58,12 @@ class NotificationMessageUserMap(BaseDataObject):
     read_at state nor any personalization, then we could maybe do away with excessive fan-outs
     """
 
-    user_id = None  # int, unconstrained pointer to edx-platform auth_user table
-    msg = None  # Instance of the Message, None = unloaded
-    read_at = None  # DateTime (UTC)
+    user_id = IntegerTypedField()  # int, unconstrained pointer to edx-platform auth_user table
+    msg = TypedField(NotificationMessage)  # Instance of the Message
+    read_at = DateTimeTypedField()  # DateTime (UTC)
 
     # dict containing any user specific context (e.g. personalization) for the notification
-    user_context = {}
+    user_context = DictTypedField()
 
 
 class NotificationUserGroup(BaseDataObject):
@@ -81,16 +81,21 @@ class NotificationChannel(BaseDataObject):
     """
 
 
-class NotificationTypeUserChannellPreference(BaseDataObject):
+class NotificationTypeUserChannelPreference(BaseDataObject):
     """
     Specifies a User preference as to how he/she would like notifications of a certain type
     delivered
     """
 
-    user_id = None  # int, unconstrained pointer to edx-platform auth_user table
-    notification_type = NotificationMessageType()  # FK to NotificationMessageType
-    channel = NotificationChannel()  # FK to NotificationChannel
+    # unconstrained identifier that is provided by some identity service (e.g. auth_user Django Auth)
+    user_id = IntegerTypedField()
+
+    # the NotificationType this preference is for
+    notification_type = TypedField(NotificationMessageType)
+
+    # the Channel that this NotificationType should route to
+    channel = TypedField(NotificationChannel)
 
     # dict containing any user specific context for this channel, for example a mobile # for SMS
     # message, or email address
-    channel_context = {}
+    channel_context = DictTypedField()

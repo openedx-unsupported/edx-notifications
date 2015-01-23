@@ -73,6 +73,9 @@ class BaseDataObjectTests(TestCase):
         self.assertTrue(isinstance(obj.test_dict_field, dict))
         self.assertTrue(isinstance(obj.test_class_field, NotificationMessage))
 
+        self.assertEqual(obj.test_int_field, 100)
+        self.assertEqual(obj.test_dict_field, {'foo': 'bar'})
+
         # make sure we can set fields after initialization
 
         obj = DataObjectWithTypedFields()
