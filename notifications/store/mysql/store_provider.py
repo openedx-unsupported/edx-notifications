@@ -2,10 +2,9 @@
 Concrete MySQL implementation of the data provider interface
 """
 
-
 from django.core.exceptions import ObjectDoesNotExist
 
-from notifications.store.base import NotificationDataProviderBase
+from notifications.store.store import BaseNotificationStoreProvider
 from notifications.data import NotificationMessage
 from notifications.exceptions import ItemNotFoundError
 
@@ -14,7 +13,7 @@ from notifications.store.mysql.models import (
 )
 
 
-class MySQLNotificationDataProvider(NotificationDataProviderBase):
+class MySQLNotificationStoreProvider(BaseNotificationStoreProvider):
     """
     Concrete MySQL implementation of the abstract base class (interface)
     """
@@ -30,7 +29,7 @@ class MySQLNotificationDataProvider(NotificationDataProviderBase):
             raise ItemNotFoundError()
 
         msg = NotificationMessage(
-            msg_id=obj.id,
+            id=obj.id,
             payload=obj.payload
         )
         return msg
@@ -44,9 +43,9 @@ class MySQLNotificationDataProvider(NotificationDataProviderBase):
         If it is created, then the id property will be set on the NotificationMsg and returned
         """
 
-        if msg.msg_id:
+        if msg.id:
             try:
-                obj = SQLNotificationMessage.objects.get(id=msg.msg_id)
+                obj = SQLNotificationMessage.objects.get(id=msg.id)
             except ObjectDoesNotExist:
                 raise ItemNotFoundError()
         else:
@@ -55,5 +54,5 @@ class MySQLNotificationDataProvider(NotificationDataProviderBase):
             )
 
         obj.save()
-        msg.msg_id = obj.id
+        msg.id = obj.id
         return msg

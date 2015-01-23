@@ -12,7 +12,7 @@ NotificationType
 import abc
 
 
-class NotificationRendererBase(object):
+class BaseNotificationRenderer(object):
     """
     Abstract Base Class for NotificationRender types.
 
@@ -22,6 +22,9 @@ class NotificationRendererBase(object):
     Note: with the utilization of the abc.abstractmethod decorators you cannot
     create an instance of the class directly
     """
+
+    # don't allow instantiation of this class, it must be subclassed
+    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def can_render_format(self, msg, render_format):
