@@ -29,11 +29,10 @@ class TypedField(object):
         """
 
         if assert_type != self._expected_type:
-            raise TypeError(
-                (
-                    "Field expected type of '{expected}' got '{got}'"
-                ).format(expected=self._expected_type, got=assert_type)
+            msg = "Field expected type of '{expected}' got '{got}'".format(
+                expected=self._expected_type, got=assert_type,
             )
+            raise TypeError(msg)
 
 
 class StringTypedField(TypedField):
@@ -96,12 +95,13 @@ class BaseDataObject(object):
 
                 setattr(self, key, value)
             else:
-                raise ValueError(
-                    (
-                        "Initialization parameter '{name}' was passed in although "
-                        "it is not a known attribute to the class."
-                    ).format(name=key)
+                msg = (
+                    "Initialization parameter '{name}' was passed in although "
+                    "it is not a known attribute to the class."
+                ).format(
+                    name=key,
                 )
+                raise ValueError(msg)
 
     def __setattr__(self, attribute, value):
         """
@@ -111,12 +111,13 @@ class BaseDataObject(object):
         """
 
         if not hasattr(self, attribute):
-            raise ValueError(
-                (
-                    "Attempting to add a new attribute '{name}' that was not part of "
-                    "the original schema."
-                ).format(name=attribute)
+            msg = (
+                "Attempting to add a new attribute '{name}' that was not part of "
+                "the original schema."
+            ).format(
+                name=attribute,
             )
+            raise ValueError(msg)
 
         existing = getattr(self, attribute)
 
@@ -131,12 +132,13 @@ class BaseDataObject(object):
             # if field has already been set, then we can't change
             # types (unless from or to None)
             if not isinstance(value, type(existing)):
-                raise TypeError(
-                    (
-                        "Attempting to change a field from type '{from_type}' to '{to_type}'. "
-                        "This is not allowed!"
-                    ).format(from_type=type(existing), to_type=type(value))
+                msg = (
+                    "Attempting to change a field from type '{from_type}' to '{to_type}'. "
+                    "This is not allowed!"
+                ).format(
+                    from_type=type(existing), to_type=type(value),
                 )
+                raise TypeError(msg)
 
         super(BaseDataObject, self).__setattr__(attribute, value)
 
@@ -148,12 +150,13 @@ class BaseDataObject(object):
         """
 
         if not hasattr(self, attribute):
-            raise ValueError(
-                (
-                    "Attempting to read an field '{name}' that was not part of "
-                    "the original schema."
-                ).format(name=attribute)
+            msg = (
+                "Attempting to read an field '{name}' that was not part of "
+                "the original schema."
+            ).format(
+                name=attribute,
             )
+            raise ValueError(msg)
 
         value = super(BaseDataObject, self).__getattr__(attribute)
 
@@ -161,9 +164,7 @@ class BaseDataObject(object):
             # we need to lazy-load this object
 
             # this is not yet implemented, so blow up
-            raise ValueError(
-                (
-                    "Attempting to read field '{name}' but is has not yet been set!"
-                ).format(name=attribute)
+            msg = "Attempting to read field '{name}' but is has not yet been set!".format(
+                name=attribute,
             )
-
+            raise ValueError(msg)
