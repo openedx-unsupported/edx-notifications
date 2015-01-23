@@ -2,6 +2,8 @@
 Tests which exercise the MySQL test_data_provider
 """
 
+from datetime import datetime
+
 from django.test import TestCase
 
 from notifications.store.mysql.store_provider import MySQLNotificationStoreProvider
@@ -32,7 +34,13 @@ class TestMySQLStoreProvider(TestCase):
         """
 
         msg = NotificationMessage(
-            payload="This is a test payload"
+            payload={
+                'foo': 'bar',
+                'one': 1,
+                'none': None,
+                'datetime': datetime.utcnow(),
+                'iso8601-fakeout': '--T::',  # something to throw off the iso8601 parser heuristic
+            }
         )
 
         with self.assertNumQueries(1):
