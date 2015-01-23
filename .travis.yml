@@ -1,32 +1,18 @@
 language: python
-
-
 python:
   - "2.7"
-
 env:
-  - TRAVIS_MODE=1
+  - DJANGO_SETTINGS_MODULE=settings
 
-
-before_install:
-  - export DJANGO_SETTINGS_MODULE=settings
-
-
-# command to install dependencies
 install:
-    - "pip install coveralls"
-    - "pip install pep8"
-    - "pip install pylint==1.2.1"
     - "pip install -r requirements.txt"
     - "pip install -r test_requirements.txt"
+    - "pip install coveralls"
 
-
-# command to run tests and quality checks
 script:
     - coverage run ./manage.py test
     - coverage report -m
-    - pep8 --config=.pep8 notifications
-    - pylint --rcfile=.pylintrc notifications --report=no
-
+    - pep8 notifications
+    - pylint notifications --report=no
 
 after_success: coveralls

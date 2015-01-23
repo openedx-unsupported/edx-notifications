@@ -107,7 +107,7 @@ class BaseDataObject(object):
         We want our data models to have a schema that is fixed as design time!!!
         """
 
-        if not attribute in dir(self):
+        if attribute not in dir(self):
             raise ValueError(
                 (
                     "Attempting to add a new attribute '{name}' that was not part of "
