@@ -1,5 +1,5 @@
 """
-Unit tests to exercise code implemented in utils.py
+Unit tests to exercise code implemented in data.py
 """
 
 from django.test import TestCase
@@ -11,12 +11,12 @@ from notifications.data import (
 
 class TestUtils(TestCase):
     """
-    Go through utils.py and exercise some tests
+    Go through data.py and exercise some tests
     """
 
     def test_base_data_object(self):
         """
-        Make sure we can initialize a new class using kwargs
+        Assert proper behavior with BaseDataObject
         """
 
         class TestObject(BaseDataObject):
@@ -31,3 +31,9 @@ class TestUtils(TestCase):
 
         with self.assertRaises(ValueError):
             TestObject(doesnt_exist='bar')
+
+        # make sure we are not allowed to add on new
+        # attributes after initialization
+        obj = TestObject(test_variable='foo')
+        with self.assertRaises(ValueError):
+            obj.blow_up_now = True  # pylint: disable=attribute-defined-outside-init
