@@ -2,100 +2,13 @@
 Base objects that data.py uses
 """
 
+import json
+import copy
+import dateutil.parser
+
 from datetime import datetime
 
-
-class TypedField(object):
-    """
-    Placeholder object to indicate that a field has not yet been set.
-    This is because None is ambiguous as it might have semantic meaning
-    even after an object has been initialized/loaded.
-    """
-
-    _expected_type = None
-
-    def __init__(self, expected_type):
-        """
-        Initializer which takes in the type this field
-        should be set it is set
-        """
-
-        self._expected_type = expected_type
-
-    def assert_type(self, assert_type):
-        """
-        Asserts that the passed in type is the same as
-        our expected type
-        """
-
-        if assert_type != self._expected_type:
-            raise TypeError(
-                (
-                    "Field expected type of '{expected}' got '{got}'"
-                ).format(expected=self._expected_type, got=assert_type)
-            )
-
-
-class StringTypedField(TypedField):
-    """
-    Specialized subclass of TypedField(unicode) as a convienence
-    """
-
-    def __init__(self):
-        super(StringTypedField, self).__init__(unicode)
-
-
-class IntegerTypedField(TypedField):
-    """
-    Specialized subclass of TypedField(int) as a convienence
-    """
-
-    def __init__(self):
-        super(IntegerTypedField, self).__init__(int)
-
-
-class DictTypedField(TypedField):
-    """
-    Specialized subclass of TypedField(dict) as a convienence
-    """
-
-    def __init__(self):
-        super(DictTypedField, self).__init__(dict)
-
-
-class DateTimeTypedField(TypedField):
-    """
-    Specialized subclass of TypedField(datetime) as a convienence
-    """
-
-    def __init__(self):
-        super(DateTimeTypedField, self).__init__(datetime)
-
-
-class EnumTypedField(StringTypedField):
-    """
-    Specialized subclass of TypedField() which is basically an StringTypedField,
-    but constrains what values can be set on it
-    """
-
-    def __init__(self, allowed_values):
-        """
-        Initializer with constrained values
-        """
-
-        self._allowed_values = allowed_values
-        super(EnumTypedField, self).__init__()
-
-    def assert_value(self, value):
-        """
-        Make sure the value is in the list of allowed_values
-        """
-
-        if value not in self._allowed_values:
-            msg = (
-                "Attempting to set to '{value}'. Allowed values are: '{allowed}'."
-            ).format(value=value, allowed=str(self._allowed_values))
-            raise ValueError(msg)
+from weakref import WeakKeyDictionary
 
 
 class BaseDataObject(object):
@@ -141,38 +54,168 @@ class BaseDataObject(object):
                 ).format(name=attribute)
             )
 
-        existing = getattr(self, attribute)
-
-        # see if we are replacing a TypeField, if so then the type's should match!
-        # however we will allow for None to be always allowed
-        is_existing_typed = isinstance(existing, TypedField)
-        if is_existing_typed and value:
-            # This will raise TypeError if we are attempting to set
-            # an attribute of an unexpected type
-            existing.assert_type(type(value))
-
-            if hasattr(existing, 'assert_value'):
-                existing.assert_value(value)
-        elif not is_existing_typed and value and existing:
-            # if field has already been set, then we can't change
-            # types (unless from or to None)
-            if not isinstance(value, type(existing)):
-                raise TypeError(
-                    (
-                        "Attempting to change a field from type '{from_type}' to '{to_type}'. "
-                        "This is not allowed!"
-                    ).format(from_type=type(existing), to_type=type(value))
-                )
-
         super(BaseDataObject, self).__setattr__(attribute, value)
 
-    def __getattribute__(self, attribute):
+
+class TypedField(object):
+    """
+    Field Decscriptors used to enforce correct typing
+    """
+
+    _expected_type = None
+
+    def __init__(self, expected_type, default=None):
         """
-        Allow for lazy loading of objects
-        We assume that the 'id' field is already set
-        So we can look it up in the database
+        Initializer which takes in the type this field
+        should be set it is set
         """
 
-        value = super(BaseDataObject, self).__getattribute__(attribute)
-        # be sure to add lazy loading
-        return value
+        self._expected_type = expected_type
+        self._default = default
+        self._data = WeakKeyDictionary()
+
+    def __get__(self, instance, owner):
+        """
+        Descriptor getter
+        """
+        return self._data.get(instance, self._default)
+
+    def __set__(self, instance, value):
+        """
+        Descriptor setter. Be sure to enforce type on setting. But None is allowed.
+        """
+
+        value_type = type(value)
+        if value and type(value) != self._expected_type:
+            raise TypeError(
+                (
+                    "Field expected type of '{expected}' got '{got}'"
+                ).format(expected=self._expected_type, got=value_type)
+            )
+        self._data[instance] = value
+
+
+class StringField(TypedField):
+    """
+    Specialized subclass of TypedField(unicode) as a convienence
+    """
+
+    def __init__(self):
+        super(StringField, self).__init__(unicode)
+
+
+class IntegerField(TypedField):
+    """
+    Specialized subclass of TypedField(int) as a convienence
+    """
+
+    def __init__(self):
+        super(IntegerField, self).__init__(int)
+
+
+class DictField(TypedField):
+    """
+    Specialized subclass of TypedField(dict) as a convienence
+    """
+
+    def __init__(self):
+        super(DictField, self).__init__(dict)
+
+    @classmethod
+    def to_json(cls, self):
+        """
+        Serialize to json
+        """
+
+        _dict = copy.deepcopy(self)
+
+        for key, value in _dict.iteritems():
+            if isinstance(value, datetime):
+                _dict[key] = value.isoformat()
+
+        return json.dumps(_dict)
+
+    @classmethod
+    def from_json(cls, self):
+        """
+        Descerialize from json
+        """
+
+        _dict = json.loads(self)
+
+        for key, value in _dict.iteritems():
+            if isinstance(value, basestring):
+                # This could be a datetime posing as a ISO8601 formatted string
+                # we so have to apply some heuristics here
+                # to see if we want to even attempt
+                if value.count('-') == 2 and value.count(':') == 2 and value.count('T') == 1:
+                    # this is likely a ISO8601 serialized string, so let's try to parse
+                    try:
+                        _dict[key] = dateutil.parser.parse(value)
+                    except ValueError:
+                        # oops, I guess our heuristic was a bit off
+                        # no harm, but just wasted CPU cycles
+                        pass
+
+        return _dict
+
+
+class DateTimeField(TypedField):
+    """
+    Specialized subclass of TypedField(datetime) as a convienence
+    """
+
+    def __init__(self):
+        super(DateTimeField, self).__init__(datetime)
+
+
+class EnumField(StringField):
+    """
+    Specialized subclass of TypedField() which is basically an StringTypedField,
+    but constrains what values can be set on it
+    """
+
+    def __init__(self, allowed_values=None):
+        """
+        Initializer with constrained values
+        """
+
+        self._allowed_values = allowed_values
+        super(EnumField, self).__init__()
+
+    def __set__(self, instance, value):
+        """
+        Descriptor setter. Be sure to enforce type on setting. But None is allowed.
+        """
+
+        if self._allowed_values:
+            if value not in self._allowed_values:
+                msg = (
+                    "Attempting to set to '{value}'. Allowed values are: '{allowed}'."
+                ).format(value=value, allowed=str(self._allowed_values))
+                raise ValueError(msg)
+
+        super(EnumField, self).__set__(instance, value)
+
+
+class RelatedObjectField(TypedField):
+    """
+    This field is a related object that is joined to the containing object,
+    for example a foreign key. The related object must be of type BaseDataObject
+    """
+
+    def __init__(self, related_type):
+        """
+        Initializer for related object which must be a subclass of
+        BaseDataObject
+        """
+
+        if not issubclass(related_type, BaseDataObject):
+            msg = (
+                "Creating a related field of type '{name}' which is not a "
+                "subclass of BaseDataObject."
+            ).format(name=related_type)
+
+            raise TypeError(msg)
+
+        super(RelatedObjectField, self).__init__(related_type)

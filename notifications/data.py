@@ -4,14 +4,32 @@ generic dictionaries from being passed around, plus this will help avoid any
 implicit database-specific bindings that come with any uses of ORMs.
 """
 
+from notifications import const
+
 from notifications.base_data import (
-    TypedField,
-    DictTypedField,
-    DateTimeTypedField,
-    IntegerTypedField,
-    EnumTypedField,
+    StringField,
+    DictField,
+    DateTimeField,
+    IntegerField,
+    EnumField,
+    RelatedObjectField,
     BaseDataObject
 )
+
+
+class NotificationChannel(BaseDataObject):
+    """
+    Specifies a channel through which a notification is delivered
+    """
+
+    # the internal name of the channel
+    name = StringField()
+
+    # the human readible name of the channel
+    display_name = StringField()
+
+    # the human readible description of the channel
+    description_name = StringField()
 
 
 class NotificationMessageType(BaseDataObject):
@@ -19,12 +37,18 @@ class NotificationMessageType(BaseDataObject):
     The Data Object representing the NotificationMessageType
     """
 
+    # the name (including namespace) of the notification, e.g. open-edx.lms.forums.reply-to-post
+    name = StringField()
 
-NOTIFICATION_PRIORITY_NONE = 0
-NOTIFICATION_PRIORITY_LOW = 1
-NOTIFICATION_PRIORITY_MEDIUM = 2
-NOTIFICATION_PRIORITY_HIGH = 3
-NOTIFICATION_PRIORITY_URGENT = 4
+    # the human readible string of the name of the notification
+    display_name = StringField()
+
+    # the human readible string that describes the notification
+    display_description = StringField()
+
+    # default delivery channel for this type
+    # None = no default
+    default_channel = RelatedObjectField(NotificationChannel)
 
 
 class NotificationMessage(BaseDataObject):
@@ -33,39 +57,39 @@ class NotificationMessage(BaseDataObject):
     """
 
     # instance of NotificationMessageType, None = unloaded
-    msg_type = TypedField(NotificationMessageType)
+    msg_type = RelatedObjectField(NotificationMessageType)
 
     # unconstained ID to some user identity service (e.g. auth_user in Django)
-    from_user_id = IntegerTypedField()
+    from_user_id = IntegerField()
 
     # dict containing key/value pairs which comprise the notification data payload
-    payload = DictTypedField()
+    payload = DictField()
 
     # DateTime, the earliest that this notification should be delivered
     # for example, this could be used for a delayed notification.
     #
     # None = ASAP
-    deliver_no_earlier_than = DateTimeTypedField()
+    deliver_no_earlier_than = DateTimeField()
 
     # DateTime, when this notification is no longer considered valid even if it has not been read
     #
     # None = never
-    expires_at = DateTimeTypedField()
+    expires_at = DateTimeField()
 
     # Duration in seconds, when this notification should be purged after being marked as read.
     #
     # None = never
-    expires_secs_after_read = IntegerTypedField()
+    expires_secs_after_read = IntegerField()
 
     #
     #
-    priority = EnumTypedField(
+    priority = EnumField(
         [
-            NOTIFICATION_PRIORITY_NONE,
-            NOTIFICATION_PRIORITY_LOW,
-            NOTIFICATION_PRIORITY_MEDIUM,
-            NOTIFICATION_PRIORITY_HIGH,
-            NOTIFICATION_PRIORITY_URGENT,
+            const.NOTIFICATION_PRIORITY_NONE,
+            const.NOTIFICATION_PRIORITY_LOW,
+            const.NOTIFICATION_PRIORITY_MEDIUM,
+            const.NOTIFICATION_PRIORITY_HIGH,
+            const.NOTIFICATION_PRIORITY_URGENT,
         ]
     )
 
@@ -81,12 +105,17 @@ class NotificationMessageUserMap(BaseDataObject):
     read_at state nor any personalization, then we could maybe do away with excessive fan-outs
     """
 
-    user_id = IntegerTypedField()  # int, unconstrained pointer to edx-platform auth_user table
-    msg = TypedField(NotificationMessage)  # Instance of the Message
-    read_at = DateTimeTypedField()  # DateTime (UTC)
+    # unconstrained pointer to edx-platform auth_user table
+    user_id = IntegerField()
+
+    # the message itself
+    msg = RelatedObjectField(NotificationMessage)
+
+    # time the user read the notification
+    read_at = DateTimeField()
 
     # dict containing any user specific context (e.g. personalization) for the notification
-    user_context = DictTypedField()
+    user_context = DictField()
 
 
 class NotificationUserGroup(BaseDataObject):
@@ -98,12 +127,6 @@ class NotificationUserGroup(BaseDataObject):
     """
 
 
-class NotificationChannel(BaseDataObject):
-    """
-    Specifies a channel through which a notification is delivered
-    """
-
-
 class NotificationTypeUserChannelPreference(BaseDataObject):
     """
     Specifies a User preference as to how he/she would like notifications of a certain type
@@ -111,14 +134,14 @@ class NotificationTypeUserChannelPreference(BaseDataObject):
     """
 
     # unconstrained identifier that is provided by some identity service (e.g. auth_user Django Auth)
-    user_id = IntegerTypedField()
+    user_id = IntegerField()
 
     # the NotificationType this preference is for
-    notification_type = TypedField(NotificationMessageType)
+    notification_type = RelatedObjectField(NotificationMessageType)
 
     # the Channel that this NotificationType should route to
-    channel = TypedField(NotificationChannel)
+    channel = RelatedObjectField(NotificationChannel)
 
     # dict containing any user specific context for this channel, for example a mobile # for SMS
     # message, or email address
-    channel_context = DictTypedField()
+    channel_context = DictField()

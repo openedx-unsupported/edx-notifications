@@ -5,6 +5,12 @@ Django ORM models to support the Notification Store SQL backend
 from django.db import models
 from model_utils.models import TimeStampedModel
 
+from notifications.base_data import DictField
+
+from notifications.data import (
+    NotificationMessage,
+)
+
 
 class SQLNotificationMessage(TimeStampedModel):
     """
@@ -19,6 +25,27 @@ class SQLNotificationMessage(TimeStampedModel):
         """
         app_label = 'notifications'  # since we have this models.py file not in the root app directory
         db_table = 'notifications_notificationmessage'
+
+    def from_data_object(self, obj):
+        """
+        Copy all of the values from passed in NotificationMessage
+        """
+
+        if obj.id:
+            self.id = obj.id  # pylint: disable=invalid-name,attribute-defined-outside-init
+        self.payload = DictField.to_json(obj.payload)
+
+    def to_data_object(self):
+        """
+        Return a Notification Messave
+        """
+
+        msg = NotificationMessage(
+            id=self.id,
+            payload=DictField.from_json(self.payload),
+        )
+
+        return msg
 
 
 class SQLNotificationUserMap(models.Model):

@@ -6,10 +6,10 @@ from django.test import TestCase
 
 from notifications.base_data import (
     BaseDataObject,
-    TypedField,
-    IntegerTypedField,
-    DictTypedField,
-    EnumTypedField
+    IntegerField,
+    DictField,
+    EnumField,
+    RelatedObjectField,
 )
 
 from notifications.data import (
@@ -30,10 +30,10 @@ class DataObjectWithTypedFields(BaseDataObject):
     More sophisticated DataObject
     """
 
-    test_int_field = IntegerTypedField()
-    test_dict_field = DictTypedField()
-    test_class_field = TypedField(NotificationMessage)
-    test_enum_field = EnumTypedField(
+    test_int_field = IntegerField()
+    test_dict_field = DictField()
+    test_class_field = RelatedObjectField(NotificationMessage)
+    test_enum_field = EnumField(
         ['foo']
     )
 
@@ -66,13 +66,14 @@ class BaseDataObjectTests(TestCase):
         """
 
         # make sure we can make proper assignments on initialization
+        msg = NotificationMessage()
         obj = DataObjectWithTypedFields(
             id=1,
             test_int_field=100,
             test_dict_field={
                 'foo': 'bar'
             },
-            test_class_field=NotificationMessage()
+            test_class_field=msg,
         )
 
         self.assertTrue(isinstance(obj.test_int_field, int))
@@ -81,6 +82,7 @@ class BaseDataObjectTests(TestCase):
 
         self.assertEqual(obj.test_int_field, 100)
         self.assertEqual(obj.test_dict_field, {'foo': 'bar'})
+        self.assertEqual(obj.test_class_field, msg)
 
         # make sure we can set fields after initialization
 
@@ -105,6 +107,11 @@ class BaseDataObjectTests(TestCase):
         self.assertTrue(isinstance(obj.test_int_field, type(None)))
         self.assertTrue(isinstance(obj.test_dict_field, type(None)))
         self.assertTrue(isinstance(obj.test_class_field, type(None)))
+
+        with self.assertRaises(TypeError):
+            # RelatedObjectField can only point to
+            # subclasses of BaseDataObject
+            RelatedObjectField(object)
 
     def test_type_fields_bad(self):
         """
