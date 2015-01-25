@@ -57,7 +57,7 @@ class MySQLNotificationStoreProvider(BaseNotificationStoreProvider):
         # ORM object
         obj.from_notification_message(msg)
         obj.save()
-        msg.id = obj.id
+        msg.id = obj.id  # pylint: disable=no-member
         return msg
 
     @lrudecorator(1024)
