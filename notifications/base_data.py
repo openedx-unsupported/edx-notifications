@@ -103,6 +103,17 @@ class StringField(TypedField):
     def __init__(self):
         super(StringField, self).__init__(unicode)
 
+    def __set__(self, instance, value):
+        """
+        Check to see if we were passed a str type, and if so
+        coerce it into a unicode
+        """
+
+        if isinstance(value, str):
+            super(StringField, self).__set__(instance, unicode(value))
+        else:
+            super(StringField, self).__set__(instance, value)
+
 
 class IntegerField(TypedField):
     """
@@ -127,6 +138,9 @@ class DictField(TypedField):
         Serialize to json
         """
 
+        if not self:
+            return None
+
         _dict = copy.deepcopy(self)
 
         for key, value in _dict.iteritems():
@@ -136,12 +150,15 @@ class DictField(TypedField):
         return json.dumps(_dict)
 
     @classmethod
-    def from_json(cls, self):
+    def from_json(cls, value):
         """
         Descerialize from json
         """
 
-        _dict = json.loads(self)
+        if not value:
+            return None
+
+        _dict = json.loads(value)
 
         for key, value in _dict.iteritems():
             if isinstance(value, basestring):

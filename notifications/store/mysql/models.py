@@ -9,6 +9,7 @@ from notifications.base_data import DictField
 
 from notifications.data import (
     NotificationMessage,
+    NotificationType,
 )
 
 
@@ -26,23 +27,35 @@ class SQLNotificationMessage(TimeStampedModel):
         app_label = 'notifications'  # since we have this models.py file not in the root app directory
         db_table = 'notifications_notificationmessage'
 
-    def from_data_object(self, obj):
+    def from_notification_message(self, obj):
         """
-        Copy all of the values from passed in NotificationMessage
+        Copy all of the values from passed in NotificationMessage data object
         """
 
-        if obj.id:
+        # special case when working with the ID's, assert the ID's
+        # match
+        if obj.id and self.id:  # pylint: disable=access-member-before-definition
+            if obj.id != self.id:  # pylint: disable=access-member-before-definition
+                msg = (
+                    "Attempting to copy over NotificationMessage into SQLNotificationMessage "
+                    "but they both have IDs set which do not match! For data integrity reasons "
+                    "this is not allowed!"
+                )
+                raise ValueError(msg)
+
+        if obj.id and not self.id:  # pylint: disable=access-member-before-definition
             self.id = obj.id  # pylint: disable=invalid-name,attribute-defined-outside-init
-        self.payload = DictField.to_json(obj.payload)
 
-    def to_data_object(self):
+        self.payload = DictField.to_json(obj.payload)  # special case, dict<-->JSON string
+
+    def to_notification_message(self):
         """
-        Return a Notification Messave
+        Return a Notification Message data object
         """
 
         msg = NotificationMessage(
             id=self.id,
-            payload=DictField.from_json(self.payload),
+            payload=DictField.from_json(self.payload),  # special case, dict<-->JSON string
         )
 
         return msg
@@ -69,12 +82,34 @@ class SQLNotificationType(models.Model):
     Notification Type information
     """
 
+    # the internal name is the primary key
+    name = models.CharField(primary_key=True, max_length=256)
+
     class Meta(object):
         """
         ORM metadata about this class
         """
         app_label = 'notifications'  # since we have this models.py file not in the root app directory
         db_table = 'notifications_notificationtype'
+
+    def to_notification_type(self):
+        """
+        Generate a NotificationType data object
+        """
+
+        return NotificationType(
+            name=self.name
+        )
+
+    @classmethod
+    def from_notification_type(cls, notification_type):
+        """
+        create and a MySQL model objects from a NotificationType
+        """
+
+        return SQLNotificationType(
+            name=notification_type.name
+        )
 
 
 class SQLNotificationChannel(models.Model):

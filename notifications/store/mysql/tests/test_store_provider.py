@@ -9,6 +9,7 @@ from django.test import TestCase
 from notifications.store.mysql.store_provider import MySQLNotificationStoreProvider
 from notifications.data import (
     NotificationMessage,
+    NotificationType
 )
 
 from notifications.exceptions import (
@@ -57,6 +58,20 @@ class TestMySQLStoreProvider(TestCase):
 
         self._save_new_notification()
 
+    def test_update_notification(self):
+        """
+        Save and then update notification
+        """
+
+        msg = self._save_new_notification()
+        msg.payload = {
+            'updated': True,
+        }
+
+        saved_msg = self.provider.save_notification_message(msg)
+
+        self.assertEqual(msg, saved_msg)
+
     def test_load_notification(self):
         """
         Save and fetch a new notification
@@ -89,3 +104,45 @@ class TestMySQLStoreProvider(TestCase):
         with self.assertRaises(ItemNotFoundError):
             msg.id = 9999999
             self.provider.save_notification_message(msg)
+
+    def test_save_notification_type(self):
+        """
+        Happy path saving (and retrieving) a new message type
+        """
+
+        notification_type = NotificationType(
+            name='foo.bar.baz'
+        )
+
+        result = self.provider.save_notification_type(notification_type)
+
+        self.assertIsNotNone(result)
+        self.assertEqual(result, notification_type)
+
+        result = self.provider.get_notification_type(notification_type.name)
+
+        self.assertIsNotNone(result)
+        self.assertEqual(result, notification_type)
+
+    def test_cant_find_notification_type(self):
+        """
+        Negative test for loading notification type
+        """
+
+        with self.assertRaises(ItemNotFoundError):
+            self.provider.get_notification_type('non-existing')
+
+    def test_update_notification_type(self):
+        """
+        Assert that we cannot change a notification type
+        """
+
+        notification_type = NotificationType(
+            name='foo.bar.baz'
+        )
+
+        self.provider.save_notification_type(notification_type)
+
+        # This should be fine saving again, since nothing is changing
+
+        self.provider.save_notification_type(notification_type)

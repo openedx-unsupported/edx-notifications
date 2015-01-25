@@ -3,6 +3,7 @@ django==1.4.12
 django-model-utils==1.4.0
 South>=0.7.6
 python-dateutil==2.1
+pylru==1.0.6
 
 # edX Packages
 -e git+https://github.com/edx/opaque-keys.git@cba8e23f53ff3ce9d1f45871986c8974576185c0#egg=opaque-keys

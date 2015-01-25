@@ -32,9 +32,9 @@ class NotificationChannel(BaseDataObject):
     description_name = StringField()
 
 
-class NotificationMessageType(BaseDataObject):
+class NotificationType(BaseDataObject):
     """
-    The Data Object representing the NotificationMessageType
+    The Data Object representing the NotificationType
     """
 
     # the name (including namespace) of the notification, e.g. open-edx.lms.forums.reply-to-post
@@ -50,6 +50,13 @@ class NotificationMessageType(BaseDataObject):
     # None = no default
     default_channel = RelatedObjectField(NotificationChannel)
 
+    def __eq__(self, other):
+        """
+        Equality test
+        """
+
+        return self.__dict__ == other.__dict__
+
 
 class NotificationMessage(BaseDataObject):
     """
@@ -57,7 +64,7 @@ class NotificationMessage(BaseDataObject):
     """
 
     # instance of NotificationMessageType, None = unloaded
-    msg_type = RelatedObjectField(NotificationMessageType)
+    msg_type = RelatedObjectField(NotificationType)
 
     # unconstained ID to some user identity service (e.g. auth_user in Django)
     from_user_id = IntegerField()
@@ -137,7 +144,7 @@ class NotificationTypeUserChannelPreference(BaseDataObject):
     user_id = IntegerField()
 
     # the NotificationType this preference is for
-    notification_type = RelatedObjectField(NotificationMessageType)
+    notification_type = RelatedObjectField(NotificationType)
 
     # the Channel that this NotificationType should route to
     channel = RelatedObjectField(NotificationChannel)

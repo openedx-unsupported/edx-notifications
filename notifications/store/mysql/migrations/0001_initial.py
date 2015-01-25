@@ -25,7 +25,7 @@ class Migration(SchemaMigration):
 
         # Adding model 'SQLNotificationType'
         db.create_table('notifications_notificationtype', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=256, primary_key=True)),
         ))
         db.send_create_signal('notifications', ['SQLNotificationType'])
 
@@ -107,7 +107,7 @@ class Migration(SchemaMigration):
         },
         'notifications.sqlnotificationtype': {
             'Meta': {'object_name': 'SQLNotificationType', 'db_table': "'notifications_notificationtype'"},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '256', 'primary_key': 'True'})
         },
         'notifications.sqlnotificationtyperenderingprovided': {
             'Meta': {'object_name': 'SQLNotificationTypeRenderingProvided', 'db_table': "'notifications_notificationtyperenderingprovided'"},
