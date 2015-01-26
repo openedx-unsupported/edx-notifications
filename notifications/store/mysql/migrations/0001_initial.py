@@ -20,6 +20,10 @@ class Migration(SchemaMigration):
         # Adding model 'SQLNotificationUserMap'
         db.create_table('notifications_notificationusermap', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('user_id', self.gf('django.db.models.fields.IntegerField')(db_index=True)),
+            ('msg', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['notifications.SQLNotificationMessage'])),
+            ('read_at', self.gf('django.db.models.fields.DateTimeField')(null=True, db_index=True)),
+            ('user_context', self.gf('django.db.models.fields.TextField')()),
         ))
         db.send_create_signal('notifications', ['SQLNotificationUserMap'])
 
@@ -115,7 +119,11 @@ class Migration(SchemaMigration):
         },
         'notifications.sqlnotificationusermap': {
             'Meta': {'object_name': 'SQLNotificationUserMap', 'db_table': "'notifications_notificationusermap'"},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'msg': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['notifications.SQLNotificationMessage']"}),
+            'read_at': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'db_index': 'True'}),
+            'user_context': ('django.db.models.fields.TextField', [], {}),
+            'user_id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True'})
         },
         'notifications.sqlnotificationusertypechannelmap': {
             'Meta': {'object_name': 'SQLNotificationUserTypeChannelMap', 'db_table': "'notifications_notificationusertypechannelmap'"},

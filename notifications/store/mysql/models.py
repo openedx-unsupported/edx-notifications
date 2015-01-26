@@ -10,6 +10,7 @@ from notifications.base_data import DictField
 from notifications.data import (
     NotificationMessage,
     NotificationType,
+    NotificationUserMap,
 )
 
 
@@ -27,28 +28,18 @@ class SQLNotificationMessage(TimeStampedModel):
         app_label = 'notifications'  # since we have this models.py file not in the root app directory
         db_table = 'notifications_notificationmessage'
 
-    def from_notification_message(self, obj):
+    @classmethod
+    def from_data_object(cls, obj):
         """
         Copy all of the values from passed in NotificationMessage data object
         """
 
-        # special case when working with the ID's, assert the ID's
-        # match
-        if obj.id and self.id:  # pylint: disable=access-member-before-definition
-            if obj.id != self.id:  # pylint: disable=access-member-before-definition
-                msg = (
-                    "Attempting to copy over NotificationMessage into SQLNotificationMessage "
-                    "but they both have IDs set which do not match! For data integrity reasons "
-                    "this is not allowed!"
-                )
-                raise ValueError(msg)
+        return SQLNotificationMessage(
+            id=obj.id,
+            payload=DictField.to_json(obj.payload)
+        )
 
-        if obj.id and not self.id:  # pylint: disable=access-member-before-definition
-            self.id = obj.id  # pylint: disable=invalid-name,attribute-defined-outside-init
-
-        self.payload = DictField.to_json(obj.payload)  # special case, dict<-->JSON string
-
-    def to_notification_message(self):
+    def to_data_object(self):
         """
         Return a Notification Message data object
         """
@@ -66,6 +57,14 @@ class SQLNotificationUserMap(models.Model):
     Information about how a Notification is tied to a targeted user, and related state (e.g. read/unread)
     """
 
+    user_id = models.IntegerField(db_index=True)
+
+    msg = models.ForeignKey(SQLNotificationMessage, db_index=True)
+
+    read_at = models.DateTimeField(null=True, db_index=True)
+
+    user_context = models.TextField()
+
     class Meta(object):
         """
         ORM metadata about this class
@@ -73,8 +72,30 @@ class SQLNotificationUserMap(models.Model):
         app_label = 'notifications'  # since we have this models.py file not in the root app directory
         db_table = 'notifications_notificationusermap'
 
-    # NOTE: Be sure to add any user (the target) context we might need here
-    # including email, First/Last name (to support any personalization)
+    def to_data_object(self):
+        """
+        Generate a NotificationType data object
+        """
+
+        return NotificationUserMap(
+            user_id=self.user_id,
+            msg=self.msg.to_data_object(),  # pylint: disable=no-member
+            read_at=self.read_at,
+            user_context=DictField.from_json(self.user_context)
+        )
+
+    @classmethod
+    def from_data_object(cls, notification_type):
+        """
+        create and a MySQL model objects from a NotificationType
+        """
+
+        return SQLNotificationUserMap(
+            user_id=notification_type.user_id,
+            msg=SQLNotificationMessage.from_data_object(notification_type.msg),
+            read_at=notification_type.read_at,
+            user_context=DictField.to_json(notification_type.context)
+        )
 
 
 class SQLNotificationType(models.Model):
@@ -92,7 +113,7 @@ class SQLNotificationType(models.Model):
         app_label = 'notifications'  # since we have this models.py file not in the root app directory
         db_table = 'notifications_notificationtype'
 
-    def to_notification_type(self):
+    def to_data_object(self):
         """
         Generate a NotificationType data object
         """
@@ -102,7 +123,7 @@ class SQLNotificationType(models.Model):
         )
 
     @classmethod
-    def from_notification_type(cls, notification_type):
+    def from_data_object(cls, notification_type):
         """
         create and a MySQL model objects from a NotificationType
         """

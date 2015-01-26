@@ -56,6 +56,13 @@ class BaseDataObject(object):
 
         super(BaseDataObject, self).__setattr__(attribute, value)
 
+    def __eq__(self, other):
+        """
+        Equality test - simply compare all of the fields
+        """
+
+        return self.__dict__ == other.__dict__
+
 
 class TypedField(object):
     """

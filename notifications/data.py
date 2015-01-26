@@ -50,13 +50,6 @@ class NotificationType(BaseDataObject):
     # None = no default
     default_channel = RelatedObjectField(NotificationChannel)
 
-    def __eq__(self, other):
-        """
-        Equality test
-        """
-
-        return self.__dict__ == other.__dict__
-
 
 class NotificationMessage(BaseDataObject):
     """
@@ -101,7 +94,7 @@ class NotificationMessage(BaseDataObject):
     )
 
 
-class NotificationMessageUserMap(BaseDataObject):
+class NotificationUserMap(BaseDataObject):
     """
     Maps a NotificationMessage to a User
 

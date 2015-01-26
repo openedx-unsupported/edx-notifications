@@ -15,7 +15,8 @@ from notifications.exceptions import (
 
 from notifications.store.mysql.models import (
     SQLNotificationMessage,
-    SQLNotificationType
+    SQLNotificationType,
+    SQLNotificationUserMap
 )
 
 
@@ -34,7 +35,7 @@ class MySQLNotificationStoreProvider(BaseNotificationStoreProvider):
         except ObjectDoesNotExist:
             raise ItemNotFoundError()
 
-        return obj.to_notification_message()
+        return obj.to_data_object()
 
     def save_notification_message(self, msg):
         """
@@ -46,19 +47,14 @@ class MySQLNotificationStoreProvider(BaseNotificationStoreProvider):
         """
 
         if msg.id:
-            try:
-                obj = SQLNotificationMessage.objects.get(id=msg.id)
-            except ObjectDoesNotExist:
+            if not SQLNotificationMessage.objects.filter(id=msg.id).exists():
                 raise ItemNotFoundError()
-        else:
-            obj = SQLNotificationMessage()
 
         # copy over all of the fields from the data object into the
         # ORM object
-        obj.from_notification_message(msg)
+        obj = SQLNotificationMessage.from_data_object(msg)
         obj.save()
-        msg.id = obj.id
-        return msg
+        return obj.to_data_object()
 
     @lrudecorator(1024)
     def get_notification_type(self, name):  # pylint: disable=no-self-use
@@ -74,7 +70,7 @@ class MySQLNotificationStoreProvider(BaseNotificationStoreProvider):
         except ObjectDoesNotExist:
             raise ItemNotFoundError()
 
-        return obj.to_notification_type()
+        return obj.to_data_object()
 
     def save_notification_type(self, msg_type):
         """
@@ -87,12 +83,14 @@ class MySQLNotificationStoreProvider(BaseNotificationStoreProvider):
             # see if this name already exists
             if SQLNotificationType.objects.filter(name=msg_type.name).exists():
                 existing = self.get_notification_type(msg_type.name)
+                # if the objects are the same, then that is OK
+                # just return immediately
                 if existing == msg_type:
                     return msg_type
                 else:
                     raise ItemConflictError()
 
-            obj = SQLNotificationType.from_notification_type(msg_type)
+            obj = SQLNotificationType.from_data_object(msg_type)
             obj.save()
         except IntegrityError:
             # This should get caught up above in the existence detection
@@ -101,6 +99,36 @@ class MySQLNotificationStoreProvider(BaseNotificationStoreProvider):
             raise ItemConflictError()
 
         return msg_type
+
+    def _get_notifications_for_user(self, user_id, read, unread):
+        """
+        Helper method to set up the query to get notifications for a user
+        """
+
+        query = SQLNotificationUserMap.objects.filter(user_id=user_id)
+        if read:
+            query = query.filter(read_at__isnull=False)
+
+        if unread:
+            query = query.filter(read_at__isnull=True)
+
+        return query
+
+    def get_num_notifications_for_user(self, user_id, read=True, unread=True):
+        """
+        Returns an integer count of notifications. It is presumed
+        that store provider implementations can make this an optimized
+        query
+
+        ARGS:
+            - user_id: The id of the user
+            - read: Whether to return read notifications (default True)
+            - unread: Whether to return unread notifications (default True)
+
+        RETURNS: type list   i.e. []
+        """
+
+        return self._get_notifications_for_user(user_id, read, unread).count()
 
     def get_notifications_for_user(self, user_id, read=True, unread=True):
         """
@@ -116,6 +144,25 @@ class MySQLNotificationStoreProvider(BaseNotificationStoreProvider):
         RETURNS: list   i.e. []
         """
 
+        query = self._get_notifications_for_user(user_id, read, unread)
+
+        # sort?
         result_set = []
+        for item in query:
+            result_set.append(item.to_data_object())
 
         return result_set
+
+    def save_notification_user_map(self, user_map):
+        """
+        Update the mapping of a user to a notification
+        """
+
+        if user_map.id:
+            if not SQLNotificationUserMap.objects.filter(id=user_map.id).exists():
+                raise ItemNotFoundError()
+
+        # copy over all of the fields from the data object into the
+        # ORM object
+        obj = SQLNotificationUserMap.from_data_object(user_map)
+        return obj.to_data_object()
