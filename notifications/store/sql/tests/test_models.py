@@ -4,7 +4,7 @@ Specific tests for the models.py file
 
 from django.test import TestCase
 
-from notifications.store.mysql.models import (
+from notifications.store.sql.models import (
     SQLNotificationMessage
 )
 

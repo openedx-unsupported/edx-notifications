@@ -31,7 +31,7 @@ INSTALLED_APPS = (
 )
 
 NOTIFICATION_STORE_PROVIDER = {
-    "class": "notifications.store.mysql.store_provider.MySQLNotificationStoreProvider",
+    "class": "notifications.store.sql.store_provider.SQLNotificationStoreProvider",
     "options": {
     }
 }
@@ -39,6 +39,6 @@ NOTIFICATION_STORE_PROVIDER = {
 MIDDLEWARE_CLASSES = {}
 
 SOUTH_MIGRATION_MODULES = {
-    'notifications': 'notifications.store.mysql.migrations',
+    'notifications': 'notifications.store.sql.migrations',
 }
 

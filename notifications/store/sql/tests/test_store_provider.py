@@ -6,7 +6,7 @@ from datetime import datetime
 
 from django.test import TestCase
 
-from notifications.store.mysql.store_provider import MySQLNotificationStoreProvider
+from notifications.store.sql.store_provider import SQLNotificationStoreProvider
 from notifications.data import (
     NotificationMessage,
     NotificationType,
@@ -18,7 +18,7 @@ from notifications.exceptions import (
 )
 
 
-class TestMySQLStoreProvider(TestCase):
+class TestSQLStoreProvider(TestCase):
     """
     This class exercises all of the implementation methods for the
     abstract DataProvider class
@@ -28,7 +28,7 @@ class TestMySQLStoreProvider(TestCase):
         """
         Setup the test case
         """
-        self.provider = MySQLNotificationStoreProvider()
+        self.provider = SQLNotificationStoreProvider()
         self.test_user_id = 1
 
     def _save_new_notification(self, payload='This is a test payload'):
@@ -229,22 +229,42 @@ class TestMySQLStoreProvider(TestCase):
         # test file namespace filtering
         #
         self.assertEqual(
-            self.provider.get_num_notifications_for_user(self.test_user_id, namespace='namespace1'),
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                {
+                    'namespace': 'namespace1',
+                }
+            ),
             1
         )
 
         with self.assertNumQueries(1):
-            notifications = self.provider.get_notifications_for_user(self.test_user_id, namespace='namespace1')
+            notifications = self.provider.get_notifications_for_user(
+                self.test_user_id,
+                {
+                    'namespace': 'namespace1'
+                }
+            )
 
             self.assertEqual(notifications[0].msg, msg1)
 
         self.assertEqual(
-            self.provider.get_num_notifications_for_user(self.test_user_id, namespace='namespace2'),
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                {
+                    'namespace': 'namespace2'
+                }
+            ),
             1
         )
 
         with self.assertNumQueries(1):
-            notifications = self.provider.get_notifications_for_user(self.test_user_id, namespace='namespace2')
+            notifications = self.provider.get_notifications_for_user(
+                self.test_user_id,
+                {
+                    'namespace': 'namespace2'
+                }
+            )
 
             self.assertEqual(notifications[0].msg, msg2)
 
@@ -254,8 +274,10 @@ class TestMySQLStoreProvider(TestCase):
         self.assertEqual(
             self.provider.get_num_notifications_for_user(
                 self.test_user_id,
-                read=True,
-                unread=False
+                {
+                    'read': True,
+                    'unread': False
+                }
             ),
             0
         )
@@ -265,6 +287,8 @@ class TestMySQLStoreProvider(TestCase):
         with self.assertRaises(ValueError):
             self.provider.get_num_notifications_for_user(
                 self.test_user_id,
-                read=False,
-                unread=False
+                {
+                    'read': False,
+                    'unread': False
+                }
             )

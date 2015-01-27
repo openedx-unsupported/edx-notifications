@@ -19,6 +19,7 @@ def notification_store():
     configured for this runtime. The class path should be
     set in NOTIFICATION_STORE_PROVIDER in the settings file
     """
+
     global _STORE_PROVIDER  # pylint: disable=global-statement
 
     if not _STORE_PROVIDER:
@@ -40,6 +41,16 @@ def notification_store():
         _STORE_PROVIDER = class_(**config['options'])
 
     return _STORE_PROVIDER
+
+
+def reset_notification_store():
+    """
+    Tears down any cached configuration. This is useful for testing.
+    """
+
+    global _STORE_PROVIDER  # pylint: disable=global-statement
+
+    _STORE_PROVIDER = None
 
 
 class BaseNotificationStoreProvider(object):
@@ -90,7 +101,7 @@ class BaseNotificationStoreProvider(object):
         """
 
     @abc.abstractmethod
-    def get_num_notifications_for_user(self, user_id, namespace=None, read=True, unread=True):
+    def get_num_notifications_for_user(self, user_id, filters=None):
         """
         Returns an integer count of notifications. It is presumed
         that store provider implementations can make this an optimized
@@ -98,14 +109,16 @@ class BaseNotificationStoreProvider(object):
 
         ARGS:
             - user_id: The id of the user
-            - read: Whether to return read notifications (default True)
-            - unread: Whether to return unread notifications (default True)
+            - filters: a dict containing
+                - namespace: what namespace to search (defuault None)
+                - read: Whether to return read notifications (default True)
+                - unread: Whether to return unread notifications (default True)
 
         RETURNS: type list   i.e. []
         """
 
     @abc.abstractmethod
-    def get_notifications_for_user(self, user_id, namespace=None, read=True, unread=True):
+    def get_notifications_for_user(self, user_id, filters=None):
         """
         Returns a (unsorted) collection (list) of notifications for the user.
 
@@ -113,8 +126,10 @@ class BaseNotificationStoreProvider(object):
 
         ARGS:
             - user_id: The id of the user
-            - read: Whether to return read notifications (default True)
-            - unread: Whether to return unread notifications (default True)
+            - filters: a dict containing
+                - namespace: what namespace to search (defuault None)
+                - read: Whether to return read notifications (default True)
+                - unread: Whether to return unread notifications (default True)
 
         RETURNS: type list   i.e. []
         """

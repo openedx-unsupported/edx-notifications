@@ -13,14 +13,14 @@ from notifications.exceptions import (
     ItemConflictError
 )
 
-from notifications.store.mysql.models import (
+from notifications.store.sql.models import (
     SQLNotificationMessage,
     SQLNotificationType,
     SQLNotificationUserMap
 )
 
 
-class MySQLNotificationStoreProvider(BaseNotificationStoreProvider):
+class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
     """
     Concrete MySQL implementation of the abstract base class (interface)
     """
@@ -130,7 +130,7 @@ class MySQLNotificationStoreProvider(BaseNotificationStoreProvider):
 
         return query
 
-    def get_num_notifications_for_user(self, user_id, namespace=None, read=True, unread=True):
+    def get_num_notifications_for_user(self, user_id, filters=None):
         """
         Returns an integer count of notifications. It is presumed
         that store provider implementations can make this an optimized
@@ -146,14 +146,10 @@ class MySQLNotificationStoreProvider(BaseNotificationStoreProvider):
 
         return self._get_notifications_for_user(
             user_id,
-            {
-                'namespace': namespace,
-                'read': read,
-                'unread': unread
-            }
+            filters,
         ).count()
 
-    def get_notifications_for_user(self, user_id, namespace=None, read=True, unread=True):
+    def get_notifications_for_user(self, user_id, filters=None):
         """
         Returns a (unsorted) collection (list) of notifications for the user.
 
@@ -169,11 +165,7 @@ class MySQLNotificationStoreProvider(BaseNotificationStoreProvider):
 
         query = self._get_notifications_for_user(
             user_id,
-            {
-                'namespace': namespace,
-                'read': read,
-                'unread': unread
-            },
+            filters,
             select_related=True
         )
 
