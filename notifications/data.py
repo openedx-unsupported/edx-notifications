@@ -4,6 +4,8 @@ generic dictionaries from being passed around, plus this will help avoid any
 implicit database-specific bindings that come with any uses of ORMs.
 """
 
+from django.core.exceptions import ValidationError
+
 from notifications import const
 
 from notifications.base_data import (
@@ -98,6 +100,14 @@ class NotificationMessage(BaseDataObject):
             const.NOTIFICATION_PRIORITY_URGENT,
         ]
     )
+
+    def validate(self):
+        """
+        Validator for this DataObject
+        """
+
+        if not self.msg_type:
+            raise ValidationError("Missing required property: msg_type")
 
 
 class NotificationUserMap(BaseDataObject):

@@ -4,6 +4,7 @@ Exercises tests on the base_store_provider file
 
 from django.test import TestCase
 from django.test.utils import override_settings
+from django.core.exceptions import ImproperlyConfigured
 
 from notifications.store.store import (
     BaseNotificationStoreProvider,
@@ -51,11 +52,20 @@ class TestBaseNotificationDataProvider(TestCase):
         self.assertIsNotNone(provider)
         self.assertTrue(isinstance(provider, SQLNotificationStoreProvider))
 
+    @override_settings(NOTIFICATION_STORE_PROVIDER=None)
+    def test_missing_provider_config(self):
+        """
+        Make sure we are throwing exceptions on poor configuration
+        """
+
+        with self.assertRaises(ImproperlyConfigured):
+            notification_store()
+
     @override_settings(NOTIFICATION_STORE_PROVIDER={"class": "foo"})
     def test_bad_provider_config(self):
         """
         Make sure we are throwing exceptions on poor configuration
         """
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(ImproperlyConfigured):
             notification_store()

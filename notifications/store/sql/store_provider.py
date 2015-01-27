@@ -5,12 +5,10 @@ Concrete MySQL implementation of the data provider interface
 from pylru import lrudecorator
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import IntegrityError
 
 from notifications.store.store import BaseNotificationStoreProvider
 from notifications.exceptions import (
-    ItemNotFoundError,
-    ItemConflictError
+    ItemNotFoundError
 )
 
 from notifications.store.sql.models import (
@@ -25,17 +23,31 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
     Concrete MySQL implementation of the abstract base class (interface)
     """
 
-    def get_notification_message_by_id(self, msg_id):
+    def _get_notification_by_id(self, msg_id, select_related=False):
         """
-        For the given message id return the corresponding NotificationMessage data object
+        Helper method to get Notification Message by id
         """
 
         try:
-            obj = SQLNotificationMessage.objects.get(id=msg_id)
+            if select_related:
+                obj = SQLNotificationMessage.objects.select_related().get(id=msg_id)
+            else:
+                obj = SQLNotificationMessage.objects.get(id=msg_id)
         except ObjectDoesNotExist:
             raise ItemNotFoundError()
 
         return obj.to_data_object()
+
+    def get_notification_message_by_id(self, msg_id, options=None):
+        """
+        For the given message id return the corresponding NotificationMessage data object
+        """
+
+        options = options if options else {}
+
+        select_related = options.get('select_related', True)
+
+        return self._get_notification_by_id(msg_id, select_related=select_related)
 
     def save_notification_message(self, msg):
         """
@@ -47,12 +59,15 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         """
 
         if msg.id:
-            if not SQLNotificationMessage.objects.filter(id=msg.id).exists():
+            try:
+                obj = SQLNotificationMessage.objects.get(id=msg.id)
+                obj.load_from_data_object(msg)
+            except ObjectDoesNotExist:
+                msg = "Could not SQLNotificationMessage with ID {_id}".format(_id=msg.id)
                 raise ItemNotFoundError()
+        else:
+            obj = SQLNotificationMessage.from_data_object(msg)
 
-        # copy over all of the fields from the data object into the
-        # ORM object
-        obj = SQLNotificationMessage.from_data_object(msg)
         obj.save()
         return obj.to_data_object()
 
@@ -74,29 +89,16 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
 
     def save_notification_type(self, msg_type):
         """
-        Saves a new notification type, note that we do not support updates
+        Create or update a notification type
         """
 
         try:
-            existing = None
-
-            # see if this name already exists
-            if SQLNotificationType.objects.filter(name=msg_type.name).exists():
-                existing = self.get_notification_type(msg_type.name)
-                # if the objects are the same, then that is OK
-                # just return immediately
-                if existing == msg_type:
-                    return msg_type
-                else:
-                    raise ItemConflictError()
+            obj = SQLNotificationType.objects.get(name=msg_type.name)
+            obj.load_from_data_object(msg_type)
+        except ObjectDoesNotExist:
             obj = SQLNotificationType.from_data_object(msg_type)
-            obj.save()
-        except IntegrityError:
-            # This should get caught up above in the existence detection
-            # but theoretically, we could have a timing issue
-            # in a multi-process scenario
-            raise ItemConflictError()
 
+        obj.save()
         return msg_type
 
     def _get_notifications_for_user(self, user_id, filters=None, select_related=False):
@@ -177,16 +179,19 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
 
     def save_notification_user_map(self, user_map):
         """
-        Update the mapping of a user to a notification.
+        Create or Update the mapping of a user to a notification.
         """
 
         if user_map.id:
-            if not SQLNotificationUserMap.objects.filter(id=user_map.id).exists():
-                raise ItemNotFoundError()
+            try:
+                obj = SQLNotificationUserMap.objects.get(id=user_map.id)
+                obj.load_from_data_object(user_map)
+            except ObjectDoesNotExist:
+                msg = "Could not find SQLNotificationUserMap with ID {_id}".format(_id=user_map.id)
+                raise ItemNotFoundError(msg)
+        else:
+            obj = SQLNotificationUserMap.from_data_object(user_map)
 
-        # copy over all of the fields from the data object into the
-        # ORM object
-        obj = SQLNotificationUserMap.from_data_object(user_map)
         obj.save()
 
         return obj.to_data_object()

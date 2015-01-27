@@ -8,6 +8,12 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Adding model 'SQLNotificationType'
+        db.create_table('notifications_notificationtype', (
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=256, primary_key=True)),
+        ))
+        db.send_create_signal('notifications', ['SQLNotificationType'])
+
         # Adding model 'SQLNotificationMessage'
         db.create_table('notifications_notificationmessage', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -15,6 +21,12 @@ class Migration(SchemaMigration):
             ('modified', self.gf('model_utils.fields.AutoLastModifiedField')(default=datetime.datetime.now)),
             ('payload', self.gf('django.db.models.fields.TextField')()),
             ('namespace', self.gf('django.db.models.fields.CharField')(max_length=128, null=True, db_index=True)),
+            ('msg_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['notifications.SQLNotificationType'])),
+            ('from_user_id', self.gf('django.db.models.fields.IntegerField')(null=True)),
+            ('deliver_no_earlier_than', self.gf('django.db.models.fields.DateTimeField')(null=True)),
+            ('expires_at', self.gf('django.db.models.fields.DateTimeField')(null=True, db_index=True)),
+            ('expires_secs_after_read', self.gf('django.db.models.fields.IntegerField')(null=True)),
+            ('priority', self.gf('django.db.models.fields.IntegerField')(default=0)),
         ))
         db.send_create_signal('notifications', ['SQLNotificationMessage'])
 
@@ -30,12 +42,6 @@ class Migration(SchemaMigration):
 
         # Adding unique constraint on 'SQLNotificationUserMap', fields ['user_id', 'msg']
         db.create_unique('notifications_notificationusermap', ['user_id', 'msg_id'])
-
-        # Adding model 'SQLNotificationType'
-        db.create_table('notifications_notificationtype', (
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=256, primary_key=True)),
-        ))
-        db.send_create_signal('notifications', ['SQLNotificationType'])
 
         # Adding model 'SQLNotificationChannel'
         db.create_table('notifications_notificationchannel', (
@@ -75,14 +81,14 @@ class Migration(SchemaMigration):
         # Removing unique constraint on 'SQLNotificationUserMap', fields ['user_id', 'msg']
         db.delete_unique('notifications_notificationusermap', ['user_id', 'msg_id'])
 
+        # Deleting model 'SQLNotificationType'
+        db.delete_table('notifications_notificationtype')
+
         # Deleting model 'SQLNotificationMessage'
         db.delete_table('notifications_notificationmessage')
 
         # Deleting model 'SQLNotificationUserMap'
         db.delete_table('notifications_notificationusermap')
-
-        # Deleting model 'SQLNotificationType'
-        db.delete_table('notifications_notificationtype')
 
         # Deleting model 'SQLNotificationChannel'
         db.delete_table('notifications_notificationchannel')
@@ -112,10 +118,16 @@ class Migration(SchemaMigration):
         'notifications.sqlnotificationmessage': {
             'Meta': {'ordering': "['-created']", 'object_name': 'SQLNotificationMessage', 'db_table': "'notifications_notificationmessage'"},
             'created': ('model_utils.fields.AutoCreatedField', [], {'default': 'datetime.datetime.now'}),
+            'deliver_no_earlier_than': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
+            'expires_at': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'db_index': 'True'}),
+            'expires_secs_after_read': ('django.db.models.fields.IntegerField', [], {'null': 'True'}),
+            'from_user_id': ('django.db.models.fields.IntegerField', [], {'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'modified': ('model_utils.fields.AutoLastModifiedField', [], {'default': 'datetime.datetime.now'}),
+            'msg_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['notifications.SQLNotificationType']"}),
             'namespace': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'db_index': 'True'}),
-            'payload': ('django.db.models.fields.TextField', [], {})
+            'payload': ('django.db.models.fields.TextField', [], {}),
+            'priority': ('django.db.models.fields.IntegerField', [], {'default': '0'})
         },
         'notifications.sqlnotificationtype': {
             'Meta': {'object_name': 'SQLNotificationType', 'db_table': "'notifications_notificationtype'"},

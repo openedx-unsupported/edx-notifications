@@ -31,12 +31,44 @@ class TestSQLStoreProvider(TestCase):
         self.provider = SQLNotificationStoreProvider()
         self.test_user_id = 1
 
+    def _save_notification_type(self):
+        """
+        Helper to set up a notification_type
+        """
+
+        notification_type = NotificationType(
+            name='foo.bar.baz'
+        )
+
+        with self.assertNumQueries(3):
+            result = self.provider.save_notification_type(notification_type)
+
+        return result
+
+    def test_save_notification_type(self):
+        """
+        Happy path saving (and retrieving) a new message type
+        """
+
+        notification_type = self._save_notification_type()
+
+        self.assertIsNotNone(notification_type)
+
+        with self.assertNumQueries(1):
+            result = self.provider.get_notification_type(notification_type.name)
+
+        self.assertIsNotNone(result)
+        self.assertEqual(result, notification_type)
+
     def _save_new_notification(self, payload='This is a test payload'):
         """
         Helper method to create a new notification
         """
 
+        msg_type = self._save_notification_type()
+
         msg = NotificationMessage(
+            msg_type=msg_type,
             payload={
                 'foo': 'bar',
                 'one': 1,
@@ -107,27 +139,6 @@ class TestSQLStoreProvider(TestCase):
             msg.id = 9999999
             self.provider.save_notification_message(msg)
 
-    def test_save_notification_type(self):
-        """
-        Happy path saving (and retrieving) a new message type
-        """
-
-        notification_type = NotificationType(
-            name='foo.bar.baz'
-        )
-
-        with self.assertNumQueries(3):
-            result = self.provider.save_notification_type(notification_type)
-
-        self.assertIsNotNone(result)
-        self.assertEqual(result, notification_type)
-
-        with self.assertNumQueries(1):
-            result = self.provider.get_notification_type(notification_type.name)
-
-        self.assertIsNotNone(result)
-        self.assertEqual(result, notification_type)
-
     def test_cant_find_notification_type(self):
         """
         Negative test for loading notification type
@@ -170,15 +181,18 @@ class TestSQLStoreProvider(TestCase):
                 self.provider.get_notifications_for_user(self.test_user_id)
             )
 
-    def test_get_notifications_for_user(self):
+    def _setup_user_notifications(self):
         """
-        Test retrieving notifications for a user
+        Helper to build out some
         """
+
+        msg_type = self._save_notification_type()
 
         # set up some notifications
 
         msg1 = self.provider.save_notification_message(NotificationMessage(
             namespace='namespace1',
+            msg_type=msg_type,
             payload={
                 'foo': 'bar',
                 'one': 1,
@@ -188,13 +202,14 @@ class TestSQLStoreProvider(TestCase):
             }
         ))
 
-        self.provider.save_notification_user_map(NotificationUserMap(
+        map1 = self.provider.save_notification_user_map(NotificationUserMap(
             user_id=self.test_user_id,
             msg=msg1
         ))
 
         msg2 = self.provider.save_notification_message(NotificationMessage(
             namespace='namespace2',
+            msg_type=msg_type,
             payload={
                 'foo': 'baz',
                 'one': 1,
@@ -204,21 +219,23 @@ class TestSQLStoreProvider(TestCase):
             }
         ))
 
-        self.provider.save_notification_user_map(NotificationUserMap(
+        map2 = self.provider.save_notification_user_map(NotificationUserMap(
             user_id=self.test_user_id,
             msg=msg2
         ))
 
-        with self.assertNumQueries(1):
-            self.assertEqual(
-                self.provider.get_num_notifications_for_user(self.test_user_id),
-                2
-            )
+        return map1, msg1, map2, msg2
 
-        # make sure we get back what we put in
-        #
-        # NOTE because we are selecting_related() on the quering of
-        # the notifications, this should be done in one round trip
+    def test_get_notifications_for_user(self):
+        """
+        Test retrieving notifications for a user
+        """
+
+        # set up some notifications
+
+        map1, msg1, map2, msg2 = self._setup_user_notifications()
+
+        # read back and compare the notifications
         with self.assertNumQueries(1):
             notifications = self.provider.get_notifications_for_user(self.test_user_id)
 
@@ -231,7 +248,7 @@ class TestSQLStoreProvider(TestCase):
         self.assertEqual(
             self.provider.get_num_notifications_for_user(
                 self.test_user_id,
-                {
+                filters={
                     'namespace': 'namespace1',
                 }
             ),
@@ -241,7 +258,7 @@ class TestSQLStoreProvider(TestCase):
         with self.assertNumQueries(1):
             notifications = self.provider.get_notifications_for_user(
                 self.test_user_id,
-                {
+                filters={
                     'namespace': 'namespace1'
                 }
             )
@@ -251,7 +268,7 @@ class TestSQLStoreProvider(TestCase):
         self.assertEqual(
             self.provider.get_num_notifications_for_user(
                 self.test_user_id,
-                {
+                filters={
                     'namespace': 'namespace2'
                 }
             ),
@@ -261,7 +278,7 @@ class TestSQLStoreProvider(TestCase):
         with self.assertNumQueries(1):
             notifications = self.provider.get_notifications_for_user(
                 self.test_user_id,
-                {
+                filters={
                     'namespace': 'namespace2'
                 }
             )
@@ -274,7 +291,7 @@ class TestSQLStoreProvider(TestCase):
         self.assertEqual(
             self.provider.get_num_notifications_for_user(
                 self.test_user_id,
-                {
+                filters={
                     'read': True,
                     'unread': False
                 }
@@ -287,8 +304,85 @@ class TestSQLStoreProvider(TestCase):
         with self.assertRaises(ValueError):
             self.provider.get_num_notifications_for_user(
                 self.test_user_id,
-                {
+                filters={
                     'read': False,
                     'unread': False
                 }
             )
+
+    def test_bad_user_map_update(self):
+        """
+        Test exception when trying to update a non-existing
+        ID
+        """
+
+        # set up some notifications
+        map1, __, __, __ = self._setup_user_notifications()
+
+        with self.assertRaises(ItemNotFoundError):
+            map1.id = -1
+            self.provider.save_notification_user_map(map1)
+
+    def test_read_unread_flags(self):
+        """
+        Test read/unread falgs
+        """
+
+        # set up some notifications
+        map1, msg1, map2, msg2 = self._setup_user_notifications()
+
+        # mark one as read
+        map1.read_at = datetime.utcnow()
+
+        # Not sure I understand why Django ORM is making 3 calls here
+        # seems like it should just be 2. I might investigate more
+        # later, but writes are less of a priority as this
+        # will be read intensive
+        with self.assertNumQueries(3):
+            self.provider.save_notification_user_map(map1)
+
+        # there should be one read notification
+        with self.assertNumQueries(1):
+            self.assertEqual(
+                self.provider.get_num_notifications_for_user(
+                    self.test_user_id,
+                    filters={
+                        'read': True,
+                        'unread': False
+                    }
+                ),
+                1
+            )
+
+        with self.assertNumQueries(1):
+            notifications = self.provider.get_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'read': True,
+                    'unread': False
+                }
+            )
+            self.assertEqual(notifications[0].msg, msg1)
+
+        # there should be one unread notification
+        with self.assertNumQueries(1):
+            self.assertEqual(
+                self.provider.get_num_notifications_for_user(
+                    self.test_user_id,
+                    filters={
+                        'read': False,
+                        'unread': True
+                    }
+                ),
+                1
+            )
+
+        with self.assertNumQueries(1):
+            notifications = self.provider.get_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'read': False,
+                    'unread': True
+                }
+            )
+            self.assertEqual(notifications[0].msg, msg2)

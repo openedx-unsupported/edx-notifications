@@ -7,7 +7,7 @@ import abc
 from importlib import import_module
 
 from django.conf import settings
-
+from django.core.exceptions import ImproperlyConfigured
 
 # Cached instance of a store provider
 _STORE_PROVIDER = None
@@ -23,17 +23,16 @@ def notification_store():
     global _STORE_PROVIDER  # pylint: disable=global-statement
 
     if not _STORE_PROVIDER:
-        if not hasattr(settings, "NOTIFICATION_STORE_PROVIDER"):
-            raise Exception("Settings not configured with NOTIFICATION_STORE_PROVIDER!")
-
-        config = settings.NOTIFICATION_STORE_PROVIDER
+        config = getattr(settings, 'NOTIFICATION_STORE_PROVIDER')
+        if not config:
+            raise ImproperlyConfigured("Settings not configured with NOTIFICATION_STORE_PROVIDER!")
 
         if 'class' not in config or 'options' not in config:
             msg = (
                 "Misconfigured NOTIFICATION_STORE_PROVIDER settings, "
                 "must have both 'class' and 'options' keys."
             )
-            raise Exception(msg)
+            raise ImproperlyConfigured(msg)
 
         module_path, _, name = config['class'].rpartition('.')
         class_ = getattr(import_module(module_path), name)
@@ -65,12 +64,14 @@ class BaseNotificationStoreProvider(object):
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
-    def get_notification_message_by_id(self, msg_id):
+    def get_notification_message_by_id(self, msg_id, options=None):
         """
         Returns the notitication message (of NotificationMessage type) by primary key
 
         ARGS:
             - msg_id: the primary key of the NotificationMessage
+            - options: dictionary of options. Possible choices:
+                * 'select_related': whether to fully fetch any related objects
 
         RETURNS: type NotificationMessage
         """

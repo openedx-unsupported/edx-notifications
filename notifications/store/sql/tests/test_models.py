@@ -5,11 +5,13 @@ Specific tests for the models.py file
 from django.test import TestCase
 
 from notifications.store.sql.models import (
-    SQLNotificationMessage
+    SQLNotificationMessage,
+    SQLNotificationType
 )
 
 from notifications.data import (
-    NotificationMessage
+    NotificationMessage,
+    NotificationType
 )
 
 
@@ -22,10 +24,14 @@ class SQLModelsTests(TestCase):
         """
         Make sure we can hydrate a SQLNotificationMessage from a NotificationMessage
         """
-        orm_obj = SQLNotificationMessage()
+
+        msg_type = NotificationType(
+            name='foo.bar.baz'
+        )
 
         msg = NotificationMessage(
-            id=2
+            id=2,
+            msg_type=msg_type
         )
 
         orm_obj = SQLNotificationMessage.from_data_object(msg)
@@ -37,7 +43,8 @@ class SQLModelsTests(TestCase):
         Test that we can create a NotificationMessage from a SQLNotificationMessage
         """
         orm_obj = SQLNotificationMessage(
-            id=1
+            id=1,
+            msg_type=SQLNotificationType()
         )
 
         msg = orm_obj.to_data_object()

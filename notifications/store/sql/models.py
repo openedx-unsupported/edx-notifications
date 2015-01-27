@@ -3,6 +3,7 @@ Django ORM models to support the Notification Store SQL backend
 """
 
 from django.db import models
+
 from model_utils.models import TimeStampedModel
 
 from notifications.base_data import DictField
@@ -12,6 +13,49 @@ from notifications.data import (
     NotificationType,
     NotificationUserMap,
 )
+from notifications import const
+
+
+class SQLNotificationType(models.Model):
+    """
+    Notification Type information
+    """
+
+    # the internal name is the primary key
+    name = models.CharField(primary_key=True, max_length=256)
+
+    class Meta(object):
+        """
+        ORM metadata about this class
+        """
+        app_label = 'notifications'  # since we have this models.py file not in the root app directory
+        db_table = 'notifications_notificationtype'
+
+    def to_data_object(self):
+        """
+        Generate a NotificationType data object
+        """
+
+        return NotificationType(
+            name=self.name,
+        )
+
+    @classmethod
+    def from_data_object(cls, msg_type):
+        """
+        create a ORM model object from a NotificationType
+        """
+
+        obj = SQLNotificationType()
+        obj.load_from_data_object(msg_type)
+        return obj
+
+    def load_from_data_object(self, msg_type):
+        """
+        Hydrate ourselves from a passed in user_map
+        """
+
+        self.name = msg_type.name  # pylint: disable=attribute-defined-outside-init
 
 
 class SQLNotificationMessage(TimeStampedModel):
@@ -19,11 +63,24 @@ class SQLNotificationMessage(TimeStampedModel):
     Model for a notification message
     """
 
-    payload = models.TextField()
-
     # a notification namespace is an optional scoping
     # field. This could be used to indicate - for instance - a course_id
     namespace = models.CharField(max_length=128, db_index=True, null=True)
+
+    # Notification type
+    msg_type = models.ForeignKey(SQLNotificationType, db_index=True)
+
+    # from which identity
+    from_user_id = models.IntegerField(null=True)
+
+    payload = models.TextField()
+
+    # delivery/expiration times
+    deliver_no_earlier_than = models.DateTimeField(null=True)
+    expires_at = models.DateTimeField(db_index=True, null=True)
+    expires_secs_after_read = models.IntegerField(null=True)
+
+    priority = models.IntegerField(default=const.NOTIFICATION_PRIORITY_NONE)
 
     class Meta(object):
         """
@@ -33,18 +90,6 @@ class SQLNotificationMessage(TimeStampedModel):
         db_table = 'notifications_notificationmessage'
         ordering = ['-created']  # default order is last one first
 
-    @classmethod
-    def from_data_object(cls, obj):
-        """
-        Copy all of the values from passed in NotificationMessage data object
-        """
-
-        return SQLNotificationMessage(
-            id=obj.id,
-            namespace=obj.namespace,
-            payload=DictField.to_json(obj.payload)
-        )
-
     def to_data_object(self):
         """
         Return a Notification Message data object
@@ -53,10 +98,42 @@ class SQLNotificationMessage(TimeStampedModel):
         msg = NotificationMessage(
             id=self.id,
             namespace=self.namespace,
+            msg_type=self.msg_type.to_data_object(),
+            from_user_id=self.from_user_id,
+            deliver_no_earlier_than=self.deliver_no_earlier_than,
+            expires_at=self.expires_at,
+            expires_secs_after_read=self.expires_secs_after_read,
             payload=DictField.from_json(self.payload),  # special case, dict<-->JSON string
         )
 
         return msg
+
+    @classmethod
+    def from_data_object(cls, msg):
+        """
+        Create a new (or fetch existing) ORM object, copy all of the values from
+        passed in NotificationMessage data object
+        """
+
+        obj = SQLNotificationMessage()
+        obj.load_from_data_object(msg)
+        return obj
+
+    def load_from_data_object(self, msg):
+        """
+        Hydrate ourselves from a data object
+        """
+
+        msg.validate()
+
+        self.id = msg.id  # pylint: disable=attribute-defined-outside-init
+        self.namespace = msg.namespace
+        self.msg_type = SQLNotificationType.from_data_object(msg.msg_type)
+        self.from_user_id = msg.from_user_id
+        self.deliver_no_earlier_than = msg.deliver_no_earlier_than
+        self.expires_at = msg.expires_at
+        self.expires_secs_after_read = msg.expires_secs_after_read
+        self.payload = DictField.to_json(msg.payload)
 
 
 class SQLNotificationUserMap(models.Model):
@@ -86,6 +163,7 @@ class SQLNotificationUserMap(models.Model):
         """
 
         return NotificationUserMap(
+            id=self.id,
             user_id=self.user_id,
             msg=self.msg.to_data_object(),  # pylint: disable=no-member
             read_at=self.read_at,
@@ -93,52 +171,25 @@ class SQLNotificationUserMap(models.Model):
         )
 
     @classmethod
-    def from_data_object(cls, notification_type):
+    def from_data_object(cls, user_map):
         """
-        create and a MySQL model objects from a NotificationType
-        """
-
-        return SQLNotificationUserMap(
-            user_id=notification_type.user_id,
-            msg=SQLNotificationMessage.from_data_object(notification_type.msg),
-            read_at=notification_type.read_at,
-            user_context=DictField.to_json(notification_type.user_context)
-        )
-
-
-class SQLNotificationType(models.Model):
-    """
-    Notification Type information
-    """
-
-    # the internal name is the primary key
-    name = models.CharField(primary_key=True, max_length=256)
-
-    class Meta(object):
-        """
-        ORM metadata about this class
-        """
-        app_label = 'notifications'  # since we have this models.py file not in the root app directory
-        db_table = 'notifications_notificationtype'
-
-    def to_data_object(self):
-        """
-        Generate a NotificationType data object
+        create a ORM model object from a NotificationType
         """
 
-        return NotificationType(
-            name=self.name
-        )
+        obj = SQLNotificationUserMap()
+        obj.load_from_data_object(user_map)
+        return obj
 
-    @classmethod
-    def from_data_object(cls, notification_type):
+    def load_from_data_object(self, user_map):
         """
-        create and a MySQL model objects from a NotificationType
+        Hydrate ourselves from a passed in user_map
         """
 
-        return SQLNotificationType(
-            name=notification_type.name
-        )
+        self.id = user_map.id  # pylint: disable=attribute-defined-outside-init
+        self.user_id = user_map.user_id
+        self.msg = SQLNotificationMessage.from_data_object(user_map.msg)
+        self.read_at = user_map.read_at
+        self.user_context = DictField.to_json(user_map.user_context)
 
 
 class SQLNotificationChannel(models.Model):
