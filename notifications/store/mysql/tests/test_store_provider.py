@@ -9,7 +9,8 @@ from django.test import TestCase
 from notifications.store.mysql.store_provider import MySQLNotificationStoreProvider
 from notifications.data import (
     NotificationMessage,
-    NotificationType
+    NotificationType,
+    NotificationUserMap
 )
 
 from notifications.exceptions import (
@@ -28,6 +29,7 @@ class TestMySQLStoreProvider(TestCase):
         Setup the test case
         """
         self.provider = MySQLNotificationStoreProvider()
+        self.test_user_id = 1
 
     def _save_new_notification(self, payload='This is a test payload'):
         """
@@ -114,12 +116,14 @@ class TestMySQLStoreProvider(TestCase):
             name='foo.bar.baz'
         )
 
-        result = self.provider.save_notification_type(notification_type)
+        with self.assertNumQueries(3):
+            result = self.provider.save_notification_type(notification_type)
 
         self.assertIsNotNone(result)
         self.assertEqual(result, notification_type)
 
-        result = self.provider.get_notification_type(notification_type.name)
+        with self.assertNumQueries(1):
+            result = self.provider.get_notification_type(notification_type.name)
 
         self.assertIsNotNone(result)
         self.assertEqual(result, notification_type)
@@ -141,8 +145,129 @@ class TestMySQLStoreProvider(TestCase):
             name='foo.bar.baz'
         )
 
-        self.provider.save_notification_type(notification_type)
+        with self.assertNumQueries(3):
+            self.provider.save_notification_type(notification_type)
 
         # This should be fine saving again, since nothing is changing
 
-        self.provider.save_notification_type(notification_type)
+        with self.assertNumQueries(2):
+            self.provider.save_notification_type(notification_type)
+
+    def test_get_no_notifications_for_user(self):
+        """
+        Make sure that get_num_notifications_for_user and get_notifications_for_user
+        return 0 and empty set respectively
+        """
+
+        with self.assertNumQueries(1):
+            self.assertEqual(
+                self.provider.get_num_notifications_for_user(self.test_user_id),
+                0
+            )
+
+        with self.assertNumQueries(1):
+            self.assertFalse(
+                self.provider.get_notifications_for_user(self.test_user_id)
+            )
+
+    def test_get_notifications_for_user(self):
+        """
+        Test retrieving notifications for a user
+        """
+
+        # set up some notifications
+
+        msg1 = self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace1',
+            payload={
+                'foo': 'bar',
+                'one': 1,
+                'none': None,
+                'datetime': datetime.utcnow(),
+                'iso8601-fakeout': '--T::',  # something to throw off the iso8601 parser heuristic
+            }
+        ))
+
+        self.provider.save_notification_user_map(NotificationUserMap(
+            user_id=self.test_user_id,
+            msg=msg1
+        ))
+
+        msg2 = self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace2',
+            payload={
+                'foo': 'baz',
+                'one': 1,
+                'none': None,
+                'datetime': datetime.utcnow(),
+                'iso8601-fakeout': '--T::',  # something to throw off the iso8601 parser heuristic
+            }
+        ))
+
+        self.provider.save_notification_user_map(NotificationUserMap(
+            user_id=self.test_user_id,
+            msg=msg2
+        ))
+
+        with self.assertNumQueries(1):
+            self.assertEqual(
+                self.provider.get_num_notifications_for_user(self.test_user_id),
+                2
+            )
+
+        # make sure we get back what we put in
+        #
+        # NOTE because we are selecting_related() on the quering of
+        # the notifications, this should be done in one round trip
+        with self.assertNumQueries(1):
+            notifications = self.provider.get_notifications_for_user(self.test_user_id)
+
+            self.assertEqual(notifications[0].msg, msg1)
+            self.assertEqual(notifications[1].msg, msg2)
+
+        #
+        # test file namespace filtering
+        #
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(self.test_user_id, namespace='namespace1'),
+            1
+        )
+
+        with self.assertNumQueries(1):
+            notifications = self.provider.get_notifications_for_user(self.test_user_id, namespace='namespace1')
+
+            self.assertEqual(notifications[0].msg, msg1)
+
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(self.test_user_id, namespace='namespace2'),
+            1
+        )
+
+        with self.assertNumQueries(1):
+            notifications = self.provider.get_notifications_for_user(self.test_user_id, namespace='namespace2')
+
+            self.assertEqual(notifications[0].msg, msg2)
+
+        #
+        # test read filtering, should be none right now
+        #
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                read=True,
+                unread=False
+            ),
+            0
+        )
+
+        # if you ask for both not read and not unread, that should be a ValueError as that
+        # combination makes no sense
+        with self.assertRaises(ValueError):
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                read=False,
+                unread=False
+            )
+
+
+

@@ -59,6 +59,12 @@ class NotificationMessage(BaseDataObject):
     # instance of NotificationMessageType, None = unloaded
     msg_type = RelatedObjectField(NotificationType)
 
+    # namespace is an optional scoping field. This could
+    # be used to indicate - for instance - a course_id. Note,
+    # that we can filter on this property when
+    # getting notifications
+    namespace = StringField()
+
     # unconstained ID to some user identity service (e.g. auth_user in Django)
     from_user_id = IntegerField()
 

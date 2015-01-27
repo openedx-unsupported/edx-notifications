@@ -21,12 +21,17 @@ class SQLNotificationMessage(TimeStampedModel):
 
     payload = models.TextField()
 
+    # a notification namespace is an optional scoping
+    # field. This could be used to indicate - for instance - a course_id
+    namespace = models.CharField(max_length=128, db_index=True, null=True)
+
     class Meta(object):
         """
         ORM metadata about this class
         """
         app_label = 'notifications'  # since we have this models.py file not in the root app directory
         db_table = 'notifications_notificationmessage'
+        ordering = ['-created']  # default order is last one first
 
     @classmethod
     def from_data_object(cls, obj):
@@ -36,6 +41,7 @@ class SQLNotificationMessage(TimeStampedModel):
 
         return SQLNotificationMessage(
             id=obj.id,
+            namespace=obj.namespace,
             payload=DictField.to_json(obj.payload)
         )
 
@@ -46,6 +52,7 @@ class SQLNotificationMessage(TimeStampedModel):
 
         msg = NotificationMessage(
             id=self.id,
+            namespace=self.namespace,
             payload=DictField.from_json(self.payload),  # special case, dict<-->JSON string
         )
 
@@ -63,7 +70,7 @@ class SQLNotificationUserMap(models.Model):
 
     read_at = models.DateTimeField(null=True, db_index=True)
 
-    user_context = models.TextField()
+    user_context = models.TextField(null=True)
 
     class Meta(object):
         """
@@ -71,6 +78,7 @@ class SQLNotificationUserMap(models.Model):
         """
         app_label = 'notifications'  # since we have this models.py file not in the root app directory
         db_table = 'notifications_notificationusermap'
+        unique_together = (('user_id', 'msg'),)  # same user should get the same notification twice
 
     def to_data_object(self):
         """
@@ -94,7 +102,7 @@ class SQLNotificationUserMap(models.Model):
             user_id=notification_type.user_id,
             msg=SQLNotificationMessage.from_data_object(notification_type.msg),
             read_at=notification_type.read_at,
-            user_context=DictField.to_json(notification_type.context)
+            user_context=DictField.to_json(notification_type.user_context)
         )
 
 

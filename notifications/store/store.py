@@ -90,7 +90,7 @@ class BaseNotificationStoreProvider(object):
         """
 
     @abc.abstractmethod
-    def get_num_notifications_for_user(self, user_id, read=True, unread=True):
+    def get_num_notifications_for_user(self, user_id, namespace=None, read=True, unread=True):
         """
         Returns an integer count of notifications. It is presumed
         that store provider implementations can make this an optimized
@@ -105,7 +105,7 @@ class BaseNotificationStoreProvider(object):
         """
 
     @abc.abstractmethod
-    def get_notifications_for_user(self, user_id, read=True, unread=True):
+    def get_notifications_for_user(self, user_id, namespace=None, read=True, unread=True):
         """
         Returns a (unsorted) collection (list) of notifications for the user.
 

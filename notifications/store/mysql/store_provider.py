@@ -89,7 +89,6 @@ class MySQLNotificationStoreProvider(BaseNotificationStoreProvider):
                     return msg_type
                 else:
                     raise ItemConflictError()
-
             obj = SQLNotificationType.from_data_object(msg_type)
             obj.save()
         except IntegrityError:
@@ -100,21 +99,38 @@ class MySQLNotificationStoreProvider(BaseNotificationStoreProvider):
 
         return msg_type
 
-    def _get_notifications_for_user(self, user_id, read, unread):
+    def _get_notifications_for_user(self, user_id, filters=None, select_related=False):
         """
         Helper method to set up the query to get notifications for a user
         """
 
-        query = SQLNotificationUserMap.objects.filter(user_id=user_id)
-        if read:
-            query = query.filter(read_at__isnull=False)
+        filters = filters if filters else {}
 
-        if unread:
-            query = query.filter(read_at__isnull=True)
+        namespace = filters.get('namespace')
+        read = filters.get('read', True)
+        unread = filters.get('unread', True)
+
+        if not read and not unread:
+            raise ValueError('Bad arg combination either read or unread must be set to True')
+
+        query = SQLNotificationUserMap.objects.filter(user_id=user_id)
+
+        if select_related:
+            query = query.select_related()
+
+        if namespace:
+            query = query.filter(msg__namespace=namespace)
+
+        if not (read and unread):
+            if read:
+                query = query.filter(read_at__isnull=False)
+
+            if unread:
+                query = query.filter(read_at__isnull=True)
 
         return query
 
-    def get_num_notifications_for_user(self, user_id, read=True, unread=True):
+    def get_num_notifications_for_user(self, user_id, namespace=None, read=True, unread=True):
         """
         Returns an integer count of notifications. It is presumed
         that store provider implementations can make this an optimized
@@ -128,9 +144,16 @@ class MySQLNotificationStoreProvider(BaseNotificationStoreProvider):
         RETURNS: type list   i.e. []
         """
 
-        return self._get_notifications_for_user(user_id, read, unread).count()
+        return self._get_notifications_for_user(
+            user_id,
+            {
+                'namespace': namespace,
+                'read': read,
+                'unread': unread
+            }
+        ).count()
 
-    def get_notifications_for_user(self, user_id, read=True, unread=True):
+    def get_notifications_for_user(self, user_id, namespace=None, read=True, unread=True):
         """
         Returns a (unsorted) collection (list) of notifications for the user.
 
@@ -144,9 +167,16 @@ class MySQLNotificationStoreProvider(BaseNotificationStoreProvider):
         RETURNS: list   i.e. []
         """
 
-        query = self._get_notifications_for_user(user_id, read, unread)
+        query = self._get_notifications_for_user(
+            user_id,
+            {
+                'namespace': namespace,
+                'read': read,
+                'unread': unread
+            },
+            select_related=True
+        )
 
-        # sort?
         result_set = []
         for item in query:
             result_set.append(item.to_data_object())
@@ -155,7 +185,7 @@ class MySQLNotificationStoreProvider(BaseNotificationStoreProvider):
 
     def save_notification_user_map(self, user_map):
         """
-        Update the mapping of a user to a notification
+        Update the mapping of a user to a notification.
         """
 
         if user_map.id:
@@ -165,4 +195,6 @@ class MySQLNotificationStoreProvider(BaseNotificationStoreProvider):
         # copy over all of the fields from the data object into the
         # ORM object
         obj = SQLNotificationUserMap.from_data_object(user_map)
+        obj.save()
+
         return obj.to_data_object()

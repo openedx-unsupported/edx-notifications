@@ -14,6 +14,7 @@ class Migration(SchemaMigration):
             ('created', self.gf('model_utils.fields.AutoCreatedField')(default=datetime.datetime.now)),
             ('modified', self.gf('model_utils.fields.AutoLastModifiedField')(default=datetime.datetime.now)),
             ('payload', self.gf('django.db.models.fields.TextField')()),
+            ('namespace', self.gf('django.db.models.fields.CharField')(max_length=128, null=True, db_index=True)),
         ))
         db.send_create_signal('notifications', ['SQLNotificationMessage'])
 
@@ -23,9 +24,12 @@ class Migration(SchemaMigration):
             ('user_id', self.gf('django.db.models.fields.IntegerField')(db_index=True)),
             ('msg', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['notifications.SQLNotificationMessage'])),
             ('read_at', self.gf('django.db.models.fields.DateTimeField')(null=True, db_index=True)),
-            ('user_context', self.gf('django.db.models.fields.TextField')()),
+            ('user_context', self.gf('django.db.models.fields.TextField')(null=True)),
         ))
         db.send_create_signal('notifications', ['SQLNotificationUserMap'])
+
+        # Adding unique constraint on 'SQLNotificationUserMap', fields ['user_id', 'msg']
+        db.create_unique('notifications_notificationusermap', ['user_id', 'msg_id'])
 
         # Adding model 'SQLNotificationType'
         db.create_table('notifications_notificationtype', (
@@ -68,6 +72,9 @@ class Migration(SchemaMigration):
         # Removing unique constraint on 'SQLDisplayString', fields ['string_name', 'lang']
         db.delete_unique('notifications_displaystring', ['string_name', 'lang'])
 
+        # Removing unique constraint on 'SQLNotificationUserMap', fields ['user_id', 'msg']
+        db.delete_unique('notifications_notificationusermap', ['user_id', 'msg_id'])
+
         # Deleting model 'SQLNotificationMessage'
         db.delete_table('notifications_notificationmessage')
 
@@ -103,10 +110,11 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
         'notifications.sqlnotificationmessage': {
-            'Meta': {'object_name': 'SQLNotificationMessage', 'db_table': "'notifications_notificationmessage'"},
+            'Meta': {'ordering': "['-created']", 'object_name': 'SQLNotificationMessage', 'db_table': "'notifications_notificationmessage'"},
             'created': ('model_utils.fields.AutoCreatedField', [], {'default': 'datetime.datetime.now'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'modified': ('model_utils.fields.AutoLastModifiedField', [], {'default': 'datetime.datetime.now'}),
+            'namespace': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'db_index': 'True'}),
             'payload': ('django.db.models.fields.TextField', [], {})
         },
         'notifications.sqlnotificationtype': {
@@ -118,11 +126,11 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
         'notifications.sqlnotificationusermap': {
-            'Meta': {'object_name': 'SQLNotificationUserMap', 'db_table': "'notifications_notificationusermap'"},
+            'Meta': {'unique_together': "(('user_id', 'msg'),)", 'object_name': 'SQLNotificationUserMap', 'db_table': "'notifications_notificationusermap'"},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'msg': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['notifications.SQLNotificationMessage']"}),
             'read_at': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'db_index': 'True'}),
-            'user_context': ('django.db.models.fields.TextField', [], {}),
+            'user_context': ('django.db.models.fields.TextField', [], {'null': 'True'}),
             'user_id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True'})
         },
         'notifications.sqlnotificationusertypechannelmap': {
