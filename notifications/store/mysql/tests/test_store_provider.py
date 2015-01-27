@@ -268,6 +268,3 @@ class TestMySQLStoreProvider(TestCase):
                 read=False,
                 unread=False
             )
-
-
-
