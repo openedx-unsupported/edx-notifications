@@ -12,10 +12,10 @@ from notifications.data import (
     NotificationType,
     NotificationUserMap
 )
-
 from notifications.exceptions import (
     ItemNotFoundError
 )
+from notifications import const
 
 
 class TestSQLStoreProvider(TestCase):
@@ -239,8 +239,9 @@ class TestSQLStoreProvider(TestCase):
         with self.assertNumQueries(1):
             notifications = self.provider.get_notifications_for_user(self.test_user_id)
 
-            self.assertEqual(notifications[0].msg, msg1)
-            self.assertEqual(notifications[1].msg, msg2)
+            # most recent one should be first
+            self.assertEqual(notifications[0].msg, msg2)
+            self.assertEqual(notifications[1].msg, msg1)
 
         #
         # test file namespace filtering
@@ -386,3 +387,61 @@ class TestSQLStoreProvider(TestCase):
                 }
             )
             self.assertEqual(notifications[0].msg, msg2)
+
+    def test_get_notifications_paging(self):
+        """
+        Test retrieving notifications for a user
+        """
+
+        # make sure we can't pass along a huge limit size
+        with self.assertRaises(ValueError):
+            self.provider.get_notifications_for_user(
+                self.test_user_id,
+                options={
+                    'limit': const.MAX_NOTIFICATION_LIST_SIZE + 1
+                }
+            )
+
+        # set up some notifications
+        map1, msg1, map2, msg2 = self._setup_user_notifications()
+
+        # test limit, we should only get the first one
+        with self.assertNumQueries(1):
+            notifications = self.provider.get_notifications_for_user(
+                self.test_user_id,
+                options={
+                    'limit': 1,
+                }
+            )
+
+            self.assertEqual(len(notifications), 1)
+            # most recent one should be first
+            self.assertEqual(notifications[0].msg, msg2)
+
+        # test limit with offset, we should only get the 2nd one
+        with self.assertNumQueries(1):
+            notifications = self.provider.get_notifications_for_user(
+                self.test_user_id,
+                options={
+                    'limit': 1,
+                    'offset': 1,
+                }
+            )
+
+            self.assertEqual(len(notifications), 1)
+            # most recent one should be first, so msg1 should be 2nd
+            self.assertEqual(notifications[0].msg, msg1)
+
+        # test that limit should be able to exceed bounds
+        with self.assertNumQueries(1):
+            notifications = self.provider.get_notifications_for_user(
+                self.test_user_id,
+                options={
+                    'offset': 1,
+                    'limit': 2,
+                }
+            )
+
+            self.assertEqual(len(notifications), 1)
+            # most recent one should be first, so msg1 should be 2nd
+            self.assertEqual(notifications[0].msg, msg1)

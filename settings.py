@@ -42,3 +42,5 @@ SOUTH_MIGRATION_MODULES = {
     'notifications': 'notifications.store.sql.migrations',
 }
 
+# to prevent run-away queries from happening
+MAX_NOTIFICATION_LIST_SIZE = 100

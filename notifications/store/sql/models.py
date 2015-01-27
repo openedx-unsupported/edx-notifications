@@ -136,7 +136,7 @@ class SQLNotificationMessage(TimeStampedModel):
         self.payload = DictField.to_json(msg.payload)
 
 
-class SQLNotificationUserMap(models.Model):
+class SQLNotificationUserMap(TimeStampedModel):
     """
     Information about how a Notification is tied to a targeted user, and related state (e.g. read/unread)
     """
@@ -156,6 +156,7 @@ class SQLNotificationUserMap(models.Model):
         app_label = 'notifications'  # since we have this models.py file not in the root app directory
         db_table = 'notifications_notificationusermap'
         unique_together = (('user_id', 'msg'),)  # same user should get the same notification twice
+        ordering = ['-created']  # default order is most recent one should be read first
 
     def to_data_object(self):
         """

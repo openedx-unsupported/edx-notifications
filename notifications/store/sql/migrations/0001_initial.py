@@ -19,10 +19,10 @@ class Migration(SchemaMigration):
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('created', self.gf('model_utils.fields.AutoCreatedField')(default=datetime.datetime.now)),
             ('modified', self.gf('model_utils.fields.AutoLastModifiedField')(default=datetime.datetime.now)),
-            ('payload', self.gf('django.db.models.fields.TextField')()),
             ('namespace', self.gf('django.db.models.fields.CharField')(max_length=128, null=True, db_index=True)),
             ('msg_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['notifications.SQLNotificationType'])),
             ('from_user_id', self.gf('django.db.models.fields.IntegerField')(null=True)),
+            ('payload', self.gf('django.db.models.fields.TextField')()),
             ('deliver_no_earlier_than', self.gf('django.db.models.fields.DateTimeField')(null=True)),
             ('expires_at', self.gf('django.db.models.fields.DateTimeField')(null=True, db_index=True)),
             ('expires_secs_after_read', self.gf('django.db.models.fields.IntegerField')(null=True)),
@@ -33,6 +33,8 @@ class Migration(SchemaMigration):
         # Adding model 'SQLNotificationUserMap'
         db.create_table('notifications_notificationusermap', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('created', self.gf('model_utils.fields.AutoCreatedField')(default=datetime.datetime.now)),
+            ('modified', self.gf('model_utils.fields.AutoLastModifiedField')(default=datetime.datetime.now)),
             ('user_id', self.gf('django.db.models.fields.IntegerField')(db_index=True)),
             ('msg', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['notifications.SQLNotificationMessage'])),
             ('read_at', self.gf('django.db.models.fields.DateTimeField')(null=True, db_index=True)),
@@ -138,8 +140,10 @@ class Migration(SchemaMigration):
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
         'notifications.sqlnotificationusermap': {
-            'Meta': {'unique_together': "(('user_id', 'msg'),)", 'object_name': 'SQLNotificationUserMap', 'db_table': "'notifications_notificationusermap'"},
+            'Meta': {'ordering': "['-created']", 'unique_together': "(('user_id', 'msg'),)", 'object_name': 'SQLNotificationUserMap', 'db_table': "'notifications_notificationusermap'"},
+            'created': ('model_utils.fields.AutoCreatedField', [], {'default': 'datetime.datetime.now'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'modified': ('model_utils.fields.AutoLastModifiedField', [], {'default': 'datetime.datetime.now'}),
             'msg': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['notifications.SQLNotificationMessage']"}),
             'read_at': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'db_index': 'True'}),
             'user_context': ('django.db.models.fields.TextField', [], {'null': 'True'}),

@@ -119,7 +119,7 @@ class BaseNotificationStoreProvider(object):
         """
 
     @abc.abstractmethod
-    def get_notifications_for_user(self, user_id, filters=None):
+    def get_notifications_for_user(self, user_id, filters=None, options=None):
         """
         Returns a (unsorted) collection (list) of notifications for the user.
 
@@ -131,6 +131,9 @@ class BaseNotificationStoreProvider(object):
                 - namespace: what namespace to search (defuault None)
                 - read: Whether to return read notifications (default True)
                 - unread: Whether to return unread notifications (default True)
+            - options: a dict containing some optional parameters
+                - limit: max number to return (up to some system defined max)
+                - offset: offset into the list, to implement paging
 
         RETURNS: type list   i.e. []
         """
