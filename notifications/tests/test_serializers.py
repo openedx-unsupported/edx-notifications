@@ -54,10 +54,23 @@ class SerializerTests(TestCase):
         data = JSONParser().parse(stream)
 
         deserializer = NotificationMessageSerializer(data=data)
-
         self.assertTrue(deserializer.is_valid())
 
+        # compare the original data object to our deserialized version
+        # and make sure they are the same
         msg_output = deserializer.object
-
         self.assertEqual(msg, msg_output)
         self.assertEqual(msg.msg_type, msg_output.msg_type)  # pylint: disable=maybe-no-member
+
+        # now intentionally try to break it
+        data['namespace'] = 'busted'
+        data['msg_type']['name'] = 'not-same'
+
+        deserializer = NotificationMessageSerializer(data=data)
+        self.assertTrue(deserializer.is_valid())
+
+        # compare the original data object to our deserialized version
+        # and make sure they are not considered the same
+        msg_output = deserializer.object
+        self.assertNotEqual(msg, msg_output)
+        self.assertNotEqual(msg.msg_type, msg_output.msg_type)  # pylint: disable=maybe-no-member
