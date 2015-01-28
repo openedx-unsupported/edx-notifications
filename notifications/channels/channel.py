@@ -63,27 +63,27 @@ def _get_system_channel_mapping(type_name):
         # traverse upwards in the type namespacing to find a match
         # most specific takes presendence
         # most generic is '*'
-        if search_name not in mappings:
+        mapping = mappings.get(search_name)
+        if not mapping:
             search_name, __, __ = search_name.rpartition('.')
 
-            while (search_name + '.*') not in mappings:
-                search_name, __, __ = search_name.rpartition('.')
+            # loop over all possible wildcards throughout the namespace
+            # from most specific to generic
+            while not mapping and search_name:
+                mapping = mappings.get(search_name + '.*')
+                if not mapping:
+                    search_name, __, __ = search_name.rpartition('.')
 
-                # at the end?
-                if not search_name:
-                    break
-
-            if not search_name:
-                search_name = '*'
-                # no match then, we take the global '*'
-                if search_name not in mappings:
+            if not mapping:
+                # did we reach the end without a mapping found? Use the global wildcard '*'
+                mapping = mappings.get('*')
+                if not mapping:
+                    # oops, this shouldn't happen if things are configured correctly
                     msg = (
                         "NOTIFICATION_CHANNEL_PROVIDERS is not configured "
                         "with a global '*' definition. This must always be defined."
                     )
                     raise ImproperlyConfigured(msg)
-
-        mapping = mappings[search_name]
 
         if mapping not in _CHANNEL_PROVIDERS:
             msg = (

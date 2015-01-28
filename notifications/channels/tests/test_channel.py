@@ -123,6 +123,32 @@ class ChannelTests(TestCase):
         self.assertEqual(provider.display_name, 'channel_name6')
         self.assertEqual(provider.display_description, 'channel_description6')
 
+        # now verify that the wildcard hierarchy rules
+        # work, by making a msg_type name which will match one of
+        # the intermediate items in the hierarchy
+
+        provider = get_notification_channel(
+            self.test_user_id,
+            NotificationType(
+                name='edx-notifications.channels.tests.another_one'
+            )
+        )
+
+        self.assertEqual(provider.name, 'channel3')
+        self.assertEqual(provider.display_name, 'channel_name3')
+        self.assertEqual(provider.display_description, 'channel_description3')
+
+        provider = get_notification_channel(
+            self.test_user_id,
+            NotificationType(
+                name='edx-notifications.channels.diff_subpath.diff_leaf'
+            )
+        )
+
+        self.assertEqual(provider.name, 'channel2')
+        self.assertEqual(provider.display_name, 'channel_name2')
+        self.assertEqual(provider.display_description, 'channel_description2')
+
     @override_settings(NOTIFICATION_CHANNEL_PROVIDERS=None)
     def test_missing_provider_config(self):
         """
