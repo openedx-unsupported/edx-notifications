@@ -152,15 +152,15 @@ class DictField(TypedField):
         super(DictField, self).__init__(dict, kwargs)
 
     @classmethod
-    def to_json(cls, self):
+    def to_json(cls, data):
         """
         Serialize to json
         """
 
-        if not self:
+        if not data:
             return None
 
-        _dict = copy.deepcopy(self)
+        _dict = copy.deepcopy(data)
 
         for key, value in _dict.iteritems():
             if isinstance(value, datetime):

@@ -104,6 +104,8 @@ class SQLNotificationMessage(TimeStampedModel):
             expires_at=self.expires_at,
             expires_secs_after_read=self.expires_secs_after_read,
             payload=DictField.from_json(self.payload),  # special case, dict<-->JSON string
+            created=self.created,
+            modified=self.modified,
         )
 
         return msg
@@ -121,7 +123,9 @@ class SQLNotificationMessage(TimeStampedModel):
 
     def load_from_data_object(self, msg):
         """
-        Hydrate ourselves from a data object
+        Hydrate ourselves from a data object, note that we
+        do not set the created/modified timestamps as that
+        is auto-generated
         """
 
         msg.validate()

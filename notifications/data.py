@@ -89,8 +89,6 @@ class NotificationMessage(BaseDataObject):
     # None = never
     expires_secs_after_read = IntegerField()
 
-    #
-    #
     priority = EnumField(
         allowed_values=[
             const.NOTIFICATION_PRIORITY_NONE,
@@ -101,6 +99,10 @@ class NotificationMessage(BaseDataObject):
         ],
         default=const.NOTIFICATION_PRIORITY_NONE
     )
+
+    # timestamps
+    created = DateTimeField()
+    modified = DateTimeField()
 
     def validate(self):
         """
