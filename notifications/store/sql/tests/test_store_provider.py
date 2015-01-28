@@ -40,8 +40,7 @@ class TestSQLStoreProvider(TestCase):
             name='foo.bar.baz'
         )
 
-        with self.assertNumQueries(3):
-            result = self.provider.save_notification_type(notification_type)
+        result = self.provider.save_notification_type(notification_type)
 
         return result
 
@@ -50,10 +49,31 @@ class TestSQLStoreProvider(TestCase):
         Happy path saving (and retrieving) a new message type
         """
 
-        notification_type = self._save_notification_type()
+        with self.assertNumQueries(3):
+            notification_type = self._save_notification_type()
 
         self.assertIsNotNone(notification_type)
 
+        with self.assertNumQueries(1):
+            result = self.provider.get_notification_type(notification_type.name)
+
+        self.assertIsNotNone(result)
+        self.assertEqual(result, notification_type)
+
+        # re-getting notification type should pull from cache
+        # so there should be no round-trips to SQL
+        with self.assertNumQueries(0):
+            result = self.provider.get_notification_type(notification_type.name)
+
+        self.assertIsNotNone(result)
+        self.assertEqual(result, notification_type)
+
+        # re-save and make sure the cache entry got invalidated
+        with self.assertNumQueries(2):
+            notification_type = self._save_notification_type()
+
+        # since we invalidated the cached entry on the last save
+        # when we re-query we'll hit another SQL round trip
         with self.assertNumQueries(1):
             result = self.provider.get_notification_type(notification_type.name)
 
@@ -119,6 +139,22 @@ class TestSQLStoreProvider(TestCase):
         self.assertIsNotNone(fetched_msg)
         self.assertEqual(msg.id, fetched_msg.id)
         self.assertEqual(msg.payload, fetched_msg.payload)
+        self.assertEqual(msg.msg_type.name, fetched_msg.msg_type.name)
+
+        # by not selecting_related (default True), this will cause another round
+        # trip to the database
+        with self.assertNumQueries(2):
+            fetched_msg = self.provider.get_notification_message_by_id(
+                msg.id,
+                options={
+                    'select_related': False,
+                }
+            )
+
+        self.assertIsNotNone(fetched_msg)
+        self.assertEqual(msg.id, fetched_msg.id)
+        self.assertEqual(msg.payload, fetched_msg.payload)
+        self.assertEqual(msg.msg_type.name, fetched_msg.msg_type.name)
 
     def test_load_nonexisting_notification(self):
         """

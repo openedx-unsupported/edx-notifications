@@ -43,6 +43,23 @@ class BaseDataObjectTests(TestCase):
     Go through data.py and exercise some tests
     """
 
+    def test_field_descriptor_get(self):
+        """
+        Confirms that when __get__ is called as a class method
+        that we get back the descriptor and not the instance (value)
+        """
+
+        # accessing the field through the class should return the descriptor type
+        self.assertTrue(isinstance(DataObjectWithTypedFields.test_int_field, IntegerField))
+
+        obj = DataObjectWithTypedFields(
+            test_int_field=1
+        )
+
+        # access the field through an instance of the class should return the value type
+        # that the descriptor contains
+        self.assertTrue(isinstance(obj.test_int_field, int))
+
     def test_base_data_object(self):
         """
         Assert proper behavior with BaseDataObject

@@ -31,7 +31,7 @@ class SQLNotificationType(models.Model):
         app_label = 'notifications'  # since we have this models.py file not in the root app directory
         db_table = 'notifications_notificationtype'
 
-    def to_data_object(self):
+    def to_data_object(self, options=None):  # pylint: disable=unused-argument
         """
         Generate a NotificationType data object
         """
@@ -90,7 +90,7 @@ class SQLNotificationMessage(TimeStampedModel):
         db_table = 'notifications_notificationmessage'
         ordering = ['-created']  # default order is last one first
 
-    def to_data_object(self):
+    def to_data_object(self, options=None):  # pylint: disable=unused-argument
         """
         Return a Notification Message data object
         """
@@ -158,7 +158,7 @@ class SQLNotificationUserMap(TimeStampedModel):
         unique_together = (('user_id', 'msg'),)  # same user should get the same notification twice
         ordering = ['-created']  # default order is most recent one should be read first
 
-    def to_data_object(self):
+    def to_data_object(self, options=None):  # pylint: disable=unused-argument
         """
         Generate a NotificationType data object
         """

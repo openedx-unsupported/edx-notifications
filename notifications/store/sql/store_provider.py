@@ -3,7 +3,7 @@ Concrete MySQL implementation of the data provider interface
 """
 
 import copy
-from pylru import lrudecorator
+import pylru
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -24,10 +24,22 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
     Concrete MySQL implementation of the abstract base class (interface)
     """
 
-    def _get_notification_by_id(self, msg_id, select_related=False):
+    def __init__(self, **kwargs):
+        """
+        Initializer
+        """
+
+        _msg_type_cache_size = kwargs.get('MAX_MSG_TYPE_CACHE_SIZE', 1024)
+        self._msg_type_cache = pylru.lrucache(_msg_type_cache_size)
+
+    def _get_notification_by_id(self, msg_id, options=None):
         """
         Helper method to get Notification Message by id
         """
+
+        # pylint/pep8 seem to complain if defaults are set to empty dicts
+        options = options if options else {}
+        select_related = options.get('select_related', True)
 
         try:
             if select_related:
@@ -37,19 +49,14 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         except ObjectDoesNotExist:
             raise ItemNotFoundError()
 
-        return obj.to_data_object()
+        return obj.to_data_object(options=options)
 
     def get_notification_message_by_id(self, msg_id, options=None):
         """
         For the given message id return the corresponding NotificationMessage data object
         """
 
-        # pylint/pep8 seem to complain if defaults are set to empty dicts
-        options = options if options else {}
-
-        select_related = options.get('select_related', True)
-
-        return self._get_notification_by_id(msg_id, select_related=select_related)
+        return self._get_notification_by_id(msg_id, options=options)
 
     def save_notification_message(self, msg):
         """
@@ -73,7 +80,6 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         obj.save()
         return obj.to_data_object()
 
-    @lrudecorator(1024)
     def get_notification_type(self, name):  # pylint: disable=no-self-use
         """
         This returns a NotificationType object.
@@ -82,12 +88,22 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         Therefore we can memoize this function
         """
 
+        data_object = None
+        # pull from the cache, if we have it
+        if name in self._msg_type_cache:
+            data_object = self._msg_type_cache[name]
+            return data_object
+
         try:
             obj = SQLNotificationType.objects.get(name=name)
         except ObjectDoesNotExist:
             raise ItemNotFoundError()
 
-        return obj.to_data_object()
+        data_object = obj.to_data_object()
+
+        # refresh the cache
+        self._msg_type_cache[name] = data_object
+        return data_object
 
     def save_notification_type(self, msg_type):
         """
@@ -101,6 +117,10 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
             obj = SQLNotificationType.from_data_object(msg_type)
 
         obj.save()
+
+        # remove cached entry
+        if msg_type.name in self._msg_type_cache:
+            del self._msg_type_cache[msg_type.name]
         return msg_type
 
     def _get_notifications_for_user(self, user_id, filters=None, options=None):
