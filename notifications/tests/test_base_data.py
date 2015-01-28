@@ -34,7 +34,7 @@ class DataObjectWithTypedFields(BaseDataObject):
     test_dict_field = DictField()
     test_class_field = RelatedObjectField(NotificationMessage)
     test_enum_field = EnumField(
-        ['foo']
+        allowed_values=['foo']
     )
 
 

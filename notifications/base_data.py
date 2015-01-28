@@ -63,6 +63,14 @@ class BaseDataObject(object):
 
         return self.__dict__ == other.__dict__
 
+    def validate(self):
+        """
+        This should be overriden to do real validation.
+        Validations should throw a ValidationError if there
+        is a problem.
+        """
+        pass  # this intentionally does nothing
+
 
 class TypedField(object):
     """
@@ -71,20 +79,24 @@ class TypedField(object):
 
     _expected_type = None
 
-    def __init__(self, expected_type, default=None):
+    def __init__(self, *args, **kwargs):
         """
         Initializer which takes in the type this field
         should be set it is set
         """
 
-        self._expected_type = expected_type
-        self._default = default
+        self._expected_type = args[0]
+        self._default = kwargs.get('default', None)
         self._data = WeakKeyDictionary()
 
     def __get__(self, instance, owner):
         """
         Descriptor getter
         """
+        if not instance:
+            # called as a class method, so return the descriptor (ourselves)
+            return self
+
         return self._data.get(instance, self._default)
 
     def __set__(self, instance, value):
@@ -107,8 +119,8 @@ class StringField(TypedField):
     Specialized subclass of TypedField(unicode) as a convienence
     """
 
-    def __init__(self):
-        super(StringField, self).__init__(unicode)
+    def __init__(self, **kwargs):
+        super(StringField, self).__init__(unicode, kwargs)
 
     def __set__(self, instance, value):
         """
@@ -127,8 +139,8 @@ class IntegerField(TypedField):
     Specialized subclass of TypedField(int) as a convienence
     """
 
-    def __init__(self):
-        super(IntegerField, self).__init__(int)
+    def __init__(self, **kwargs):
+        super(IntegerField, self).__init__(int, kwargs)
 
 
 class DictField(TypedField):
@@ -136,8 +148,8 @@ class DictField(TypedField):
     Specialized subclass of TypedField(dict) as a convienence
     """
 
-    def __init__(self):
-        super(DictField, self).__init__(dict)
+    def __init__(self, **kwargs):
+        super(DictField, self).__init__(dict, kwargs)
 
     @classmethod
     def to_json(cls, self):
@@ -189,8 +201,8 @@ class DateTimeField(TypedField):
     Specialized subclass of TypedField(datetime) as a convienence
     """
 
-    def __init__(self):
-        super(DateTimeField, self).__init__(datetime)
+    def __init__(self, **kwargs):
+        super(DateTimeField, self).__init__(datetime, kwargs)
 
 
 class EnumField(StringField):
@@ -199,13 +211,13 @@ class EnumField(StringField):
     but constrains what values can be set on it
     """
 
-    def __init__(self, allowed_values=None):
+    def __init__(self, **kwargs):
         """
         Initializer with constrained values
         """
 
-        self._allowed_values = allowed_values
-        super(EnumField, self).__init__()
+        self._allowed_values = kwargs['allowed_values']
+        super(EnumField, self).__init__(**kwargs)
 
     def __set__(self, instance, value):
         """
@@ -228,7 +240,7 @@ class RelatedObjectField(TypedField):
     for example a foreign key. The related object must be of type BaseDataObject
     """
 
-    def __init__(self, related_type):
+    def __init__(self, related_type, **kwargs):
         """
         Initializer for related object which must be a subclass of
         BaseDataObject
@@ -242,4 +254,4 @@ class RelatedObjectField(TypedField):
 
             raise TypeError(msg)
 
-        super(RelatedObjectField, self).__init__(related_type)
+        super(RelatedObjectField, self).__init__(related_type, kwargs)

@@ -44,3 +44,16 @@ SOUTH_MIGRATION_MODULES = {
 
 # to prevent run-away queries from happening
 MAX_NOTIFICATION_LIST_SIZE = 100
+
+# list all known channel providers
+NOTIFICATION_CHANNEL_PROVIDERS = {
+    'durable': {
+        'class': 'notifications.channels.durable.BaseDurableNotificationChannel',
+        'options': {}
+    }
+}
+
+# list all of the mappings of notification types to channel
+NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS = {
+    '*': 'durable',  # default global mapping
+}

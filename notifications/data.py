@@ -92,18 +92,25 @@ class NotificationMessage(BaseDataObject):
     #
     #
     priority = EnumField(
-        [
+        allowed_values=[
             const.NOTIFICATION_PRIORITY_NONE,
             const.NOTIFICATION_PRIORITY_LOW,
             const.NOTIFICATION_PRIORITY_MEDIUM,
             const.NOTIFICATION_PRIORITY_HIGH,
             const.NOTIFICATION_PRIORITY_URGENT,
-        ]
+        ],
+        default=const.NOTIFICATION_PRIORITY_NONE
     )
 
     def validate(self):
         """
         Validator for this DataObject
+
+        I'd like to consolidate this to be optional args on the fields and
+        have introspection to make sure everything is OK, but since
+        Fields are descriptors, that might make things a bit more difficult. Basically
+        we need a way to look at the descriptor not the value the descriptor
+        reveals
         """
 
         if not self.msg_type:

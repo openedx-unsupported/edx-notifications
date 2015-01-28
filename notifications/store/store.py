@@ -89,6 +89,11 @@ class BaseNotificationStoreProvider(object):
         RETURNS: type NotificationMessage
         """
 
+    def save_notification_user_map(self, user_map):
+        """
+        Create or Update the mapping of a user to a notification.
+        """
+
     @abc.abstractmethod
     def get_notification_type(self, name):
         """

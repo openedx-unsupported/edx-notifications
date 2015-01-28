@@ -14,3 +14,9 @@ class ItemConflictError(Exception):
     """
     Generic exception when trying to save an object that has the same primary key
     """
+
+
+class ChannelNotFound(Exception):
+    """
+    Exception when a channel could not be found
+    """
