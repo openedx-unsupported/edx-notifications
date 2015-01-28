@@ -38,8 +38,8 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         """
 
         # pylint/pep8 seem to complain if defaults are set to empty dicts
-        options = options if options else {}
-        select_related = options.get('select_related', True)
+        _options = options if options else {}
+        select_related = _options.get('select_related', True)
 
         try:
             if select_related:
@@ -129,15 +129,15 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         """
 
         # pylint/pep8 seem to complain if defaults are set to empty dicts
-        filters = filters if filters else {}
-        options = options if options else {}
+        _filters = filters if filters else {}
+        _options = options if options else {}
 
-        namespace = filters.get('namespace')
-        read = filters.get('read', True)
-        unread = filters.get('unread', True)
-        select_related = options.get('select_related', False)
-        limit = options.get('limit', const.MAX_NOTIFICATION_LIST_SIZE)
-        offset = options.get('offset', 0)
+        namespace = _filters.get('namespace')
+        read = _filters.get('read', True)
+        unread = _filters.get('unread', True)
+        select_related = _options.get('select_related', False)
+        limit = _options.get('limit', const.MAX_NOTIFICATION_LIST_SIZE)
+        offset = _options.get('offset', 0)
 
         # make sure passed in limit is allowed
         # as we don't want to blow up the query too large here
