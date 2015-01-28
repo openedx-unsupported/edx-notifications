@@ -5,10 +5,6 @@ All in-proc API endpoints for acting as a Notification Publisher
 from notifications.channels.channel import get_notification_channel
 from notifications.store.store import notification_store
 
-from notifications.exceptions import (
-    ChannelNotFound
-)
-
 
 def register_notification_type(msg_type):
     """

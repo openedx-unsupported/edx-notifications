@@ -18,6 +18,9 @@ def notification_store():
     Returns the singleton instance of the StoreProvider that has been
     configured for this runtime. The class path should be
     set in NOTIFICATION_STORE_PROVIDER in the settings file
+
+    NOTE: When we switch over to gevent support, we should use some
+    locking techniques in this area to prevent concurrent execution
     """
 
     global _STORE_PROVIDER  # pylint: disable=global-statement
@@ -45,6 +48,9 @@ def notification_store():
 def reset_notification_store():
     """
     Tears down any cached configuration. This is useful for testing.
+
+    NOTE: When we switch over to gevent support, we should use some
+    locking techniques in this area to prevent concurrent execution
     """
 
     global _STORE_PROVIDER  # pylint: disable=global-statement

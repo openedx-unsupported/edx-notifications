@@ -3,6 +3,7 @@ Abstract base class that all NotificationChannels must implement
 """
 
 import abc
+import copy
 
 from importlib import import_module
 
@@ -36,7 +37,10 @@ def _init_channel_providers():
         module_path, _, name = channel_config['class'].rpartition('.')
         class_ = getattr(import_module(module_path), name)
 
-        provider = class_(**channel_config['options'])
+        options = copy.deepcopy(channel_config['options'])
+        options['name'] = key
+
+        provider = class_(**options)  # pylint: disable=star-args
         _CHANNEL_PROVIDERS[key] = provider
 
 
@@ -114,6 +118,9 @@ def get_notification_channel(user_id, msg_type):
     Ultimately, this will be user-selectable, e.g.
     'send my discussion forum notifications to my mobile device via SMS'
     but for now, we're always mapping to the system default
+
+    NOTE: When we switch over to gevent support, we should use some
+    locking techniques in this area to prevent concurrent execution
     """
 
     global _CHANNEL_PROVIDERS  # pylint: disable=global-statement, global-variable-not-assigned
@@ -129,11 +136,66 @@ def get_notification_channel(user_id, msg_type):
     return channel
 
 
+def reset_notification_channels():
+    """
+    Clear out all cached channel definitions and mappings.
+    This is useful for testing scenarious, but likely should not
+    be called in normal runtimes
+
+    NOTE: When we switch over to gevent support, we should use some
+    locking techniques in this area to prevent concurrent execution
+    """
+
+    global _CHANNEL_PROVIDERS  # pylint: disable=global-statement
+    global _CHANNEL_PROVIDERS_TYPE_MAPS  # pylint: disable=global-statement
+
+    _CHANNEL_PROVIDERS = {}
+    _CHANNEL_PROVIDERS_TYPE_MAPS = {}
+
+
 class BaseNotificationChannelProvider(object):
     """
     The abstract base class that all NotificationChannelProviders
     need to implement
     """
+
+    # Name of the notification channel
+    _name = None
+    _display_name = None
+    _display_description = None
+
+    @property
+    def name(self):
+        """
+        Getter for _name field
+        """
+        return self._name
+
+    @property
+    def display_name(self):
+        """
+        Getter for _display_name field
+        """
+        return self._display_name
+
+    @property
+    def display_description(self):
+        """
+        Getter for _display_description
+        """
+        return self._display_description
+
+    # don't allow instantiation of this class, it must be subclassed
+    __metaclass__ = abc.ABCMeta
+
+    def __init__(self, name=None, display_name=None, display_description=None):
+        """
+        Base implementation of __init__
+        """
+
+        self._name = name
+        self._display_name = display_name
+        self._display_description = display_description
 
     @abc.abstractmethod
     def dispatch_notification_to_user(self, user_id, msg):
