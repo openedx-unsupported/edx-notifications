@@ -29,8 +29,7 @@ class DictFieldSerializer(serializers.WritableField):
         """
         from json format
         """
-        obj = DictField.from_json(data)
-        return obj
+        return DictField.from_json(data)
 
 
 class NotificationTypeSerializer(serializers.Serializer):

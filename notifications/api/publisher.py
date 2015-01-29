@@ -51,3 +51,7 @@ def publish_notification_to_user(user_id, msg):
     channel = get_notification_channel(user_id, msg.msg_type)
 
     channel.dispatch_notification_to_user(user_id, msg)
+
+    #
+    # Here is where we will tie into the Analytics pipeline
+    #
