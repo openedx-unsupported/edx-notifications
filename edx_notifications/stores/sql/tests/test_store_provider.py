@@ -217,6 +217,18 @@ class TestSQLStoreProvider(TestCase):
                 self.provider.get_notifications_for_user(self.test_user_id)
             )
 
+    def test_num_notifications_with_msg_id_filter(self):
+        """
+        Make sure this raises a ValueError
+        """
+        with self.assertRaises(ValueError):
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'msg_id': 1
+                }
+            )
+
     def _setup_user_notifications(self):
         """
         Helper to build out some

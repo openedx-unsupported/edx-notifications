@@ -4,72 +4,12 @@ Base objects that data.py uses
 
 import json
 import copy
+import inspect
 import dateutil.parser
 
 from datetime import datetime
 
 from weakref import WeakKeyDictionary
-
-
-class BaseDataObject(object):
-    """
-    A base class for all Notification Data Objects
-    """
-
-    id = None  # pylint: disable=invalid-name
-
-    _is_loaded = False
-    _is_dirty = False  # Returns if this object has been modified after initialization
-
-    def __init__(self, **kwargs):
-        """
-        Initializer which will allow for kwargs. Note we can only allow for setting
-        of attributes which have been explicitly declared in any subclass
-        """
-
-        for key in kwargs.keys():
-            value = kwargs[key]
-            if key in dir(self):
-                setattr(self, key, value)
-            else:
-                raise ValueError(
-                    (
-                        "Initialization parameter '{name}' was passed in although "
-                        "it is not a known attribute to the class."
-                    ).format(name=key)
-                )
-
-    def __setattr__(self, attribute, value):
-        """
-        Don't allow new attributes to be added outside of
-        attributes that were present after initialization
-        We want our data models to have a schema that is fixed as design time!!!
-        """
-
-        if attribute not in dir(self):
-            raise ValueError(
-                (
-                    "Attempting to add a new attribute '{name}' that was not part of "
-                    "the original schema."
-                ).format(name=attribute)
-            )
-
-        super(BaseDataObject, self).__setattr__(attribute, value)
-
-    def __eq__(self, other):
-        """
-        Equality test - simply compare all of the fields
-        """
-
-        return self.__dict__ == other.__dict__
-
-    def validate(self):
-        """
-        This should be overriden to do real validation.
-        Validations should throw a ValidationError if there
-        is a problem.
-        """
-        pass  # this intentionally does nothing
 
 
 class TypedField(object):
@@ -232,6 +172,95 @@ class EnumField(StringField):
                 raise ValueError(msg)
 
         super(EnumField, self).__set__(instance, value)
+
+
+class BaseDataObject(object):
+    """
+    A base class for all Notification Data Objects
+    """
+
+    id = IntegerField(default=None)  # pylint: disable=invalid-name
+
+    _is_loaded = False
+    _is_dirty = False  # Returns if this object has been modified after initialization
+
+    def __init__(self, **kwargs):
+        """
+        Initializer which will allow for kwargs. Note we can only allow for setting
+        of attributes which have been explicitly declared in any subclass
+        """
+
+        for key in kwargs.keys():
+            value = kwargs[key]
+            if key in dir(self):
+                setattr(self, key, value)
+            else:
+                raise ValueError(
+                    (
+                        "Initialization parameter '{name}' was passed in although "
+                        "it is not a known attribute to the class."
+                    ).format(name=key)
+                )
+
+    def __setattr__(self, attribute, value):
+        """
+        Don't allow new attributes to be added outside of
+        attributes that were present after initialization
+        We want our data models to have a schema that is fixed as design time!!!
+        """
+
+        if attribute not in dir(self):
+            raise ValueError(
+                (
+                    "Attempting to add a new attribute '{name}' that was not part of "
+                    "the original schema."
+                ).format(name=attribute)
+            )
+
+        super(BaseDataObject, self).__setattr__(attribute, value)
+
+    def __eq__(self, other):
+        """
+        Equality test - simply compare all of the fields
+        """
+
+        return self.__dict__ == other.__dict__
+
+    def __str__(self):
+        """
+        Dump out all of our fields
+        """
+
+        return str(self.get_fields())
+
+    def __unicode__(self):
+        """
+        Dump out all of our fields
+        """
+
+        return unicode(self.get_fields())
+
+    def get_fields(self):
+        """
+        Returns all fields as a dict. This will include any sub objects
+        """
+
+        _dict = {}
+        for attr_name, __ in inspect.getmembers(self.__class__, lambda attr: isinstance(attr, TypedField)):
+            value = getattr(self, attr_name)
+            if isinstance(value, BaseDataObject):
+                _dict[attr_name] = value.get_fields()
+            else:
+                _dict[attr_name] = value
+        return _dict
+
+    def validate(self):
+        """
+        This should be overriden to do real validation.
+        Validations should throw a ValidationError if there
+        is a problem.
+        """
+        pass  # this intentionally does nothing
 
 
 class RelatedObjectField(TypedField):

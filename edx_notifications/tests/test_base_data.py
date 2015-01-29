@@ -43,6 +43,24 @@ class BaseDataObjectTests(TestCase):
     Go through data.py and exercise some tests
     """
 
+    def test_get_fields(self):
+        """
+        Verifies that the get_fields() method on BaseDataObject works as expected
+        """
+
+        obj = DataObjectWithTypedFields()
+        obj.test_class_field = NotificationMessage()
+        fields = obj.get_fields()
+
+        self.assertEqual(fields['test_int_field'], None)
+        self.assertEqual(fields['test_dict_field'], None)
+        self.assertEqual(fields['test_class_field']['id'], None)
+        self.assertEqual(fields['test_enum_field'], None)
+
+        # test string-ifying the BaseDataObject
+        self.assertEqual(str(obj), str(fields))
+        self.assertEqual(unicode(obj), unicode(fields))
+
     def test_field_descriptor_get(self):
         """
         Confirms that when __get__ is called as a class method

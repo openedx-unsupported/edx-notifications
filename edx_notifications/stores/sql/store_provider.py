@@ -132,6 +132,7 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         _filters = filters if filters else {}
         _options = options if options else {}
 
+        msg_id = _filters.get('msg_id')
         namespace = _filters.get('namespace')
         read = _filters.get('read', True)
         unread = _filters.get('unread', True)
@@ -153,6 +154,9 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
 
         if select_related:
             query = query.select_related()
+
+        if msg_id:
+            query = query.filter(msg__id=msg_id)
 
         if namespace:
             query = query.filter(msg__namespace=namespace)
@@ -183,8 +187,16 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
                 - unread: Whether to return unread notifications (default True)
                 - type_name: which type to return
 
-        RETURNS: type list   i.e. []
+        RETURNS: integer
+
+        NOTE: You cannot pass in a filter of 'msg_id'
         """
+
+        if filters and 'msg_id' in filters:
+            raise ValueError(
+                'It is non-sensical to pass in a msg_id '
+                'filter parameter into an aggregate counting method!'
+            )
 
         return self._get_notifications_for_user(
             user_id,
@@ -200,6 +212,9 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         ARGS:
             - user_id: The id of the user
             - filters: a dict containing
+                - msg_id: a particular notification id to retrieve
+                    ( if this is used in conjuction with other filters, it may
+                      result in an empty set being returned )
                 - namespace: what namespace to search (defuault None)
                 - read: Whether to return read notifications (default True)
                 - unread: Whether to return unread notifications (default True)
