@@ -240,18 +240,26 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         for item in query:
             result_set.append(item.to_data_object())
 
-        if 'msg_id' in _options:
+        if filters and 'msg_id' in filters:
+            # if we are querying a single specific item, then do
+            # some examination of the results
+
+            # and if we don't find a match then raise an exception
+            if not result_set:
+                err_msg = (
+                    'Could not find notification msg_id {msg_id} for {user_id}'
+                ).format(msg_id=filters['msg_id'], user_id=user_id)
+                raise ItemNotFoundError(err_msg)
+
             if len(result_set) > 1:
                 # There should be at most one match, else raise an exception
-                # this really shouldn't happen because there is a database constraint,
-                # at least with SQL backends. However, for future no-SQL backends
-                # this is conceptually a possibility, so good to double check
+                # this really shouldn't happen because there is a database constraint with
+                # SQL backends
                 err_msg = (
                     'There should be at most 1 NotificationUserMap items found for '
                     'msg_id {msg_id} and user_id {user_id}. {cnt} were found!'
-                ).format(msg_id=_options['msg_id'], user_id=user_id, cnt=len(result_set))
-
-            raise ItemIntegrityError(err_msg)
+                ).format(msg_id=filters['msg_id'], user_id=user_id, cnt=len(result_set))
+                raise ItemIntegrityError(err_msg)
 
         return result_set
 

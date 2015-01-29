@@ -10,7 +10,6 @@ from datetime import datetime
 from edx_notifications.stores.store import notification_store
 
 from edx_notifications.exceptions import (
-    ItemNotFoundError,
     ItemIntegrityError
 )
 
@@ -94,15 +93,9 @@ def mark_notification_read(user_id, msg_id, read=True):
             'msg_id': msg_id,
         },
         options={
-            'select_related': False,
+            'select_related': False,  # we don't need the related objects to do this
         }
     )
-
-    if not notifications:
-        err_msg = (
-            'Could not find notification msg_id {msg_id} for {user_id}'
-        ).format(msg_id=msg_id, user_id=user_id)
-        raise ItemNotFoundError(err_msg)
 
     if len(notifications) > 1:
         # There should be at most one match, else raise an exception
