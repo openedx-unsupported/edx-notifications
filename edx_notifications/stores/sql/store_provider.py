@@ -9,7 +9,8 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from edx_notifications.stores.store import BaseNotificationStoreProvider
 from edx_notifications.exceptions import (
-    ItemNotFoundError
+    ItemNotFoundError,
+    ItemIntegrityError
 )
 from edx_notifications import const
 from edx_notifications.stores.sql.models import (
@@ -238,6 +239,19 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         result_set = []
         for item in query:
             result_set.append(item.to_data_object())
+
+        if 'msg_id' in _options:
+            if len(result_set) > 1:
+                # There should be at most one match, else raise an exception
+                # this really shouldn't happen because there is a database constraint,
+                # at least with SQL backends. However, for future no-SQL backends
+                # this is conceptually a possibility, so good to double check
+                err_msg = (
+                    'There should be at most 1 NotificationUserMap items found for '
+                    'msg_id {msg_id} and user_id {user_id}. {cnt} were found!'
+                ).format(msg_id=_options['msg_id'], user_id=user_id, cnt=len(result_set))
+
+            raise ItemIntegrityError(err_msg)
 
         return result_set
 

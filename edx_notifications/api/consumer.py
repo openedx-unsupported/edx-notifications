@@ -27,6 +27,8 @@ def get_notifications_count_for_user(user_id, filters=None):
             - 'unread': Whether to return unread notifications (default True)
             - 'type_name': what msg_types to count
 
+    NOTE: If the 'msg_id' filter is passed in, a ValueError will be raised as
+    this is not a valid combination
     """
 
     # make sure user_id is an integer
@@ -73,6 +75,16 @@ def get_notifications_for_user(user_id, filters=None, options=None):
 def mark_notification_read(user_id, msg_id, read=True):
     """
     Will mark a given NotificationUserMap as 'read' (or unread is 'unread' argument is passed in)
+
+    ARGS:
+        - user_id: The user that wishes to mark the msg as read/unread
+        - msg_id: The corresponding message that is being marked
+        - read: (Optional) indicate whether message should be marked as read or unread
+
+    NOTE: If the corresponding user_id/msg_id cannot be found, then this will raise
+    a ItemNotFoundError(). Also, if there is some database integrity error where the
+    same user_id/msg_id mapping is found more than once, it will raise a
+    ItemIntegrityError()
     """
 
     store = notification_store()
@@ -94,6 +106,9 @@ def mark_notification_read(user_id, msg_id, read=True):
 
     if len(notifications) > 1:
         # There should be at most one match, else raise an exception
+        # this really shouldn't happen because there is a database constraint,
+        # at least with SQL backends. However, for future no-SQL backends
+        # this is conceptually a possibility, so good to double check
         err_msg = (
             'There should be at most 1 NotificationUserMap items found for '
             'msg_id {msg_id} and user_id {user_id}. {cnt} were found!'

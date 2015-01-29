@@ -159,7 +159,7 @@ class SQLNotificationUserMap(TimeStampedModel):
         """
         app_label = 'edx_notifications'  # since we have this models.py file not in the root app directory
         db_table = 'edx_notifications_notificationusermap'
-        unique_together = (('user_id', 'msg'),)  # same user should get the same notification twice
+        unique_together = (('user_id', 'msg'),)  # same user should not get the same notification twice
         ordering = ['-created']  # default order is most recent one should be read first
 
     def to_data_object(self, options=None):  # pylint: disable=unused-argument
