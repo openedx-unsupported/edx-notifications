@@ -30,7 +30,8 @@ def publish_notification_to_user(user_id, msg):
         - msg: A NotificationMessage
 
     RETURNS:
-        None
+        A new instance of NotificationUserMap that includes any auto-generated
+        fields
     """
 
     # make sure user_id is an integer
@@ -50,8 +51,10 @@ def publish_notification_to_user(user_id, msg):
     # a problem, it will throw an exception
     channel = get_notification_channel(user_id, msg.msg_type)
 
-    channel.dispatch_notification_to_user(user_id, msg)
+    _user_map = channel.dispatch_notification_to_user(user_id, msg)
 
     #
     # Here is where we will tie into the Analytics pipeline
     #
+
+    return _user_map

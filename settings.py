@@ -7,7 +7,7 @@ TEST_MODE=True
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 TEST_ROOT = "tests"
 TRANSACTIONS_MANAGED = {}
-USE_TZ = False
+USE_TZ = True
 TIME_ZONE = {}
 SECRET_KEY='SHHHHHH'
 

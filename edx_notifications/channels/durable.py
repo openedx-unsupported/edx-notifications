@@ -28,7 +28,7 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
 
         store = notification_store()
 
-        msg = store.save_notification_message(msg)
+        _msg = store.save_notification_message(msg)
 
         # create a new NotificationUserMap and point to the new message
         # this new mapping will have the message in an unread state
@@ -36,12 +36,14 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
         # we won't have it's primary key (id)
         user_map = NotificationUserMap(
             user_id=user_id,
-            msg=msg
+            msg=_msg
         )
 
-        store.save_notification_user_map(user_map)
+        _user_map = store.save_notification_user_map(user_map)
 
         # When we support in-broswer push notifications
         # such as Comet/WebSockets, this is where we should
         # signal the client to come fetch the
         # notification
+
+        return _user_map

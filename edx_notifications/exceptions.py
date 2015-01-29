@@ -20,3 +20,9 @@ class ChannelNotFound(Exception):
     """
     Exception when a channel could not be found
     """
+
+
+class ItemIntegrityError(Exception):
+    """
+    Thrown when something to have an integrity error in our database
+    """
