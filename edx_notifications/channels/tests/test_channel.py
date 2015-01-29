@@ -74,12 +74,12 @@ _NOTIFICATION_CHANNEL_PROVIDERS = {
 # list all of the mappings of notification types to channel
 _NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS = {
     '*': 'default',  # default global mapping
-    'edx-edx_notifications.*': 'channel1',
-    'edx-edx_notifications.channels.*': 'channel2',
-    'edx-edx_notifications.channels.tests.*': 'channel3',
-    'edx-edx_notifications.channels.tests.test_channel.*': 'channel4',
-    'edx-edx_notifications.channels.tests.test_channel.channeltests.*': 'channel5',
-    'edx-edx_notifications.channels.tests.test_channel.channeltests.foo': 'channel6'
+    'edx_notifications.*': 'channel1',
+    'edx_notifications.channels.*': 'channel2',
+    'edx_notifications.channels.tests.*': 'channel3',
+    'edx_notifications.channels.tests.test_channel.*': 'channel4',
+    'edx_notifications.channels.tests.test_channel.channeltests.*': 'channel5',
+    'edx_notifications.channels.tests.test_channel.channeltests.foo': 'channel6'
 }
 
 
@@ -97,7 +97,7 @@ class ChannelTests(TestCase):
         reset_notification_channels()
         self.test_user_id = 1001  # an arbitrary user_id
         self.test_msg_type = NotificationType(
-            name='edx-edx_notifications.channels.tests.test_channel.channeltests.foo'
+            name='edx_notifications.channels.tests.test_channel.channeltests.foo'
         )
 
     def test_cannot_create_instance(self):
@@ -130,7 +130,7 @@ class ChannelTests(TestCase):
         provider = get_notification_channel(
             self.test_user_id,
             NotificationType(
-                name='edx-edx_notifications.channels.tests.another_one'
+                name='edx_notifications.channels.tests.another_one'
             )
         )
 
@@ -141,7 +141,7 @@ class ChannelTests(TestCase):
         provider = get_notification_channel(
             self.test_user_id,
             NotificationType(
-                name='edx-edx_notifications.channels.diff_subpath.diff_leaf'
+                name='edx_notifications.channels.diff_subpath.diff_leaf'
             )
         )
 
@@ -167,7 +167,7 @@ class ChannelTests(TestCase):
         with self.assertRaises(ImproperlyConfigured):
             get_notification_channel(self.test_user_id, self.test_msg_type)
 
-    @override_settings(NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS={'edx-edx_notifications.bogus': 'bogus'})
+    @override_settings(NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS={'edx_notifications.bogus': 'bogus'})
     def test_missing_global_mapping(self):
         """
         Make sure we are throwing exceptions when global mapping is missing
