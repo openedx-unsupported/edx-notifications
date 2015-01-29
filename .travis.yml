@@ -13,6 +13,6 @@ script:
     - coverage run ./manage.py test
     - coverage report -m
     - pep8 edx_notifications
-    - pylint dx_notifications --report=no
+    - pylint edx_notifications --report=no
 
 after_success: coveralls
