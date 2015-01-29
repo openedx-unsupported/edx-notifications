@@ -25,13 +25,13 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
 
-    'notifications',
+    'edx_notifications',
     'django_nose',
     'south',
 )
 
 NOTIFICATION_STORE_PROVIDER = {
-    "class": "notifications.store.sql.store_provider.SQLNotificationStoreProvider",
+    "class": "edx_notifications.store.sql.store_provider.SQLNotificationStoreProvider",
     "options": {
     }
 }
@@ -39,7 +39,7 @@ NOTIFICATION_STORE_PROVIDER = {
 MIDDLEWARE_CLASSES = {}
 
 SOUTH_MIGRATION_MODULES = {
-    'notifications': 'notifications.store.sql.migrations',
+    'edx_notifications': 'edx_notifications.store.sql.migrations',
 }
 
 # to prevent run-away queries from happening
@@ -48,7 +48,7 @@ MAX_NOTIFICATION_LIST_SIZE = 100
 # list all known channel providers
 NOTIFICATION_CHANNEL_PROVIDERS = {
     'durable': {
-        'class': 'notifications.channels.durable.BaseDurableNotificationChannel',
+        'class': 'edx_notifications.channels.durable.BaseDurableNotificationChannel',
         'options': {}
     }
 }

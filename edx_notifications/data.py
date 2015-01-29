@@ -6,9 +6,9 @@ implicit database-specific bindings that come with any uses of ORMs.
 
 from django.core.exceptions import ValidationError
 
-from notifications import const
+from edx_notifications import const
 
-from notifications.base_data import (
+from edx_notifications.base_data import (
     StringField,
     DictField,
     DateTimeField,

@@ -26,14 +26,20 @@ Open edX Platform Integration
 * Add desired commit hash (tip of master) from github code repository
     * edx-platform/requirements/github.txt
     * "Our libraries" section
-* Add 'notifications' to the list of installed apps, you can put this in OPTIONAL_APPS:
+* Add 'edx_notifications' to the list of installed apps, you can put this in OPTIONAL_APPS:
     * common.py
 * Add required configuration in your settings file, e.g. common.py:
 
 ```
 
+NOTIFICATION_STORE_PROVIDER = {
+    "class": "edx_notifications.store.sql.store_provider.SQLNotificationStoreProvider",
+    "options": {
+    }
+}
+
 SOUTH_MIGRATION_MODULES = {
-    'notifications': 'notifications.store.sql.migrations',
+    'edx_notifications': 'edx_notifications.store.sql.migrations',
 }
 
 # to prevent run-away queries from happening
@@ -42,7 +48,7 @@ MAX_NOTIFICATION_LIST_SIZE = 100
 # list all known channel providers
 NOTIFICATION_CHANNEL_PROVIDERS = {
     'durable': {
-        'class': 'notifications.channels.durable.BaseDurableNotificationChannel',
+        'class': 'edx_notifications.channels.durable.BaseDurableNotificationChannel',
         'options': {}
     }
 }

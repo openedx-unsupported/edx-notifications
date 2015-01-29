@@ -7,12 +7,12 @@ import pylru
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from notifications.store.store import BaseNotificationStoreProvider
-from notifications.exceptions import (
+from edx_notifications.store.store import BaseNotificationStoreProvider
+from edx_notifications.exceptions import (
     ItemNotFoundError
 )
-from notifications import const
-from notifications.store.sql.models import (
+from edx_notifications import const
+from edx_notifications.store.sql.models import (
     SQLNotificationMessage,
     SQLNotificationType,
     SQLNotificationUserMap
@@ -166,7 +166,7 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
 
     def get_num_notifications_for_user(self, user_id, filters=None):
         """
-        Returns an integer count of notifications. It is presumed
+        Returns an integer count of edx_notifications. It is presumed
         that store provider implementations can make this an optimized
         query
 

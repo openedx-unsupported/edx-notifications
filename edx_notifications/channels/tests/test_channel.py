@@ -6,64 +6,64 @@ from django.test import TestCase
 from django.test.utils import override_settings
 from django.core.exceptions import ImproperlyConfigured
 
-from notifications.channels.channel import (
+from edx_notifications.channels.channel import (
     get_notification_channel,
     reset_notification_channels,
     BaseNotificationChannelProvider,
 )
 
-from notifications.channels.durable import BaseDurableNotificationChannel
+from edx_notifications.channels.durable import BaseDurableNotificationChannel
 
-from notifications.data import (
+from edx_notifications.data import (
     NotificationType,
 )
 
 # list all known channel providers
 _NOTIFICATION_CHANNEL_PROVIDERS = {
     'default': {
-        'class': 'notifications.channels.durable.BaseDurableNotificationChannel',
+        'class': 'edx_notifications.channels.durable.BaseDurableNotificationChannel',
         'options': {
             'display_name': 'channel_default',
             'display_description': 'channel_description_default',
         }
     },
     'channel1': {
-        'class': 'notifications.channels.durable.BaseDurableNotificationChannel',
+        'class': 'edx_notifications.channels.durable.BaseDurableNotificationChannel',
         'options': {
             'display_name': 'channel_name1',
             'display_description': 'channel_description1',
         }
     },
     'channel2': {
-        'class': 'notifications.channels.durable.BaseDurableNotificationChannel',
+        'class': 'edx_notifications.channels.durable.BaseDurableNotificationChannel',
         'options': {
             'display_name': 'channel_name2',
             'display_description': 'channel_description2',
         }
     },
     'channel3': {
-        'class': 'notifications.channels.durable.BaseDurableNotificationChannel',
+        'class': 'edx_notifications.channels.durable.BaseDurableNotificationChannel',
         'options': {
             'display_name': 'channel_name3',
             'display_description': 'channel_description3',
         }
     },
     'channel4': {
-        'class': 'notifications.channels.durable.BaseDurableNotificationChannel',
+        'class': 'edx_notifications.channels.durable.BaseDurableNotificationChannel',
         'options': {
             'display_name': 'channel_name4',
             'display_description': 'channel_description4',
         }
     },
     'channel5': {
-        'class': 'notifications.channels.durable.BaseDurableNotificationChannel',
+        'class': 'edx_notifications.channels.durable.BaseDurableNotificationChannel',
         'options': {
             'display_name': 'channel_name5',
             'display_description': 'channel_description5',
         }
     },
     'channel6': {
-        'class': 'notifications.channels.durable.BaseDurableNotificationChannel',
+        'class': 'edx_notifications.channels.durable.BaseDurableNotificationChannel',
         'options': {
             'display_name': 'channel_name6',
             'display_description': 'channel_description6',
@@ -74,12 +74,12 @@ _NOTIFICATION_CHANNEL_PROVIDERS = {
 # list all of the mappings of notification types to channel
 _NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS = {
     '*': 'default',  # default global mapping
-    'edx-notifications.*': 'channel1',
-    'edx-notifications.channels.*': 'channel2',
-    'edx-notifications.channels.tests.*': 'channel3',
-    'edx-notifications.channels.tests.test_channel.*': 'channel4',
-    'edx-notifications.channels.tests.test_channel.channeltests.*': 'channel5',
-    'edx-notifications.channels.tests.test_channel.channeltests.foo': 'channel6'
+    'edx-edx_notifications.*': 'channel1',
+    'edx-edx_notifications.channels.*': 'channel2',
+    'edx-edx_notifications.channels.tests.*': 'channel3',
+    'edx-edx_notifications.channels.tests.test_channel.*': 'channel4',
+    'edx-edx_notifications.channels.tests.test_channel.channeltests.*': 'channel5',
+    'edx-edx_notifications.channels.tests.test_channel.channeltests.foo': 'channel6'
 }
 
 
@@ -97,7 +97,7 @@ class ChannelTests(TestCase):
         reset_notification_channels()
         self.test_user_id = 1001  # an arbitrary user_id
         self.test_msg_type = NotificationType(
-            name='edx-notifications.channels.tests.test_channel.channeltests.foo'
+            name='edx-edx_notifications.channels.tests.test_channel.channeltests.foo'
         )
 
     def test_cannot_create_instance(self):
@@ -130,7 +130,7 @@ class ChannelTests(TestCase):
         provider = get_notification_channel(
             self.test_user_id,
             NotificationType(
-                name='edx-notifications.channels.tests.another_one'
+                name='edx-edx_notifications.channels.tests.another_one'
             )
         )
 
@@ -141,7 +141,7 @@ class ChannelTests(TestCase):
         provider = get_notification_channel(
             self.test_user_id,
             NotificationType(
-                name='edx-notifications.channels.diff_subpath.diff_leaf'
+                name='edx-edx_notifications.channels.diff_subpath.diff_leaf'
             )
         )
 
@@ -167,7 +167,7 @@ class ChannelTests(TestCase):
         with self.assertRaises(ImproperlyConfigured):
             get_notification_channel(self.test_user_id, self.test_msg_type)
 
-    @override_settings(NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS={'edx-notifications.bogus': 'bogus'})
+    @override_settings(NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS={'edx-edx_notifications.bogus': 'bogus'})
     def test_missing_global_mapping(self):
         """
         Make sure we are throwing exceptions when global mapping is missing

@@ -4,12 +4,12 @@ Tests for the publisher.py file
 
 from django.test import TestCase
 
-from notifications.api.publisher import (
+from edx_notifications.api.publisher import (
     publish_notification_to_user,
     register_notification_type
 )
 
-from notifications.data import (
+from edx_notifications.data import (
     NotificationMessage,
     NotificationType
 )
@@ -27,7 +27,7 @@ class TestPublisherLibrary(TestCase):
 
         self.user_id = 1001  # some bogus user identifier
         self.msg_type = NotificationType(
-            name='open-edx.notifications.api.tests.test_publisher'
+            name='open-edx.edx_notifications.api.tests.test_publisher'
         )
         register_notification_type(self.msg_type)
 
