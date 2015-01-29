@@ -33,7 +33,7 @@ Open edX Platform Integration
 ```
 
 NOTIFICATION_STORE_PROVIDER = {
-    "class": "edx_notifications.store.sql.store_provider.SQLNotificationStoreProvider",
+    "class": "edx_notifications.stores.sql.store_provider.SQLNotificationStoreProvider",
     "options": {
     }
 }
@@ -42,7 +42,7 @@ NOTIFICATION_STORE_PROVIDER = {
 # update it
 SOUTH_MIGRATION_MODULES = {
     'djcelery': 'ignore',
-    'edx_notifications': 'edx_notifications.store.sql.migrations',
+    'edx_notifications': 'edx_notifications.stores.sql.migrations',
 }
 
 # to prevent run-away queries from happening

@@ -6,7 +6,7 @@ retrieval
 
 from edx_notifications.channels.channel import BaseNotificationChannelProvider
 
-from edx_notifications.store.store import notification_store
+from edx_notifications.stores.store import notification_store
 
 from edx_notifications.data import (
     NotificationUserMap
