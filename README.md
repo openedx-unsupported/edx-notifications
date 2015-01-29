@@ -38,7 +38,10 @@ NOTIFICATION_STORE_PROVIDER = {
     }
 }
 
+# This setting already exists in the LMS, please
+# update it
 SOUTH_MIGRATION_MODULES = {
+    'djcelery': 'ignore',
     'edx_notifications': 'edx_notifications.store.sql.migrations',
 }
 
