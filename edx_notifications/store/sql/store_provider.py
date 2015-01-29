@@ -135,6 +135,8 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         namespace = _filters.get('namespace')
         read = _filters.get('read', True)
         unread = _filters.get('unread', True)
+        type_name = _filters.get('type_name')
+
         select_related = _options.get('select_related', False)
         limit = _options.get('limit', const.MAX_NOTIFICATION_LIST_SIZE)
         offset = _options.get('offset', 0)
@@ -162,6 +164,9 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
             if unread:
                 query = query.filter(read_at__isnull=True)
 
+        if type_name:
+            query = query.filter(msg__msg_type=type_name)
+
         return query[offset:offset + limit]
 
     def get_num_notifications_for_user(self, user_id, filters=None):
@@ -172,15 +177,18 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
 
         ARGS:
             - user_id: The id of the user
-            - read: Whether to return read notifications (default True)
-            - unread: Whether to return unread notifications (default True)
+            - filters: a dict containing
+                - namespace: what namespace to search (defuault None)
+                - read: Whether to return read notifications (default True)
+                - unread: Whether to return unread notifications (default True)
+                - type_name: which type to return
 
         RETURNS: type list   i.e. []
         """
 
         return self._get_notifications_for_user(
             user_id,
-            filters,
+            filters=filters,
         ).count()
 
     def get_notifications_for_user(self, user_id, filters=None, options=None):
@@ -195,6 +203,7 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
                 - namespace: what namespace to search (defuault None)
                 - read: Whether to return read notifications (default True)
                 - unread: Whether to return unread notifications (default True)
+                - type_name: which type to return
             - options: a dict containing some optional parameters
                 - limit: max number to return (up to some system defined max)
                 - offset: offset into the list, to implement paging

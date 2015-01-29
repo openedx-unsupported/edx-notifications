@@ -243,9 +243,15 @@ class TestSQLStoreProvider(TestCase):
             msg=msg1
         ))
 
+        msg_type2 = self.provider.save_notification_type(
+            NotificationType(
+                name='foo.bar.another'
+            )
+        )
+
         msg2 = self.provider.save_notification_message(NotificationMessage(
             namespace='namespace2',
-            msg_type=msg_type,
+            msg_type=msg_type2,
             payload={
                 'foo': 'baz',
                 'one': 1,
@@ -346,6 +352,52 @@ class TestSQLStoreProvider(TestCase):
                     'unread': False
                 }
             )
+
+        # test for filtering by msg_type
+        with self.assertNumQueries(1):
+            self.assertEqual(
+                self.provider.get_num_notifications_for_user(
+                    self.test_user_id,
+                    filters={
+                        'type_name': msg1.msg_type.name
+                    }
+                ),
+                1
+            )
+
+        with self.assertNumQueries(1):
+            notifications = self.provider.get_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'type_name': msg1.msg_type.name
+                }
+            )
+
+            self.assertEqual(len(notifications), 1)
+            self.assertEqual(notifications[0].msg, msg1)
+
+        # test with msg_type and namespace combos
+        with self.assertNumQueries(1):
+            self.assertEqual(
+                self.provider.get_num_notifications_for_user(
+                    self.test_user_id,
+                    filters={
+                        'namespace': 'does-not-exist',
+                        'type_name': msg1.msg_type.name
+                    }
+                ),
+                0
+            )
+
+        with self.assertNumQueries(1):
+            notifications = self.provider.get_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'namespace': 'does-not-exist',
+                    'type_name': msg1.msg_type.name
+                }
+            )
+            self.assertEqual(len(notifications), 0)
 
     def test_bad_user_map_update(self):
         """
