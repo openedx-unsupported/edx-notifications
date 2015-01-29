@@ -29,7 +29,7 @@ class SQLNotificationType(models.Model):
         ORM metadata about this class
         """
         app_label = 'edx_notifications'  # since we have this models.py file not in the root app directory
-        db_table = 'notifications_notificationtype'
+        db_table = 'edx_notifications_notificationtype'
 
     def to_data_object(self, options=None):  # pylint: disable=unused-argument
         """
@@ -87,7 +87,7 @@ class SQLNotificationMessage(TimeStampedModel):
         ORM metadata about this class
         """
         app_label = 'edx_notifications'  # since we have this models.py file not in the root app directory
-        db_table = 'notifications_notificationmessage'
+        db_table = 'edx_notifications_notificationmessage'
         ordering = ['-created']  # default order is last one first
 
     def to_data_object(self, options=None):  # pylint: disable=unused-argument
@@ -158,7 +158,7 @@ class SQLNotificationUserMap(TimeStampedModel):
         ORM metadata about this class
         """
         app_label = 'edx_notifications'  # since we have this models.py file not in the root app directory
-        db_table = 'notifications_notificationusermap'
+        db_table = 'edx_notifications_notificationusermap'
         unique_together = (('user_id', 'msg'),)  # same user should get the same notification twice
         ordering = ['-created']  # default order is most recent one should be read first
 
@@ -208,7 +208,7 @@ class SQLNotificationChannel(models.Model):
         ORM metadata about this class
         """
         app_label = 'edx_notifications'  # since we have this models.py file not in the root app directory
-        db_table = 'notifications_notificationchannel'
+        db_table = 'edx_notifications_notificationchannel'
 
 
 class SQLNotificationTypeRenderingProvided(models.Model):
@@ -221,7 +221,7 @@ class SQLNotificationTypeRenderingProvided(models.Model):
         ORM metadata about this class
         """
         app_label = 'edx_notifications'  # since we have this models.py file not in the root app directory
-        db_table = 'notifications_notificationtyperenderingprovided'
+        db_table = 'edx_notifications_notificationtyperenderingprovided'
 
 
 class SQLNotificationUserTypeChannelMap(models.Model):
@@ -234,7 +234,7 @@ class SQLNotificationUserTypeChannelMap(models.Model):
         ORM metadata about this class
         """
         app_label = 'edx_notifications'  # since we have this models.py file not in the root app directory
-        db_table = 'notifications_notificationusertypechannelmap'
+        db_table = 'edx_notifications_notificationusertypechannelmap'
 
 
 class SQLDisplayString(models.Model):
@@ -252,5 +252,5 @@ class SQLDisplayString(models.Model):
         ORM metadata about this class
         """
         app_label = 'edx_notifications'  # since we have this models.py file not in the root app directory
-        db_table = 'notifications_displaystring'
+        db_table = 'edx_notifications_displaystring'
         unique_together = (('string_name', 'lang'),)
