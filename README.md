@@ -31,7 +31,6 @@ Open edX Platform Integration
 * Add required configuration in your settings file, e.g. common.py:
 
 ```
-MIDDLEWARE_CLASSES = {}
 
 SOUTH_MIGRATION_MODULES = {
     'notifications': 'notifications.store.sql.migrations',
