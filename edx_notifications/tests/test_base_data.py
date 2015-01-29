@@ -4,7 +4,7 @@ Unit tests to exercise code implemented in data.py
 
 from django.test import TestCase
 
-from notifications.base_data import (
+from edx_notifications.base_data import (
     BaseDataObject,
     IntegerField,
     DictField,
@@ -12,7 +12,7 @@ from notifications.base_data import (
     RelatedObjectField,
 )
 
-from notifications.data import (
+from edx_notifications.data import (
     NotificationMessage,
 )
 

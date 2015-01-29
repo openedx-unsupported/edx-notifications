@@ -19,7 +19,7 @@ setup(
         'Programming Language :: Python',
         'Framework :: Django',
     ],
-    packages=['notifications'],
+    packages=['edx_notifications'],
     dependency_links=[
     ],
     install_requires=[

@@ -115,7 +115,7 @@ class BaseNotificationStoreProvider(object):
     @abc.abstractmethod
     def get_num_notifications_for_user(self, user_id, filters=None):
         """
-        Returns an integer count of notifications. It is presumed
+        Returns an integer count of edx_notifications. It is presumed
         that store provider implementations can make this an optimized
         query
 

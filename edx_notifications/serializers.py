@@ -4,11 +4,11 @@ Serializers (Django REST Framework) for Data Objects
 
 from rest_framework import serializers
 
-from notifications.base_data import (
+from edx_notifications.base_data import (
     DictField
 )
 
-from notifications.data import (
+from edx_notifications.data import (
     NotificationMessage,
     NotificationType
 )
@@ -37,7 +37,7 @@ class NotificationTypeSerializer(serializers.Serializer):
     DRF Serializer definition for NotificationType
     """
 
-    name = serializers.CharField(max_length=256)
+    name = serializers.CharField(max_length=255)
 
     def restore_object(self, attrs, instance=None):
         """

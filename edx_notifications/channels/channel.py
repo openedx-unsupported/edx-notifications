@@ -101,7 +101,7 @@ def _get_system_channel_mapping(type_name):
 def _get_channel_preference(user_id, msg_type):  # pylint: disable=unused-argument
     """
     Returns what the user has chosen to be his/her preference
-    for notifications.
+    for edx_notifications.
 
     Return of None = no preference declared
     """

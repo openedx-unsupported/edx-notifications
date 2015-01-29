@@ -4,12 +4,12 @@ Specific tests for the models.py file
 
 from django.test import TestCase
 
-from notifications.store.sql.models import (
+from edx_notifications.store.sql.models import (
     SQLNotificationMessage,
     SQLNotificationType
 )
 
-from notifications.data import (
+from edx_notifications.data import (
     NotificationMessage,
     NotificationType
 )

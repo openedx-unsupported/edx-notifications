@@ -12,7 +12,7 @@ install:
 script:
     - coverage run ./manage.py test
     - coverage report -m
-    - pep8 notifications
-    - pylint notifications --report=no
+    - pep8 edx_notifications
+    - pylint edx_notifications --report=no
 
 after_success: coveralls

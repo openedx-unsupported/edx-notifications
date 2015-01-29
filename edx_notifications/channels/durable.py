@@ -4,11 +4,11 @@ that saves Notifications to a database for later
 retrieval
 """
 
-from notifications.channels.channel import BaseNotificationChannelProvider
+from edx_notifications.channels.channel import BaseNotificationChannelProvider
 
-from notifications.store.store import notification_store
+from edx_notifications.store.store import notification_store
 
-from notifications.data import (
+from edx_notifications.data import (
     NotificationUserMap
 )
 

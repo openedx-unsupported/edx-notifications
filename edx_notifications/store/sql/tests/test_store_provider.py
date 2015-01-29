@@ -6,16 +6,16 @@ from datetime import datetime
 
 from django.test import TestCase
 
-from notifications.store.sql.store_provider import SQLNotificationStoreProvider
-from notifications.data import (
+from edx_notifications.store.sql.store_provider import SQLNotificationStoreProvider
+from edx_notifications.data import (
     NotificationMessage,
     NotificationType,
     NotificationUserMap
 )
-from notifications.exceptions import (
+from edx_notifications.exceptions import (
     ItemNotFoundError
 )
-from notifications import const
+from edx_notifications import const
 
 
 class TestSQLStoreProvider(TestCase):

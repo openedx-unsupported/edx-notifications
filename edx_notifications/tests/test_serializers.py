@@ -11,12 +11,12 @@ from rest_framework.renderers import JSONRenderer
 from datetime import datetime
 
 
-from notifications.data import (  # pylint: disable=unused-import
+from edx_notifications.data import (  # pylint: disable=unused-import
     NotificationMessage,
     NotificationType,
 )
 
-from notifications.serializers import (
+from edx_notifications.serializers import (
     NotificationMessageSerializer
 )
 
@@ -34,7 +34,7 @@ class SerializerTests(TestCase):
         msg = NotificationMessage(
             id=1001,
             msg_type=NotificationType(
-                name='notifications.sample'
+                name='edx_notifications.sample'
             ),
             namespace='my-namespace',
             payload={
