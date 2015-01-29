@@ -22,7 +22,7 @@ class SQLNotificationType(models.Model):
     """
 
     # the internal name is the primary key
-    name = models.CharField(primary_key=True, max_length=256)
+    name = models.CharField(primary_key=True, max_length=255)
 
     class Meta(object):
         """
