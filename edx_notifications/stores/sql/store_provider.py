@@ -7,12 +7,12 @@ import pylru
 
 from django.core.exceptions import ObjectDoesNotExist
 
-from edx_notifications.store.store import BaseNotificationStoreProvider
+from edx_notifications.stores.store import BaseNotificationStoreProvider
 from edx_notifications.exceptions import (
     ItemNotFoundError
 )
 from edx_notifications import const
-from edx_notifications.store.sql.models import (
+from edx_notifications.stores.sql.models import (
     SQLNotificationMessage,
     SQLNotificationType,
     SQLNotificationUserMap

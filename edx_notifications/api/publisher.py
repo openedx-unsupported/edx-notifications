@@ -3,7 +3,7 @@ All in-proc API endpoints for acting as a Notification Publisher
 """
 
 from edx_notifications.channels.channel import get_notification_channel
-from edx_notifications.store.store import notification_store
+from edx_notifications.stores.store import notification_store
 
 
 def register_notification_type(msg_type):

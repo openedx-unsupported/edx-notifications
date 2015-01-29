@@ -6,7 +6,7 @@ from datetime import datetime
 
 from django.test import TestCase
 
-from edx_notifications.store.sql.store_provider import SQLNotificationStoreProvider
+from edx_notifications.stores.sql.store_provider import SQLNotificationStoreProvider
 from edx_notifications.data import (
     NotificationMessage,
     NotificationType,

@@ -31,7 +31,7 @@ INSTALLED_APPS = (
 )
 
 NOTIFICATION_STORE_PROVIDER = {
-    "class": "edx_notifications.store.sql.store_provider.SQLNotificationStoreProvider",
+    "class": "edx_notifications.stores.sql.store_provider.SQLNotificationStoreProvider",
     "options": {
     }
 }
@@ -39,7 +39,7 @@ NOTIFICATION_STORE_PROVIDER = {
 MIDDLEWARE_CLASSES = {}
 
 SOUTH_MIGRATION_MODULES = {
-    'edx_notifications': 'edx_notifications.store.sql.migrations',
+    'edx_notifications': 'edx_notifications.stores.sql.migrations',
 }
 
 # to prevent run-away queries from happening
