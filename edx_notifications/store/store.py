@@ -125,6 +125,7 @@ class BaseNotificationStoreProvider(object):
                 - namespace: what namespace to search (defuault None)
                 - read: Whether to return read notifications (default True)
                 - unread: Whether to return unread notifications (default True)
+                - type_name: which type to return
 
         RETURNS: type list   i.e. []
         """
@@ -142,6 +143,7 @@ class BaseNotificationStoreProvider(object):
                 - namespace: what namespace to search (defuault None)
                 - read: Whether to return read notifications (default True)
                 - unread: Whether to return unread notifications (default True)
+                - type_name: which type to return
             - options: a dict containing some optional parameters
                 - limit: max number to return (up to some system defined max)
                 - offset: offset into the list, to implement paging
