@@ -83,6 +83,15 @@ class IntegerField(TypedField):
         super(IntegerField, self).__init__(int, kwargs)
 
 
+class LongField(TypedField):
+    """
+    Specialized subclass of TypedField(int) as a convienence
+    """
+
+    def __init__(self, **kwargs):
+        super(LongField, self).__init__(long, kwargs)
+
+
 class DictField(TypedField):
     """
     Specialized subclass of TypedField(dict) as a convienence
@@ -179,7 +188,7 @@ class BaseDataObject(object):
     A base class for all Notification Data Objects
     """
 
-    id = IntegerField(default=None)  # pylint: disable=invalid-name
+    id = LongField(default=None)  # pylint: disable=invalid-name
 
     _is_loaded = False
     _is_dirty = False  # Returns if this object has been modified after initialization
