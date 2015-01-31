@@ -21,7 +21,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -41,20 +41,17 @@ INSTALLED_APPS = (
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
 )
 
 ROOT_URLCONF = 'edx_notifications.server.urls'
 
 WSGI_APPLICATION = 'edx_notifications.server.wsgi.application'
 
-
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'web/templates')]
 
-print TEMPLATE_DIRS
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
@@ -92,8 +89,6 @@ NOTIFICATION_STORE_PROVIDER = {
     "options": {
     }
 }
-
-MIDDLEWARE_CLASSES = {}
 
 SOUTH_MIGRATION_MODULES = {
     'edx_notifications': 'edx_notifications.stores.sql.migrations',

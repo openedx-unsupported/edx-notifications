@@ -10,6 +10,7 @@ def hello(request):
     """
     Test method
     """
+
     template = loader.get_template('test.html')
     context = RequestContext(request, {})
     return HttpResponse(template.render(context))

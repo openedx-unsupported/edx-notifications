@@ -30,6 +30,14 @@ INSTALLED_APPS = (
     'south',
 )
 
+MIDDLEWARE_CLASSES = (
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+)
+
 ROOT_URLCONF = 'edx_notifications.server.urls'
 
 WSGI_APPLICATION = 'edx_notifications.server.wsgi.application'
@@ -41,8 +49,6 @@ NOTIFICATION_STORE_PROVIDER = {
     "options": {
     }
 }
-
-MIDDLEWARE_CLASSES = {}
 
 SOUTH_MIGRATION_MODULES = {
     'edx_notifications': 'edx_notifications.stores.sql.migrations',
