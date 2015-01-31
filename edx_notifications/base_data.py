@@ -25,7 +25,7 @@ class TypedField(object):
         should be set it is set
         """
 
-        self._expected_type = args[0]
+        self._expected_type = [args[0]] if not isinstance(args[0], list) else args[0]
         self._default = kwargs.get('default', None)
         self._data = WeakKeyDictionary()
 
@@ -45,7 +45,8 @@ class TypedField(object):
         """
 
         value_type = type(value)
-        if value and type(value) != self._expected_type:
+
+        if value and type(value) not in self._expected_type:
             raise TypeError(
                 (
                     "Field expected type of '{expected}' got '{got}'"
@@ -80,7 +81,7 @@ class IntegerField(TypedField):
     """
 
     def __init__(self, **kwargs):
-        super(IntegerField, self).__init__(int, kwargs)
+        super(IntegerField, self).__init__([int, long], kwargs)
 
 
 class DictField(TypedField):

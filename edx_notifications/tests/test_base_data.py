@@ -119,6 +119,13 @@ class BaseDataObjectTests(TestCase):
         self.assertEqual(obj.test_dict_field, {'foo': 'bar'})
         self.assertEqual(obj.test_class_field, msg)
 
+        # make sure we work with longs as well
+        obj = DataObjectWithTypedFields(
+            id=long(1),
+        )
+
+        self.assertTrue(isinstance(obj.id, long))
+
         # make sure we can set fields after initialization
 
         obj = DataObjectWithTypedFields()
