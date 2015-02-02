@@ -8,6 +8,8 @@ from django.conf import settings
 from django.contrib.auth import login
 from django.http import HttpRequest
 from django.test.client import Client
+from django.test import TestCase
+from django.contrib.auth.models import User
 
 
 class TestClient(Client):
@@ -49,3 +51,19 @@ class TestClient(Client):
 
         # Save the session values.
         request.session.save()
+
+
+class LoggedInTestCase(TestCase):
+    """
+    All tests for the views.py
+    """
+
+    def setUp(self):
+        """
+        Setup for tests
+        """
+
+        self.client = TestClient()
+        self.user = User(username='tester')
+        self.user.save()
+        self.client.login_user(self.user)
