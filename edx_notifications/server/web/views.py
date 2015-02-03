@@ -10,7 +10,7 @@ from django.http import (
 from django.template import RequestContext, loader
 from django.utils.decorators import available_attrs
 
-from edx_notifications.api.consumer import (
+from edx_notifications.lib.consumer import (
     get_notifications_count_for_user,
 )
 

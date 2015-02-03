@@ -7,7 +7,7 @@ import logging
 from rest_framework import status
 from rest_framework.response import Response
 
-from edx_notifications.api.consumer import (
+from edx_notifications.lib.consumer import (
     get_notifications_count_for_user
 )
 

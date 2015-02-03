@@ -4,12 +4,12 @@ Tests for the publisher.py and consumer.py methods
 
 from django.test import TestCase
 
-from edx_notifications.api.publisher import (
+from edx_notifications.lib.publisher import (
     publish_notification_to_user,
     register_notification_type
 )
 
-from edx_notifications.api.consumer import (
+from edx_notifications.lib.consumer import (
     get_notifications_count_for_user,
     get_notifications_for_user,
     mark_notification_read
@@ -38,7 +38,7 @@ class TestPublisherLibrary(TestCase):
 
         self.test_user_id = 1001  # some bogus user identifier
         self.msg_type = NotificationType(
-            name='open-edx.edx_notifications.api.tests.test_publisher'
+            name='open-edx.edx_notifications.lib.tests.test_publisher'
         )
         register_notification_type(self.msg_type)
 

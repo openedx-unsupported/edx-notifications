@@ -11,7 +11,7 @@ from edx_notifications.server.web.tests.utils import (
     LoggedInTestCase,
 )
 
-from edx_notifications.api.publisher import (
+from edx_notifications.lib.publisher import (
     register_notification_type,
     publish_notification_to_user,
 )
@@ -33,7 +33,7 @@ class ConsumerAPITests(LoggedInTestCase):
         """
 
         self.msg_type = NotificationType(
-            name='open-edx.edx_notifications.api.tests.test_publisher'
+            name='open-edx.edx_notifications.lib.tests.test_publisher'
         )
         register_notification_type(self.msg_type)
 
