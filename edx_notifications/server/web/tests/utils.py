@@ -25,8 +25,7 @@ class TestClient(Client):
         """
         if 'django.contrib.sessions' not in settings.INSTALLED_APPS:
             raise AssertionError("Unable to login without django.contrib.sessions in INSTALLED_APPS")
-        user.backend = "%s.%s" % ("django.contrib.auth.backends",
-                                  "ModelBackend")
+        user.backend = "django.contrib.auth.backends.ModelBackend"
         engine = import_module(settings.SESSION_ENGINE)
 
         # Create a fake request to store login details.
