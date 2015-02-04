@@ -58,7 +58,6 @@ def _get_parameters_from_request(request, allowed_parameters):
             value = None
             str_val = request.GET[filter_name]
 
-            print 'type = {}'.format(filter_type)
             if filter_type == int:
                 value = int(str_val)
             elif filter_type == bool:
@@ -107,8 +106,6 @@ class NotificationCount(AuthenticatedAPIView):
         except ValueError:
             return Response({}, status.HTTP_400_BAD_REQUEST)
 
-        print 'params = {}'.format(request.GET)
-        print 'filters = {}'.format(filters)
         cnt = get_notifications_count_for_user(
             request.user.id,
             filters=filters
