@@ -26,6 +26,7 @@ setup(
         "django>=1.4.12",
         "django-model-utils==1.4.0",
         "South>=0.7.6",
+        "pylru==1.0.6"
     ],
     tests_require=[
         "coverage==3.7.1",
