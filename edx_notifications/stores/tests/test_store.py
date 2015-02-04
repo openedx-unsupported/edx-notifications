@@ -21,6 +21,59 @@ TEST_NOTIFICATION_STORE_PROVIDER = {
 }
 
 
+class BadImplementationStoreProvider(BaseNotificationStoreProvider):
+    """
+    Test implementation of StoreProvider to assert that non-implementations of methods
+    raises the correct methods
+    """
+
+    def get_notification_message_by_id(self, msg_id, options=None):
+        """
+        Fake implementation of method which calls base class, which should throw NotImplementedError
+        """
+        super(BadImplementationStoreProvider, self).get_notification_message_by_id(msg_id, options=options)
+
+    def save_notification_message(self, msg):
+        """
+        Fake implementation of method which calls base class, which should throw NotImplementedError
+        """
+        super(BadImplementationStoreProvider, self).save_notification_message(msg)
+
+    def save_notification_user_map(self, user_map):
+        """
+        Fake implementation of method which calls base class, which should throw NotImplementedError
+        """
+        super(BadImplementationStoreProvider, self).save_notification_user_map(user_map)
+
+    def get_notification_type(self, name):
+        """
+        Fake implementation of method which calls base class, which should throw NotImplementedError
+        """
+        super(BadImplementationStoreProvider, self).get_notification_type(name)
+
+    def save_notification_type(self, msg_type):
+        """
+        Saves a new notification type, note that we do not support updates
+        """
+        super(BadImplementationStoreProvider, self).save_notification_type(msg_type)
+
+    def get_num_notifications_for_user(self, user_id, filters=None):
+        """
+        Saves a new notification type, note that we do not support updates
+        """
+        super(BadImplementationStoreProvider, self).get_num_notifications_for_user(user_id, filters=filters)
+
+    def get_notifications_for_user(self, user_id, filters=None, options=None):
+        """
+        Saves a new notification type, note that we do not support updates
+        """
+        super(BadImplementationStoreProvider, self).get_notifications_for_user(
+            user_id,
+            filters=filters,
+            options=options
+        )
+
+
 class TestBaseNotificationDataProvider(TestCase):
     """
     Cover the NotificationDataProviderBase class
@@ -69,3 +122,32 @@ class TestBaseNotificationDataProvider(TestCase):
 
         with self.assertRaises(ImproperlyConfigured):
             notification_store()
+
+    def test_base_methods_exceptions(self):
+        """
+        Asserts that all base-methods on the StoreProvider interface will throw
+        an NotImplementedError
+        """
+
+        bad_provider = BadImplementationStoreProvider()
+
+        with self.assertRaises(NotImplementedError):
+            bad_provider.get_notification_message_by_id(None)
+
+        with self.assertRaises(NotImplementedError):
+            bad_provider.save_notification_message(None)
+
+        with self.assertRaises(NotImplementedError):
+            bad_provider.save_notification_user_map(None)
+
+        with self.assertRaises(NotImplementedError):
+            bad_provider.get_notification_type(None)
+
+        with self.assertRaises(NotImplementedError):
+            bad_provider.save_notification_type(None)
+
+        with self.assertRaises(NotImplementedError):
+            bad_provider.get_num_notifications_for_user(None)
+
+        with self.assertRaises(NotImplementedError):
+            bad_provider.get_notifications_for_user(None)

@@ -81,6 +81,7 @@ class BaseNotificationStoreProvider(object):
 
         RETURNS: type NotificationMessage
         """
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def save_notification_message(self, msg):
@@ -94,23 +95,28 @@ class BaseNotificationStoreProvider(object):
 
         RETURNS: type NotificationMessage
         """
+        raise NotImplementedError()
 
+    @abc.abstractmethod
     def save_notification_user_map(self, user_map):
         """
         Create or Update the mapping of a user to a notification.
         """
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def get_notification_type(self, name):
         """
         This returns a NotificationType object.
         """
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def save_notification_type(self, msg_type):
         """
         Saves a new notification type, note that we do not support updates
         """
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def get_num_notifications_for_user(self, user_id, filters=None):
@@ -129,6 +135,7 @@ class BaseNotificationStoreProvider(object):
 
         RETURNS: type list   i.e. []
         """
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def get_notifications_for_user(self, user_id, filters=None, options=None):
@@ -150,3 +157,4 @@ class BaseNotificationStoreProvider(object):
 
         RETURNS: type list   i.e. []
         """
+        raise NotImplementedError()

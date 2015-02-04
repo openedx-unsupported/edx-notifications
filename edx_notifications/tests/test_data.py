@@ -6,7 +6,7 @@ from django.test import TestCase
 
 from django.core.exceptions import ValidationError
 
-from edx_notifications.data import (  # pylint: disable=unused-import
+from edx_notifications.data import (
     NotificationMessage,
 )
 

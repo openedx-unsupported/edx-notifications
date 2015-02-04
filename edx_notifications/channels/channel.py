@@ -204,3 +204,4 @@ class BaseNotificationChannelProvider(object):
         'user_id' and 'msg' are valid and have already passed
         all necessary validations
         """
+        raise NotImplementedError()

@@ -17,15 +17,15 @@ class TypedField(object):
     Field Decscriptors used to enforce correct typing
     """
 
-    _expected_type = None
+    _expected_types = None
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, types, *args, **kwargs):  # pylint: disable=unused-argument
         """
         Initializer which takes in the type this field
         should be set it is set
         """
 
-        self._expected_type = [args[0]] if not isinstance(args[0], list) else args[0]
+        self._expected_types = [types] if not isinstance(types, list) else types
         self._default = kwargs.get('default', None)
         self._data = WeakKeyDictionary()
 
@@ -46,11 +46,11 @@ class TypedField(object):
 
         value_type = type(value)
 
-        if value and type(value) not in self._expected_type:
+        if value and type(value) not in self._expected_types:
             raise TypeError(
                 (
                     "Field expected type of '{expected}' got '{got}'"
-                ).format(expected=self._expected_type, got=value_type)
+                ).format(expected=self._expected_types, got=value_type)
             )
         self._data[instance] = value
 
