@@ -10,7 +10,8 @@ from edx_notifications.base_data import (
 
 from edx_notifications.data import (
     NotificationMessage,
-    NotificationType
+    NotificationType,
+    NotificationUserMap
 )
 
 
@@ -76,3 +77,25 @@ class NotificationMessageSerializer(serializers.Serializer):
 
         msg = NotificationMessage(**attrs)  # pylint: disable=star-args
         return msg
+
+
+class NotificationUserMapSerializer(serializers.Serializer):
+    """
+    DRF Serializer definition for NotificationUserMap
+    """
+
+    user_id = serializers.IntegerField()
+    msg = NotificationMessageSerializer()
+    read_at = serializers.DateTimeField()
+    user_context = DictFieldSerializer()
+
+    def restore_object(self, attrs, instance=None):
+        """
+        Instantiate a new object from the deserialized data
+        """
+
+        if instance is not None:
+            raise NotImplementedError()
+
+        user_msg = NotificationUserMap(**attrs)  # pylint: disable=star-args
+        return user_msg

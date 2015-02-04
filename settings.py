@@ -40,10 +40,15 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_CLASSES': (
         'rest_framework.throttling.UserRateThrottle',
     ),
-    'DEFAULT_THROTTLE_RATES': {
-        'user': '10/sec',
-    }
 }
+
+if not TEST_MODE:
+    # we don't want to throttle unit tests
+    REST_FRAMEWORK.update({
+        'DEFAULT_THROTTLE_RATES': {
+            'user': '10/sec',
+        }
+    })
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',

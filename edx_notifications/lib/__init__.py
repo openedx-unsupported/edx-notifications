@@ -1,4 +1,3 @@
 """
-All APIs exposed for this subsystem, both in-proc libraries
-and out-of-proc standalone services
+All in-proc python libraries that can be called by applications using edx_milestones subsystem
 """
