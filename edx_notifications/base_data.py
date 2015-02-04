@@ -19,13 +19,18 @@ class TypedField(object):
 
     _expected_types = None
 
-    def __init__(self, types, *args, **kwargs):  # pylint: disable=unused-argument
+    def __init__(self, *args, **kwargs):  # pylint: disable=unused-argument
         """
         Initializer which takes in the type this field
         should be set it is set
         """
 
-        self._expected_types = [types] if not isinstance(types, list) else types
+        if not self._expected_types:
+            raise TypeError(
+                "Subclass of TypedField ('{type_name}') has not set required "
+                "_expected_types attribute".format(type_name=type(self).__name__)
+            )
+
         self._default = kwargs.get('default', None)
         self._data = WeakKeyDictionary()
 
@@ -46,7 +51,7 @@ class TypedField(object):
 
         value_type = type(value)
 
-        if value and type(value) not in self._expected_types:
+        if value and value_type not in self._expected_types:
             raise TypeError(
                 (
                     "Field expected type of '{expected}' got '{got}'"
@@ -60,19 +65,7 @@ class StringField(TypedField):
     Specialized subclass of TypedField(unicode) as a convienence
     """
 
-    def __init__(self, **kwargs):
-        super(StringField, self).__init__(unicode, kwargs)
-
-    def __set__(self, instance, value):
-        """
-        Check to see if we were passed a str type, and if so
-        coerce it into a unicode
-        """
-
-        if isinstance(value, str):
-            super(StringField, self).__set__(instance, unicode(value))
-        else:
-            super(StringField, self).__set__(instance, value)
+    _expected_types = [unicode, str]
 
 
 class IntegerField(TypedField):
@@ -80,8 +73,7 @@ class IntegerField(TypedField):
     Specialized subclass of TypedField(int) as a convienence
     """
 
-    def __init__(self, **kwargs):
-        super(IntegerField, self).__init__([int, long], kwargs)
+    _expected_types = [int, long]
 
 
 class DictField(TypedField):
@@ -89,8 +81,7 @@ class DictField(TypedField):
     Specialized subclass of TypedField(dict) as a convienence
     """
 
-    def __init__(self, **kwargs):
-        super(DictField, self).__init__(dict, kwargs)
+    _expected_types = [dict]
 
     @classmethod
     def to_json(cls, data):
@@ -142,8 +133,7 @@ class DateTimeField(TypedField):
     Specialized subclass of TypedField(datetime) as a convienence
     """
 
-    def __init__(self, **kwargs):
-        super(DateTimeField, self).__init__(datetime, kwargs)
+    _expected_types = [datetime]
 
 
 class EnumField(StringField):
@@ -284,4 +274,6 @@ class RelatedObjectField(TypedField):
 
             raise TypeError(msg)
 
-        super(RelatedObjectField, self).__init__(related_type, kwargs)
+        self._expected_types = [related_type]
+
+        super(RelatedObjectField, self).__init__(kwargs)

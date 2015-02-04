@@ -227,7 +227,7 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         RETURNS: list   i.e. []
         """
 
-        _options = copy.deepcopy(options) if options else {}
+        _options = copy.copy(options) if options else {}
         _options['select_related'] = True
 
         query = self._get_notifications_for_user(
