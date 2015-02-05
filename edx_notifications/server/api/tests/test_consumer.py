@@ -171,9 +171,9 @@ class ConsumerAPITests(LoggedInTestCase):
         self.assertIn('count', results)
         self.assertEqual(results['count'], 0)
 
-    def test_get_single_notification(self):
+    def _publish_test_notification(self):
         """
-        Tests reading of a notification
+        Helper method to set up a notification to test against
         """
 
         msg = NotificationMessage(
@@ -187,6 +187,15 @@ class ConsumerAPITests(LoggedInTestCase):
         # publish
         user_msg = publish_notification_to_user(self.user.id, msg)
         self.assertIsNotNone(user_msg)
+
+        return user_msg
+
+    def test_get_single_notification(self):
+        """
+        Tests reading of a notification
+        """
+
+        user_msg = self._publish_test_notification()
 
         response = self.client.get(reverse(
             'edx_notifications.consumer.notifications.detail',
@@ -274,6 +283,73 @@ class ConsumerAPITests(LoggedInTestCase):
         self._compare_user_msg_to_result(user_msg2, results[0])
         self._compare_user_msg_to_result(user_msg1, results[1])
 
+    def _mark_notification_as_read(self, user_msg, read=True):
+        """
+        Helper method to call API to mark user msg as read or unread
+        """
+
+        response = self.client.post(
+            reverse(
+                'edx_notifications.consumer.notifications.detail',
+                args=[user_msg.msg.id]
+            ),
+            {
+                'mark_as': 'read' if read else 'unread',
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def _assert_expected_counts(self, expected_cnt, read_filter=True):
+        """
+        Helper method to query counts (with appropriate filter) and
+        then assert count returned by API
+        """
+        # now do query with a 'read' filter
+        response = self.client.get(
+            reverse('edx_notifications.consumer.notifications'),
+            {
+                'read': read_filter,
+                'unread': not read_filter,
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+
+        results = json.loads(response.content)
+
+        # did we get back what we expected?
+        self.assertEqual(len(results), expected_cnt)
+
+    def test_mark_notification_as_read(self):
+        """
+        Create a test notification and mark it as read and then
+        verify results
+        """
+
+        user_msg = self._publish_test_notification()
+
+        self._mark_notification_as_read(user_msg)
+
+        self._assert_expected_counts(1, read_filter=True)
+        self._assert_expected_counts(0, read_filter=False)
+
+    def test_toggle_read_unread(self):
+        """
+        Create a test notification and toggle it as read and then back to unread
+        """
+
+        user_msg = self._publish_test_notification()
+
+        self._mark_notification_as_read(user_msg)
+
+        self._assert_expected_counts(1, read_filter=True)
+        self._assert_expected_counts(0, read_filter=False)
+
+        # toggle back to unread
+        self._mark_notification_as_read(user_msg, read=False)
+
+        self._assert_expected_counts(0, read_filter=True)
+        self._assert_expected_counts(1, read_filter=False)
+
     def test_get_notifications_bad_request(self):
         """
         Test Case for retrieving multiple notifications
@@ -286,3 +362,38 @@ class ConsumerAPITests(LoggedInTestCase):
             }
         )
         self.assertEqual(response.status_code, 400)
+
+    def test_bad_user_msg_update(self):
+        """
+        Pass in an invalid data parameter to the notification update endpoing and
+        make sure we get back a 400 error
+        """
+
+        user_msg = self._publish_test_notification()
+
+        response = self.client.post(
+            reverse(
+                'edx_notifications.consumer.notifications.detail',
+                args=[user_msg.msg.id]
+            ),
+            {
+                'bad': 'value',
+            }
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_update_missing_user_msg(self):
+        """
+        Try to update a user msg which does not exist
+        """
+
+        response = self.client.post(
+            reverse(
+                'edx_notifications.consumer.notifications.detail',
+                args=[0]
+            ),
+            {
+                'mark_as': 'read',
+            }
+        )
+        self.assertEqual(response.status_code, 404)

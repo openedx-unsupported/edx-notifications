@@ -7,9 +7,12 @@ import logging
 from rest_framework import status
 from rest_framework.response import Response
 
+from django.http import Http404
+
 from edx_notifications.lib.consumer import (
     get_notifications_count_for_user,
-    get_notifications_for_user
+    get_notifications_for_user,
+    mark_notification_read
 )
 
 from edx_notifications.exceptions import (
@@ -119,30 +122,6 @@ class NotificationCount(AuthenticatedAPIView):
         )
 
 
-class NotificationDetail(AuthenticatedAPIView):
-    """
-    GET returns details on the notifications
-    POST can mark notification
-    """
-
-    def get(self, request, msg_id):
-        """
-        HTTP GET Handler
-        """
-
-        try:
-            user_msg = get_notifications_for_user(
-                request.user.id,
-                filters={
-                    'msg_id': msg_id
-                }
-            )
-        except ItemNotFoundError:
-            return Response({}, status=status.HTTP_404_NOT_FOUND)
-
-        return Response(user_msg[0].get_fields(), status.HTTP_200_OK)
-
-
 class NotificationsList(AuthenticatedAPIView):
     """
     GET returns list of notifications
@@ -167,3 +146,64 @@ class NotificationsList(AuthenticatedAPIView):
         resultset = [user_msg.get_fields() for user_msg in user_msgs]
 
         return Response(resultset, status.HTTP_200_OK)
+
+
+def _find_notification_by_id(user_id, msg_id):
+    """
+    Helper method to look up a notification for a user, if it is not
+    found then raise a Http404
+    """
+
+    try:
+        user_msg = get_notifications_for_user(
+            user_id,
+            filters={
+                'msg_id': msg_id
+            }
+        )
+    except ItemNotFoundError:
+        raise Http404()
+
+    return user_msg
+
+
+class NotificationDetail(AuthenticatedAPIView):
+    """
+    GET returns details on the notifications
+    POST can mark notification
+    """
+
+    _allowed_post_parameters = {
+        'mark_as': ['read', 'unread'],
+    }
+
+    def get(self, request, msg_id):
+        """
+        HTTP GET Handler
+        """
+
+        # Get msg for user, raise Http404 if not found
+        user_msg = _find_notification_by_id(request.user.id, msg_id)
+
+        return Response(user_msg[0].get_fields(), status.HTTP_200_OK)
+
+    def post(self, request, msg_id):
+        """
+        HTTP POST Handler which is used for such use-cases as 'mark as read'
+        and 'mark as unread'
+        """
+
+        # make sure we only have expected parameter names and values
+        if not self.validate_post_parameters(request):
+            return Response({}, status.HTTP_400_BAD_REQUEST)
+
+        if 'mark_as' in request.DATA:
+            mark_as_read = request.DATA['mark_as'] == 'read'
+            try:
+                # this will raise an ItemNotFoundError if the user_id/msg_id combo
+                # cannot be found
+                mark_notification_read(request.user.id, msg_id, read=mark_as_read)
+            except ItemNotFoundError:
+                raise Http404()
+
+        return Response({}, status.HTTP_200_OK)
