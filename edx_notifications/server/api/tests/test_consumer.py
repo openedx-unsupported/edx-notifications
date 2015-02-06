@@ -11,7 +11,7 @@ import json
 from django.test.client import Client
 from django.core.urlresolvers import reverse
 
-from edx_notifications.server.web.tests.utils import (
+from .utils import (
     LoggedInTestCase,
 )
 

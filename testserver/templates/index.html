@@ -1,0 +1,21 @@
+<html>
+<head>
+    <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="{{ STATIC_URL }}edx_notifications/js/vendor/dev/underscore.js"></script>
+    <script src="{{ STATIC_URL }}edx_notifications/js/vendor/dev/backbone.js"></script>
+
+    <script src="{{ STATIC_URL }}edx_notifications/js/views/counter_icon_view.js"></script>
+    <script src="{{ STATIC_URL }}edx_notifications/js/models/counter_icon_model.js"></script>
+</head>
+<body>
+    <h1>Notifications List</h1>
+    <div id='notification_icon_container'></div>
+
+    <script type="text/javascript">
+        var counter_icon = new CounterIconView({
+            el: $("#notification_icon_container"),
+            model: new CounterIconModel()
+        });
+    </script>
+</body>
+</html>

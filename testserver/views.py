@@ -7,6 +7,16 @@ from django.http import (
     HttpResponse,
 )
 
+def index(request):
+    """
+    Returns a basic HTML snippet rendering of a notification count
+    """
+
+    template = loader.get_template('index.html')
+
+    context = RequestContext(request, {})
+    return HttpResponse(template.render(context))
+
 def login(request):
     """
     Returns a basic HTML snippet rendering of a notification count

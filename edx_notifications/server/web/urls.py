@@ -1,14 +1,9 @@
 """
-All URL endpoints for HTML web server
+We currently have no server-side HTML generation. This file is reserved for future use.
 """
 
-from django.conf.urls import patterns, url
+from django.conf.urls import patterns
 
 urlpatterns = patterns(  # pylint: disable=invalid-name
     '',
-    url(
-        r'/notifications/count*$',
-        'edx_notifications.server.web.views.notification_count',
-        name='web.notifications.count'
-    ),
 )
