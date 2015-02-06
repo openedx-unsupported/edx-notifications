@@ -32,6 +32,23 @@ Open edX Platform Integration
 
 ```
 
+# add to the INSTALLED_APPS list
+INSTALLED_APPS = (
+    :
+    'edx_notifications',
+    'edx_notifications.server.web',
+    :
+)
+
+# make sure that 'django.template.loaders.app_directories.Loader' is
+# in the list of TEMPLATE_LOADERS
+TEMPLATE_LOADERS = (
+    :
+    'django.template.loaders.app_directories.Loader',
+    :
+)
+
+# for now we just support SQL backed stores
 NOTIFICATION_STORE_PROVIDER = {
     "class": "edx_notifications.stores.sql.store_provider.SQLNotificationStoreProvider",
     "options": {
