@@ -39,11 +39,11 @@ class BadImplementationStoreProvider(BaseNotificationStoreProvider):
         """
         super(BadImplementationStoreProvider, self).save_notification_message(msg)
 
-    def save_notification_user_map(self, user_map):
+    def save_user_notification(self, user_map):
         """
         Fake implementation of method which calls base class, which should throw NotImplementedError
         """
-        super(BadImplementationStoreProvider, self).save_notification_user_map(user_map)
+        super(BadImplementationStoreProvider, self).save_user_notification(user_map)
 
     def get_notification_type(self, name):
         """
@@ -138,7 +138,7 @@ class TestBaseNotificationDataProvider(TestCase):
             bad_provider.save_notification_message(None)
 
         with self.assertRaises(NotImplementedError):
-            bad_provider.save_notification_user_map(None)
+            bad_provider.save_user_notification(None)
 
         with self.assertRaises(NotImplementedError):
             bad_provider.get_notification_type(None)

@@ -18,7 +18,7 @@ from edx_notifications.lib.consumer import (
 from edx_notifications.data import (
     NotificationMessage,
     NotificationType,
-    NotificationUserMap,
+    UserNotification,
 )
 
 from edx_notifications.exceptions import (
@@ -91,7 +91,7 @@ class TestPublisherLibrary(TestCase):
 
         self.assertTrue(isinstance(notifications, list))
         self.assertEqual(len(notifications), 1)
-        self.assertTrue(isinstance(notifications[0], NotificationUserMap))
+        self.assertTrue(isinstance(notifications[0], UserNotification))
 
         read_user_map = notifications[0]
         self.assertEqual(read_user_map.user_id, self.test_user_id)

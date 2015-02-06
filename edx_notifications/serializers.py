@@ -11,7 +11,7 @@ from edx_notifications.base_data import (
 from edx_notifications.data import (
     NotificationMessage,
     NotificationType,
-    NotificationUserMap
+    UserNotification
 )
 
 
@@ -79,9 +79,9 @@ class NotificationMessageSerializer(serializers.Serializer):
         return msg
 
 
-class NotificationUserMapSerializer(serializers.Serializer):
+class UserNotificationSerializer(serializers.Serializer):
     """
-    DRF Serializer definition for NotificationUserMap
+    DRF Serializer definition for UserNotification
     """
 
     user_id = serializers.IntegerField()
@@ -97,5 +97,5 @@ class NotificationUserMapSerializer(serializers.Serializer):
         if instance is not None:
             raise NotImplementedError()
 
-        user_msg = NotificationUserMap(**attrs)  # pylint: disable=star-args
+        user_msg = UserNotification(**attrs)  # pylint: disable=star-args
         return user_msg

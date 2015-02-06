@@ -257,14 +257,14 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
                 # this really shouldn't happen because there is a database constraint with
                 # SQL backends
                 err_msg = (
-                    'There should be at most 1 NotificationUserMap items found for '
+                    'There should be at most 1 UserNotification items found for '
                     'msg_id {msg_id} and user_id {user_id}. {cnt} were found!'
                 ).format(msg_id=filters['msg_id'], user_id=user_id, cnt=len(result_set))
                 raise ItemIntegrityError(err_msg)
 
         return result_set
 
-    def save_notification_user_map(self, user_map):
+    def save_user_notification(self, user_map):
         """
         Create or Update the mapping of a user to a notification.
         """

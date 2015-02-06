@@ -11,7 +11,7 @@ from edx_notifications.base_data import DictField
 from edx_notifications.data import (
     NotificationMessage,
     NotificationType,
-    NotificationUserMap,
+    UserNotification,
 )
 from edx_notifications import const
 
@@ -168,7 +168,7 @@ class SQLUserNotification(TimeStampedModel):
         Generate a NotificationType data object
         """
 
-        return NotificationUserMap(
+        return UserNotification(
             id=self.id,
             user_id=self.user_id,
             msg=self.msg.to_data_object(),  # pylint: disable=no-member

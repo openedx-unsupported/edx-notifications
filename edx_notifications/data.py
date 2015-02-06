@@ -121,7 +121,7 @@ class NotificationMessage(BaseDataObject):
             raise ValidationError("Missing required property: msg_type")
 
 
-class NotificationUserMap(BaseDataObject):
+class UserNotification(BaseDataObject):
     """
     Maps a NotificationMessage to a User
 

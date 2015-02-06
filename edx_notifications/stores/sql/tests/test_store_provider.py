@@ -10,7 +10,7 @@ from edx_notifications.stores.sql.store_provider import SQLNotificationStoreProv
 from edx_notifications.data import (
     NotificationMessage,
     NotificationType,
-    NotificationUserMap
+    UserNotification
 )
 from edx_notifications.exceptions import (
     ItemNotFoundError
@@ -250,7 +250,7 @@ class TestSQLStoreProvider(TestCase):
             }
         ))
 
-        map1 = self.provider.save_notification_user_map(NotificationUserMap(
+        map1 = self.provider.save_user_notification(UserNotification(
             user_id=self.test_user_id,
             msg=msg1
         ))
@@ -273,7 +273,7 @@ class TestSQLStoreProvider(TestCase):
             }
         ))
 
-        map2 = self.provider.save_notification_user_map(NotificationUserMap(
+        map2 = self.provider.save_user_notification(UserNotification(
             user_id=self.test_user_id,
             msg=msg2
         ))
@@ -422,7 +422,7 @@ class TestSQLStoreProvider(TestCase):
 
         with self.assertRaises(ItemNotFoundError):
             map1.id = -1
-            self.provider.save_notification_user_map(map1)
+            self.provider.save_user_notification(map1)
 
     def test_read_unread_flags(self):
         """
@@ -440,7 +440,7 @@ class TestSQLStoreProvider(TestCase):
         # later, but writes are less of a priority as this
         # will be read intensive
         with self.assertNumQueries(3):
-            self.provider.save_notification_user_map(map1)
+            self.provider.save_user_notification(map1)
 
         # there should be one read notification
         with self.assertNumQueries(1):

@@ -9,7 +9,7 @@ from edx_notifications.channels.channel import BaseNotificationChannelProvider
 from edx_notifications.stores.store import notification_store
 
 from edx_notifications.data import (
-    NotificationUserMap
+    UserNotification
 )
 
 
@@ -32,16 +32,16 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
 
         _msg = store.save_notification_message(msg)
 
-        # create a new NotificationUserMap and point to the new message
+        # create a new UserNotification and point to the new message
         # this new mapping will have the message in an unread state
         # NOTE: We need to set this up after msg is saved otherwise
         # we won't have it's primary key (id)
-        user_map = NotificationUserMap(
+        user_map = UserNotification(
             user_id=user_id,
             msg=_msg
         )
 
-        _user_map = store.save_notification_user_map(user_map)
+        _user_map = store.save_user_notification(user_map)
 
         # When we support in-broswer push notifications
         # such as Comet/WebSockets, this is where we should

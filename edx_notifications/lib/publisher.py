@@ -30,7 +30,7 @@ def publish_notification_to_user(user_id, msg):
         - msg: A NotificationMessage
 
     RETURNS:
-        A new instance of NotificationUserMap that includes any auto-generated
+        A new instance of UserNotification that includes any auto-generated
         fields
     """
 

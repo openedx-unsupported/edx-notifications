@@ -42,7 +42,7 @@ def get_notifications_count_for_user(user_id, filters=None):
 
 def get_notifications_for_user(user_id, filters=None, options=None):
     """
-    Returns a list of NotificationUserMap for the passed in user. The list will be
+    Returns a list of UserNotification for the passed in user. The list will be
     ordered by most recent first
 
     ARGS:
@@ -73,7 +73,7 @@ def get_notifications_for_user(user_id, filters=None, options=None):
 
 def mark_notification_read(user_id, msg_id, read=True):
     """
-    Will mark a given NotificationUserMap as 'read' (or unread is 'unread' argument is passed in)
+    Will mark a given UserNotification as 'read' (or unread is 'unread' argument is passed in)
 
     ARGS:
         - user_id: The user that wishes to mark the msg as read/unread
@@ -103,7 +103,7 @@ def mark_notification_read(user_id, msg_id, read=True):
         # at least with SQL backends. However, for future no-SQL backends
         # this is conceptually a possibility, so good to double check
         err_msg = (
-            'There should be at most 1 NotificationUserMap items found for '
+            'There should be at most 1 UserNotification items found for '
             'msg_id {msg_id} and user_id {user_id}. {cnt} were found!'
         ).format(msg_id=msg_id, user_id=user_id, cnt=len(notifications))
 
@@ -118,4 +118,4 @@ def mark_notification_read(user_id, msg_id, read=True):
         # marking as unread
         user_map.read_at = None
 
-    store.save_notification_user_map(user_map)
+    store.save_user_notification(user_map)
