@@ -145,15 +145,6 @@ class NotificationUserMap(BaseDataObject):
     user_context = DictField()
 
 
-class NotificationUserGroup(BaseDataObject):
-    """
-    A grouping of users into a group, e.g. "cohort", "course enrollments", etc.
-    Note that in order to decouple the notification subsystem
-    from any existing edx-platform dependencies, we need to
-    have generic, abstract grouping mechanisms
-    """
-
-
 class NotificationTypeUserChannelPreference(BaseDataObject):
     """
     Specifies a User preference as to how he/she would like notifications of a certain type

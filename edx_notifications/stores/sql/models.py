@@ -73,6 +73,7 @@ class SQLNotificationMessage(TimeStampedModel):
     # from which identity
     from_user_id = models.IntegerField(null=True)
 
+    # the actual data which will be used in rendering the notification
     payload = models.TextField()
 
     # delivery/expiration times
@@ -140,7 +141,7 @@ class SQLNotificationMessage(TimeStampedModel):
         self.payload = DictField.to_json(msg.payload)
 
 
-class SQLNotificationUserMap(TimeStampedModel):
+class SQLUserNotification(TimeStampedModel):
     """
     Information about how a Notification is tied to a targeted user, and related state (e.g. read/unread)
     """
@@ -158,7 +159,7 @@ class SQLNotificationUserMap(TimeStampedModel):
         ORM metadata about this class
         """
         app_label = 'edx_notifications'  # since we have this models.py file not in the root app directory
-        db_table = 'edx_notifications_notificationusermap'
+        db_table = 'edx_notifications_usernotification'
         unique_together = (('user_id', 'msg'),)  # same user should not get the same notification twice
         ordering = ['-created']  # default order is most recent one should be read first
 
@@ -181,7 +182,7 @@ class SQLNotificationUserMap(TimeStampedModel):
         create a ORM model object from a NotificationType
         """
 
-        obj = SQLNotificationUserMap()
+        obj = SQLUserNotification()
         obj.load_from_data_object(user_map)
         return obj
 
@@ -211,20 +212,7 @@ class SQLNotificationChannel(models.Model):
         db_table = 'edx_notifications_notificationchannel'
 
 
-class SQLNotificationTypeRenderingProvided(models.Model):
-    """
-    Describes which rendering types this notification type supports, e.g. 'json', 'text', 'short-html', 'long-html'
-    """
-
-    class Meta(object):
-        """
-        ORM metadata about this class
-        """
-        app_label = 'edx_notifications'  # since we have this models.py file not in the root app directory
-        db_table = 'edx_notifications_notificationtyperenderingprovided'
-
-
-class SQLNotificationUserTypeChannelMap(models.Model):
+class SQLUserNotificationPreferences(models.Model):
     """
     User specific mappings of Notifications to Channel, to reflect user preferences
     """
@@ -234,23 +222,4 @@ class SQLNotificationUserTypeChannelMap(models.Model):
         ORM metadata about this class
         """
         app_label = 'edx_notifications'  # since we have this models.py file not in the root app directory
-        db_table = 'edx_notifications_notificationusertypechannelmap'
-
-
-class SQLDisplayString(models.Model):
-    """
-    NOTE: These can be cached completely in memory
-    """
-
-    string_name = models.CharField(max_length=255, db_index=True)
-    lang = models.CharField(max_length=16, db_index=True)
-    string_value = models.TextField()
-
-    class Meta(object):
-
-        """
-        ORM metadata about this class
-        """
-        app_label = 'edx_notifications'  # since we have this models.py file not in the root app directory
-        db_table = 'edx_notifications_displaystring'
-        unique_together = (('string_name', 'lang'),)
+        db_table = 'edx_notifications_usernotificationpreferences'

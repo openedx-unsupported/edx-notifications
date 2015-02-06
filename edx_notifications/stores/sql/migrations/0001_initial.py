@@ -30,8 +30,8 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('edx_notifications', ['SQLNotificationMessage'])
 
-        # Adding model 'SQLNotificationUserMap'
-        db.create_table('edx_notifications_notificationusermap', (
+        # Adding model 'SQLUserNotification'
+        db.create_table('edx_notifications_usernotification', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('created', self.gf('model_utils.fields.AutoCreatedField')(default=datetime.datetime.now)),
             ('modified', self.gf('model_utils.fields.AutoLastModifiedField')(default=datetime.datetime.now)),
@@ -40,10 +40,10 @@ class Migration(SchemaMigration):
             ('read_at', self.gf('django.db.models.fields.DateTimeField')(null=True, db_index=True)),
             ('user_context', self.gf('django.db.models.fields.TextField')(null=True)),
         ))
-        db.send_create_signal('edx_notifications', ['SQLNotificationUserMap'])
+        db.send_create_signal('edx_notifications', ['SQLUserNotification'])
 
-        # Adding unique constraint on 'SQLNotificationUserMap', fields ['user_id', 'msg']
-        db.create_unique('edx_notifications_notificationusermap', ['user_id', 'msg_id'])
+        # Adding unique constraint on 'SQLUserNotification', fields ['user_id', 'msg']
+        db.create_unique('edx_notifications_usernotification', ['user_id', 'msg_id'])
 
         # Adding model 'SQLNotificationChannel'
         db.create_table('edx_notifications_notificationchannel', (
@@ -51,37 +51,16 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('edx_notifications', ['SQLNotificationChannel'])
 
-        # Adding model 'SQLNotificationTypeRenderingProvided'
-        db.create_table('edx_notifications_notificationtyperenderingprovided', (
+        # Adding model 'SQLUserNotificationPreferences'
+        db.create_table('edx_notifications_usernotificationpreferences', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
         ))
-        db.send_create_signal('edx_notifications', ['SQLNotificationTypeRenderingProvided'])
-
-        # Adding model 'SQLNotificationUserTypeChannelMap'
-        db.create_table('edx_notifications_notificationusertypechannelmap', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-        ))
-        db.send_create_signal('edx_notifications', ['SQLNotificationUserTypeChannelMap'])
-
-        # Adding model 'SQLDisplayString'
-        db.create_table('edx_notifications_displaystring', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('string_name', self.gf('django.db.models.fields.CharField')(max_length=255, db_index=True)),
-            ('lang', self.gf('django.db.models.fields.CharField')(max_length=16, db_index=True)),
-            ('string_value', self.gf('django.db.models.fields.TextField')()),
-        ))
-        db.send_create_signal('edx_notifications', ['SQLDisplayString'])
-
-        # Adding unique constraint on 'SQLDisplayString', fields ['string_name', 'lang']
-        db.create_unique('edx_notifications_displaystring', ['string_name', 'lang'])
+        db.send_create_signal('edx_notifications', ['SQLUserNotificationPreferences'])
 
 
     def backwards(self, orm):
-        # Removing unique constraint on 'SQLDisplayString', fields ['string_name', 'lang']
-        db.delete_unique('edx_notifications_displaystring', ['string_name', 'lang'])
-
-        # Removing unique constraint on 'SQLNotificationUserMap', fields ['user_id', 'msg']
-        db.delete_unique('edx_notifications_notificationusermap', ['user_id', 'msg_id'])
+        # Removing unique constraint on 'SQLUserNotification', fields ['user_id', 'msg']
+        db.delete_unique('edx_notifications_usernotification', ['user_id', 'msg_id'])
 
         # Deleting model 'SQLNotificationType'
         db.delete_table('edx_notifications_notificationtype')
@@ -89,30 +68,17 @@ class Migration(SchemaMigration):
         # Deleting model 'SQLNotificationMessage'
         db.delete_table('edx_notifications_notificationmessage')
 
-        # Deleting model 'SQLNotificationUserMap'
-        db.delete_table('edx_notifications_notificationusermap')
+        # Deleting model 'SQLUserNotification'
+        db.delete_table('edx_notifications_usernotification')
 
         # Deleting model 'SQLNotificationChannel'
         db.delete_table('edx_notifications_notificationchannel')
 
-        # Deleting model 'SQLNotificationTypeRenderingProvided'
-        db.delete_table('edx_notifications_notificationtyperenderingprovided')
-
-        # Deleting model 'SQLNotificationUserTypeChannelMap'
-        db.delete_table('edx_notifications_notificationusertypechannelmap')
-
-        # Deleting model 'SQLDisplayString'
-        db.delete_table('edx_notifications_displaystring')
+        # Deleting model 'SQLUserNotificationPreferences'
+        db.delete_table('edx_notifications_usernotificationpreferences')
 
 
     models = {
-        'edx_notifications.sqldisplaystring': {
-            'Meta': {'unique_together': "(('string_name', 'lang'),)", 'object_name': 'SQLDisplayString', 'db_table': "'edx_notifications_displaystring'"},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'lang': ('django.db.models.fields.CharField', [], {'max_length': '16', 'db_index': 'True'}),
-            'string_name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'}),
-            'string_value': ('django.db.models.fields.TextField', [], {})
-        },
         'edx_notifications.sqlnotificationchannel': {
             'Meta': {'object_name': 'SQLNotificationChannel', 'db_table': "'edx_notifications_notificationchannel'"},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
@@ -135,12 +101,8 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'SQLNotificationType', 'db_table': "'edx_notifications_notificationtype'"},
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'primary_key': 'True'})
         },
-        'edx_notifications.sqlnotificationtyperenderingprovided': {
-            'Meta': {'object_name': 'SQLNotificationTypeRenderingProvided', 'db_table': "'edx_notifications_notificationtyperenderingprovided'"},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
-        },
-        'edx_notifications.sqlnotificationusermap': {
-            'Meta': {'ordering': "['-created']", 'unique_together': "(('user_id', 'msg'),)", 'object_name': 'SQLNotificationUserMap', 'db_table': "'edx_notifications_notificationusermap'"},
+        'edx_notifications.sqlusernotification': {
+            'Meta': {'ordering': "['-created']", 'unique_together': "(('user_id', 'msg'),)", 'object_name': 'SQLUserNotification', 'db_table': "'edx_notifications_usernotification'"},
             'created': ('model_utils.fields.AutoCreatedField', [], {'default': 'datetime.datetime.now'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'modified': ('model_utils.fields.AutoLastModifiedField', [], {'default': 'datetime.datetime.now'}),
@@ -149,8 +111,8 @@ class Migration(SchemaMigration):
             'user_context': ('django.db.models.fields.TextField', [], {'null': 'True'}),
             'user_id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True'})
         },
-        'edx_notifications.sqlnotificationusertypechannelmap': {
-            'Meta': {'object_name': 'SQLNotificationUserTypeChannelMap', 'db_table': "'edx_notifications_notificationusertypechannelmap'"},
+        'edx_notifications.sqlusernotificationpreferences': {
+            'Meta': {'object_name': 'SQLUserNotificationPreferences', 'db_table': "'edx_notifications_usernotificationpreferences'"},
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         }
     }

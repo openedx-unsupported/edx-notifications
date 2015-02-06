@@ -16,7 +16,7 @@ from edx_notifications import const
 from edx_notifications.stores.sql.models import (
     SQLNotificationMessage,
     SQLNotificationType,
-    SQLNotificationUserMap
+    SQLUserNotification
 )
 
 
@@ -151,7 +151,7 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         if not read and not unread:
             raise ValueError('Bad arg combination either read or unread must be set to True')
 
-        query = SQLNotificationUserMap.objects.filter(user_id=user_id)
+        query = SQLUserNotification.objects.filter(user_id=user_id)
 
         if select_related:
             query = query.select_related()
@@ -206,9 +206,10 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
 
     def get_notifications_for_user(self, user_id, filters=None, options=None):
         """
-        Returns a (unsorted) collection (list) of notifications for the user.
+        Returns a collection (list) of notifications for the user. This will be sorted
+        most recent first.
 
-        NOTE: We will have to add paging (with sorting/filtering) in the future
+        NOTE: We should add other sort ability (e.g. type/date to group together types)
 
         ARGS:
             - user_id: The id of the user
@@ -219,7 +220,7 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
                 - namespace: what namespace to search (defuault None)
                 - read: Whether to return read notifications (default True)
                 - unread: Whether to return unread notifications (default True)
-                - type_name: which type to return
+                - type_name: which type to return (default None)
             - options: a dict containing some optional parameters
                 - limit: max number to return (up to some system defined max)
                 - offset: offset into the list, to implement paging
@@ -270,13 +271,13 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
 
         if user_map.id:
             try:
-                obj = SQLNotificationUserMap.objects.get(id=user_map.id)
+                obj = SQLUserNotification.objects.get(id=user_map.id)
                 obj.load_from_data_object(user_map)
             except ObjectDoesNotExist:
-                msg = "Could not find SQLNotificationUserMap with ID {_id}".format(_id=user_map.id)
+                msg = "Could not find SQLUserNotification with ID {_id}".format(_id=user_map.id)
                 raise ItemNotFoundError(msg)
         else:
-            obj = SQLNotificationUserMap.from_data_object(user_map)
+            obj = SQLUserNotification.from_data_object(user_map)
 
         obj.save()
 
