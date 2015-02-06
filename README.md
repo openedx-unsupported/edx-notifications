@@ -63,6 +63,33 @@ NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS = {
 ```
 
 
+Development and Test HTTP Server
+--------------------------------
+
+This repository comes with a simple development and test server so that is possible to develop
+and test in an isolated environment (i.e. not have to run the LMS in edx-platform). In order to
+use the test server, it is recommended that you make a new dedicated Python virtual-environment:
+
+```
+virtualenv edxnotifications_env (just do this once)
+
+source edxnotifications_env/bin/activate
+
+pip install -r requirements.txt
+pip install -r test_requirements.txt
+
+./manage.py syncdb --settings=testserver.settings
+./manage.py migrate --settings=testserver.settings
+
+./manage.py runserver --settings=testserver.settings (run the test server)
+```
+
+The development server will provide very raw basic login/register functionality in order to
+allow for authentication. Overall, the testserver is not meant to be styled, it is merely
+to provide a development environment, plus to act as a HTTP server for all automated UI
+test frameworks.
+
+
 How to Contribute
 -----------------
 Contributions are very welcome, but please note that edx-notifications is currently an

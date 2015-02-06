@@ -10,17 +10,17 @@ from edx_notifications.server.api import consumer as consumer_views
 urlpatterns = patterns(  # pylint: disable=invalid-name
     '',
     url(
-        r'edx_notifications/v1/consumer/notifications/count/$',
+        r'edx_notifications/v1/consumer/notifications/count$',
         consumer_views.NotificationCount.as_view(),
         name='edx_notifications.consumer.notifications.count'
     ),
     url(
-        r'edx_notifications/v1/consumer/notifications/(?P<msg_id>[0-9]+)/$',
+        r'edx_notifications/v1/consumer/notifications/(?P<msg_id>[0-9]+)$',
         consumer_views.NotificationDetail.as_view(),
         name='edx_notifications.consumer.notifications.detail'
     ),
     url(
-        r'edx_notifications/v1/consumer/notifications/$',
+        r'edx_notifications/v1/consumer/notifications$',
         consumer_views.NotificationsList.as_view(),
         name='edx_notifications.consumer.notifications'
     ),

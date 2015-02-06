@@ -3,6 +3,10 @@
     <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
 </head>
 <body>
+
+    <p>Welcome {{ user.username }} !!!</p>
+    <a href="/logout/">Logout</a>
+
     <h1>Notifications List</h1>
 
     {# use the "drop-in" widget that is defined in edx_notifications/server/web/templates/django #}
