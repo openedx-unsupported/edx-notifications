@@ -14,6 +14,7 @@ from edx_notifications.base_data import (
 
 from edx_notifications.data import (
     NotificationMessage,
+    NotificationType,
 )
 
 
@@ -112,6 +113,7 @@ class BaseDataObjectTests(TestCase):
         )
 
         self.assertTrue(isinstance(obj.test_int_field, int))
+        print type(obj.test_dict_field)
         self.assertTrue(isinstance(obj.test_dict_field, dict))
         self.assertTrue(isinstance(obj.test_class_field, NotificationMessage))
 
@@ -212,3 +214,77 @@ class BaseDataObjectTests(TestCase):
         # this should not be OK
         with self.assertRaises(ValueError):
             obj.test_enum_field = u'bad'
+
+    def test_data_object_equality(self):
+        """
+        Make sure that we can compare equality between two objects
+        """
+
+        obj1 = DataObjectWithTypedFields(
+            id=1,
+            test_int_field=100,
+            test_dict_field={
+                'foo': 'bar'
+            },
+            test_class_field=NotificationMessage(
+                msg_type=NotificationType(
+                    name='testing'
+                ),
+                namespace='namespace',
+                payload={'field': 'value'}
+            )
+        )
+
+        obj2 = DataObjectWithTypedFields(
+            id=1,
+            test_int_field=100,
+            test_dict_field={
+                'foo': 'bar'
+            },
+            test_class_field=NotificationMessage(
+                msg_type=NotificationType(
+                    name='testing'
+                ),
+                namespace='namespace',
+                payload={'field': 'value'}
+            )
+        )
+
+        self.assertEqual(obj1, obj2)
+
+    def test_data_object_inequality(self):
+        """
+        Make sure that we can verify inequality between two objects
+        """
+
+        obj1 = DataObjectWithTypedFields(
+            id=1,
+            test_int_field=100,
+            test_dict_field={
+                'foo': 'bar'
+            },
+            test_class_field=NotificationMessage(
+                msg_type=NotificationType(
+                    name='testing'
+                ),
+                namespace='namespace',
+                payload={'field': 'value'}
+            )
+        )
+
+        obj2 = DataObjectWithTypedFields(
+            id=1,
+            test_int_field=100,
+            test_dict_field={
+                'foo': 'bar'
+            },
+            test_class_field=NotificationMessage(
+                msg_type=NotificationType(
+                    name='something-different'
+                ),
+                namespace='namespace',
+                payload={'field': 'value'}
+            )
+        )
+
+        self.assertNotEqual(obj1, obj2)

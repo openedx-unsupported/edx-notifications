@@ -58,6 +58,8 @@ class NotificationMessage(BaseDataObject):
     The basic Notification Message
     """
 
+    _exclude_fields_for_equality = ['created', 'modified']  # to account for slight clock skews
+
     # instance of NotificationMessageType, None = unloaded
     msg_type = RelatedObjectField(NotificationType)
 

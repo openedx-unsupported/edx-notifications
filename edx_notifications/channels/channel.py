@@ -56,7 +56,9 @@ def _get_system_channel_mapping(type_name):
         mappings = getattr(settings, 'NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS')
 
         if not mappings:
-            raise ImproperlyConfigured("Settings not configured with NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS!")
+            raise ImproperlyConfigured(
+                "Settings not configured with NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS!"
+            )
 
         search_name = type_name
 
@@ -119,8 +121,8 @@ def get_notification_channel(user_id, msg_type):
     'send my discussion forum notifications to my mobile device via SMS'
     but for now, we're always mapping to the system default
 
-    NOTE: When we switch over to gevent support, we should use some
-    locking techniques in this area to prevent concurrent execution
+    NOTE: If we switch over to gevent support, we should investigate
+    any potential concurrency issues
     """
 
     global _CHANNEL_PROVIDERS  # pylint: disable=global-statement, global-variable-not-assigned
@@ -142,15 +144,12 @@ def reset_notification_channels():
     This is useful for testing scenarious, but likely should not
     be called in normal runtimes
 
-    NOTE: When we switch over to gevent support, we should use some
-    locking techniques in this area to prevent concurrent execution
+    NOTE: If we switch over to gevent support, we should investigate
+    any potential concurrency issues
     """
 
-    global _CHANNEL_PROVIDERS  # pylint: disable=global-statement
-    global _CHANNEL_PROVIDERS_TYPE_MAPS  # pylint: disable=global-statement
-
-    _CHANNEL_PROVIDERS = {}
-    _CHANNEL_PROVIDERS_TYPE_MAPS = {}
+    _CHANNEL_PROVIDERS.clear()
+    _CHANNEL_PROVIDERS_TYPE_MAPS.clear()
 
 
 class BaseNotificationChannelProvider(object):

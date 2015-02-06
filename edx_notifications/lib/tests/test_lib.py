@@ -97,6 +97,9 @@ class TestPublisherLibrary(TestCase):
         self.assertEqual(read_user_map.user_id, self.test_user_id)
         self.assertIsNone(read_user_map.read_at)  # should be unread
 
+        # print 'read_user_map = {}'.format(read_user_map)
+        # print 'sent_user_map = {}'.format(sent_user_map)
+
         self.assertEqual(read_user_map, sent_user_map)
         self.assertEqual(read_user_map.msg, sent_user_map.msg)
 

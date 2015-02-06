@@ -7,9 +7,43 @@ import copy
 import inspect
 import dateutil.parser
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from weakref import WeakKeyDictionary
+
+class DateTimeWithDeltaCompare(datetime):
+    """
+    Create a subclass of datetime with special equality methods
+    that treat very, very similar datetimes as 'equal'. This is helpful
+    to account for slight timestamp quantization/skews that happen when writing a
+    datetime object to a database and reading it back
+    """
+
+    _max_allowed_time_diff = timedelta(0, 0, 100000)  # max tolerance 100ms
+
+    def __eq__(self, other):
+        """
+        Is two datetimes are within a second of each other than say that they are equal
+        """
+
+        diff = self - other if self > other else other - self
+        return diff <= self._max_allowed_time_diff
+
+    def __ne__(self, other):
+        """
+        Is two datetimes are within a second of each other than say that they are equal
+        """
+
+        diff = self - other if self > other else other - self
+
+        return diff > self._max_allowed_time_diff
+
+
+class Dict(dict):
+    """
+    Create a subclass of dict to make it weak referencable
+    per https://docs.python.org/2/library/weakref.html
+    """
+    pass
 
 
 class TypedField(object):
@@ -18,6 +52,7 @@ class TypedField(object):
     """
 
     _expected_types = None
+    __name__ = None
 
     def __init__(self, *args, **kwargs):  # pylint: disable=unused-argument
         """
@@ -32,22 +67,34 @@ class TypedField(object):
             )
 
         self._default = kwargs.get('default', None)
-        self._data = WeakKeyDictionary()
 
-    def __get__(self, instance, owner):
+    def _assert_has_name(self):
+        """
+        Helper method to make sure we have our __name__ attribute
+        set before we do any reads/writes
+        """
+
+    def __get__(self, data_object, owner_class):
         """
         Descriptor getter
         """
-        if not instance:
+        if not data_object:
             # called as a class method, so return the descriptor (ourselves)
             return self
 
-        return self._data.get(instance, self._default)
+        self._assert_has_name()
 
-    def __set__(self, instance, value):
+        if not hasattr(data_object, '_field_data'):
+            return self._default
+
+        return data_object._field_data.get(self.__name__, self._default)  # pylint: disable=protected-access
+
+    def __set__(self, data_object, value):
         """
         Descriptor setter. Be sure to enforce type on setting. But None is allowed.
         """
+
+        self._assert_has_name()
 
         value_type = type(value)
 
@@ -57,7 +104,21 @@ class TypedField(object):
                     "Field expected type of '{expected}' got '{got}'"
                 ).format(expected=self._expected_types, got=value_type)
             )
-        self._data[instance] = value
+
+        if not hasattr(data_object, '_field_data'):
+            data_object._field_data = {}  # pylint: disable=protected-access
+
+        data_object._field_data[self.__name__] = value  # pylint: disable=protected-access
+
+    def __delete__(self, data_object):
+        """
+        Descriptor delete
+        """
+
+        self._assert_has_name()
+
+        if hasattr(data_object, '_field_data') and self.__name__ in data_object._field_data:  # pylint: disable=protected-access
+            del data_object._field_data[self.__name__]  # pylint: disable=protected-access
 
 
 class StringField(TypedField):
@@ -165,15 +226,38 @@ class EnumField(StringField):
         super(EnumField, self).__set__(instance, value)
 
 
+class BaseDataObjectMetaClass(type):
+    """
+    A metaclass which adds the __name__ attribute to all TypedField descriptors. We
+    need to do this because we store the values of the descriptors in a dictionary on
+    the instance itself, therefore it needs to know the attribute name it is bound
+    to in the containing object
+    """
+    def __new__(mcs, name, bases, attrs):
+        # Iterate over the TypedField attrs before they're bound to the class
+        # so that we don't accidentally trigger any __get__ methods
+        for attr_name, attr in attrs.iteritems():
+            if isinstance(attr, TypedField):
+                attr.__name__ = attr_name
+
+        # Do the same with any other base classes
+        for base in bases:
+            for attr_name, attr in inspect.getmembers(base, lambda attr: isinstance(attr, TypedField)):
+                attr.__name__ = attr_name
+
+        return super(BaseDataObjectMetaClass, mcs).__new__(mcs, name, bases, attrs)
+
+
 class BaseDataObject(object):
     """
     A base class for all Notification Data Objects
     """
 
-    id = IntegerField(default=None)  # pylint: disable=invalid-name
+    # assign a metaclass so that all TypedFields in a BaseDataObject derviced class get a
+    # __name__ attribute set which is the attribute name in the containing object
+    __metaclass__ = BaseDataObjectMetaClass
 
-    _is_loaded = False
-    _is_dirty = False  # Returns if this object has been modified after initialization
+    id = IntegerField(name='id', default=None)  # pylint: disable=invalid-name
 
     def __init__(self, **kwargs):
         """
@@ -189,7 +273,7 @@ class BaseDataObject(object):
                 raise ValueError(
                     (
                         "Initialization parameter '{name}' was passed in although "
-                        "it is not a known attribute to the class."
+                        "it is not a known field to the DataObject."
                     ).format(name=key)
                 )
 
@@ -200,7 +284,7 @@ class BaseDataObject(object):
         We want our data models to have a schema that is fixed as design time!!!
         """
 
-        if attribute not in dir(self):
+        if attribute != '_field_data' and attribute not in dir(self):
             raise ValueError(
                 (
                     "Attempting to add a new attribute '{name}' that was not part of "
@@ -215,7 +299,22 @@ class BaseDataObject(object):
         Equality test - simply compare all of the fields
         """
 
-        return self.__dict__ == other.__dict__
+        # pylint disable this because self & other are the same class types
+        _self_fields = self._get_fields_for_equality_check()
+        _other_fields = other._get_fields_for_equality_check()  # pylint: disable=protected-access
+
+        return _self_fields == _other_fields
+
+    def __ne__(self, other):
+        """
+        Inequality test - simply compare all of the fields
+        """
+
+        # pylint disable this because self & other are the same class types
+        _self_fields = self._get_fields_for_equality_check()
+        _other_fields = other._get_fields_for_equality_check()  # pylint: disable=protected-access
+
+        return _self_fields != _other_fields
 
     def __str__(self):
         """
@@ -241,6 +340,33 @@ class BaseDataObject(object):
             value = getattr(self, attr_name)
             if isinstance(value, BaseDataObject):
                 _dict[attr_name] = value.get_fields()
+            else:
+                _dict[attr_name] = value
+        return _dict
+
+    def _get_fields_for_equality_check(self):
+        """
+        Returns all fields as a dict but use a specialized datetime subclass that allows
+        for some limited tolerances regarding tests for equality
+        """
+
+        _dict = {}
+        for attr_name, __ in inspect.getmembers(self.__class__, lambda attr: isinstance(attr, TypedField)):
+            value = getattr(self, attr_name)
+
+            if isinstance(value, BaseDataObject):
+                # disable pylint error because we are calling a objects of the same base class
+                _dict[attr_name] = value._get_fields_for_equality_check()  # pylint: disable=protected-access
+            elif isinstance(value, datetime):
+                _dict[attr_name] = DateTimeWithDeltaCompare(
+                    value.year,
+                    value.month,
+                    value.day,
+                    value.hour,
+                    value.minute,
+                    value.second,
+                    value.microsecond
+                )
             else:
                 _dict[attr_name] = value
         return _dict
@@ -276,4 +402,4 @@ class RelatedObjectField(TypedField):
 
         self._expected_types = [related_type]
 
-        super(RelatedObjectField, self).__init__(kwargs)
+        super(RelatedObjectField, self).__init__(**kwargs)

@@ -19,8 +19,8 @@ def notification_store():
     configured for this runtime. The class path should be
     set in NOTIFICATION_STORE_PROVIDER in the settings file
 
-    NOTE: When we switch over to gevent support, we should use some
-    locking techniques in this area to prevent concurrent execution
+    NOTE: If we switch over to gevent support, we should investigate
+    any potential concurrency issues
     """
 
     global _STORE_PROVIDER  # pylint: disable=global-statement
@@ -49,8 +49,8 @@ def reset_notification_store():
     """
     Tears down any cached configuration. This is useful for testing.
 
-    NOTE: When we switch over to gevent support, we should use some
-    locking techniques in this area to prevent concurrent execution
+    NOTE: If we switch over to gevent support, we should investigate
+    any potential concurrency issues
     """
 
     global _STORE_PROVIDER  # pylint: disable=global-statement

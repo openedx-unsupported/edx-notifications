@@ -16,7 +16,9 @@ from edx_notifications.data import (
 class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
     """
     A durable notification channel will save messages to
-    the database
+    the database. This can be subclassed by any specialized
+    Channel provider if it was to provide custom behavior (but still
+    has the characteristic of using a durable stoage backend)
     """
 
     def dispatch_notification_to_user(self, user_id, msg):

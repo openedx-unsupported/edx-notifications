@@ -32,6 +32,7 @@ class BaseNotificationRenderer(object):
         Returns (True/False) whether this renderer is able to convert the passed in message
         into the requested format.
         """
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def can_render_lang(self, msg, lang):
@@ -39,6 +40,7 @@ class BaseNotificationRenderer(object):
         Returns (True/False) whether this renderer is able to covert the passed in message
         into the requested language
         """
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def render_subject(self, msg, render_format, lang):
@@ -55,16 +57,15 @@ class BaseNotificationRenderer(object):
         throw a NotificationLanguageNotSupported exception. The calling code
         should trap that and try with a different language
         """
-
-        # Base implementation will say it cannot render a Subject
-        return None
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def render_body(self, msg, render_format, lang):
-        """ for
+        """
         Renders a body for this particular notification in the requested format and language
 
         If the requested language is not supported then subclasses should
         throw a NotificationLanguageNotSupported exception. The calling code
         should trap that and try with a different language
         """
+        raise NotImplementedError()

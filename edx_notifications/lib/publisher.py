@@ -51,10 +51,10 @@ def publish_notification_to_user(user_id, msg):
     # a problem, it will throw an exception
     channel = get_notification_channel(user_id, msg.msg_type)
 
-    _user_map = channel.dispatch_notification_to_user(user_id, msg)
+    user_msg = channel.dispatch_notification_to_user(user_id, msg)
 
     #
     # Here is where we will tie into the Analytics pipeline
     #
 
-    return _user_map
+    return user_msg
