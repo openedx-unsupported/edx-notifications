@@ -1,0 +1,23 @@
+{% comment %}
+
+This is a "drop-in" Django template widget to instantiate the edx-notifications front end application
+which is a Backbone application that is defined in edx_notifications/server/web/static/js
+
+This HTML snippet assumes that jQuery been included in the page that is using this widget
+
+{% endcomment %}
+
+<div id='notification_icon_container'></div>
+
+<script src="{{ STATIC_URL }}edx_notifications/js/vendor/underscore.js"></script>
+<script src="{{ STATIC_URL }}edx_notifications/js/vendor/backbone.js"></script>
+<script src="{{ STATIC_URL }}edx_notifications/js/views/counter_icon_view.js"></script>
+<script src="{{ STATIC_URL }}edx_notifications/js/models/counter_icon_model.js"></script>
+
+<script type="text/javascript">
+    /* start up the root Notification view, which will bootstrap the whole front-end */
+    var counter_icon = new CounterIconView({
+        el: $("#notification_icon_container"),
+        model: new CounterIconModel()
+    });
+</script>
