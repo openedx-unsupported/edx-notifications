@@ -26,8 +26,7 @@ Open edX Platform Integration
 * Add desired commit hash (tip of master) from github code repository
     * edx-platform/requirements/github.txt
     * "Our libraries" section
-* Add 'edx_notifications' to the list of installed apps, you can put this in OPTIONAL_APPS:
-    * common.py
+
 * Add required configuration in your settings file, e.g. common.py:
 
 ```

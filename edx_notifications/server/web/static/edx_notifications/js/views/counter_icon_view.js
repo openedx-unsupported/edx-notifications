@@ -1,5 +1,7 @@
 var CounterIconView = Backbone.View.extend({
-    initialize: function(){
+    initialize: function(options){
+        this.options = options;
+
         /* re-render if the model changes */
         this.listenTo(this.model,'change', this.render);
 
@@ -10,8 +12,15 @@ var CounterIconView = Backbone.View.extend({
         this.render();
     },
 
+    events: {
+        'click .edx-notifications-icon': 'showPane'
+    },
+
     /* cached notification_icon.html template */
     fetched_template: null,
+
+    /* cached notifications pane view */
+    notification_pane: null,
 
     render: function () {
         if (!this.fetched_template) {
@@ -38,6 +47,17 @@ var CounterIconView = Backbone.View.extend({
                     self.model.toJSON()
                 )
             );
+        }
+   },
+
+   showPane: function() {
+        if (!this.notification_pane) {
+            this.notification_pane = new NotificationPaneView({
+                el: this.options.pane_el,
+                collection: new UserNotificationCollection()
+            });
+        } else {
+            this.notification_pane.show();
         }
    }
 });
