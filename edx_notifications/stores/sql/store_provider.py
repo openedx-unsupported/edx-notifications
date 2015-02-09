@@ -127,17 +127,16 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
             del self._msg_type_cache[msg_type.name]
         return msg_type
 
-    def _get_notifications_for_user(self, user_id, filters=None, options=None):
+    def _get_prepaged_notifications(self, user_id, filters=None, options=None):
         """
-        Helper method to set up the query to get notifications for a user
+        Helper to set up the notifications query before paging
+        is applied. WARNING: This should be used with care and to not
+        iterate over this returned results set. Typically this
+        will just be used to get a count()
         """
 
-        # pylint/pep8 seem to complain if defaults are set to empty dicts
         _filters = filters if filters else {}
         _options = options if options else {}
-
-        if 'msg_id' in _filters:
-            raise ValueError()
 
         namespace = _filters.get('namespace')
         read = _filters.get('read', True)
@@ -145,13 +144,6 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         type_name = _filters.get('type_name')
 
         select_related = _options.get('select_related', False)
-        limit = _options.get('limit', const.MAX_NOTIFICATION_LIST_SIZE)
-        offset = _options.get('offset', 0)
-
-        # make sure passed in limit is allowed
-        # as we don't want to blow up the query too large here
-        if limit > const.MAX_NOTIFICATION_LIST_SIZE:
-            raise ValueError('Max limit is {limit}'.format(limit=limit))
 
         if not read and not unread:
             raise ValueError('Bad arg combination either read or unread must be set to True')
@@ -174,6 +166,31 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         if type_name:
             query = query.filter(msg__msg_type=type_name)
 
+        return query
+
+    def _get_notifications_for_user(self, user_id, filters=None, options=None):
+        """
+        Helper method to set up the query to get notifications for a user
+        this includes offset/limit parameters passed in OPTIONS
+        """
+
+        _filters = filters if filters else {}
+        _options = options if options else {}
+
+        query = self._get_prepaged_notifications(
+            user_id,
+            filters=filters,
+            options=options
+        )
+
+        limit = _options.get('limit', const.MAX_NOTIFICATION_LIST_SIZE)
+        offset = _options.get('offset', 0)
+
+        # make sure passed in limit is allowed
+        # as we don't want to blow up the query too large here
+        if limit > const.MAX_NOTIFICATION_LIST_SIZE:
+            raise ValueError('Max limit is {limit}'.format(limit=limit))
+
         return query[offset:offset + limit]
 
     def get_num_notifications_for_user(self, user_id, filters=None):
@@ -193,7 +210,7 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         RETURNS: integer
         """
 
-        return self._get_notifications_for_user(
+        return self._get_prepaged_notifications(
             user_id,
             filters=filters,
         ).count()
