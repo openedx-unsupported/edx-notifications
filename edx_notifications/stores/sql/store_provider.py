@@ -46,10 +46,10 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         select_related = _options.get('select_related', True)
 
         try:
+            query = SQLNotificationMessage.objects
             if select_related:
-                obj = SQLNotificationMessage.objects.select_related().get(id=msg_id)
-            else:
-                obj = SQLNotificationMessage.objects.get(id=msg_id)
+                query = query.select_related()
+            obj = query.get(id=msg_id)
         except ObjectDoesNotExist:
             raise ItemNotFoundError()
 
@@ -258,9 +258,7 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
             options=_options
         )
 
-        result_set = []
-        for item in query:
-            result_set.append(item.to_data_object())
+        result_set = [item.to_data_object() for item in query]
 
         return result_set
 
