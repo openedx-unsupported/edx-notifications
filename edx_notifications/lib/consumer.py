@@ -6,10 +6,12 @@ persisted in our database
 
 import pytz
 from datetime import datetime
+from contracts import contract
 
 from edx_notifications.stores.store import notification_store
 
 
+@contract(user_id='int,>0')
 def get_notifications_count_for_user(user_id, filters=None):
     """
     Returns the number of notifications this user has
@@ -33,6 +35,7 @@ def get_notifications_count_for_user(user_id, filters=None):
     )
 
 
+@contract(user_id='int,>0', msg_id='int,>0')
 def get_notification_for_user(user_id, msg_id):
     """
     Returns a single UserNotification object for the user_id/msg_id paid.
@@ -42,6 +45,7 @@ def get_notification_for_user(user_id, msg_id):
     return notification_store().get_notification_for_user(user_id, msg_id)
 
 
+@contract(user_id='int,>0')
 def get_notifications_for_user(user_id, filters=None, options=None):
     """
     Returns a list of UserNotification for the passed in user. The list will be
@@ -70,6 +74,7 @@ def get_notifications_for_user(user_id, filters=None, options=None):
     )
 
 
+@contract(user_id='int,>0', msg_id='int,>0', read=bool)
 def mark_notification_read(user_id, msg_id, read=True):
     """
     Will mark a given UserNotification as 'read' (or unread is 'unread' argument is passed in)

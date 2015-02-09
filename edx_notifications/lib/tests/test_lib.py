@@ -3,6 +3,7 @@ Tests for the publisher.py and consumer.py methods
 """
 
 from django.test import TestCase
+from contracts import ContractNotRespected
 
 from edx_notifications.lib.publisher import (
     publish_notification_to_user,
@@ -65,14 +66,14 @@ class TestPublisherLibrary(TestCase):
         )
 
         # make sure it asserts that user_id is an integer
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ContractNotRespected):
             publish_notification_to_user('bad-id', msg)
 
         # now do happy path
         sent_user_map = publish_notification_to_user(self.test_user_id, msg)
 
         # make sure type checking is happening
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ContractNotRespected):
             get_notifications_count_for_user('bad-type')
 
         # now query back the notification to make sure it got stored
@@ -84,7 +85,7 @@ class TestPublisherLibrary(TestCase):
         )
 
         # make sure it asserts that user_id is an integer
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ContractNotRespected):
             get_notifications_for_user('bad-id')
 
         notifications = get_notifications_for_user(self.test_user_id)

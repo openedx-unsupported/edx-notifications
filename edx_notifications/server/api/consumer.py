@@ -156,7 +156,7 @@ def _find_notification_by_id(user_id, msg_id):
     """
 
     try:
-        user_msg = get_notification_for_user(user_id, msg_id)
+        user_msg = get_notification_for_user(int(user_id), int(msg_id))
     except ItemNotFoundError:
         raise Http404()
 
@@ -179,7 +179,7 @@ class NotificationDetail(AuthenticatedAPIView):
         """
 
         # Get msg for user, raise Http404 if not found
-        user_msg = _find_notification_by_id(request.user.id, msg_id)
+        user_msg = _find_notification_by_id(request.user.id, int(msg_id))
 
         return Response(user_msg.get_fields(), status.HTTP_200_OK)
 
@@ -198,7 +198,7 @@ class NotificationDetail(AuthenticatedAPIView):
             try:
                 # this will raise an ItemNotFoundError if the user_id/msg_id combo
                 # cannot be found
-                mark_notification_read(request.user.id, msg_id, read=mark_as_read)
+                mark_notification_read(request.user.id, int(msg_id), read=mark_as_read)
             except ItemNotFoundError:
                 raise Http404()
 

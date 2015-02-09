@@ -159,8 +159,8 @@ class ConsumerAPITests(LoggedInTestCase):
             }
         )
 
-        # publish
-        user_msg = publish_notification_to_user(0, msg)
+        # publish to some other user_id
+        user_msg = publish_notification_to_user(99999, msg)
         self.assertIsNotNone(user_msg)
 
         # now query API
@@ -217,7 +217,7 @@ class ConsumerAPITests(LoggedInTestCase):
 
         response = self.client.get(reverse(
             'edx_notifications.consumer.notifications.detail',
-            args=[0]
+            args=[99999999]
         ))
         self.assertEqual(response.status_code, 404)
 
@@ -390,7 +390,7 @@ class ConsumerAPITests(LoggedInTestCase):
         response = self.client.post(
             reverse(
                 'edx_notifications.consumer.notifications.detail',
-                args=[0]
+                args=[9999999999]
             ),
             {
                 'mark_as': 'read',

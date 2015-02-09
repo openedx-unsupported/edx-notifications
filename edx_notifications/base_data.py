@@ -3,7 +3,6 @@ Base objects that data.py uses
 """
 
 import json
-import copy
 import inspect
 import dateutil.parser
 
@@ -18,11 +17,11 @@ class DateTimeWithDeltaCompare(datetime):
     datetime object to a database and reading it back
     """
 
-    _max_allowed_time_diff = timedelta(0, 0, 100000)  # max tolerance 100ms
+    _max_allowed_time_diff = timedelta(0, 0, 10000)  # max tolerance 10ms
 
     def __eq__(self, other):
         """
-        Is two datetimes are within a second of each other than say that they are equal
+        If two datetimes are within 10ms of each other then consider them equal
         """
 
         diff = self - other if self > other else other - self
@@ -30,7 +29,7 @@ class DateTimeWithDeltaCompare(datetime):
 
     def __ne__(self, other):
         """
-        Is two datetimes are within a second of each other than say that they are equal
+        If two datetimes are within 10ms of each other then consider them equal
         """
 
         diff = self - other if self > other else other - self
@@ -153,18 +152,24 @@ class DictField(TypedField):
         if not data:
             return None
 
-        _dict = copy.deepcopy(data)
+        def datetime_to_json(obj):
+            """
+            JSON serializer for objects not serializable by default json code.
+            For now, this means datetime objects.
+            """
 
-        for key, value in _dict.iteritems():
-            if isinstance(value, datetime):
-                _dict[key] = value.isoformat()
+            if isinstance(obj, datetime):
+                serial = obj.isoformat()
+                return serial
 
-        return json.dumps(_dict)
+            return obj
+
+        return json.dumps(data, default=datetime_to_json)
 
     @classmethod
     def from_json(cls, value):
         """
-        Descerialize from json
+        Deserialize from json
         """
 
         if not value:

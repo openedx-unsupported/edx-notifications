@@ -2,10 +2,18 @@
 All in-proc API endpoints for acting as a Notification Publisher
 """
 
+from contracts import contract
+
 from edx_notifications.channels.channel import get_notification_channel
 from edx_notifications.stores.store import notification_store
 
+from edx_notifications.data import (
+    NotificationType,
+    NotificationMessage,
+)
 
+
+@contract(msg_type=NotificationType)
 def register_notification_type(msg_type):
     """
     Registers a new notification type
@@ -17,6 +25,7 @@ def register_notification_type(msg_type):
     notification_store().save_notification_type(msg_type)
 
 
+@contract(user_id='int,>0', msg=NotificationMessage)
 def publish_notification_to_user(user_id, msg):
     """
     This top level API method will publish a notification
