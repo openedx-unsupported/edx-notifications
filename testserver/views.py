@@ -13,6 +13,16 @@ from django.views.decorators.csrf import csrf_protect
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
 
+from edx_notifications.lib.publisher import (
+    register_notification_type,
+    publish_notification_to_user,
+)
+
+from edx_notifications.data import (
+    NotificationMessage,
+    NotificationType,
+)
+
 from .forms import *
 
 
@@ -21,6 +31,21 @@ def index(request):
     """
     Returns a basic HTML snippet rendering of a notification count
     """
+
+    if request.method == 'POST':
+        msg_type = NotificationType(
+            name='testserver.type1'
+        )
+        register_notification_type(msg_type)
+
+        msg = NotificationMessage(
+            msg_type=msg_type,
+            payload={
+                'foo': 'bar'
+            }
+        )
+
+        publish_notification_to_user(request.user.id, msg)
 
     template = loader.get_template('index.html')
 

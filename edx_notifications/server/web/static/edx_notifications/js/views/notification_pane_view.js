@@ -1,15 +1,35 @@
 var NotificationPaneView = Backbone.View.extend({
     initialize: function(){
         /* re-render if the model changes */
-        this.listenTo(this.collection, 'change', this.render);
+        this.listenTo(this.collection, 'change', this.collectionChanged);
 
-        this.collection.fetch();
+        this.hydrate();
 
         this.render();
     },
 
+    hydrate: function() {
+        /* This function will load the bound collection */
+
+        /* add and remove a class when we do the initial loading */
+        /* we might - at some point - add a visual element to the */
+        /* loading, like a spinner */
+        var self = this;
+        self.$el.addClass('loading');
+        this.collection.fetch({
+            success: function(){
+                self.$el.removeClass('loading')
+            }
+        });
+    },
+
     /* cached notification_icon.html template */
     fetched_template: null,
+
+    collectionChanged: function() {
+        /* redraw for now */
+        this.render();
+    },
 
     render: function() {
         if (!this.fetched_template) {
