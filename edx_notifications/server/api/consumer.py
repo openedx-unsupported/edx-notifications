@@ -12,6 +12,7 @@ from django.http import Http404
 from edx_notifications.lib.consumer import (
     get_notifications_count_for_user,
     get_notifications_for_user,
+    get_notification_for_user,
     mark_notification_read
 )
 
@@ -155,12 +156,7 @@ def _find_notification_by_id(user_id, msg_id):
     """
 
     try:
-        user_msg = get_notifications_for_user(
-            user_id,
-            filters={
-                'msg_id': msg_id
-            }
-        )
+        user_msg = get_notification_for_user(user_id, msg_id)
     except ItemNotFoundError:
         raise Http404()
 
@@ -185,7 +181,7 @@ class NotificationDetail(AuthenticatedAPIView):
         # Get msg for user, raise Http404 if not found
         user_msg = _find_notification_by_id(request.user.id, msg_id)
 
-        return Response(user_msg[0].get_fields(), status.HTTP_200_OK)
+        return Response(user_msg.get_fields(), status.HTTP_200_OK)
 
     def post(self, request, msg_id):
         """

@@ -9,8 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from edx_notifications.stores.store import BaseNotificationStoreProvider
 from edx_notifications.exceptions import (
-    ItemNotFoundError,
-    ItemIntegrityError
+    ItemNotFoundError
 )
 from edx_notifications import const
 from edx_notifications.stores.sql.models import (
@@ -28,6 +27,10 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
     def __init__(self, **kwargs):
         """
         Initializer
+
+        ARGS: kwargs
+            - MAX_MSG_TYPE_CACHE_SIZE: Maximum size of the LRU cache around
+              msg_types
         """
 
         _msg_type_cache_size = kwargs.get('MAX_MSG_TYPE_CACHE_SIZE', 1024)
@@ -133,7 +136,9 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         _filters = filters if filters else {}
         _options = options if options else {}
 
-        msg_id = _filters.get('msg_id')
+        if 'msg_id' in _filters:
+            raise ValueError()
+
         namespace = _filters.get('namespace')
         read = _filters.get('read', True)
         unread = _filters.get('unread', True)
@@ -155,9 +160,6 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
 
         if select_related:
             query = query.select_related()
-
-        if msg_id:
-            query = query.filter(msg__id=msg_id)
 
         if namespace:
             query = query.filter(msg__namespace=namespace)
@@ -189,20 +191,25 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
                 - type_name: which type to return
 
         RETURNS: integer
-
-        NOTE: You cannot pass in a filter of 'msg_id'
         """
-
-        if filters and 'msg_id' in filters:
-            raise ValueError(
-                'It is non-sensical to pass in a msg_id '
-                'filter parameter into an aggregate counting method!'
-            )
 
         return self._get_notifications_for_user(
             user_id,
             filters=filters,
         ).count()
+
+    def get_notification_for_user(self, user_id, msg_id):
+        """
+        Get a single UserNotification for the user_id/msg_id pair
+        """
+        try:
+            item = SQLUserNotification.objects.select_related().get(user_id=user_id, msg_id=msg_id)
+            return item.to_data_object()
+        except ObjectDoesNotExist:
+            msg = (
+                "Could not find msg_id '{msg_id}' for user_id '{user_id}'!"
+            ).format(msg_id=msg_id, user_id=user_id)
+            raise ItemNotFoundError(msg)
 
     def get_notifications_for_user(self, user_id, filters=None, options=None):
         """
@@ -214,9 +221,6 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         ARGS:
             - user_id: The id of the user
             - filters: a dict containing
-                - msg_id: a particular notification id to retrieve
-                    ( if this is used in conjuction with other filters, it may
-                      result in an empty set being returned )
                 - namespace: what namespace to search (defuault None)
                 - read: Whether to return read notifications (default True)
                 - unread: Whether to return unread notifications (default True)
@@ -240,27 +244,6 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         result_set = []
         for item in query:
             result_set.append(item.to_data_object())
-
-        if filters and 'msg_id' in filters:
-            # if we are querying a single specific item, then do
-            # some examination of the results
-
-            # and if we don't find a match then raise an exception
-            if not result_set:
-                err_msg = (
-                    'Could not find notification msg_id {msg_id} for {user_id}'
-                ).format(msg_id=filters['msg_id'], user_id=user_id)
-                raise ItemNotFoundError(err_msg)
-
-            if len(result_set) > 1:
-                # There should be at most one match, else raise an exception
-                # this really shouldn't happen because there is a database constraint with
-                # SQL backends
-                err_msg = (
-                    'There should be at most 1 UserNotification items found for '
-                    'msg_id {msg_id} and user_id {user_id}. {cnt} were found!'
-                ).format(msg_id=filters['msg_id'], user_id=user_id, cnt=len(result_set))
-                raise ItemIntegrityError(err_msg)
 
         return result_set
 

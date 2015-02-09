@@ -119,6 +119,13 @@ class BaseNotificationStoreProvider(object):
         raise NotImplementedError()
 
     @abc.abstractmethod
+    def get_notification_for_user(self, user_id, msg_id):
+        """
+        Get a single UserNotification for the user_id/msg_id pair
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
     def get_num_notifications_for_user(self, user_id, filters=None):
         """
         Returns an integer count of edx_notifications. It is presumed

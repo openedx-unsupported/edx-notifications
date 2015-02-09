@@ -100,6 +100,12 @@ class ChannelTests(TestCase):
             name='edx_notifications.channels.tests.test_channel.channeltests.foo'
         )
 
+    def cleanUp(self):  # pylint: disable=invalid-name
+        """
+        Test tear down
+        """
+        reset_notification_channels()
+
     def test_cannot_create_instance(self):
         """
         BaseNotificationChannelProvider is an abstract class and we should not be able

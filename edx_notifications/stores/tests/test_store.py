@@ -63,6 +63,12 @@ class BadImplementationStoreProvider(BaseNotificationStoreProvider):
         """
         super(BadImplementationStoreProvider, self).get_num_notifications_for_user(user_id, filters=filters)
 
+    def get_notification_for_user(self, user_id, msg_id):
+        """
+        Get a single UserNotification for the user_id/msg_id pair
+        """
+        super(BadImplementationStoreProvider, self).get_notification_for_user(user_id, msg_id)
+
     def get_notifications_for_user(self, user_id, filters=None, options=None):
         """
         Saves a new notification type, note that we do not support updates
