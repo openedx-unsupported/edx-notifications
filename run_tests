@@ -4,7 +4,7 @@ ECHO 'Removing *.pyc files'
 find . -name "*.pyc" -exec rm -rf {} \;
 
 ECHO 'Running test suite'
-coverage run manage.py test --verbosity=3
+coverage run manage.py test edx_notifications --verbosity=3
 coverage report -m
 coverage html
 pep8 edx_notifications
