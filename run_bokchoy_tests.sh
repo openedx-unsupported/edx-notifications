@@ -20,7 +20,7 @@ until $(curl --output /dev/null --silent --head --fail http://127.0.0.1:8000); d
 done
 
 echo "Running acceptance tests..."
-python bok_choy_tests/test_login.py
+python testserver/test/acceptance/test_login.py
 
 # capture the exit code from the test.  Anything more than 0 indicates failed cases.
 EXIT_CODE=$?
