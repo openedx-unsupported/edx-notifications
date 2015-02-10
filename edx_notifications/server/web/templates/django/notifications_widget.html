@@ -25,7 +25,8 @@ This HTML snippet assumes that jQuery been included in the page that is using th
     /* start up the root Notification view, which will bootstrap the whole front-end */
     var counter_icon = new CounterIconView({
         el: $("#edx_notification_container"),
-        model: new CounterIconModel(),
-        pane_el: $("#edx_notification_pane")
+        pane_el: $("#edx_notification_pane"),
+        unread_notification_count_endpoint: "{% autoescape off %}{{ unread_notification_count_endpoint }}{% endautoescape %}",
+        user_notifications_endpoint: "{{ user_notifications_endpoint }}"
     });
 </script>

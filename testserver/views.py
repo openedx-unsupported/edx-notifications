@@ -2,6 +2,7 @@
 View handlers for HTML serving
 """
 
+from django.core.urlresolvers import reverse
 from django.template import RequestContext, loader
 from django.http import (
     HttpResponse,
@@ -49,7 +50,21 @@ def index(request):
 
     template = loader.get_template('index.html')
 
-    context = RequestContext(request, {'user': request.user})
+    # Pass along API endpoints to Backbone models
+    unread_notification_count_endpoint = (
+        '{base_url}?read=False&unread=True'
+    ). format(base_url=reverse('edx_notifications.consumer.notifications.count'))
+
+    user_notifications_endpoint = reverse('edx_notifications.consumer.notifications')
+
+    context = RequestContext(
+        request,
+        {
+            'user': request.user,
+            'unread_notification_count_endpoint': unread_notification_count_endpoint,
+            'user_notifications_endpoint': user_notifications_endpoint,
+        }
+    )
     return HttpResponse(template.render(context))
 
 

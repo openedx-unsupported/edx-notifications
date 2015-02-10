@@ -1,5 +1,12 @@
 var NotificationPaneView = Backbone.View.extend({
-    initialize: function(){
+    initialize: function(options){
+
+        /* set up our collection */
+        this.collection = new UserNotificationCollection();
+
+        /* set the API endpoint that was passed into our initializer */
+        this.collection.url = options.user_notifications_endpoint;
+
         /* re-render if the model changes */
         this.listenTo(this.collection, 'change', this.collectionChanged);
 
