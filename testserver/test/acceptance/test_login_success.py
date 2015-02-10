@@ -26,7 +26,6 @@ class TestLoginSuccess(WebAppTest):
         Login success Test
         """
         user_name = str(uuid.uuid4())[:8]
-        print(user_name)
         self.home_page.visit()
         self.home_page.go_to_registration_page()
         self.registration_page.register(user_name, user_email, password)
