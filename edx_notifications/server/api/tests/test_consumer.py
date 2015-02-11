@@ -9,7 +9,7 @@ All tests for the test_consumer.py
 import json
 
 from django.test.client import Client
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, NoReverseMatch
 
 from .utils import (
     LoggedInTestCase,
@@ -33,6 +33,8 @@ from edx_notifications.renderers.basic import (
     BasicSubjectBodyRenderer
 )
 
+from edx_notifications.server.api.urls import urlpatterns
+
 
 class ConsumerAPITests(LoggedInTestCase):
     """
@@ -54,12 +56,20 @@ class ConsumerAPITests(LoggedInTestCase):
 
     def test_no_anonymous_access(self):
         """
-        Make sure we cannot access API methods without being logged in
+        Make sure we cannot access any API methods without being logged in
         """
 
-        self.client = Client()
-        response = self.client.get(reverse('edx_notifications.consumer.notifications.count'))
-        self.assertEqual(response.status_code, 403)
+        self.client = Client()  # use AnonymousUser on the API calls
+
+        for urlpattern in urlpatterns:
+            if hasattr(urlpattern, 'name'):
+                try:
+                    response = self.client.get(reverse(urlpattern.name))
+                except NoReverseMatch:
+                    # some of our URL mappings may require a argument substitution
+                    response = self.client.get(reverse(urlpattern.name, args=[0]))
+
+                self.assertEqual(response.status_code, 403)
 
     def test_get_renderer_templates(self):
         """

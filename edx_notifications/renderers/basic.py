@@ -18,7 +18,7 @@ def path_to_underscore_template(name):
     """
 
     return static(
-        '/edx_notifications/templates/renderers/{name}'.format(name=name)
+        'edx_notifications/templates/renderers/{name}'.format(name=name)
     )
 
 
