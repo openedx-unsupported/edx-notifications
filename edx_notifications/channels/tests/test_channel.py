@@ -97,7 +97,8 @@ class ChannelTests(TestCase):
         reset_notification_channels()
         self.test_user_id = 1001  # an arbitrary user_id
         self.test_msg_type = NotificationType(
-            name='edx_notifications.channels.tests.test_channel.channeltests.foo'
+            name='edx_notifications.channels.tests.test_channel.channeltests.foo',
+            renderer='foo.renderer',
         )
 
     def cleanUp(self):  # pylint: disable=invalid-name
@@ -136,7 +137,8 @@ class ChannelTests(TestCase):
         provider = get_notification_channel(
             self.test_user_id,
             NotificationType(
-                name='edx_notifications.channels.tests.another_one'
+                name='edx_notifications.channels.tests.another_one',
+                renderer='foo.renderer',
             )
         )
 
@@ -147,7 +149,8 @@ class ChannelTests(TestCase):
         provider = get_notification_channel(
             self.test_user_id,
             NotificationType(
-                name='edx_notifications.channels.diff_subpath.diff_leaf'
+                name='edx_notifications.channels.diff_subpath.diff_leaf',
+                renderer='foo.renderer',
             )
         )
 

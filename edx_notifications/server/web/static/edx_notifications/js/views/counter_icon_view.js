@@ -1,12 +1,11 @@
 var CounterIconView = Backbone.View.extend({
     initialize: function(options){
         this.options = options;
-        this.unread_notification_count_endpoint = this.options.unread_notification_count_endpoint
-        this.user_notifications_endpoint = this.options.user_notifications_endpoint
+        this.endpoints = options.endpoints;
 
         /* initialize the model using the API endpoint URL that was passed into us */
         this.model = new CounterIconModel();
-        this.model.url = this.unread_notification_count_endpoint;
+        this.model.url = this.endpoints.unread_notification_count;
 
         /* re-render if the model changes */
         this.listenTo(this.model,'change', this.modelChanged);
@@ -64,7 +63,7 @@ var CounterIconView = Backbone.View.extend({
 
             this.notification_pane = new NotificationPaneView({
                 el: this.options.pane_el,
-                user_notifications_endpoint: this.user_notifications_endpoint
+                endpoints: this.endpoints,
             });
         } else {
             this.notification_pane.show();

@@ -26,7 +26,8 @@ class SQLModelsTests(TestCase):
         """
 
         msg_type = NotificationType(
-            name='foo.bar.baz'
+            name='foo.bar.baz',
+            renderer='foo.renderer',
         )
 
         msg = NotificationMessage(

@@ -228,7 +228,8 @@ class BaseDataObjectTests(TestCase):
             },
             test_class_field=NotificationMessage(
                 msg_type=NotificationType(
-                    name='testing'
+                    name='testing',
+                    renderer='foo.renderer',
                 ),
                 namespace='namespace',
                 payload={'field': 'value'}
@@ -243,7 +244,8 @@ class BaseDataObjectTests(TestCase):
             },
             test_class_field=NotificationMessage(
                 msg_type=NotificationType(
-                    name='testing'
+                    name='testing',
+                    renderer='foo.renderer',
                 ),
                 namespace='namespace',
                 payload={'field': 'value'}
@@ -265,7 +267,8 @@ class BaseDataObjectTests(TestCase):
             },
             test_class_field=NotificationMessage(
                 msg_type=NotificationType(
-                    name='testing'
+                    name='testing',
+                    renderer='foo.renderer',
                 ),
                 namespace='namespace',
                 payload={'field': 'value'}
@@ -280,7 +283,8 @@ class BaseDataObjectTests(TestCase):
             },
             test_class_field=NotificationMessage(
                 msg_type=NotificationType(
-                    name='something-different'
+                    name='something-different',
+                    renderer='foo.renderer',
                 ),
                 namespace='namespace',
                 payload={'field': 'value'}

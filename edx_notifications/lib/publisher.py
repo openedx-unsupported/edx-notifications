@@ -12,6 +12,10 @@ from edx_notifications.data import (
     NotificationMessage,
 )
 
+from edx_notifications.renderers.renderer import (
+    register_renderer
+)
+
 
 @contract(msg_type=NotificationType)
 def register_notification_type(msg_type):
@@ -23,6 +27,21 @@ def register_notification_type(msg_type):
     msg_type.validate()
 
     notification_store().save_notification_type(msg_type)
+
+    # also register the Renderer associated with this
+    # type, note that the multiple msg types can have
+    # the same renderer, but only one entry will
+    # get placed in the registry
+    register_renderer(msg_type.renderer)
+
+
+@contract(type_name=basestring)
+def get_notification_type(type_name):
+    """
+    Returns the NotificationType registered by type_name
+    """
+
+    return notification_store().get_notification_type(type_name)
 
 
 @contract(user_id='int,>0', msg=NotificationMessage)

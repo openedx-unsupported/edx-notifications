@@ -16,9 +16,15 @@ from edx_notifications.lib.consumer import (
     mark_notification_read
 )
 
+from edx_notifications.renderers.renderer import (
+    get_all_renderers,
+)
+
 from edx_notifications.exceptions import (
     ItemNotFoundError,
 )
+
+from edx_notifications import const
 
 from .api_utils import AuthenticatedAPIView
 
@@ -203,3 +209,22 @@ class NotificationDetail(AuthenticatedAPIView):
                 raise Http404()
 
         return Response({}, status.HTTP_200_OK)
+
+
+class RendererTemplatesList(AuthenticatedAPIView):
+    """
+    GET returns a list of all Underscore templates that have been registered in the system
+    """
+
+    def get(self, request):  # pylint: disable=unused-argument
+        """
+        HTTP Get Handler
+        """
+
+        result_dict = {}
+
+        for class_name, renderer in get_all_renderers().iteritems():
+            if renderer.can_render_format(const.RENDER_FORMAT_UNDERSCORE):
+                result_dict[class_name] = renderer.get_template_path(const.RENDER_FORMAT_UNDERSCORE)
+
+        return Response(result_dict, status.HTTP_200_OK)

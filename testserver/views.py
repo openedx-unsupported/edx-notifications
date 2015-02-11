@@ -17,6 +17,7 @@ from django.http import HttpResponseRedirect
 from edx_notifications.lib.publisher import (
     register_notification_type,
     publish_notification_to_user,
+    get_notification_type,
 )
 
 from edx_notifications.data import (
@@ -34,15 +35,13 @@ def index(request):
     """
 
     if request.method == 'POST':
-        msg_type = NotificationType(
-            name='testserver.type1'
-        )
-        register_notification_type(msg_type)
+        msg_type = get_notification_type('testserver.type1')
 
         msg = NotificationMessage(
             msg_type=msg_type,
             payload={
-                'foo': 'bar'
+                'subject': 'Test Notification',
+                'body': 'Here is test notification that has a simple subject and body',
             }
         )
 
@@ -55,14 +54,15 @@ def index(request):
         '{base_url}?read=False&unread=True'
     ). format(base_url=reverse('edx_notifications.consumer.notifications.count'))
 
-    user_notifications_endpoint = reverse('edx_notifications.consumer.notifications')
-
     context = RequestContext(
         request,
         {
             'user': request.user,
-            'unread_notification_count_endpoint': unread_notification_count_endpoint,
-            'user_notifications_endpoint': user_notifications_endpoint,
+            'endpoints': {
+                'unread_notification_count': unread_notification_count_endpoint,
+                'user_notifications': reverse('edx_notifications.consumer.notifications'),
+                'renderer_templates_urls': reverse('edx_notifications.consumer.renderers.templates'),
+            }
         }
     )
     return HttpResponse(template.render(context))

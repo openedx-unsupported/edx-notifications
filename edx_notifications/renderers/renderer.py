@@ -11,6 +11,43 @@ NotificationType
 
 import abc
 
+from importlib import import_module
+
+_RENDERERS = {}
+
+
+def register_renderer(class_name):
+    """
+    Adds a Renderer class - which must derive from BaseNotificationRenderer -
+    to our in-proc cache. An instance will be created and a dictionary of
+    class_name, instance will be built up
+    """
+
+    if class_name in _RENDERERS:
+        return _RENDERERS[class_name]
+
+    module_path, _, name = class_name.rpartition('.')
+    class_ = getattr(import_module(module_path), name)
+
+    renderer_instance = class_()
+    _RENDERERS[class_name] = renderer_instance
+
+    return renderer_instance
+
+
+def get_all_renderers():
+    """
+    Returns the dictionary of registered renderers
+    """
+    return _RENDERERS
+
+
+def clear_renderers():
+    """
+    Empties the dictionary of Renderer instances
+    """
+    _RENDERERS.clear()
+
 
 class BaseNotificationRenderer(object):
     """
@@ -21,24 +58,19 @@ class BaseNotificationRenderer(object):
 
     Note: with the utilization of the abc.abstractmethod decorators you cannot
     create an instance of the class directly
+
+    NOTE: Renderers will be singletons, so please do not store state inside of your
+    Renderers
     """
 
     # don't allow instantiation of this class, it must be subclassed
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
-    def can_render_format(self, msg, render_format):
+    def can_render_format(self, render_format):
         """
         Returns (True/False) whether this renderer is able to convert the passed in message
         into the requested format.
-        """
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def can_render_lang(self, msg, lang):
-        """
-        Returns (True/False) whether this renderer is able to covert the passed in message
-        into the requested language
         """
         raise NotImplementedError()
 
@@ -67,5 +99,13 @@ class BaseNotificationRenderer(object):
         If the requested language is not supported then subclasses should
         throw a NotificationLanguageNotSupported exception. The calling code
         should trap that and try with a different language
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_template_path(self, render_format):
+        """
+        Returns the raw template used. Note that msg payloads might be versioned
+        so the renderer should do appropriate versioning of the templates
         """
         raise NotImplementedError()

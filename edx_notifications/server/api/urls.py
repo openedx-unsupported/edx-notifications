@@ -24,6 +24,11 @@ urlpatterns = patterns(  # pylint: disable=invalid-name
         consumer_views.NotificationsList.as_view(),
         name='edx_notifications.consumer.notifications'
     ),
+    url(
+        r'edx_notifications/v1/consumer/renderers/templates$',
+        consumer_views.RendererTemplatesList.as_view(),
+        name='edx_notifications.consumer.renderers.templates'
+    ),
 )
 
 urlpatterns = format_suffix_patterns(urlpatterns)  # pylint: disable=invalid-name

@@ -34,7 +34,8 @@ class SerializerTests(TestCase):
         msg = NotificationMessage(
             id=1001,
             msg_type=NotificationType(
-                name='edx_notifications.sample'
+                name='edx_notifications.sample',
+                renderer='foo.renderer',
             ),
             namespace='my-namespace',
             payload={

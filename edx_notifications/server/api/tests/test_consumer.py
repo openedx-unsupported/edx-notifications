@@ -29,6 +29,10 @@ from edx_notifications.data import (
     NotificationMessage,
 )
 
+from edx_notifications.renderers.basic import (
+    BasicSubjectBodyRenderer
+)
+
 
 class ConsumerAPITests(LoggedInTestCase):
     """
@@ -41,7 +45,8 @@ class ConsumerAPITests(LoggedInTestCase):
         """
 
         self.msg_type = NotificationType(
-            name='open-edx.edx_notifications.lib.tests.test_publisher'
+            name='open-edx.edx_notifications.lib.tests.test_publisher',
+            renderer='edx_notifications.renderers.basic.BasicSubjectBodyRenderer',
         )
         register_notification_type(self.msg_type)
 
@@ -55,6 +60,28 @@ class ConsumerAPITests(LoggedInTestCase):
         self.client = Client()
         response = self.client.get(reverse('edx_notifications.consumer.notifications.count'))
         self.assertEqual(response.status_code, 403)
+
+    def test_get_renderer_templates(self):
+        """
+        Make sure we can get URLs to the Underscore templates for the
+        renderer that we registered for our MessageType
+        """
+
+        response = self.client.get(
+            reverse('edx_notifications.consumer.renderers.templates')
+        )
+        self.assertEqual(response.status_code, 200)
+
+        result_dict = json.loads(response.content)
+        self.assertEqual(len(result_dict), 1)
+        self.assertIn(
+            'edx_notifications.renderers.basic.BasicSubjectBodyRenderer',
+            result_dict
+        )
+        self.assertEqual(
+            result_dict['edx_notifications.renderers.basic.BasicSubjectBodyRenderer'],
+            BasicSubjectBodyRenderer().underscore_template_path
+        )
 
     def test_empty_notification_count(self):
         """

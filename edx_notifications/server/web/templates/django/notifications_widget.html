@@ -26,7 +26,10 @@ This HTML snippet assumes that jQuery been included in the page that is using th
     var counter_icon = new CounterIconView({
         el: $("#edx_notification_container"),
         pane_el: $("#edx_notification_pane"),
-        unread_notification_count_endpoint: "{% autoescape off %}{{ unread_notification_count_endpoint }}{% endautoescape %}",
-        user_notifications_endpoint: "{{ user_notifications_endpoint }}"
+        endpoints: {
+            unread_notification_count: "{% autoescape off %}{{ endpoints.unread_notification_count }}{% endautoescape %}",
+            user_notifications: "{% autoescape off %}{{ endpoints.user_notifications }}{% endautoescape %}",
+            renderer_templates_urls: "{% autoescape off %}{{ endpoints.renderer_templates_urls }}{% endautoescape %}"
+        }
     });
 </script>

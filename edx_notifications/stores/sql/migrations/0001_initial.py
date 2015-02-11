@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import datetime
+from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
@@ -11,6 +11,7 @@ class Migration(SchemaMigration):
         # Adding model 'SQLNotificationType'
         db.create_table('edx_notifications_notificationtype', (
             ('name', self.gf('django.db.models.fields.CharField')(max_length=255, primary_key=True)),
+            ('renderer', self.gf('django.db.models.fields.CharField')(max_length=255)),
         ))
         db.send_create_signal('edx_notifications', ['SQLNotificationType'])
 
@@ -99,7 +100,8 @@ class Migration(SchemaMigration):
         },
         'edx_notifications.sqlnotificationtype': {
             'Meta': {'object_name': 'SQLNotificationType', 'db_table': "'edx_notifications_notificationtype'"},
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'primary_key': 'True'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'primary_key': 'True'}),
+            'renderer': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         'edx_notifications.sqlusernotification': {
             'Meta': {'ordering': "['-created']", 'unique_together': "(('user_id', 'msg'),)", 'object_name': 'SQLUserNotification', 'db_table': "'edx_notifications_usernotification'"},

@@ -39,6 +39,7 @@ class NotificationTypeSerializer(serializers.Serializer):
     """
 
     name = serializers.CharField(max_length=255)
+    renderer = serializers.CharField(max_length=255)
 
     def restore_object(self, attrs, instance=None):
         """

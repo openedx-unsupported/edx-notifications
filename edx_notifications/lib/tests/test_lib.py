@@ -26,6 +26,10 @@ from edx_notifications.exceptions import (
     ItemNotFoundError,
 )
 
+from edx_notifications.renderers.renderer import (
+    clear_renderers
+)
+
 
 class TestPublisherLibrary(TestCase):
     """
@@ -37,9 +41,12 @@ class TestPublisherLibrary(TestCase):
         Initialize some data
         """
 
+        clear_renderers()
+
         self.test_user_id = 1001  # some bogus user identifier
         self.msg_type = NotificationType(
-            name='open-edx.edx_notifications.lib.tests.test_publisher'
+            name='open-edx.edx_notifications.lib.tests.test_publisher',
+            renderer='edx_notifications.renderers.basic.BasicSubjectBodyRenderer',
         )
         register_notification_type(self.msg_type)
 

@@ -24,6 +24,9 @@ class SQLNotificationType(models.Model):
     # the internal name is the primary key
     name = models.CharField(primary_key=True, max_length=255)
 
+    # the class of the renderer for this type
+    renderer = models.CharField(max_length=255)
+
     class Meta(object):
         """
         ORM metadata about this class
@@ -38,6 +41,7 @@ class SQLNotificationType(models.Model):
 
         return NotificationType(
             name=self.name,
+            renderer=self.renderer,
         )
 
     @classmethod
@@ -56,6 +60,7 @@ class SQLNotificationType(models.Model):
         """
 
         self.name = msg_type.name  # pylint: disable=attribute-defined-outside-init
+        self.renderer = msg_type.renderer
 
 
 class SQLNotificationMessage(TimeStampedModel):

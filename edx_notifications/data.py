@@ -52,6 +52,10 @@ class NotificationType(BaseDataObject):
     # None = no default
     default_channel = RelatedObjectField(NotificationChannel)
 
+    # renderer class - as a string - that will handle the rendering of
+    # this type
+    renderer = StringField()
+
 
 class NotificationMessage(BaseDataObject):
     """

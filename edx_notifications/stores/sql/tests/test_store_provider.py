@@ -37,7 +37,8 @@ class TestSQLStoreProvider(TestCase):
         """
 
         notification_type = NotificationType(
-            name='foo.bar.baz'
+            name='foo.bar.baz',
+            renderer='foo.renderer',
         )
 
         result = self.provider.save_notification_type(notification_type)
@@ -69,7 +70,7 @@ class TestSQLStoreProvider(TestCase):
         self.assertEqual(result, notification_type)
 
         # re-save and make sure the cache entry got invalidated
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(3):
             notification_type = self._save_notification_type()
 
         # since we invalidated the cached entry on the last save
@@ -189,7 +190,8 @@ class TestSQLStoreProvider(TestCase):
         """
 
         notification_type = NotificationType(
-            name='foo.bar.baz'
+            name='foo.bar.baz',
+            renderer='foo.renderer',
         )
 
         with self.assertNumQueries(3):
@@ -197,7 +199,7 @@ class TestSQLStoreProvider(TestCase):
 
         # This should be fine saving again, since nothing is changing
 
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(3):
             self.provider.save_notification_type(notification_type)
 
     def test_get_no_notifications_for_user(self):
@@ -245,7 +247,8 @@ class TestSQLStoreProvider(TestCase):
 
         msg_type2 = self.provider.save_notification_type(
             NotificationType(
-                name='foo.bar.another'
+                name='foo.bar.another',
+                renderer='foo.renderer',
             )
         )
 
