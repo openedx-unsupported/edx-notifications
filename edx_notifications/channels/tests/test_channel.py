@@ -101,11 +101,7 @@ class ChannelTests(TestCase):
             renderer='foo.renderer',
         )
 
-    def cleanUp(self):  # pylint: disable=invalid-name
-        """
-        Test tear down
-        """
-        reset_notification_channels()
+        self.addCleanup(reset_notification_channels)
 
     def test_cannot_create_instance(self):
         """

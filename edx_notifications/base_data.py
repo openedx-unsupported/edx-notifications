@@ -162,7 +162,9 @@ class DictField(TypedField):
                 serial = obj.isoformat()
                 return serial
 
-            return obj
+            raise TypeError(
+                "Could not provide JSON serializer for type {name}!".format(name=type(obj))
+            )
 
         return json.dumps(data, default=datetime_to_json)
 

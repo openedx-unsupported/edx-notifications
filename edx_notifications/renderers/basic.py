@@ -2,6 +2,8 @@
 Simple Subject/Body Underscore renderers
 """
 
+from django.templatetags.static import static
+
 from edx_notifications.renderers.renderer import BaseNotificationRenderer
 
 from edx_notifications.const import (
@@ -15,7 +17,9 @@ def path_to_underscore_template(name):
     system defined Underscore rendering templates
     """
 
-    return '/static/edx_notifications/templates/renderers/{name}'.format(name=name)
+    return static(
+        '/edx_notifications/templates/renderers/{name}'.format(name=name)
+    )
 
 
 class UnderscoreStaticFileRenderer(BaseNotificationRenderer):

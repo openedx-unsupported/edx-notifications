@@ -2,6 +2,7 @@
 Tests which exercise the MySQL test_data_provider
 """
 
+import mock
 from datetime import datetime
 
 from django.test import TestCase
@@ -218,6 +219,42 @@ class TestSQLStoreProvider(TestCase):
             self.assertFalse(
                 self.provider.get_notifications_for_user(self.test_user_id)
             )
+
+    @mock.patch('edx_notifications.const.MAX_NOTIFICATION_LIST_SIZE', 1)
+    def test_over_limit_counting(self):
+        """
+        Verifies that our counting operations will work as expected even when
+        our count is greater that the MAX_NOTIFICATION_LIST_SIZE which is
+        the maximum page size
+        """
+
+        self.assertEqual(const.MAX_NOTIFICATION_LIST_SIZE, 1)
+
+        msg_type = self._save_notification_type()
+
+        for __ in range(10):
+            msg = self.provider.save_notification_message(NotificationMessage(
+                namespace='namespace1',
+                msg_type=msg_type,
+                payload={
+                    'foo': 'bar'
+                }
+            ))
+
+            self.provider.save_user_notification(UserNotification(
+                user_id=self.test_user_id,
+                msg=msg
+            ))
+
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'namespace': 'namespace1',
+                }
+            ),
+            10
+        )
 
     def _setup_user_notifications(self):
         """
