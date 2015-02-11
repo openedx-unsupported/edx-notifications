@@ -2,7 +2,6 @@
 View handlers for HTML serving
 """
 
-from django.core.urlresolvers import reverse
 from django.template import RequestContext, loader
 from django.http import (
     HttpResponse,
@@ -15,15 +14,15 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
 
 from edx_notifications.lib.publisher import (
-    register_notification_type,
     publish_notification_to_user,
     get_notification_type,
 )
 
 from edx_notifications.data import (
     NotificationMessage,
-    NotificationType,
 )
+
+from edx_notifications.server.web.utils import get_notification_widget_context
 
 from .forms import *
 
@@ -49,23 +48,16 @@ def index(request):
 
     template = loader.get_template('index.html')
 
-    # Pass along API endpoints to Backbone models
-    unread_notification_count_endpoint = (
-        '{base_url}?read=False&unread=True'
-    ). format(base_url=reverse('edx_notifications.consumer.notifications.count'))
+    context_dict = {
+        'user': request.user,
+    }
 
-    context = RequestContext(
-        request,
-        {
-            'user': request.user,
-            'endpoints': {
-                'unread_notification_count': unread_notification_count_endpoint,
-                'user_notifications': reverse('edx_notifications.consumer.notifications'),
-                'renderer_templates_urls': reverse('edx_notifications.consumer.renderers.templates'),
-            }
-        }
-    )
-    return HttpResponse(template.render(context))
+    # call to the helper method to build up all the context we need
+    # to render the "notification_widget" that is embedded in our
+    # test page
+    context_dict.update(get_notification_widget_context())
+
+    return HttpResponse(template.render(RequestContext(request, context_dict)))
 
 
 @csrf_protect
@@ -73,10 +65,10 @@ def register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            user = User.objects.create_user(
-            username=form.cleaned_data['username'],
-            password=form.cleaned_data['password1'],
-            email=form.cleaned_data['email']
+            User.objects.create_user(
+                username=form.cleaned_data['username'],
+                password=form.cleaned_data['password1'],
+                email=form.cleaned_data['email']
             )
             return HttpResponseRedirect('/register/success/')
     else:

@@ -30,6 +30,10 @@ This HTML snippet assumes that jQuery been included in the page that is using th
             unread_notification_count: "{% autoescape off %}{{ endpoints.unread_notification_count }}{% endautoescape %}",
             user_notifications: "{% autoescape off %}{{ endpoints.user_notifications }}{% endautoescape %}",
             renderer_templates_urls: "{% autoescape off %}{{ endpoints.renderer_templates_urls }}{% endautoescape %}"
+        },
+        view_templates: {
+            notification_icon: "{% autoescape off %}{{ view_templates.notification_icon }}{% endautoescape %}",
+            notification_pane: "{% autoescape off %}{{ view_templates.notification_pane }}{% endautoescape %}",
         }
     });
 </script>

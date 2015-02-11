@@ -2,6 +2,7 @@ var CounterIconView = Backbone.View.extend({
     initialize: function(options){
         this.options = options;
         this.endpoints = options.endpoints;
+        this.view_templates = options.view_templates;
 
         /* initialize the model using the API endpoint URL that was passed into us */
         this.model = new CounterIconModel();
@@ -31,11 +32,11 @@ var CounterIconView = Backbone.View.extend({
     },
 
     render: function () {
+        var self = this;
         if (!this.fetched_template) {
-            var self = this;
 
             /* load Underscore template asynchronously on first load */
-            $.get("/static/edx_notifications/templates/underscore/notification_icon.html")
+            $.get(self.view_templates.notification_icon)
                 .done(function(template_data) {
 
                     /* convert to Underscore template object */
@@ -64,6 +65,7 @@ var CounterIconView = Backbone.View.extend({
             this.notification_pane = new NotificationPaneView({
                 el: this.options.pane_el,
                 endpoints: this.endpoints,
+                view_templates: this.view_templates
             });
         } else {
             this.notification_pane.show();

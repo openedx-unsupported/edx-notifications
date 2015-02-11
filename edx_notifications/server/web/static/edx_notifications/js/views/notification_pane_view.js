@@ -1,12 +1,13 @@
 var NotificationPaneView = Backbone.View.extend({
     initialize: function(options){
         this.endpoints = options.endpoints;
+        this.view_templates = options.view_templates;
 
         var self = this;
         /* get out main backbone view template */
-        $.get("/static/edx_notifications/templates/underscore/notification_pane.html")
+        $.get(this.view_templates.notification_pane)
             .done(function(template_data) {
-        /* convert to Underscore template object */
+                /* convert to Underscore template object */
                 self.fetched_template = _.template(template_data);
                 self.render();
             });
@@ -20,7 +21,7 @@ var NotificationPaneView = Backbone.View.extend({
         this.collection = new UserNotificationCollection();
 
         /* set the API endpoint that was passed into our initializer */
-        this.collection.url = this.endpoints.user_notifications
+        this.collection.url = this.endpoints.user_notifications;
 
         /* re-render if the model changes */
         this.listenTo(this.collection, 'change', this.collectionChanged);
@@ -37,9 +38,9 @@ var NotificationPaneView = Backbone.View.extend({
         */
         var self = this;
 
-        var number_to_fetch = 0
-        for (var renderer_class in data) {
-            if (data.hasOwnProperty(renderer_class)) {
+        var number_to_fetch = 0;
+        for (var item in data) {
+            if (data.hasOwnProperty(item)) {
                 number_to_fetch++;
             }
         }
@@ -52,7 +53,8 @@ var NotificationPaneView = Backbone.View.extend({
                 $.get(url).done(function(template_data) {
                     number_to_fetch--;
                     renderer_templates[renderer_class] = _.template(template_data);
-                    if (number_to_fetch == 0) {
+                    if (number_to_fetch === 0) {
+                        /* when we've loaded them all, then call render() again */
                         self.renderer_templates = renderer_templates;
                         self.render();
                     }
@@ -71,7 +73,7 @@ var NotificationPaneView = Backbone.View.extend({
         self.$el.addClass('ui-loading');
         this.collection.fetch({
             success: function(){
-                self.$el.removeClass('ui-loading')
+                self.$el.removeClass('ui-loading');
                 self.render();
             }
         });
@@ -95,7 +97,7 @@ var NotificationPaneView = Backbone.View.extend({
         /* and render each one */
 
         if (this.fetched_template !== null) {
-            var user_notifications =[]
+            var user_notifications =[];
             if (this.collection !== null && this.renderer_templates !== null) {
                 for (var i=0; i<this.collection.length; i++) {
                     var user_msg = this.collection.at(i);
@@ -104,6 +106,7 @@ var NotificationPaneView = Backbone.View.extend({
                     var renderer_class_name = msg_type.renderer;
                     user_notifications.push({
                         user_msg: user_msg,
+                        /* render the particular NotificationMessage */
                         html: this.renderer_templates[renderer_class_name](msg.payload),
                     });
                 }
