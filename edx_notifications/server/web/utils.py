@@ -5,6 +5,7 @@ Assortment of helper utility methods
 from django.templatetags.static import static
 from django.core.urlresolvers import reverse
 
+
 def get_template_path(template_name):
     """
     returns a full URL path to our template directory
@@ -17,7 +18,7 @@ def get_template_path(template_name):
     )
 
 
-def get_notification_widget_context():
+def get_notifications_widget_context():
     """
     As a convenience method, this will return all required
     context properties that the notifications_widget needs

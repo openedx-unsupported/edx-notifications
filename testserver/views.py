@@ -22,7 +22,7 @@ from edx_notifications.data import (
     NotificationMessage,
 )
 
-from edx_notifications.server.web.utils import get_notification_widget_context
+from edx_notifications.server.web.utils import get_notifications_widget_context
 
 from .forms import *
 
@@ -55,7 +55,7 @@ def index(request):
     # call to the helper method to build up all the context we need
     # to render the "notification_widget" that is embedded in our
     # test page
-    context_dict.update(get_notification_widget_context())
+    context_dict.update(get_notifications_widget_context())
 
     return HttpResponse(template.render(RequestContext(request, context_dict)))
 

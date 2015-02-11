@@ -22,10 +22,16 @@ This HTML snippet assumes that jQuery been included in the page that is using th
 
 
 <script type="text/javascript">
-    /* start up the root Notification view, which will bootstrap the whole front-end */
+    {% comment %} start up the root Notification view, which will bootstrap the whole front-end {% endcomment %}
     var counter_icon = new CounterIconView({
         el: $("#edx_notification_container"),
         pane_el: $("#edx_notification_pane"),
+
+        {% comment %}
+        NOTE: the following settings can be automatically added to your RenderContext by calling
+        edx_notifications.server.web.utils.get_notification_widget_context()
+        {% endcomment %}
+
         endpoints: {
             unread_notification_count: "{% autoescape off %}{{ endpoints.unread_notification_count }}{% endautoescape %}",
             user_notifications: "{% autoescape off %}{{ endpoints.user_notifications }}{% endautoescape %}",
