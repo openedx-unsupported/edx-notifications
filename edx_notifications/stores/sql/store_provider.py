@@ -109,6 +109,20 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         self._msg_type_cache[name] = data_object
         return data_object
 
+    def get_all_notification_types(self):  # pylint: disable=no-self-use
+        """
+        This returns a NotificationType object.
+        NOTE: NotificationTypes are supposed to be immutable during the
+        process lifetime. New Types can be added, but not updated.
+        Therefore we can memoize this function
+        """
+
+        query = SQLNotificationType.objects.all()
+
+        result_set = [item.to_data_object() for item in query]
+
+        return result_set
+
     def save_notification_type(self, msg_type):
         """
         Create or update a notification type

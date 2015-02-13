@@ -17,6 +17,11 @@
     <h2>Here are some actions you can take</h2>
     <form method='POST'>
         {% csrf_token %}
+        <label>Notification Type</label><select name='notification_type' />
+            {% for t in notification_types %}
+                <option value='{{t.name}}'>{{t.name}}</option>
+            {% endfor %}
+        </select>
         <input type='submit' name='add_notifications' value='add a notification' />
     </form>
 </body>

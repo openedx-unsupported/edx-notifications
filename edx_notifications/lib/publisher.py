@@ -44,6 +44,14 @@ def get_notification_type(type_name):
     return notification_store().get_notification_type(type_name)
 
 
+def get_all_notification_types():
+    """
+    Returns all know Notification types
+    """
+
+    return notification_store().get_all_notification_types()
+
+
 @contract(user_id='int,>0', msg=NotificationMessage)
 def publish_notification_to_user(user_id, msg):
     """

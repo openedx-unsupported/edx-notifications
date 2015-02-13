@@ -112,6 +112,13 @@ class BaseNotificationStoreProvider(object):
         raise NotImplementedError()
 
     @abc.abstractmethod
+    def get_all_notification_types(self):
+        """
+        This returns all registered notification types.
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
     def save_notification_type(self, msg_type):
         """
         Saves a new notification type, note that we do not support updates

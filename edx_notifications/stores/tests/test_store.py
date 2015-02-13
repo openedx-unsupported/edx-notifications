@@ -51,6 +51,12 @@ class BadImplementationStoreProvider(BaseNotificationStoreProvider):
         """
         super(BadImplementationStoreProvider, self).get_notification_type(name)
 
+    def get_all_notification_types(self):
+        """
+        Fake implementation of method which calls base class, which should throw NotImplementedError
+        """
+        super(BadImplementationStoreProvider, self).get_all_notification_types()
+
     def save_notification_type(self, msg_type):
         """
         Saves a new notification type, note that we do not support updates
@@ -148,6 +154,9 @@ class TestBaseNotificationDataProvider(TestCase):
 
         with self.assertRaises(NotImplementedError):
             bad_provider.get_notification_type(None)
+
+        with self.assertRaises(NotImplementedError):
+            bad_provider.get_all_notification_types()
 
         with self.assertRaises(NotImplementedError):
             bad_provider.save_notification_type(None)

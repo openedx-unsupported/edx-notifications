@@ -62,6 +62,12 @@ class TestSQLStoreProvider(TestCase):
         self.assertIsNotNone(result)
         self.assertEqual(result, notification_type)
 
+        with self.assertNumQueries(1):
+            result_set = self.provider.get_all_notification_types()
+
+        self.assertEqual(len(result_set), 1)
+        self.assertEqual(result_set[0], notification_type)
+
         # re-getting notification type should pull from cache
         # so there should be no round-trips to SQL
         with self.assertNumQueries(0):

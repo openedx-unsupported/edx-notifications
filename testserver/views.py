@@ -16,6 +16,7 @@ from django.http import HttpResponseRedirect
 from edx_notifications.lib.publisher import (
     publish_notification_to_user,
     get_notification_type,
+    get_all_notification_types,
 )
 
 from edx_notifications.data import (
@@ -34,7 +35,8 @@ def index(request):
     """
 
     if request.method == 'POST':
-        msg_type = get_notification_type('testserver.type1')
+        type_name = request.POST['notification_type']
+        msg_type = get_notification_type(type_name)
 
         msg = NotificationMessage(
             msg_type=msg_type,
@@ -50,6 +52,7 @@ def index(request):
 
     context_dict = {
         'user': request.user,
+        'notification_types': get_all_notification_types(),
     }
 
     # call to the helper method to build up all the context we need
