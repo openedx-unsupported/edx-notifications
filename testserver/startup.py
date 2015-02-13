@@ -4,6 +4,8 @@ One time initialization of the Notification subsystem
 
 import logging
 
+from django.dispatch import receiver
+
 from edx_notifications.lib.publisher import (
     register_notification_type,
 )
@@ -12,11 +14,15 @@ from edx_notifications.data import (
     NotificationType,
 )
 
+from edx_notifications import startup
+
 logger = logging.getLogger("testserver")
 
-def start_up():
+
+@receiver(startup.perform_type_registrations)
+def perform_type_registrations_handler(sender, **kwargs):  # pylint: disable=unused-argument
     """
-    Initialize the Notification subsystem
+    Register test notification types
     """
 
     logger.info('Registering NotificationTypes...')
@@ -27,3 +33,13 @@ def start_up():
             renderer='edx_notifications.renderers.basic.BasicSubjectBodyRenderer',
         )
     )
+
+
+def start_up():
+    """
+    Initialize the Notification subsystem
+    """
+
+    startup.initialize()
+
+

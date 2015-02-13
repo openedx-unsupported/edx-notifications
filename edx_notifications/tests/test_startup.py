@@ -1,20 +1,17 @@
 """
-Test background.py
+Tests for the startup process
 """
 
 from django.test import TestCase
 from django.dispatch import receiver
 
-from edx_notifications.background import (
-    perform_notification_scan,
-    fire_background_notification_check,
-)
+from edx_notifications import startup
 
 _SIGNAL_RAISED = False
 
 
-@receiver(perform_notification_scan)
-def verify_signal_receiver(sender, **kwargs):  # pylint: disable=unused-argument
+@receiver(startup.perform_type_registrations)
+def perform_type_registrations_handler(sender, **kwargs):  # pylint: disable=unused-argument
     """
     Simple handler
     """
@@ -22,9 +19,9 @@ def verify_signal_receiver(sender, **kwargs):  # pylint: disable=unused-argument
     _SIGNAL_RAISED = True
 
 
-class BackgroundTests(TestCase):
+class StartupTests(TestCase):
     """
-    Test cases for background.py
+    Test cases for startup.py
     """
 
     def setUp(self):
@@ -36,6 +33,6 @@ class BackgroundTests(TestCase):
         Verifies that a signal has been raised
         """
 
-        fire_background_notification_check()
+        startup.initialize()
 
         self.assertTrue(_SIGNAL_RAISED)
