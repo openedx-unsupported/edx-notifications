@@ -1,74 +1,69 @@
-var CounterIconView = Backbone.View.extend({
-    initialize: function(options){
-        this.options = options;
-        this.endpoints = options.endpoints;
-        this.view_templates = options.view_templates;
+;(function (define) {
 
-        /* initialize the model using the API endpoint URL that was passed into us */
-        this.model = new CounterIconModel();
-        this.model.url = this.endpoints.unread_notification_count;
+define([
+    'jquery',
+    'backbone',
+    '/static/edx_notifications/js/models/counter_icon_model.js',
+    '/static/edx_notifications/js/views/notification_pane_view.js',
+    'text!/static/edx_notifications/templates/notification_icon.html'
+], function ($, Backbone, CounterIconModel, NotificationPaneView, NotifcationIconUnderscoreTemplate) {
+    'use strict';
 
-        /* re-render if the model changes */
-        this.listenTo(this.model,'change', this.modelChanged);
+    return Backbone.View.extend({
+        initialize: function(options){
+            this.options = options;
+            this.endpoints = options.endpoints;
+            this.view_templates = options.view_templates;
 
-        /* make the async call to the backend REST API */
-        /* after it loads, the listenTo event will file and */
-        /* will call into the rendering */
-        this.model.fetch();
-    },
+            /* initialize the model using the API endpoint URL that was passed into us */
+            this.model = new CounterIconModel();
+            this.model.url = this.endpoints.unread_notification_count;
 
-    events: {
-        'click .edx-notifications-icon': 'showPane'
-    },
+            /* re-render if the model changes */
+            this.listenTo(this.model,'change', this.modelChanged);
 
-    /* cached notification_icon.html template */
-    fetched_template: null,
+            /* make the async call to the backend REST API */
+            /* after it loads, the listenTo event will file and */
+            /* will call into the rendering */
+            this.model.fetch();
+        },
 
-    /* cached notifications pane view */
-    notification_pane: null,
+        events: {
+            'click .edx-notifications-icon': 'showPane'
+        },
 
-    modelChanged: function() {
-        this.render();
-    },
+        /* cached notifications pane view */
+        notification_pane: null,
 
-    render: function () {
-        var self = this;
-        if (!this.fetched_template) {
+        template: null,
 
-            /* load Underscore template asynchronously on first load */
-            $.get(self.view_templates.notification_icon)
-                .done(function(template_data) {
+        modelChanged: function() {
+            this.render();
+        },
 
-                    /* convert to Underscore template object */
-                    self.fetched_template = _.template(template_data);
+        render: function () {
 
-                    /* now render template with our model */
-                    self.$el.html(
-                        self.fetched_template(
-                            self.model.toJSON()
-                        )
-                    );
-            });
-        } else {
-            /* we already have the Underscore template, so just render it with out model */
-            self.$el.html(
-                self.fetched_template(
-                    self.model.toJSON()
+            if (!this.template)
+                this.template = _.template(NotifcationIconUnderscoreTemplate);
+
+            this.$el.html(this.template(
+                    this.model.toJSON()
                 )
             );
-        }
-   },
+       },
 
-   showPane: function() {
-        if (!this.notification_pane) {
+       showPane: function() {
+            if (!this.notification_pane) {
 
-            this.notification_pane = new NotificationPaneView({
-                el: this.options.pane_el,
-                endpoints: this.endpoints,
-                view_templates: this.view_templates
-            });
-        } else {
-            this.notification_pane.show();
-        }
-   }
+                this.notification_pane = new NotificationPaneView({
+                    el: this.options.pane_el,
+                    endpoints: this.endpoints,
+                    view_templates: this.view_templates
+                });
+            } else {
+                this.notification_pane.show();
+            }
+       }
+    });
 });
+})(define || RequireJS.define);

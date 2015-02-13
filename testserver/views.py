@@ -12,6 +12,7 @@ from django.contrib.auth import logout
 from django.views.decorators.csrf import csrf_protect
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
+from django.templatetags.static import static
 
 from edx_notifications.lib.publisher import (
     publish_notification_to_user,
@@ -59,6 +60,9 @@ def index(request):
     # to render the "notification_widget" that is embedded in our
     # test page
     context_dict.update(get_notifications_widget_context())
+
+    # we always need to pass along the URL to the RequireJS main
+    context_dict['requirejs_main_url'] = static('js/main.js')
 
     return HttpResponse(template.render(RequestContext(request, context_dict)))
 
