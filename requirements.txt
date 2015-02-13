@@ -1,5 +1,5 @@
 # Django/Framework Packages
-django==1.4.12
+django==1.4.18
 django-model-utils==1.4.0
 South>=0.7.6
 python-dateutil==2.1

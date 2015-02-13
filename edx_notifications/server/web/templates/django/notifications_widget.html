@@ -7,31 +7,32 @@ This HTML snippet assumes that jQuery been included in the page that is using th
 
 {% endcomment %}
 
-<div id='edx_notification_container'></div>
+<div id='edx_notification_counter'></div>
 <div id="edx_notification_pane"></div>
 
-<script src="{{ STATIC_URL }}edx_notifications/js/vendor/underscore.js"></script>
-<script src="{{ STATIC_URL }}edx_notifications/js/vendor/backbone.js"></script>
-
-<script src="{{ STATIC_URL }}edx_notifications/js/models/counter_icon_model.js"></script>
-<script src="{{ STATIC_URL }}edx_notifications/js/models/user_notification_model.js"></script>
-<script src="{{ STATIC_URL }}edx_notifications/js/models/notification_collection_model.js"></script>
-
-<script src="{{ STATIC_URL }}edx_notifications/js/views/counter_icon_view.js"></script>
-<script src="{{ STATIC_URL }}edx_notifications/js/views/notification_pane_view.js"></script>
-
-
 <script type="text/javascript">
-    {% comment %} start up the root Notification view, which will bootstrap the whole front-end {% endcomment %}
-    var counter_icon = new CounterIconView({
-        el: $("#edx_notification_container"),
-        pane_el: $("#edx_notification_pane"),
 
-        {% comment %}
-        NOTE: the following settings can be automatically added to your RenderContext by calling
-        edx_notifications.server.web.utils.get_notification_widget_context()
-        {% endcomment %}
+requirejs.config({
+    paths: {
+        jquery: '/static/js/jquery-1.11.2.min',
+        backbone: '/static/js/backbone',
+        underscore: '/static/js/underscore',
+        text: '/static/js/text',
+        notifications_app: '/static/edx_notifications/js/app',
+        counter_icon_view: '/static/edx_notifications/js/views/counter_icon_view',
+        counter_icon_model: '/static/edx_notifications/js/models/counter_icon_model',
+        notification_pane_view: '/static/edx_notifications/js/views/notification_pane_view',
+        notification_collection: '/static/edx_notifications/js/collections/notification_collection',
+        user_notification_model: '/static/edx_notifications/js/models/user_notification_model'
+    }
+});
 
+require([
+    'notifications_app'
+], function (NotificationApp) {
+    'use strict';
+
+    var app = new NotificationApp({
         endpoints: {
             unread_notification_count: "{% autoescape off %}{{ endpoints.unread_notification_count }}{% endautoescape %}",
             user_notifications: "{% autoescape off %}{{ endpoints.user_notifications }}{% endautoescape %}",
@@ -42,4 +43,6 @@ This HTML snippet assumes that jQuery been included in the page that is using th
             notification_pane: "{% autoescape off %}{{ view_templates.notification_pane }}{% endautoescape %}",
         }
     });
+});
 </script>
+

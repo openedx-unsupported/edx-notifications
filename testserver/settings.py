@@ -29,6 +29,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'testserver',
     'rest_framework',
     'edx_notifications',
     'edx_notifications.server.web',
