@@ -1,3 +1,15 @@
+
+//Add ability to turn coverage off when the tests are run in debug mode
+var sourcePreprocessors = 'coverage';
+
+function isDebug(argument) {
+    return argument === 'debug';
+}
+if (process.argv.some(isDebug)) {
+    sourcePreprocessors = [];
+}
+
+
 module.exports = function(config) {
   config.set({
 
@@ -7,18 +19,19 @@ module.exports = function(config) {
         'karma-requirejs',
         'karma-firefox-launcher',
         'karma-phantomjs-launcher',
-        'karma-coverage'
+        'karma-coverage',
+        'karma-sinon'
     ],
 
     // start the browser
-    browsers: ['PhantomJS'],
+    browsers: ['Firefox'],
 
     //frameworks to use
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'sinon'],
 
     //patterns to load all files in child folders
     files: [
-        {pattern: 'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/mock-ajax.js'},
+        //{pattern: 'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/mock-ajax.js'},
         {pattern: 'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/jquery-1.11.2.min.js'},
         {pattern: 'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/underscore.js'},
         {pattern: 'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/backbone.js'},
@@ -36,9 +49,9 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-        'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/**/*.js': ['coverage'],
-        'edx_notifications/server/web/static/edx_notifications/js/models/**/*.js': ['coverage'],
-        'edx_notifications/server/web/static/edx_notifications/js/views/**/*.js': ['coverage']
+        'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/**/*.js': sourcePreprocessors,
+        'edx_notifications/server/web/static/edx_notifications/js/models/**/*.js': sourcePreprocessors,
+        'edx_notifications/server/web/static/edx_notifications/js/views/**/*.js': sourcePreprocessors
     },
 
     // test results reporter to use
@@ -75,4 +88,5 @@ module.exports = function(config) {
 
   });
 };
+
 
