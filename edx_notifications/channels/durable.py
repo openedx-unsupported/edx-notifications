@@ -36,16 +36,16 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
         # this new mapping will have the message in an unread state
         # NOTE: We need to set this up after msg is saved otherwise
         # we won't have it's primary key (id)
-        user_map = UserNotification(
+        user_msg = UserNotification(
             user_id=user_id,
             msg=_msg
         )
 
-        _user_map = store.save_user_notification(user_map)
+        _user_msg = store.save_user_notification(user_msg)
 
         # When we support in-broswer push notifications
         # such as Comet/WebSockets, this is where we should
         # signal the client to come fetch the
         # notification
 
-        return _user_map
+        return _user_msg

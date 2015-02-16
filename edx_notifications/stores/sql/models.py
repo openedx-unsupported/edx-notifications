@@ -56,7 +56,7 @@ class SQLNotificationType(models.Model):
 
     def load_from_data_object(self, msg_type):
         """
-        Hydrate ourselves from a passed in user_map
+        Hydrate ourselves from a passed in user_msg
         """
 
         self.name = msg_type.name  # pylint: disable=attribute-defined-outside-init
@@ -182,25 +182,25 @@ class SQLUserNotification(TimeStampedModel):
         )
 
     @classmethod
-    def from_data_object(cls, user_map):
+    def from_data_object(cls, user_msg):
         """
         create a ORM model object from a NotificationType
         """
 
         obj = SQLUserNotification()
-        obj.load_from_data_object(user_map)
+        obj.load_from_data_object(user_msg)
         return obj
 
-    def load_from_data_object(self, user_map):
+    def load_from_data_object(self, user_msg):
         """
-        Hydrate ourselves from a passed in user_map
+        Hydrate ourselves from a passed in user_msg
         """
 
-        self.id = user_map.id  # pylint: disable=attribute-defined-outside-init
-        self.user_id = user_map.user_id
-        self.msg = SQLNotificationMessage.from_data_object(user_map.msg)
-        self.read_at = user_map.read_at
-        self.user_context = DictField.to_json(user_map.user_context)
+        self.id = user_msg.id  # pylint: disable=attribute-defined-outside-init
+        self.user_id = user_msg.user_id
+        self.msg = SQLNotificationMessage.from_data_object(user_msg.msg)
+        self.read_at = user_msg.read_at
+        self.user_context = DictField.to_json(user_msg.user_context)
 
 
 class SQLNotificationChannel(models.Model):

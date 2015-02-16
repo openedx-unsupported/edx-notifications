@@ -445,7 +445,7 @@ class TestSQLStoreProvider(TestCase):
             )
             self.assertEqual(len(notifications), 0)
 
-    def test_bad_user_map_update(self):
+    def test_bad_user_msg_update(self):
         """
         Test exception when trying to update a non-existing
         ID

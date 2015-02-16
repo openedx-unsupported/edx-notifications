@@ -98,7 +98,7 @@ class BaseNotificationStoreProvider(object):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def save_user_notification(self, user_map):
+    def save_user_notification(self, user_msg):
         """
         Create or Update the mapping of a user to a notification.
         """

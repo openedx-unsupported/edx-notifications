@@ -77,7 +77,7 @@ class TestPublisherLibrary(TestCase):
             publish_notification_to_user('bad-id', msg)
 
         # now do happy path
-        sent_user_map = publish_notification_to_user(self.test_user_id, msg)
+        sent_user_msg = publish_notification_to_user(self.test_user_id, msg)
 
         # make sure type checking is happening
         with self.assertRaises(ContractNotRespected):
@@ -101,15 +101,12 @@ class TestPublisherLibrary(TestCase):
         self.assertEqual(len(notifications), 1)
         self.assertTrue(isinstance(notifications[0], UserNotification))
 
-        read_user_map = notifications[0]
-        self.assertEqual(read_user_map.user_id, self.test_user_id)
-        self.assertIsNone(read_user_map.read_at)  # should be unread
+        read_user_msg = notifications[0]
+        self.assertEqual(read_user_msg.user_id, self.test_user_id)
+        self.assertIsNone(read_user_msg.read_at)  # should be unread
 
-        # print 'read_user_map = {}'.format(read_user_map)
-        # print 'sent_user_map = {}'.format(sent_user_map)
-
-        self.assertEqual(read_user_map, sent_user_map)
-        self.assertEqual(read_user_map.msg, sent_user_map.msg)
+        self.assertEqual(read_user_msg, sent_user_msg)
+        self.assertEqual(read_user_msg.msg, sent_user_msg.msg)
 
     def test_marking_read_state(self):
         """
@@ -125,10 +122,10 @@ class TestPublisherLibrary(TestCase):
         )
 
         # now do happy path
-        sent_user_map = publish_notification_to_user(self.test_user_id, msg)
+        sent_user_msg = publish_notification_to_user(self.test_user_id, msg)
 
         # now mark msg as read by this user
-        mark_notification_read(self.test_user_id, sent_user_map.msg.id)
+        mark_notification_read(self.test_user_id, sent_user_msg.msg.id)
 
         # shouldn't be counted in unread counts
         self.assertEquals(
@@ -155,7 +152,7 @@ class TestPublisherLibrary(TestCase):
         )
 
         # now mark msg as unread by this user
-        mark_notification_read(self.test_user_id, sent_user_map.msg.id, read=False)
+        mark_notification_read(self.test_user_id, sent_user_msg.msg.id, read=False)
 
         # Should be counted in unread counts
         self.assertEquals(
@@ -195,8 +192,8 @@ class TestPublisherLibrary(TestCase):
         )
 
         # publish that
-        sent_user_map = publish_notification_to_user(self.test_user_id, msg)
+        sent_user_msg = publish_notification_to_user(self.test_user_id, msg)
 
         with self.assertRaises(ItemNotFoundError):
             # this user doesn't have this notification!
-            mark_notification_read(100, sent_user_map.msg.id)
+            mark_notification_read(100, sent_user_msg.msg.id)

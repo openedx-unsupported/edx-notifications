@@ -276,20 +276,20 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
 
         return result_set
 
-    def save_user_notification(self, user_map):
+    def save_user_notification(self, user_msg):
         """
         Create or Update the mapping of a user to a notification.
         """
 
-        if user_map.id:
+        if user_msg.id:
             try:
-                obj = SQLUserNotification.objects.get(id=user_map.id)
-                obj.load_from_data_object(user_map)
+                obj = SQLUserNotification.objects.get(id=user_msg.id)
+                obj.load_from_data_object(user_msg)
             except ObjectDoesNotExist:
-                msg = "Could not find SQLUserNotification with ID {_id}".format(_id=user_map.id)
+                msg = "Could not find SQLUserNotification with ID {_id}".format(_id=user_msg.id)
                 raise ItemNotFoundError(msg)
         else:
-            obj = SQLUserNotification.from_data_object(user_map)
+            obj = SQLUserNotification.from_data_object(user_msg)
 
         obj.save()
 
