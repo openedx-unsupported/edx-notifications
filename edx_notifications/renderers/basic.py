@@ -30,7 +30,14 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
     templates must be able to be fetched via a public HTTP request
     """
 
-    underscore_template_path = None
+    underscore_template_name = None
+
+    def __init__(self, template_name=None):
+        """
+        Initializer
+        """
+        if template_name:
+            self.underscore_template_name = template_name
 
     def can_render_format(self, render_format):
         """
@@ -56,8 +63,8 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
         Return a path to where a client can get the template
         """
 
-        if render_format == RENDER_FORMAT_UNDERSCORE and self.underscore_template_path:
-            return self.underscore_template_path
+        if render_format == RENDER_FORMAT_UNDERSCORE and self.underscore_template_name:
+            return path_to_underscore_template(self.underscore_template_name)
 
         raise NotImplementedError()
 
@@ -67,4 +74,4 @@ class BasicSubjectBodyRenderer(UnderscoreStaticFileRenderer):
     Return the appropriate Underscore template for this notification type
     """
 
-    underscore_template_path = path_to_underscore_template('basic_subject_body.html')
+    underscore_template_name = 'basic_subject_body.html'

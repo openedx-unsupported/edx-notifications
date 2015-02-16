@@ -28,6 +28,35 @@ from edx_notifications.server.web.utils import get_notifications_widget_context
 from .forms import *
 
 
+CANNED_TEST_PAYLOAD = {
+    'open-edx.lms.discussions.reply-to-thread': {
+        'original_poster_id': 1,
+        'action_user_id': 2,
+        'action_username': 'testuser',
+        'thread_title': 'A demo posting to the discussion forums',
+        'link_to_thread': 'http://localhost',
+    },
+    'open-edx.lms.discussions.thread-followed': {
+        'original_poster_id': 1,
+        'action_user_id': 2,
+        'action_username': 'testuser',
+        'thread_title': 'A demo posting to the discussion forums',
+        'link_to_thread': 'http://localhost',
+    },
+    'open-edx.lms.discussions.post-upvoted': {
+        'original_poster_id': 1,
+        'action_user_id': 2,
+        'action_username': 'testuser',
+        'thread_title': 'A demo posting to the discussion forums',
+        'link_to_thread': 'http://localhost',
+    },
+    'testserver.type1': {
+        'subject': 'Test Notification',
+        'body': 'Here is test notification that has a simple subject and body',
+    }
+}
+
+
 @login_required
 def index(request):
     """
@@ -40,10 +69,7 @@ def index(request):
 
         msg = NotificationMessage(
             msg_type=msg_type,
-            payload={
-                'subject': 'Test Notification',
-                'body': 'Here is test notification that has a simple subject and body',
-            }
+            payload=CANNED_TEST_PAYLOAD[type_name],
         )
 
         publish_notification_to_user(request.user.id, msg)

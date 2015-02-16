@@ -50,9 +50,9 @@ var NotificationPaneView = Backbone.View.extend({
         for (var renderer_class in data) {
             if (data.hasOwnProperty(renderer_class)) {
                 var url = data[renderer_class];
-                $.get(url).done(function(template_data) {
+                $.ajax({url: url, context: renderer_class}).done(function(template_data) {
                     number_to_fetch--;
-                    renderer_templates[renderer_class] = _.template(template_data);
+                    renderer_templates[this] = _.template(template_data);
                     if (number_to_fetch === 0) {
                         /* when we've loaded them all, then call render() again */
                         self.renderer_templates = renderer_templates;

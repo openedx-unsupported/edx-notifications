@@ -3,12 +3,13 @@ File to support the startup of the Notification subsystem. This should be called
 at least once at the beginning of any process lifecycle
 """
 
-from django.dispatch import Signal
+from edx_notifications.signals import perform_type_registrations
 
-
-# Signal to all receivers that they should go register their NotificationTypes into
-# the subsystem
-perform_type_registrations = Signal(providing_args=[])  # pylint: disable=invalid-name
+# This is unfortunate, but to have the standard Open edX
+# NotificationTypes get registered on startup we have
+# to import the modules, otherwise, they will
+# not register their Django signal receivers
+from edx_notifications.openedx import forums  # pylint: disable=unused-import
 
 
 def initialize():

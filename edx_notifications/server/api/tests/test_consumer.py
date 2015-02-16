@@ -29,10 +29,6 @@ from edx_notifications.data import (
     NotificationMessage,
 )
 
-from edx_notifications.renderers.basic import (
-    BasicSubjectBodyRenderer
-)
-
 from edx_notifications.server.api.urls import urlpatterns
 
 
@@ -87,10 +83,6 @@ class ConsumerAPITests(LoggedInTestCase):
         self.assertIn(
             'edx_notifications.renderers.basic.BasicSubjectBodyRenderer',
             result_dict
-        )
-        self.assertEqual(
-            result_dict['edx_notifications.renderers.basic.BasicSubjectBodyRenderer'],
-            BasicSubjectBodyRenderer().underscore_template_path
         )
 
     def test_empty_notification_count(self):
