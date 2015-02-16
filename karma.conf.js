@@ -13,25 +13,28 @@ if (process.argv.some(isDebug)) {
 module.exports = function(config) {
   config.set({
 
-    // plugins required for running the karma tests
+    basePath: '',
+
+    //plugins required for running the karma tests
     plugins:[
         'karma-jasmine',
         'karma-requirejs',
+        'karma-jasmine-jquery',
         'karma-firefox-launcher',
         'karma-phantomjs-launcher',
+        'karma-chrome-launcher',
         'karma-coverage',
         'karma-sinon'
     ],
 
     // start the browser
-    browsers: ['Firefox'],
+    browsers: ['PhantomJS'],
 
     //frameworks to use
-    frameworks: ['jasmine', 'sinon'],
+    frameworks: ['jasmine-jquery', 'jasmine',  'sinon'],
 
     //patterns to load all files in child folders
     files: [
-        //{pattern: 'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/mock-ajax.js'},
         {pattern: 'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/jquery-1.11.2.min.js'},
         {pattern: 'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/underscore.js'},
         {pattern: 'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/backbone.js'},
@@ -39,7 +42,7 @@ module.exports = function(config) {
         {pattern: 'edx_notifications/server/web/static/edx_notifications/js/models/counter_icon_model.js'},
         {pattern: 'edx_notifications/server/web/static/edx_notifications/js/models/notification_collection_model.js'},
         {pattern: 'edx_notifications/server/web/static/edx_notifications/js/views/*.js'},
-        {pattern: 'edx_notifications/server/web/static/edx_notifications/js/test/specs/counter_icon_view_spec.js'}
+        {pattern: 'edx_notifications/server/web/static/edx_notifications/js/test/specs/counter_icon_view_spec.js'},
 //        {pattern: 'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/**/*.js'},
 //        {pattern: 'edx_notifications/server/web/static/edx_notifications/js/models/**/*.js'},
 //        {pattern: 'edx_notifications/server/web/static/edx_notifications/js/views/**/*.js'}
