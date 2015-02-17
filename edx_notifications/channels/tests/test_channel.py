@@ -83,6 +83,25 @@ _NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS = {
 }
 
 
+class BadChannel(BaseNotificationChannelProvider):
+    """
+    A poorly formed Channel for testing purposes
+    """
+
+    def dispatch_notification_to_user(self, user_id, msg):
+        """
+        This will raise an error
+        """
+        raise super(BadChannel, self).dispatch_notification_to_user(user_id, msg)
+
+    def bulk_dispatch_notification(self, user_ids, msg):
+        """
+        Perform a bulk dispatch of the notification message to
+        all user_ids that will be enumerated over in user_ids.
+        """
+        raise super(BadChannel, self).bulk_dispatch_notification(user_ids, msg)
+
+
 @override_settings(NOTIFICATION_CHANNEL_PROVIDERS=_NOTIFICATION_CHANNEL_PROVIDERS)
 @override_settings(NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS=_NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS)
 class ChannelTests(TestCase):
@@ -199,3 +218,15 @@ class ChannelTests(TestCase):
 
         with self.assertRaises(ImproperlyConfigured):
             get_notification_channel(self.test_user_id, self.test_msg_type)
+
+    def test_bad_channel(self):
+        """
+        This will assert that a derived class from BaseChannelProvider which
+        calls into the base will throw the NotImplementedError
+        """
+
+        with self.assertRaises(NotImplementedError):
+            BadChannel().dispatch_notification_to_user(None, None)
+
+        with self.assertRaises(NotImplementedError):
+            BadChannel().bulk_dispatch_notification(None, None)

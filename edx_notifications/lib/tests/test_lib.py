@@ -5,15 +5,17 @@ Tests for the publisher.py and consumer.py methods
 from django.test import TestCase
 from contracts import ContractNotRespected
 
+from edx_notifications import const
 from edx_notifications.lib.publisher import (
     publish_notification_to_user,
-    register_notification_type
+    bulk_publish_notification_to_users,
+    register_notification_type,
 )
 
 from edx_notifications.lib.consumer import (
     get_notifications_count_for_user,
     get_notifications_for_user,
-    mark_notification_read
+    mark_notification_read,
 )
 
 from edx_notifications.data import (
@@ -107,6 +109,66 @@ class TestPublisherLibrary(TestCase):
 
         self.assertEqual(read_user_msg, sent_user_msg)
         self.assertEqual(read_user_msg.msg, sent_user_msg.msg)
+
+    def test_bulk_publish_notification_list(self):
+        """
+        Make sure we can bulk publish to a number of users
+        passing in a list
+        """
+
+        msg = NotificationMessage(
+            namespace='test-runner',
+            msg_type=self.msg_type,
+            payload={
+                'foo': 'bar'
+            }
+        )
+
+        # now send to more than our internal chunking size
+        sent_user_msg = bulk_publish_notification_to_users(
+            [user_id for user_id in range(1, const.MAX_BULK_USER_NOTIFICATION_SIZE * 2 + 1)],
+            msg
+        )
+
+        # now read them all back
+        for user_id in range(1, const.MAX_BULK_USER_NOTIFICATION_SIZE * 2 + 1):
+            notifications = get_notifications_for_user(user_id)
+
+            self.assertTrue(isinstance(notifications, list))
+            self.assertEqual(len(notifications), 1)
+            self.assertTrue(isinstance(notifications[0], UserNotification))
+
+    def test_bulk_publish_notification_generator(self):
+        """
+        Make sure we can bulk publish to a number of users
+        passing in a generator function
+        """
+
+        msg = NotificationMessage(
+            namespace='test-runner',
+            msg_type=self.msg_type,
+            payload={
+                'foo': 'bar'
+            }
+        )
+
+        def _user_id_generator():
+            for user_id in range(1, 100):
+                yield user_id
+
+        # now send to more than our internal chunking size
+        sent_user_msg = bulk_publish_notification_to_users(
+            _user_id_generator(),
+            msg
+        )
+
+        # now read them all back
+        for user_id in range(1, 100):
+            notifications = get_notifications_for_user(user_id)
+
+            self.assertTrue(isinstance(notifications, list))
+            self.assertEqual(len(notifications), 1)
+            self.assertTrue(isinstance(notifications[0], UserNotification))
 
     def test_marking_read_state(self):
         """

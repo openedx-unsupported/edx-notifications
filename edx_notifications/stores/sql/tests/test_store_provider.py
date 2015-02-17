@@ -14,7 +14,8 @@ from edx_notifications.data import (
     UserNotification
 )
 from edx_notifications.exceptions import (
-    ItemNotFoundError
+    ItemNotFoundError,
+    BulkOperationTooLarge
 )
 from edx_notifications import const
 
@@ -579,3 +580,51 @@ class TestSQLStoreProvider(TestCase):
             self.assertEqual(len(notifications), 1)
             # most recent one should be first, so msg1 should be 2nd
             self.assertEqual(notifications[0].msg, msg1)
+
+    def test_bulk_user_notification_create(self):
+        """
+        Test that we can create new UserNotifications using an optimized
+        code path to minimize round trips to the database
+        """
+
+        msg_type = self._save_notification_type()
+
+        # set up some notifications
+
+        msg = self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace1',
+            msg_type=msg_type,
+            payload={
+                'foo': 'bar',
+                'one': 1,
+                'none': None,
+                'datetime': datetime.utcnow(),
+                'iso8601-fakeout': '--T::',  # something to throw off the iso8601 parser heuristic
+            }
+        ))
+
+        user_msgs = []
+        for user_id in range(const.MAX_BULK_USER_NOTIFICATION_SIZE):
+            user_msgs.append(
+                UserNotification(user_id=user_id, msg=msg)
+            )
+
+        # assert that this only takes one round-trip to the database
+        # to insert all of them
+        with self.assertNumQueries(1):
+            self.provider.bulk_create_user_notification(user_msgs)
+
+        # now make sure that we can query each one
+        for user_id in range(const.MAX_BULK_USER_NOTIFICATION_SIZE):
+            notifications = self.provider.get_notifications_for_user(user_id)
+
+            self.assertEqual(len(notifications), 1)
+            self.assertEqual(notifications[0].msg, msg)
+
+        # now test if we send in a size too large that an exception is raised
+        user_msgs.append(
+            UserNotification(user_id=user_id, msg=msg)
+        )
+
+        with self.assertRaises(BulkOperationTooLarge):
+            self.provider.bulk_create_user_notification(user_msgs)

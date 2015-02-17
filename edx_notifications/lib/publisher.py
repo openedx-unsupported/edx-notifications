@@ -70,10 +70,6 @@ def publish_notification_to_user(user_id, msg):
         fields
     """
 
-    # make sure user_id is an integer
-    if not isinstance(user_id, int):
-        raise TypeError("user_id must be an integer")
-
     # validate the msg, this will raise a ValidationError if there
     # is something malformatted or missing in the NotificationMessage
     msg.validate()
@@ -94,3 +90,34 @@ def publish_notification_to_user(user_id, msg):
     #
 
     return user_msg
+
+
+@contract(msg=NotificationMessage)
+def bulk_publish_notification_to_users(user_ids, msg):
+    """
+    This top level API method will publish a notification
+    to a user.
+
+    Ultimately this method will look up the user's preference
+    to which NotificationChannel to distribute this over.
+
+    ARGS:
+        - user_ids: an iterator that we can enumerate over, say a list or a generator
+        - msg: A NotificationMessage
+
+    """
+
+    # validate the msg, this will raise a ValidationError if there
+    # is something malformatted or missing in the NotificationMessage
+    msg.validate()
+
+    # get the system defined msg_type -> channel mapping
+    # note, when we enable user preferences, we will
+    # have to change this
+    channel = get_notification_channel(None, msg.msg_type)
+
+    channel.bulk_dispatch_notification(user_ids, msg)
+
+    #
+    # Here is where we will tie into the Analytics pipeline
+    #

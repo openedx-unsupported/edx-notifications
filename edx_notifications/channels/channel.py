@@ -117,6 +117,9 @@ def get_notification_channel(user_id, msg_type):
     Returns the appropriate NotificationChannel
     for this user and msg_type.
 
+    If user_id is None, then we only perform a system defined
+    mapping.
+
     Ultimately, this will be user-selectable, e.g.
     'send my discussion forum notifications to my mobile device via SMS'
     but for now, we're always mapping to the system default
@@ -131,7 +134,10 @@ def get_notification_channel(user_id, msg_type):
         _init_channel_providers()
 
     # first see what the user preference is
-    channel = _get_channel_preference(user_id, msg_type)  # pylint: disable=assignment-from-none
+    channel = None
+
+    if user_id:
+        channel = _get_channel_preference(user_id, msg_type)  # pylint: disable=assignment-from-none
     if not channel:
         channel = _get_system_channel_mapping(msg_type.name)
 
@@ -202,5 +208,13 @@ class BaseNotificationChannelProvider(object):
         Send a notification to a user. It is assumed that
         'user_id' and 'msg' are valid and have already passed
         all necessary validations
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def bulk_dispatch_notification(self, user_ids, msg):
+        """
+        Perform a bulk dispatch of the notification message to
+        all user_ids that will be enumerated over in user_ids.
         """
         raise NotImplementedError()

@@ -105,6 +105,18 @@ class BaseNotificationStoreProvider(object):
         raise NotImplementedError()
 
     @abc.abstractmethod
+    def bulk_create_user_notification(self, user_msgs):
+        """
+        This is an optimization for bulk creating *new* UserNotification
+        objects in the database. Since we want to support fan-outs of messages,
+        we may need to insert 10,000's (or 100,000's) of objects as optimized
+        as possible.
+
+        NOTE: This method cannot update existing UserNotifications, only create them
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
     def get_notification_type(self, name):
         """
         This returns a NotificationType object.

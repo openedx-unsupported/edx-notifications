@@ -113,7 +113,6 @@ class BaseDataObjectTests(TestCase):
         )
 
         self.assertTrue(isinstance(obj.test_int_field, int))
-        print type(obj.test_dict_field)
         self.assertTrue(isinstance(obj.test_dict_field, dict))
         self.assertTrue(isinstance(obj.test_class_field, NotificationMessage))
 

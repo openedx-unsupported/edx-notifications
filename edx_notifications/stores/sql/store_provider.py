@@ -9,7 +9,8 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from edx_notifications.stores.store import BaseNotificationStoreProvider
 from edx_notifications.exceptions import (
-    ItemNotFoundError
+    ItemNotFoundError,
+    BulkOperationTooLarge,
 )
 from edx_notifications import const
 from edx_notifications.stores.sql.models import (
@@ -294,3 +295,30 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         obj.save()
 
         return obj.to_data_object()
+
+    def bulk_create_user_notification(self, user_msgs):
+        """
+        This is an optimization for bulk creating *new* UserNotification
+        objects in the database. Since we want to support fan-outs of messages,
+        we may need to insert 10,000's (or 100,000's) of objects as optimized
+        as possible.
+
+        NOTE: this method will return None, the primary key of the user_msgs
+              that was created will not be returned (limitation of Django ORM)
+
+        NOTE: This method cannot update existing UserNotifications, only create them.
+        NOTE: It is assumed that user_msgs is already chunked in an appropriate size.
+        """
+
+        if len(user_msgs) > const.MAX_BULK_USER_NOTIFICATION_SIZE:
+            msg = (
+                'You have passed in a user_msgs list of size {length} but the size '
+                'limit is {max}.'.format(length=len(user_msgs), max=const.MAX_BULK_USER_NOTIFICATION_SIZE)
+            )
+            raise BulkOperationTooLarge(msg)
+
+        objs = []
+        for user_msg in user_msgs:
+            objs.append(SQLUserNotification.from_data_object(user_msg))
+
+        SQLUserNotification.objects.bulk_create(objs, batch_size=const.MAX_BULK_USER_NOTIFICATION_SIZE)

@@ -4,6 +4,7 @@ that saves Notifications to a database for later
 retrieval
 """
 
+from edx_notifications import const
 from edx_notifications.channels.channel import BaseNotificationChannelProvider
 
 from edx_notifications.stores.store import notification_store
@@ -49,3 +50,34 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
         # notification
 
         return _user_msg
+
+    def bulk_dispatch_notification(self, user_ids, msg):
+        """
+        Perform a bulk dispatch of the notification message to
+        all user_ids that will be enumerated over in user_ids.
+
+        NOTE: We will chunk together up to MAX_BULK_USER_NOTIFICATION_SIZE
+        """
+
+        store = notification_store()
+
+        _msg = store.save_notification_message(msg)
+
+        user_msgs = []
+
+        cnt = 0
+        for user_id in user_ids:
+            user_msgs.append(
+                UserNotification(
+                    user_id=user_id,
+                    msg=_msg
+                )
+            )
+            cnt = cnt + 1
+            if cnt == const.MAX_BULK_USER_NOTIFICATION_SIZE:
+                store.bulk_create_user_notification(user_msgs)
+                user_msgs = []
+                cnt = 0
+
+        if user_msgs:
+            store.bulk_create_user_notification(user_msgs)

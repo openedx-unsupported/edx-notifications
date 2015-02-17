@@ -26,3 +26,9 @@ class ItemIntegrityError(Exception):
     """
     Thrown when something to have an integrity error in our database
     """
+
+
+class BulkOperationTooLarge(Exception):
+    """
+    Thrown when a bulk operation is determined to be too large
+    """
