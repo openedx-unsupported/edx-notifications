@@ -4,6 +4,7 @@ Tests for the publisher.py and consumer.py methods
 
 from django.test import TestCase
 from contracts import ContractNotRespected
+from django.contrib.auth.models import User
 
 from edx_notifications import const
 from edx_notifications.lib.publisher import (
@@ -125,7 +126,7 @@ class TestPublisherLibrary(TestCase):
         )
 
         # now send to more than our internal chunking size
-        sent_user_msg = bulk_publish_notification_to_users(
+        bulk_publish_notification_to_users(
             [user_id for user_id in range(1, const.MAX_BULK_USER_NOTIFICATION_SIZE * 2 + 1)],
             msg
         )
@@ -157,7 +158,7 @@ class TestPublisherLibrary(TestCase):
                 yield user_id
 
         # now send to more than our internal chunking size
-        sent_user_msg = bulk_publish_notification_to_users(
+        bulk_publish_notification_to_users(
             _user_id_generator(),
             msg
         )
@@ -165,6 +166,43 @@ class TestPublisherLibrary(TestCase):
         # now read them all back
         for user_id in range(1, 100):
             notifications = get_notifications_for_user(user_id)
+
+            self.assertTrue(isinstance(notifications, list))
+            self.assertEqual(len(notifications), 1)
+            self.assertTrue(isinstance(notifications[0], UserNotification))
+
+    def test_bulk_publish_notification_orm_query(self):
+        """
+        Make sure we can bulk publish to a number of users
+        passing in a resultset from a Django ORM query
+        """
+
+        # set up some test users in Django User's model
+        User(username='tester1').save()
+        User(username='tester2').save()
+        User(username='tester3').save()
+
+        msg = NotificationMessage(
+            namespace='test-runner',
+            msg_type=self.msg_type,
+            payload={
+                'foo': 'bar'
+            }
+        )
+
+        resultset = User.objects.values_list('id', flat=True).all()
+
+        num_sent = bulk_publish_notification_to_users(
+            resultset,
+            msg
+        )
+
+        # make sure we sent 3
+        self.assertEqual(num_sent, 3)
+
+        # now read them back
+        for user in User.objects.all():
+            notifications = get_notifications_for_user(user.id)
 
             self.assertTrue(isinstance(notifications, list))
             self.assertEqual(len(notifications), 1)

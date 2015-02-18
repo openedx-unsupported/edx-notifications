@@ -57,6 +57,9 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
         all user_ids that will be enumerated over in user_ids.
 
         NOTE: We will chunk together up to MAX_BULK_USER_NOTIFICATION_SIZE
+
+        user_ids should be a list, a generator function, or a django.db.models.query.ValuesListQuerySet
+        when directly feeding in a Django ORM queryset, where we select just the id column of the user
         """
 
         store = notification_store()
@@ -66,6 +69,7 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
         user_msgs = []
 
         cnt = 0
+        total = 0
         for user_id in user_ids:
             user_msgs.append(
                 UserNotification(
@@ -74,6 +78,7 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
                 )
             )
             cnt = cnt + 1
+            total = total + 1
             if cnt == const.MAX_BULK_USER_NOTIFICATION_SIZE:
                 store.bulk_create_user_notification(user_msgs)
                 user_msgs = []
@@ -81,3 +86,5 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
 
         if user_msgs:
             store.bulk_create_user_notification(user_msgs)
+
+        return total
