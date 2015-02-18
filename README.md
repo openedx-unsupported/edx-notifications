@@ -107,7 +107,7 @@ test frameworks.
 
 
 Bok-Choy Tests
---------------------------------
+--------------
 
 Bok-choy tests are present in the directory
 
@@ -115,21 +115,54 @@ Bok-choy tests are present in the directory
 /testserver/test/acceptance
 ```
 
-The global variables are defined in __init__.py file at
-
-```
-testserver/test/acceptance/pages/__init__.py
-```
-
-You may want to set or change variable values before running the tests. Do change the
-user name on rerunning the tests as the registration process is included in tests and
-tests will fail if user is already registered
-
 To run these tests just use the following command
 
 ```
-bash run\_bokchoy\_tests.sh
+bash run_bokchoy_tests.sh
 ```
+
+Jasmine Tests
+--------------
+
+
+Before running Jasmine tests you need to install node.js, you can get it from
+[here ](http://nodejs.org "get Node.JS from here")
+
+After installing node.js just run the following command, it install all the required software for running jasmine tests.
+
+```
+npm install
+```
+
+To run the tests in normal mode with coverage enabled use following command
+
+```
+gulp test
+```
+
+To run the tests in debug mode use
+
+```
+gulp debug
+```
+
+This will start the tests in debug mode, coverage is turned off in debug mode so it will always show coverage of 0/0 in
+debug mode
+
+
+Writing Jasmine Tests
+
+Jasmine tests are present in the directory
+
+```
+/edx_notifications/server/web/static/edx_notifications/js/test/spec
+```
+
+While creating a new test file make sure that file name ends in _Spec.js
+
+Note: Jasmine checks the presence of js files in the folder mentioned in karma.config.js file, if any new directory
+is added in the code, it's path should be added to karma.config
+
 
 How to Contribute
 -----------------
