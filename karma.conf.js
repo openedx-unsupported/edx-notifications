@@ -48,9 +48,9 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-        'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/**/*.js': sourcePreprocessors,
-        'edx_notifications/server/web/static/edx_notifications/js/models/**/*.js': sourcePreprocessors,
-        'edx_notifications/server/web/static/edx_notifications/js/views/**/*.js': sourcePreprocessors
+        'edx_notifications/server/web/static/edx_notifications/js/models/*.js': sourcePreprocessors,
+        'edx_notifications/server/web/static/edx_notifications/js/collections/*.js': sourcePreprocessors,
+        'edx_notifications/server/web/static/edx_notifications/js/views/*.js': sourcePreprocessors
     },
 
     // test results reporter to use
