@@ -37,15 +37,13 @@ module.exports = function(config) {
     files: [
         {pattern: 'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/*.js', included:false},
         {pattern: 'edx_notifications/server/web/static/edx_notifications/img/*.jpg', included:false},
-        {pattern:'edx_notifications/server/web/static/edx_notifications/templates/*.html', included:false},
+        {pattern: 'edx_notifications/server/web/static/edx_notifications/templates/*.html', included:false},
         {pattern: 'edx_notifications/server/web/static/edx_notifications/js/collections/*.js', included:false},
         {pattern: 'edx_notifications/server/web/static/edx_notifications/js/models/*.js', included:false},
         {pattern: 'edx_notifications/server/web/static/edx_notifications/js/views/*.js', included:false},
         {pattern: 'edx_notifications/server/web/static/edx_notifications/js/test/**/*Spec.js', included:false},
         'edx_notifications/server/web/static/edx_notifications/js/test/test-main.js'
-
     ],
-
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor

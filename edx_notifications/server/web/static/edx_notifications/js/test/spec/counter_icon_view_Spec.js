@@ -9,7 +9,6 @@ define([
 ], function ($, Backbone, CounterIconView, NotificationIcon, NotificationPane) {
     'use strict';
 
-
 describe("CounterIconView", function(){
 
     beforeEach(function(){
@@ -41,16 +40,6 @@ describe("CounterIconView", function(){
     });
 
     it("get unread notifications count", function(){
-        this.server.respondWith(
-            "GET",
-            "/edx_notifications/server/web/static/edx_notifications/templates/notification_icon.html",
-            [
-                200,
-                {},
-                "<img class='edx-notifications-icon'/><span class='edx-notifications-count-number'><%= count %></span>"
-            ]
-        );
-
         var unread_count = 2030
         this.server.respondWith(
             "GET",
@@ -61,10 +50,8 @@ describe("CounterIconView", function(){
                 '{"count":' + unread_count + '}'
             ]
         );
-
-        //this.counter_view.render();
         this.server.respond();
-        expect(this.counter_view.$el.html()).toContain(unread_count);
+        expect(this.counter_view.$el.html()).toContain(unread_count)
     });
   });
 });
