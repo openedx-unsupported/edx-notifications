@@ -1,6 +1,5 @@
 from bok_choy.page_object import PageObject
 from login_page import LoginPage
-from . import base_url
 
 
 class RegistrationPage(PageObject):
@@ -9,13 +8,15 @@ class RegistrationPage(PageObject):
 
     def is_browser_on_page(self):
         """
-        :return: True if register button is present on page
+        Return True if register button is present on page
+        :return:
         """
         return self.q(css='input[value="Register"]').present
 
     def register(self, username, email, password):
         """
-        Provide username, email, password and click on register button
+        Gets username, email, password as parameters and fill the registration form using these
+        Clicks on the register button to complete registration
         :param username:
         :param email:
         :param password:
@@ -34,12 +35,15 @@ class RegistrationSuccess(PageObject):
 
     def is_browser_on_page(self):
         """
-        :return: True if registration success message is present on page
+        Return True if registration success message is present on page
+        :return:
         """
         return 'Registration Completed Successfully' in self.q(css='html>body>h1').text[0]
 
-
     def go_to_login_page(self):
+        """
+        Click on the login link to go to login page
+        """
         self.q(css='html>body>a').click()
         LoginPage(self.browser).wait_for_page()
 

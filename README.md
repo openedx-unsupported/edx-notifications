@@ -106,6 +106,31 @@ to provide a development environment, plus to act as a HTTP server for all autom
 test frameworks.
 
 
+Bok-Choy Tests
+--------------------------------
+
+Bok-choy tests are present in the directory
+
+```
+/testserver/test/acceptance
+```
+
+The global variables are defined in __init__.py file at
+
+```
+testserver/test/acceptance/pages/__init__.py
+```
+
+You may want to set or change variable values before running the tests. Do change the
+user name on rerunning the tests as the registration process is included in tests and
+tests will fail if user is already registered
+
+To run these tests just use the following command
+
+```
+bash run\_bokchoy\_tests.sh
+```
+
 How to Contribute
 -----------------
 Contributions are very welcome, but please note that edx-notifications is currently an
