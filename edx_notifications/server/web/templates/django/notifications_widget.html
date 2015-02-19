@@ -12,22 +12,7 @@ This HTML snippet assumes that jQuery been included in the page that is using th
 
 <script type="text/javascript">
 
-requirejs.config({
-    paths: {
-        jquery: '/static/js/jquery-1.11.2.min',
-        backbone: '/static/js/backbone',
-        underscore: '/static/js/underscore',
-        text: '/static/js/text',
-        notifications_app: '/static/edx_notifications/js/app',
-        counter_icon_view: '/static/edx_notifications/js/views/counter_icon_view',
-        counter_icon_model: '/static/edx_notifications/js/models/counter_icon_model',
-        notification_pane_view: '/static/edx_notifications/js/views/notification_pane_view',
-        notification_collection: '/static/edx_notifications/js/collections/notification_collection',
-        user_notification_model: '/static/edx_notifications/js/models/user_notification_model'
-    }
-});
-
-require([
+RequireJS.require([
     'notifications_app'
 ], function (NotificationApp) {
     'use strict';

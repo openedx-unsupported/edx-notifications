@@ -1,9 +1,10 @@
 <html>
 <head>
     <script src="static/js/require.js"></script>
+    <script src="static/js/RequireJS-namespace.js"></script>
 
     <script type="text/javascript">
-        requirejs.config({
+        RequireJS.config({
             paths: {
                 jquery: '/static/js/jquery-1.11.2.min',
                 backbone: '/static/js/backbone',
@@ -17,6 +18,12 @@
                 user_notification_model: '/static/edx_notifications/js/models/user_notification_model',
                 notification_pane_template: '/static/edx_notifications/templates/notification_pane.html',
                 notification_icon_template: '/static/edx_notifications/templates/notification_icon.html'
+            },
+            shim: {
+                "backbone": {
+                    deps: ["underscore", "jquery"],
+                    exports: "Backbone"  //attaches "Backbone" to the window object
+                }
             }
         });
     </script>
