@@ -33,6 +33,6 @@ class StartupTests(TestCase):
         Verifies that a signal has been raised
         """
 
-        startup.initialize()
+        startup.initialize()  # pylint: disable=R0801
 
         self.assertTrue(_SIGNAL_RAISED)
