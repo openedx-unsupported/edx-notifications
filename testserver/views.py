@@ -53,6 +53,9 @@ CANNED_TEST_PAYLOAD = {
     'testserver.type1': {
         'subject': 'Test Notification',
         'body': 'Here is test notification that has a simple subject and body',
+    },
+    'open-edx.studio.announcements.new_announcement': {
+        'course_name': 'Demo Course',
     }
 }
 
