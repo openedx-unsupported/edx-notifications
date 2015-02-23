@@ -12,6 +12,8 @@ from edx_notifications.channels.channel import (
     BaseNotificationChannelProvider,
 )
 
+from edx_notifications.channels.null import NullNotificationChannel
+
 from edx_notifications.channels.durable import BaseDurableNotificationChannel
 
 from edx_notifications.data import (
@@ -69,6 +71,10 @@ _NOTIFICATION_CHANNEL_PROVIDERS = {
             'display_description': 'channel_description6',
         }
     },
+    'null': {
+        'class': 'edx_notifications.channels.null.NullNotificationChannel',
+        'options': {}
+    },
 }
 
 # list all of the mappings of notification types to channel
@@ -79,7 +85,8 @@ _NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS = {
     'edx_notifications.channels.tests.*': 'channel3',
     'edx_notifications.channels.tests.test_channel.*': 'channel4',
     'edx_notifications.channels.tests.test_channel.channeltests.*': 'channel5',
-    'edx_notifications.channels.tests.test_channel.channeltests.foo': 'channel6'
+    'edx_notifications.channels.tests.test_channel.channeltests.foo': 'channel6',
+    'edx_notifications.channels.tests.test_channel.channeltests.null': 'null',
 }
 
 
@@ -230,3 +237,21 @@ class ChannelTests(TestCase):
 
         with self.assertRaises(NotImplementedError):
             BadChannel().bulk_dispatch_notification(None, None)
+
+    def test_null_channel(self):
+        """
+        Makes sure that the NullNotificationChannel doesn't do anythign what so ever
+        """
+
+        test_msg_type = NotificationType(
+            name='edx_notifications.channels.tests.test_channel.channeltests.null',
+            renderer='foo.renderer',
+        )
+
+        provider = get_notification_channel(self.test_user_id, test_msg_type)
+
+        self.assertIsNotNone(provider)
+        self.assertTrue(isinstance(provider, NullNotificationChannel))
+
+        self.assertIsNone(provider.dispatch_notification_to_user(None, None))
+        self.assertEqual(provider.bulk_dispatch_notification(None, None), 0)

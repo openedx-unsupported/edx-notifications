@@ -122,6 +122,10 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
     'durable': {
         'class': 'edx_notifications.channels.durable.BaseDurableNotificationChannel',
         'options': {}
+    },
+    'null': {
+        'class': 'edx_notifications.channels.null.NullNotificationChannel',
+        'options': {}
     }
 }
 
