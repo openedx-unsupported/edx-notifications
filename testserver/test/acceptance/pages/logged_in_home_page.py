@@ -7,12 +7,45 @@ class LoggedInHomePage(PageObject):
 
     def is_browser_on_page(self):
         """
-        :return: True if welcome message is displayed at top
+        Return True if welcome message is displayed at top
+        :return:
         """
         return 'Welcome' in self.q(css='html>body>p').text[0]
 
+    def select_notification_type(self, notification_type):
+        """
+        Gets notification type as parameter and select this notification type from drop down.
+        Returns true if the correct notification type is selected successfully
+        :param notification_type:
+        :return:
+        """
+        self.wait_for_element_visibility('select[name="notification_type"]', 'Notification type drop down not found')
+        self.q(css='select[name="notification_type"] option[value="{}"]'.format(notification_type)).first.click()
+        return self.q(css='select[name="notification_type"] option[value="{}"]'.format(notification_type)).selected
+
     def add_notification(self):
         """
-        Add notification
+        Clicks on add notification button
         """
-        self.wait_for_element_visibility('input[value="add a notification"]', 'wait for add notification button')
+        self.wait_for_element_visibility('input[name="add_notifications"]', 'Add notification button not found')
+        self.q(css='input[name="add_notifications"]').click()
+
+    def get_notifications_count(self):
+        """
+        Return notification count
+        :return:
+        """
+        self.wait_for_element_visibility('.edx-notifications-count-number', 'Notification count not found')
+        return int(self.q(css='.edx-notifications-count-number').text[0])
+
+    def get_notification_messages(self):
+        """
+        Clicks on notification icon to display list of notification messages
+        Return all these messages as a list
+        :return:
+        """
+        self.wait_for_element_visibility('.edx-notifications-icon', 'Notification icon not found')
+        self.q(css='.edx-notifications-icon[src="/static/edx_notifications/img/notification_icon.jpg"]').click()
+        self.wait_for_element_visibility('.edx-notifications-list', 'Notification messages list not found')
+        return self.q(css='.edx-notifications-list').text
+

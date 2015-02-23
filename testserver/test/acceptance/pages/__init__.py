@@ -1,4 +1,4 @@
-
 base_url = "http://127.0.0.1:8000/"
-user_email = 'user@edx.org'
+user_name = 'testuser1'
+user_email = 'testuser1@edx.org'
 password = 'ARbi12.,'

@@ -10,15 +10,22 @@ class HomePage(PageObject):
 
     def is_browser_on_page(self):
         """
-        :return: True if login is found in driver title
+        Return True if word login is found in driver title
+        :return:
         """
         return "login" in self.browser.title.lower()
 
     def go_to_registration_page(self):
-        self.wait_for_element_presence('a[href="/register"]', 'wait for registration link')
+        """
+        Click on the registration link to go to registration page
+        """
+        self.wait_for_element_presence('a[href="/register"]', 'Registration link not found')
         self.q(css='a[href="/register"]').click()
         RegistrationPage(self.browser).wait_for_page()
 
     def go_to_login_page(self):
-        self.wait_for_element_presence('input[value="Login"]', 'wait for login button')
+        """
+        Click on the login button to go to login page
+        """
+        self.wait_for_element_presence('input[value="Login"]', 'Login button not found')
         LoginPage(self.browser).wait_for_page()

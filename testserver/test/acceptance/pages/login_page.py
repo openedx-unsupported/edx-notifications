@@ -8,14 +8,15 @@ class LoginPage(PageObject):
 
     def is_browser_on_page(self):
         """
-        :return: True if login button is present on page
+        Return True if login button is present on page
+        :return:
         """
         return self.q(css='input[value="Login"]').present
 
 
     def provide_credentials(self, username, password):
         """
-        Provide username, password
+        Get username, password as parameters and provide these in relevant input boxes
         :param username:
         :param password:
         """
@@ -24,15 +25,16 @@ class LoginPage(PageObject):
 
     def submit_incorrect_credentials(self):
         """
-        Submit incorrect answer and check for error message
-        :return: text of error message
+        Check for error message after incorrect credentials have been provided
+        Return the error message text
+        :return:
         """
         self.q(css='input[value="Login"]').click()
         return self.q(css='html>body>p').text[0]
 
     def submit_correct_credentials(self):
         """
-        Submit answer and login
+        go to logged in home page after clicking login button
         """
         self.q(css='input[value="Login"]').click()
         LoggedInHomePage(self.browser).wait_for_page()
