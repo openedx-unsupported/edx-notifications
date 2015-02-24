@@ -11,7 +11,7 @@ stopServers
 
 
 echo "Deleting test DB file ..."
-if [-f ./test_notifications.db]; then
+if [ -f ./test_notifications.db ]; then
     rm ./test_notifications.db
 else
     echo "DB File not present"
