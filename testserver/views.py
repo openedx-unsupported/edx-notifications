@@ -107,6 +107,8 @@ def register(request):
                 email=form.cleaned_data['email']
             )
             return HttpResponseRedirect('/register/success/')
+        else:
+            raise Exception('Invalid registration form')
     else:
         form = RegistrationForm()
         variables = RequestContext(

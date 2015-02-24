@@ -38,6 +38,8 @@ class RegistrationSuccess(PageObject):
         Return True if registration success message is present on page
         :return:
         """
+        if not self.q(css='html>body>h1').text:
+            return False
         return 'Registration Completed Successfully' in self.q(css='html>body>h1').text[0]
 
     def go_to_login_page(self):

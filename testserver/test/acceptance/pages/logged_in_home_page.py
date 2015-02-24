@@ -10,6 +10,9 @@ class LoggedInHomePage(PageObject):
         Return True if welcome message is displayed at top
         :return:
         """
+        if not self.q(css='html>body>p').text:
+            return False
+
         return 'Welcome' in self.q(css='html>body>p').text[0]
 
     def select_notification_type(self, notification_type):
