@@ -9,27 +9,24 @@ stopServers() {
 echo "Stop any already running servers..."
 stopServers
 
-
-echo "Deleting test DB file ..."
+echo "Deleting test db if present..."
 if [ -f ./test_notifications.db ]; then
     rm ./test_notifications.db
 else
-    echo "DB File not present"
+    echo "No existing test db file found"
 fi
 
-
-echo "creating new test db and sync data..."
+echo "Creating new test db and sync data..."
 ./manage.py syncdb --noinput --settings=testserver.bokchoy_settings
 
-ech "migrate data"
+ech "Migrate data"
 ./manage.py migrate --noinput --settings=testserver.bokchoy_settings
 
-echo "Starting Notifications Server..."
+echo "Starting notifications server..."
 ./manage.py runserver --settings=testserver.bokchoy_settings --noreload &
 
 
 echo "Waiting for testserver to fully start up..."
-
 until $(curl --output /dev/null --silent --head --fail http://127.0.0.1:8000); do
     printf '.'
     sleep 2
@@ -44,7 +41,7 @@ EXIT_CODE=$?
 echo "Shutting down server..."
 stopServers
 
-echo "Deleting test DB file ..."
+echo "Deleting test db file ..."
 rm ./test_notifications.db
 
 if [[ "$EXIT_CODE" = "0" ]]; then
@@ -52,4 +49,4 @@ if [[ "$EXIT_CODE" = "0" ]]; then
 else
     echo "Failed tests..."
 fi
-exit $EXIT_CODE
+exit ${EXIT_CODE}
