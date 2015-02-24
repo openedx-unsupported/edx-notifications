@@ -12,6 +12,7 @@ class TestAddNotifications(WebAppTest):
         'open-edx.lms.discussions.reply-to-thread': 'testuser has replied to a discussion posting ',
         'open-edx.lms.discussions.thread-followed': 'testuser is now following your discussion thread',
         'open-edx.lms.discussions.post-upvoted': 'estuser has upvoted your discussion thread',
+        'open-edx.studio.announcements.new_announcement': 'There is a new Course Update available',
         'testserver.type1': 'Here is test notification that has a simple subject and body'
     }
 

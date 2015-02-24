@@ -1,4 +1,5 @@
 from bok_choy.page_object import PageObject
+from . import user_name
 
 
 class LoggedInHomePage(PageObject):
@@ -10,10 +11,9 @@ class LoggedInHomePage(PageObject):
         Return True if welcome message is displayed at top
         :return:
         """
-        if not self.q(css='html>body>p').text:
-            return False
-
-        return 'Welcome' in self.q(css='html>body>p').text[0]
+        welcome_message = "Welcome " + user_name + " !!!"
+        self.wait_for_element_visibility('html>body>p', 'Para not found')
+        return welcome_message in self.q(css='html>body>p').text[0]
 
     def select_notification_type(self, notification_type):
         """
