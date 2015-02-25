@@ -13,7 +13,6 @@ class LoginPage(PageObject):
         """
         return self.q(css='input[value="Login"]').present
 
-
     def provide_credentials(self, username, password):
         """
         Get username, password as parameters and provide these in relevant input boxes
