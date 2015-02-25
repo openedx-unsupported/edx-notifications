@@ -11,7 +11,7 @@ class TestAddNotifications(WebAppTest):
     notification_dict = {
         'open-edx.lms.discussions.reply-to-thread': 'testuser has replied to a discussion posting ',
         'open-edx.lms.discussions.thread-followed': 'testuser is now following your discussion thread',
-        'open-edx.lms.discussions.post-upvoted': 'estuser has upvoted your discussion thread',
+        'open-edx.lms.discussions.post-upvoted': 'testuser has upvoted your discussion thread',
         'open-edx.studio.announcements.new_announcement': 'There is a new Course Update available',
         'testserver.type1': 'Here is test notification that has a simple subject and body'
     }
@@ -50,7 +50,7 @@ class TestAddNotifications(WebAppTest):
         self.home_page.visit()
         self.home_page.go_to_login_page()
         self.login_page.provide_credentials('abc', '123')
-        error_msg =self.login_page.submit_incorrect_credentials()
+        error_msg = self.login_page.submit_incorrect_credentials()
         self.assertIn('match', error_msg)
 
     def test_02_login_success(self):

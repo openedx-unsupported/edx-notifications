@@ -1,7 +1,6 @@
 from bok_choy.page_object import PageObject
 from . import user_name
 
-from time import sleep
 
 class LoggedInHomePage(PageObject):
 
@@ -50,7 +49,6 @@ class LoggedInHomePage(PageObject):
         """
         self.wait_for_element_visibility('.edx-notifications-icon', 'Notification icon not found')
         self.q(css='.edx-notifications-icon[src="/static/edx_notifications/img/notification_icon.jpg"]').click()
+        self.wait_for_ajax()
         self.wait_for_element_visibility('.edx-notifications-list', 'Notification messages list not found')
-        sleep(0.25)
         return self.q(css='.edx-notifications-list').text
-

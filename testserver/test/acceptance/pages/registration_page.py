@@ -47,6 +47,3 @@ class RegistrationSuccess(PageObject):
         """
         self.q(css='html>body>a').click()
         LoginPage(self.browser).wait_for_page()
-
-
-
