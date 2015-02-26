@@ -4,9 +4,8 @@ define([
     'jquery',
     'backbone',
     'notification_collection',
-    'text!notification_pane_template',
-    'counter_icon_view'
-], function ($, Backbone, UserNotificationCollection, NotificationPaneUnderscoreTemplate, CounterIconView) {
+    'text!notification_pane_template'
+], function ($, Backbone, UserNotificationCollection, NotificationPaneUnderscoreTemplate) {
     'use strict';
 
     return Backbone.View.extend({
@@ -101,7 +100,7 @@ define([
 
         collectionChanged: function() {
             /* redraw for now */
-            CounterIconView.render();
+            this.render();
         },
 
         render: function() {
@@ -170,10 +169,6 @@ define([
                     }
                 }
             );
-
-            this.collection.models.url = this.endpoints.unread_notification_count;
-
-            this.collection.models[0].fetch();
 
             self.unreadNotificationsClicked()
 
