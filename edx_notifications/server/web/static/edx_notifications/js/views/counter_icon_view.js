@@ -6,7 +6,9 @@ define([
     'counter_icon_model',
     'notification_pane_view',
     'text!notification_icon_template'
-], function ($, Backbone, CounterIconModel, NotificationPaneView, NotifcationIconUnderscoreTemplate) {
+], function (
+    $, Backbone, CounterIconModel, NotificationPaneView, NotifcationIconUnderscoreTemplate
+) {
     'use strict';
 
     return Backbone.View.extend({
@@ -35,6 +37,9 @@ define([
         /* cached notifications pane view */
         notification_pane: null,
 
+        /* cached user_notifications_mark_true view */
+        user_notifications_mark_true: null,
+
         template: null,
 
         modelChanged: function() {
@@ -60,8 +65,9 @@ define([
                     endpoints: this.endpoints,
                     view_templates: this.view_templates
                 });
+
             } else {
-                this.notification_pane.show();
+                this.notification_pane.showPane();
             }
        }
     });

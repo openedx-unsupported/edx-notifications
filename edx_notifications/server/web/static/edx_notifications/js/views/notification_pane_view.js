@@ -4,8 +4,9 @@ define([
     'jquery',
     'backbone',
     'notification_collection',
-    'text!notification_pane_template'
-], function ($, Backbone, UserNotificationCollection, NotificationPaneUnderscoreTemplate) {
+    'text!notification_pane_template',
+    'counter_icon_view'
+], function ($, Backbone, UserNotificationCollection, NotificationPaneUnderscoreTemplate, CounterIconView) {
     'use strict';
 
     return Backbone.View.extend({
@@ -26,7 +27,7 @@ define([
             this.collection = new UserNotificationCollection();
 
             /* set the API endpoint that was passed into our initializer */
-            this.collection.url = this.endpoints.user_notifications;
+            this.collection.url = this.endpoints.user_notifications_unread_only;
 
             /* re-render if the model changes */
             this.listenTo(this.collection, 'change', this.collectionChanged);
@@ -34,6 +35,15 @@ define([
             this.hydrate();
 
             this.render();
+        },
+
+        events: {
+            'click #user_notifications_all': 'allUserNotificationsClicked',
+            'click #unread_notifications': 'unreadNotificationsClicked',
+            'click #mark_notifications_read': 'markNotificationsRead',
+            'click #hide_pane': 'hidePane',
+            'click document': 'hidePaneWhenClickedOutside'
+
         },
 
         template: null,
@@ -91,7 +101,7 @@ define([
 
         collectionChanged: function() {
             /* redraw for now */
-            this.render();
+            CounterIconView.render();
         },
 
         render: function() {
@@ -110,8 +120,9 @@ define([
                         var renderer_class_name = msg_type.renderer;
                         user_notifications.push({
                             user_msg: user_msg,
+                            msg: msg,
                             /* render the particular NotificationMessage */
-                            html: this.renderer_templates[renderer_class_name](msg.payload),
+                            html: this.renderer_templates[renderer_class_name](msg.payload)
                         });
                     }
                 }
@@ -124,7 +135,64 @@ define([
 
                 this.$el.html(_html);
             }
+        },
+        allUserNotificationsClicked: function() {
+            /* set the API endpoint that was passed into our initializer */
+            this.collection.url = this.endpoints.user_notifications_all;
+
+            this.hydrate();
+        },
+        unreadNotificationsClicked: function() {
+            /* set the API endpoint that was passed into our initializer */
+            this.collection.url = this.endpoints.user_notifications_unread_only;
+
+            this.hydrate();
+        },
+        markNotificationsRead: function() {
+            /* set the API endpoint that was passed into our initializer */
+            this.collection.url = this.endpoints.mark_all_user_notifications_read;
+
+            /* make the async call to the backend REST API */
+            /* after it loads, the listenTo event will file and */
+            /* will call into the rendering */
+            var self = this;
+            self.$el.addClass('ui-loading');
+            this.collection.fetch(
+                {
+                    data:{
+                        mark_as: 'read',
+                        csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').prop('value') }
+                    ,
+                    type: 'POST',
+                    success: function(){
+                        self.$el.removeClass('ui-loading');
+                        self.render();
+                    }
+                }
+            );
+
+            this.collection.models.url = this.endpoints.unread_notification_count;
+
+            this.collection.models[0].fetch();
+
+            self.unreadNotificationsClicked()
+
+        },
+        hidePane: function() {
+            $('.container').hide();
+        },
+        showPane: function() {
+            $('.container').show();
+        },
+        hidePaneWhenClickedOutside: function() {
+            var container = $('.container');
+            if (!container.is(e.target) // if the target of the click isn't the container...
+                && container.has(e.target).length === 0) // ... nor a descendant of the container
+            {
+                container.hide();
+            }
         }
+
     });
 });
 })(define || RequireJS.define);

@@ -29,8 +29,15 @@ def get_notifications_widget_context():
             'unread_notification_count': (
                 '{base_url}?read=False&unread=True'
             ). format(base_url=reverse('edx_notifications.consumer.notifications.count')),
-
-            'user_notifications': reverse('edx_notifications.consumer.notifications'),
+            'mark_all_user_notifications_read': (
+                '{base_url}'
+            ). format(base_url=reverse('edx_notifications.consumer.notifications.mark_notifications')),
+            'user_notifications_unread_only': (
+                '{base_url}?read=False&unread=True'
+            ). format(base_url=reverse('edx_notifications.consumer.notifications')),
+            'user_notifications_all': (
+                '{base_url}?read=True&unread=True'
+            ). format(base_url=reverse('edx_notifications.consumer.notifications')),
             'renderer_templates_urls': reverse('edx_notifications.consumer.renderers.templates'),
         },
         'view_templates': {
