@@ -13,7 +13,8 @@ from edx_notifications.lib.consumer import (
     get_notifications_count_for_user,
     get_notifications_for_user,
     get_notification_for_user,
-    mark_notification_read
+    mark_notification_read,
+    mark_all_user_notification_as_read
 )
 
 from edx_notifications.renderers.renderer import (
@@ -209,6 +210,25 @@ class NotificationDetail(AuthenticatedAPIView):
                 raise Http404()
 
         return Response({}, status.HTTP_200_OK)
+
+
+class MarkNotifications(AuthenticatedAPIView):
+    """
+    Mark all the user notifications as read
+    """
+
+    def post(self, request):
+        """
+        HTTP POST Handler which is used for such use-cases as 'mark as read'
+        """
+        try:
+            # this will raise an ItemNotFoundError if the user_id/msg_id combo
+            # cannot be found
+            mark_all_user_notification_as_read(request.user.id)
+        except ItemNotFoundError:
+            raise Http404()
+
+        return Response({'success': True}, status.HTTP_200_OK)
 
 
 class RendererTemplatesList(AuthenticatedAPIView):

@@ -20,6 +20,11 @@ urlpatterns = patterns(  # pylint: disable=invalid-name
         name='edx_notifications.consumer.notifications.detail'
     ),
     url(
+        r'edx_notifications/v1/consumer/notifications/mark_notifications$',
+        consumer_views.MarkNotifications.as_view(),
+        name='edx_notifications.consumer.notifications.mark_notifications'
+    ),
+    url(
         r'edx_notifications/v1/consumer/notifications$',
         consumer_views.NotificationsList.as_view(),
         name='edx_notifications.consumer.notifications'

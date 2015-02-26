@@ -23,7 +23,7 @@ class TestUtils(TestCase):
 
         endpoints = render_context['endpoints']
         self.assertIn('unread_notification_count', endpoints)
-        self.assertIn('user_notifications', endpoints)
+        self.assertIn('user_notifications_all', endpoints)
         self.assertIn('renderer_templates_urls', endpoints)
 
         self.assertIn('view_templates', render_context)
