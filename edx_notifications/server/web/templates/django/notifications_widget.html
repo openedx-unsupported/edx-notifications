@@ -25,6 +25,9 @@ RequireJS.require([
             user_notifications_unread_only: "{% autoescape off %}{{ endpoints.user_notifications_unread_only }}{% endautoescape %}",
             renderer_templates_urls: "{% autoescape off %}{{ endpoints.renderer_templates_urls }}{% endautoescape %}"
         },
+        global_variables: {
+            app_name: "{{global_variables.app_name}}"
+        },
         view_templates: {
             notification_icon: "{% autoescape off %}{{ view_templates.notification_icon }}{% endautoescape %}",
             notification_pane: "{% autoescape off %}{{ view_templates.notification_pane }}{% endautoescape %}"
