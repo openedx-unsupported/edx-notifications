@@ -12,6 +12,7 @@ define([
             el: $('#edx_notification_counter'),
             pane_el: $('#edx_notification_pane'),
             endpoints: config.endpoints,
+            global_variables: config.global_variables,
             view_templates: config.view_templates
         });
     };

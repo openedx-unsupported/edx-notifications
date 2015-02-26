@@ -11,6 +11,7 @@ define([
     return Backbone.View.extend({
         initialize: function(options){
             this.endpoints = options.endpoints;
+            this.global_variables = options.global_variables;
             this.view_templates = options.view_templates;
 
             var self = this;
@@ -129,6 +130,7 @@ define([
                 /* now render template with our model */
 
                 var _html = this.template({
+                    global_variables: this.global_variables,
                     user_notifications: user_notifications
                 });
 

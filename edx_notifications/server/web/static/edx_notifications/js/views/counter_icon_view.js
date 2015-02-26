@@ -15,6 +15,7 @@ define([
         initialize: function(options){
             this.options = options;
             this.endpoints = options.endpoints;
+            this.global_variables = options.global_variables;
             this.view_templates = options.view_templates;
 
             /* initialize the model using the API endpoint URL that was passed into us */
@@ -63,6 +64,7 @@ define([
                 this.notification_pane = new NotificationPaneView({
                     el: this.options.pane_el,
                     endpoints: this.endpoints,
+                    global_variables: this.global_variables,
                     view_templates: this.view_templates
                 });
 
