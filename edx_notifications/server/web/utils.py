@@ -18,7 +18,7 @@ def get_template_path(template_name):
     )
 
 
-def get_notifications_widget_context():
+def get_notifications_widget_context(override_context=None):
     """
     As a convenience method, this will return all required
     context properties that the notifications_widget needs
@@ -40,10 +40,16 @@ def get_notifications_widget_context():
             ). format(base_url=reverse('edx_notifications.consumer.notifications')),
             'renderer_templates_urls': reverse('edx_notifications.consumer.renderers.templates'),
         },
+        'global_variables': {
+            'app_name': 'Your App Name Here',
+        },
         'view_templates': {
             'notification_icon': get_template_path('notification_icon.html'),
             'notification_pane': get_template_path('notification_pane.html'),
         }
     }
+
+    if override_context:
+        context.update(override_context)
 
     return context
