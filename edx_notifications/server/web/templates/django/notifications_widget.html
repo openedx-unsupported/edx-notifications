@@ -13,19 +13,21 @@ This HTML snippet assumes that jQuery been included in the page that is using th
 <script type="text/javascript">
 
 RequireJS.require([
+    'jquery',
     'notifications_app'
-], function (NotificationApp) {
+], function ($, NotificationApp) {
     'use strict';
-
     var app = new NotificationApp({
         endpoints: {
             unread_notification_count: "{% autoescape off %}{{ endpoints.unread_notification_count }}{% endautoescape %}",
-            user_notifications: "{% autoescape off %}{{ endpoints.user_notifications }}{% endautoescape %}",
+            mark_all_user_notifications_read: "{% autoescape off %}{{ endpoints.mark_all_user_notifications_read }}{% endautoescape %}",
+            user_notifications_all: "{% autoescape off %}{{ endpoints.user_notifications_all }}{% endautoescape %}",
+            user_notifications_unread_only: "{% autoescape off %}{{ endpoints.user_notifications_unread_only }}{% endautoescape %}",
             renderer_templates_urls: "{% autoescape off %}{{ endpoints.renderer_templates_urls }}{% endautoescape %}"
         },
         view_templates: {
             notification_icon: "{% autoescape off %}{{ view_templates.notification_icon }}{% endautoescape %}",
-            notification_pane: "{% autoescape off %}{{ view_templates.notification_pane }}{% endautoescape %}",
+            notification_pane: "{% autoescape off %}{{ view_templates.notification_pane }}{% endautoescape %}"
         }
     });
 });

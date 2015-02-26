@@ -1,0 +1,184 @@
+/* Styles */
+
+body{
+	font-family: 'Lato', sans-serif;
+	font-size: 13px;
+	color: #333;
+	margin: auto;
+}
+h1, h2, h3, h4, h5, h6{
+	font-weight: 400;
+	margin-bottom: 10px;
+	margin-top: 10px;
+}
+p{
+	margin: 5px 0 10px 0;
+}
+.text-warning{
+	color: #e37527;
+}
+.bold{
+	font-weight: 600;
+}
+a{
+	color: #328FE0;
+	text-decoration: none;
+}
+a:hover{
+	color: #67B2F2;
+	text-decoration: underline;
+}
+ul{
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.container{
+	max-width: 1000px;
+	margin: 0 auto;
+}
+.borderB{
+	border-bottom: 1px solid #e8e8e8;
+}
+.padB5{
+	padding-bottom: 5px;
+}
+.padB10{
+	padding-bottom: 10px;
+}
+.marT0{
+	margin-top: 0;
+}
+.marB10{
+	margin-bottom: 10px;
+}
+.uppercase{
+	text-transform: uppercase;
+}
+.top-bar{
+	padding: 10px 20px;
+	text-align: right;
+	min-height: 20px;
+	background: #3384ca;
+	color: #eee;
+	line-height: 20px;
+	cursor: pointer;
+}
+.top-bar p{
+	margin: 0;
+	padding-right: 15px;
+}
+.content{
+	border: 1px solid #e8e8e8;
+	padding: 0 15px 20px 15px;
+	margin-top: 15px;
+	border-radius: 3px;
+	box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.09);
+	width: 280px;
+	float: right;
+	height: 300px;
+	position: relative;
+	max-height: 550px;
+	overflow: auto;
+}
+.content:before{
+	content: "";
+	background: url('../img/caret.png') no-repeat;
+	width: 16px;
+	height: 8px;
+	position: absolute;
+	top: -8px;
+	right: 20px;
+}
+.content .close{
+	float: right;
+	font-weight: bold;
+	color: #999;
+	opacity: 0.7;
+	cursor: pointer;
+	padding-right: 10px;
+	display: inline-block;
+	line-height: 15px;font-weight: bold;
+	color: #CCC;
+	padding-right: 10px;
+	display: inline-block;
+	line-height: 15px;
+}
+.content .close:hover{
+	opacity: 0.9;
+}
+.content h2{
+	margin-bottom: 10px;
+}
+.content .actions{
+	margin-bottom: 20px;
+}
+.content .actions ul li{
+	display: inline-block;
+}
+.content .actions ul li{
+	padding: 0 15px;
+	border-right: 1px solid #ddd;
+}
+.content .actions ul li:first-child{
+	padding-left: 0;
+}
+.content .actions ul li:last-child{
+	padding-right: 0;
+	border: none;
+}
+.content .actions ul li.active a{
+	color: #999;
+	text-decoration: none;
+}
+.content .date{
+	color: #999;
+	font-style: italic;
+}
+.content .description{
+	margin-bottom: 15px;
+	padding-bottom: 15px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
