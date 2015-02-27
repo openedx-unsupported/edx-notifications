@@ -17,6 +17,7 @@ define([
             this.endpoints = options.endpoints;
             this.global_variables = options.global_variables;
             this.view_templates = options.view_templates;
+            this.refresh_watcher = options.refresh_watcher;
 
             /* initialize the model using the API endpoint URL that was passed into us */
             this.model = new CounterIconModel();

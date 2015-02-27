@@ -13,7 +13,8 @@ define([
             pane_el: $('#edx_notification_pane'),
             endpoints: config.endpoints,
             global_variables: config.global_variables,
-            view_templates: config.view_templates
+            view_templates: config.view_templates,
+            refresh_watcher: config.refresh_watcher
         });
     };
 
