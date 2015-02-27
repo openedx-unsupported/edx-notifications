@@ -17,7 +17,7 @@ class TestUtils(TestCase):
         Make sure we get the render context that we expect
         """
 
-        render_context = get_notifications_widget_context()
+        render_context = get_notifications_widget_context(override_context={'test_settings': 'ok'})
 
         self.assertIn('endpoints', render_context)
 
@@ -29,5 +29,7 @@ class TestUtils(TestCase):
         self.assertIn('view_templates', render_context)
         view_templates = render_context['view_templates']
 
-        self.assertIn('notification_icon', view_templates)
+        self.assertIn('view_templates', render_context)
+
+        self.assertIn('ok', render_context['test_settings'])
         self.assertIn('notification_pane', view_templates)
