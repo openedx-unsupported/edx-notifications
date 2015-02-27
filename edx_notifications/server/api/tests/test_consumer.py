@@ -250,6 +250,16 @@ class ConsumerAPITests(LoggedInTestCase):
         ))
         self.assertEqual(response.status_code, 404)
 
+    def test_mark_user_notifications_read_not_found(self):
+        """
+        Test case where a mark_notifications_read cannot be found
+        """
+        response = self.client.post(reverse(
+            'edx_notifications.consumer.notifications.mark_notifications',
+            args=[99999999]
+        ))
+        self.assertEqual(response.status_code, 404)
+
     def _compare_user_msg_to_result(self, original, api_result):
         """
         Helper to compare a notification with the data that was returned
@@ -312,6 +322,17 @@ class ConsumerAPITests(LoggedInTestCase):
         self._compare_user_msg_to_result(user_msg2, results[0])
         self._compare_user_msg_to_result(user_msg1, results[1])
 
+    def _mark_user_notifications_as_read(self):
+        """
+        Helper method to call API to mark users notifications as read
+        """
+        response = self.client.post(
+            reverse(
+                'edx_notifications.consumer.notifications.mark_notifications',
+            )
+        )
+        self.assertEqual(response.status_code, 200)
+
     def _mark_notification_as_read(self, user_msg, read=True):
         """
         Helper method to call API to mark user msg as read or unread
@@ -347,6 +368,20 @@ class ConsumerAPITests(LoggedInTestCase):
 
         # did we get back what we expected?
         self.assertEqual(len(results), expected_cnt)
+
+    def test_mark_user_notifications_as_read(self):
+        """
+        Create a test notifications for user and mark it as read
+        and then verify results
+        """
+        for __ in range(10):
+            self._publish_test_notification()
+
+        self._mark_user_notifications_as_read()
+
+        self._assert_expected_counts(10, read_filter=True)
+
+        self._assert_expected_counts(0, read_filter=False)
 
     def test_mark_notification_as_read(self):
         """
