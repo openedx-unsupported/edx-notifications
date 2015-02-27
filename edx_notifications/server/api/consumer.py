@@ -223,7 +223,8 @@ class MarkNotifications(AuthenticatedAPIView):
         """
 
         mark_all_user_notification_as_read(request.user.id)
-        return Response({'success': True}, status.HTTP_200_OK)
+
+        return Response([], status.HTTP_200_OK)
 
 
 class RendererTemplatesList(AuthenticatedAPIView):
