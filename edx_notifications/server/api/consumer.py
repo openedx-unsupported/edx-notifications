@@ -221,13 +221,8 @@ class MarkNotifications(AuthenticatedAPIView):
         """
         HTTP POST Handler which is used for such use-cases as 'mark as read'
         """
-        try:
-            # this will raise an ItemNotFoundError if the user_id/msg_id combo
-            # cannot be found
-            mark_all_user_notification_as_read(request.user.id)
-        except ItemNotFoundError:
-            raise Http404()
 
+        mark_all_user_notification_as_read(request.user.id)
         return Response({'success': True}, status.HTTP_200_OK)
 
 

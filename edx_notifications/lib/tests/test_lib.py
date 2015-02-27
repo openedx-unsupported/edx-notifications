@@ -17,6 +17,7 @@ from edx_notifications.lib.consumer import (
     get_notifications_count_for_user,
     get_notifications_for_user,
     mark_notification_read,
+    mark_all_user_notification_as_read
 )
 
 from edx_notifications.data import (
@@ -207,6 +208,47 @@ class TestPublisherLibrary(TestCase):
             self.assertTrue(isinstance(notifications, list))
             self.assertEqual(len(notifications), 1)
             self.assertTrue(isinstance(notifications[0], UserNotification))
+
+    def test_mark_all_as_read(self):
+        """
+        Verify proper behavior when marking user notifications as read/unread
+        """
+        for i in range(10):
+            msg = NotificationMessage(
+                namespace='test-runner',
+                msg_type=self.msg_type,
+                payload={
+                    'foo': 'bar'
+                }
+            )
+            publish_notification_to_user(self.test_user_id, msg)
+
+        # now mark msg as read by this user
+        mark_all_user_notification_as_read(self.test_user_id)
+
+        # shouldn't be counted in unread counts
+        self.assertEquals(
+            get_notifications_count_for_user(
+                self.test_user_id,
+                filters={
+                    'read': False,
+                    'unread': True,
+                },
+            ),
+            0
+        )
+
+        # Should be counted in read counts
+        self.assertEquals(
+            get_notifications_count_for_user(
+                self.test_user_id,
+                filters={
+                    'read': True,
+                    'unread': False,
+                },
+            ),
+            10
+        )
 
     def test_marking_read_state(self):
         """
