@@ -46,7 +46,11 @@ def get_notifications_widget_context(override_context=None):
         'view_templates': {
             'notification_icon': get_template_path('notification_icon.html'),
             'notification_pane': get_template_path('notification_pane.html'),
-        }
+        },
+        'refresh_watchers': {
+            'name': 'none',
+            'args': {},
+        },
     }
 
     if override_context:
