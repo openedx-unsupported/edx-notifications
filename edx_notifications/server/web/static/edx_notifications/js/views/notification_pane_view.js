@@ -42,7 +42,7 @@ define([
             'click #unread_notifications': 'unreadNotificationsClicked',
             'click #mark_notifications_read': 'markNotificationsRead',
             'click #hide_pane': 'hidePane',
-            'click document': 'hidePaneWhenClickedOutside'
+            'click body': 'hidePaneWhenClickedOutside'
 
         },
 
@@ -161,7 +161,6 @@ define([
             this.collection.fetch(
                 {
                     data:{
-                        mark_as: 'read',
                         csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').prop('value') }
                     ,
                     type: 'POST',
