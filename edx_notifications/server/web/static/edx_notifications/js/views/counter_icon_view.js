@@ -32,7 +32,8 @@ define([
         },
 
         events: {
-            'click .edx-notifications-icon': 'showPane'
+            'click .edx-notifications-icon': 'showPane',
+            'click this.options' : 'hidePane'
         },
 
         /* cached notifications pane view */
@@ -62,15 +63,18 @@ define([
             if (!this.notification_pane) {
 
                 this.notification_pane = new NotificationPaneView({
+                    counter_icon_view: this,
                     el: this.options.pane_el,
                     endpoints: this.endpoints,
                     global_variables: this.global_variables,
                     view_templates: this.view_templates
                 });
 
-            } else {
-                this.notification_pane.showPane();
             }
+           else {
+                this.notification_pane.showPane();
+           }
+
        }
     });
 });

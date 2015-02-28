@@ -13,6 +13,7 @@ define([
             this.endpoints = options.endpoints;
             this.global_variables = options.global_variables;
             this.view_templates = options.view_templates;
+            this.counter_icon_view = options.counter_icon_view;
 
             var self = this;
             /* get out main backbone view template */
@@ -80,7 +81,7 @@ define([
             }
         },
 
-        hydrate: function() {
+        hydrate: function(e) {
             /* This function will load the bound collection */
 
             /* add and remove a class when we do the initial loading */
@@ -92,6 +93,10 @@ define([
                 success: function(){
                     self.$el.removeClass('ui-loading');
                     self.render();
+                    if (e && e.currentTarget) {
+                        self.$el.find($('ul.notifications_list_tab > li')).removeClass('active');
+                        self.$el.find('#'+e.currentTarget.id).addClass('active');
+                    }
                 }
             });
         },
@@ -137,51 +142,67 @@ define([
                 this.$el.html(_html);
             }
         },
-        allUserNotificationsClicked: function() {
+        allUserNotificationsClicked: function(e) {
+
             /* set the API endpoint that was passed into our initializer */
             this.collection.url = this.endpoints.user_notifications_all;
 
-            this.hydrate();
+            this.hydrate(e);
         },
-        unreadNotificationsClicked: function() {
+        unreadNotificationsClicked: function(e) {
             /* set the API endpoint that was passed into our initializer */
             this.collection.url = this.endpoints.user_notifications_unread_only;
 
-            this.hydrate();
+            this.hydrate(e);
         },
-        markNotificationsRead: function() {
-            /* set the API endpoint that was passed into our initializer */
-            this.collection.url = this.endpoints.mark_all_user_notifications_read;
+        markNotificationsRead: function(e) {
+            var count = this.counter_icon_view.model.get('count');
+            // mark all notifications True, when the user notifications count should be > 0
+            if (count !== undefined && count > 0) {
+                /* set the API endpoint that was passed into our initializer */
+                this.collection.url = this.endpoints.mark_all_user_notifications_read;
 
-            /* make the async call to the backend REST API */
-            /* after it loads, the listenTo event will file and */
-            /* will call into the rendering */
-            var self = this;
-            self.$el.addClass('ui-loading');
-            this.collection.fetch(
-                {
-                    data:{
-                        csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').prop('value') }
-                    ,
-                    type: 'POST',
-                    success: function(){
-                        self.$el.removeClass('ui-loading');
-                        self.render();
+                /* make the async call to the backend REST API */
+                /* after it loads, the listenTo event will file and */
+                /* will call into the rendering */
+                var self = this;
+                self.$el.addClass('ui-loading');
+                this.collection.fetch(
+                    {
+                        data: {
+                            csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').prop('value')
+                        }
+                        ,
+                        type: 'POST',
+                        success: function () {
+                            self.$el.removeClass('ui-loading');
+                            self.render();
+                        }
                     }
-                }
-            );
+                );
 
-            self.unreadNotificationsClicked()
+                // display the unread notification view
+                self.unreadNotificationsClicked(e);
 
+                // fetch the latest notification count
+                this.counter_icon_view.model.fetch();
+            }
+            else {
+                $('ul.notifications_list_tab > li').removeClass('active');
+                $('#'+e.currentTarget.id).addClass('active');
+            }
         },
         hidePane: function() {
-            $('.container').hide();
+            $('.edx-notifications-container').hide();
         },
         showPane: function() {
-            $('.container').show();
+            $('.edx-notifications-container').show();
+        },
+        activeClickedTab: function(){
+
         },
         hidePaneWhenClickedOutside: function() {
-            var container = $('.container');
+            var container = $('.edx-notifications-container');
             if (!container.is(e.target) // if the target of the click isn't the container...
                 && container.has(e.target).length === 0) // ... nor a descendant of the container
             {
