@@ -11,6 +11,7 @@ define([
         this.EdxNotificationIcon= new CounterIconView({
             el: $('#edx_notification_counter'),
             pane_el: $('#edx_notification_pane'),
+            body: $('body'),
             endpoints: config.endpoints,
             global_variables: config.global_variables,
             view_templates: config.view_templates

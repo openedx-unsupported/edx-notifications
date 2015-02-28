@@ -32,7 +32,7 @@ ul{
 	padding: 0;
 	margin: 0;
 }
-.container{
+.edx-notifications-container{
 	max-width: 1000px;
 	margin: 0 auto;
 }
@@ -67,20 +67,20 @@ ul{
 	margin: 0;
 	padding-right: 15px;
 }
-.content{
+.edx-notifications-content{
 	border: 1px solid #e8e8e8;
 	padding: 0 15px 20px 15px;
 	margin-top: 15px;
 	border-radius: 3px;
 	box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.09);
-	width: 280px;
+	width: 330px;
 	float: right;
 	height: 300px;
 	position: relative;
 	max-height: 550px;
 	overflow: auto;
 }
-.content:before{
+.edx-notifications-content:before{
 	content: "";
 	background: url('../img/caret.png') no-repeat;
 	width: 16px;
@@ -89,7 +89,7 @@ ul{
 	top: -8px;
 	right: 20px;
 }
-.content .close{
+.edx-notifications-content .close{
 	float: right;
 	font-weight: bold;
 	color: #999;
@@ -103,38 +103,38 @@ ul{
 	display: inline-block;
 	line-height: 15px;
 }
-.content .close:hover{
+.edx-notifications-content .close:hover{
 	opacity: 0.9;
 }
-.content h2{
+.edx-notifications-content h2{
 	margin-bottom: 10px;
 }
-.content .actions{
+.edx-notifications-content .actions{
 	margin-bottom: 20px;
 }
-.content .actions ul li{
+.edx-notifications-content .actions ul li{
 	display: inline-block;
 }
-.content .actions ul li{
+.edx-notifications-content .actions ul li{
 	padding: 0 15px;
 	border-right: 1px solid #ddd;
 }
-.content .actions ul li:first-child{
+.edx-notifications-content .actions ul li:first-child{
 	padding-left: 0;
 }
-.content .actions ul li:last-child{
+.edx-notifications-content .actions ul li:last-child{
 	padding-right: 0;
 	border: none;
 }
-.content .actions ul li.active a{
+.edx-notifications-content .actions ul li.active a{
 	color: #999;
 	text-decoration: none;
 }
-.content .date{
+.edx-notifications-content .date{
 	color: #999;
 	font-style: italic;
 }
-.content .description{
+.edx-notifications-content .description{
 	margin-bottom: 15px;
 	padding-bottom: 15px;
 }
