@@ -26,7 +26,7 @@ var _edxnotifications_requirejs_config = {
 if (typeof _edxnotifications_requirejs_path_overrides !== 'undefined') {
     for (var attrname in _edxnotifications_requirejs_path_overrides)
         {
-            _edxnotifications_requirejs_config.paths[attrname] = _edxnotifications_requirejs_paths[attrname];
+            _edxnotifications_requirejs_config.paths[attrname] = _edxnotifications_requirejs_path_overrides[attrname];
         }
 }
 
