@@ -11,13 +11,7 @@ This HTML snippet assumes that jQuery been included in the page that is using th
 <div id="edx_notification_pane"></div>
 
 <script type="text/javascript">
-
-RequireJS.require([
-    'jquery',
-    'notifications_app'
-], function ($, NotificationApp) {
-    'use strict';
-    var app = new NotificationApp({
+var edxnotificationsAppConfiguration = {
         endpoints: {
             unread_notification_count: "{% autoescape off %}{{ endpoints.unread_notification_count }}{% endautoescape %}",
             mark_all_user_notifications_read: "{% autoescape off %}{{ endpoints.mark_all_user_notifications_read }}{% endautoescape %}",
@@ -32,7 +26,6 @@ RequireJS.require([
             notification_icon: "{% autoescape off %}{{ view_templates.notification_icon }}{% endautoescape %}",
             notification_pane: "{% autoescape off %}{{ view_templates.notification_pane }}{% endautoescape %}"
         }
-    });
-});
+};
 </script>
 
