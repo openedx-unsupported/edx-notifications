@@ -223,6 +223,18 @@ class TestPublisherLibrary(TestCase):
             )
             publish_notification_to_user(self.test_user_id, msg)
 
+        # make sure we have 10 unreads before we do anything else
+        self.assertEquals(
+            get_notifications_count_for_user(
+                self.test_user_id,
+                filters={
+                    'read': False,
+                    'unread': True,
+                },
+            ),
+            10
+        )
+
         # now mark msg as read by this user
         mark_all_user_notification_as_read(self.test_user_id)
 
