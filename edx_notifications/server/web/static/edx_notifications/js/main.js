@@ -6,6 +6,7 @@ var _edxnotifications_requirejs_config = {
     backbone: '/static/js/vendor/backbone',
     underscore: '/static/js/vendor/underscore',
     text: '/static/js/vendor/text',
+    date: '/static/js/vendor/date',
     notifications_app: '/static/edx_notifications/js/app',
     counter_icon_view: '/static/edx_notifications/js/views/counter_icon_view',
     counter_icon_model: '/static/edx_notifications/js/models/counter_icon_model',

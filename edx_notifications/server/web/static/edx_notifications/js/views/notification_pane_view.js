@@ -3,9 +3,10 @@
 define([
     'jquery',
     'backbone',
+    'date',
     'notification_collection',
     'text!notification_pane_template'
-], function ($, Backbone, UserNotificationCollection, NotificationPaneUnderscoreTemplate) {
+], function ($, Backbone, Date, UserNotificationCollection, NotificationPaneUnderscoreTemplate) {
     'use strict';
 
     return Backbone.View.extend({
