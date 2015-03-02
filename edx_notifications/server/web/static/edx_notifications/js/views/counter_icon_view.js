@@ -40,8 +40,7 @@ define([
         },
 
         events: {
-            'click .edx-notifications-icon': 'showPane',
-            'click this.options' : 'hidePane'
+            'click .edx-notifications-icon': 'showPane'
         },
 
         /* cached notifications pane view */
@@ -67,7 +66,7 @@ define([
             );
        },
 
-       showPane: function() {
+       showPane: function(e) {
             if (!this.notification_pane) {
 
                 this.notification_pane = new NotificationPaneView({
@@ -77,11 +76,20 @@ define([
                     global_variables: this.global_variables,
                     view_templates: this.view_templates
                 });
-
+                $('body').bind('click', this.hidePaneWhenClickedOutside);
             }
            else {
+              if (this.notification_pane.isVisible()) {
+                this.notification_pane.hidePane();
+                $('body').unbind('click');
+              }
+              else {
                 this.notification_pane.showPane();
+                $('body').bind('click', this.hidePaneWhenClickedOutside);
+              }
            }
+
+           e.stopPropagation();
         },
 
         autoRefreshNotifications: function(counterView) {
@@ -99,6 +107,11 @@ define([
                    }
                }
            });
+        },
+
+       hidePaneWhenClickedOutside: function() {
+         $('.edx-notifications-container').hide();
+         $('body').unbind('click');
        }
     });
 });

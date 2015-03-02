@@ -43,7 +43,9 @@ define([
             'click .user_notifications_all': 'allUserNotificationsClicked',
             'click .unread_notifications': 'unreadNotificationsClicked',
             'click .mark_notifications_read': 'markNotificationsRead',
-            'click .hide_pane': 'hidePane'
+            'click .hide_pane': 'hidePane',
+            'click': 'preventHidingWhenClickedInside'
+
         },
 
         template: null,
@@ -190,18 +192,17 @@ define([
         showPane: function() {
             $('.edx-notifications-container').show();
         },
-        activeClickedTab: function(){
-
+        preventHidingWhenClickedInside: function(e) {
+          e.stopPropagation();
         },
-        hidePaneWhenClickedOutside: function() {
-            var container = $('.edx-notifications-container');
-            if (!container.is(e.target) // if the target of the click isn't the container...
-                && container.has(e.target).length === 0) // ... nor a descendant of the container
-            {
-                container.hide();
-            }
+        isVisible: function() {
+          if ($('.edx-notifications-container').is(':visible')) {
+            return true;
+          }
+          else {
+            return false;
+          }
         }
-
     });
 });
 })(define || RequireJS.define);
