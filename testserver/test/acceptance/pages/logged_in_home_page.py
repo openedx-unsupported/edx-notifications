@@ -39,7 +39,9 @@ class LoggedInHomePage(PageObject):
         :return:
         """
         self.wait_for_element_visibility('.edx-notifications-count-number', 'Notification count not found')
-        return int(self.q(css='.edx-notifications-count-number').text[0])
+        text = self.q(css='.edx-notifications-count-number').text[0]
+        # We don't display a 0 count, but it is left blank when there are no unread notifications
+        return int(text) if text else 0
 
     def get_notification_messages(self):
         """
