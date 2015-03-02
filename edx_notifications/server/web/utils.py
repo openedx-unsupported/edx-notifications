@@ -18,6 +18,18 @@ def get_template_path(template_name):
     )
 
 
+def get_audio_path(audio_name):
+    """
+    returns a full URL path to audio directory
+    """
+
+    return static(
+        'edx_notifications/audio/{audio_name}'.format(
+            audio_name=audio_name
+        )
+    )
+
+
 def get_notifications_widget_context(override_context=None):
     """
     As a convenience method, this will return all required
@@ -46,7 +58,14 @@ def get_notifications_widget_context(override_context=None):
         'view_templates': {
             'notification_icon': get_template_path('notification_icon.html'),
             'notification_pane': get_template_path('notification_pane.html'),
-        }
+        },
+        'refresh_watchers': {
+            'name': 'none',
+            'args': {},
+        },
+        'view_audios': {
+            'notification_alert': get_audio_path('notification_alert.mp3'),
+        },
     }
 
     if override_context:

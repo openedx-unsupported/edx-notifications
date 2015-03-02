@@ -20,11 +20,22 @@ var edxnotificationsAppConfiguration = {
             renderer_templates_urls: "{% autoescape off %}{{ endpoints.renderer_templates_urls }}{% endautoescape %}"
         },
         global_variables: {
-            app_name: "{{global_variables.app_name}}"
+            app_name: "{{ global_variables.app_name }}"
+        },
+        refresh_watcher: {
+            name: "{{refresh_watcher.name}}",
+            args: {
+            {% if refresh_watcher.name == 'short-poll' %}
+                poll_period_secs: {{ refresh_watcher.args.poll_period_secs }}
+            {% endif %}
+            }
         },
         view_templates: {
             notification_icon: "{% autoescape off %}{{ view_templates.notification_icon }}{% endautoescape %}",
             notification_pane: "{% autoescape off %}{{ view_templates.notification_pane }}{% endautoescape %}"
+        },
+        view_audios: {
+            notification_alert: "{% autoescape off %}{{ view_audios.notification_alert }}{% endautoescape %}"
         }
 };
 </script>

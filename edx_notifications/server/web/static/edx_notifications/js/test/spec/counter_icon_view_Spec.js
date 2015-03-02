@@ -27,6 +27,9 @@ describe("CounterIconView", function(){
             view_templates: {
                 notification_icon: NotificationIcon,
                 notification_pane: NotificationPane
+            },
+            refresh_watcher: {
+                name: "none"
             }
         });
     });
