@@ -49,6 +49,6 @@ class LoggedInHomePage(PageObject):
         """
         self.wait_for_element_visibility('.edx-notifications-icon', 'Notification icon not found')
         self.q(css='.edx-notifications-icon[src="/static/edx_notifications/img/notification_icon.jpg"]').click()
-        self.wait_for_element_visibility('.edx-notifications-list', 'Notification messages list not found')
-        return self.q(css='.edx-notifications-list').text
+        self.wait_for_element_visibility('.edx-notifications-content', 'Notification messages list not found')
+        return self.q(css='.edx-notifications-content').text
 
