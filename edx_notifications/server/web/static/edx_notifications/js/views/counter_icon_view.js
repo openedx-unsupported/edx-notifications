@@ -18,6 +18,7 @@ define([
             this.global_variables = options.global_variables;
             this.view_templates = options.view_templates;
             this.refresh_watcher = options.refresh_watcher;
+            this.view_audios = options.view_audios;
 
             /* initialize the model using the API endpoint URL that was passed into us */
             this.model = new CounterIconModel();
@@ -30,6 +31,12 @@ define([
             /* after it loads, the listenTo event will file and */
             /* will call into the rendering */
             this.model.fetch();
+
+            /* adding short-poll capabilities to refresh notification counter */
+            if(this.refresh_watcher.name == 'short-poll'){
+                var period = this.refresh_watcher.args.poll_period_secs;
+                setInterval(this.autoRefreshNotifications.bind(window, this), period * 1000);
+            }
         },
 
         events: {
@@ -75,7 +82,23 @@ define([
            else {
                 this.notification_pane.showPane();
            }
+        },
 
+        autoRefreshNotifications: function(counterView) {
+           var currentModel = new CounterIconModel();
+           currentModel.url = counterView.endpoints.unread_notification_count;
+           currentModel.fetch().done(function(){
+               // if notification counter is incremented.
+               if(currentModel.get('count') > counterView.model.get('count')){
+                   var notification_alert = new Audio(counterView.view_audios.notification_alert);
+                   counterView.model = currentModel;
+                   notification_alert.play();
+                   counterView.render();
+                   if (counterView.notification_pane) {
+                       counterView.notification_pane.hydrate();
+                   }
+               }
+           });
        }
     });
 });
