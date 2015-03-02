@@ -90,6 +90,19 @@ def index(request):
         'global_variables': {
             'app_name': 'Notification Test Server',
         },
+        # for test purposes, set up a short-poll which contacts the server
+        # every 10 seconds to see if there is a new notification
+        #
+        # NOTE: short-poll technique should not be used in a production setting with
+        # any reasonable number of concurrent users. This is just for
+        # testing purposes.
+        #
+        'refresh_watcher': {
+            'name': 'short-poll',
+            'args': {
+                'poll_period_secs': 10,
+            },
+        },
     })
 
     return HttpResponse(template.render(RequestContext(request, context_dict)))
