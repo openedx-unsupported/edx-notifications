@@ -22,6 +22,8 @@ define([
             this.model = new CounterIconModel();
             this.model.url = this.endpoints.unread_notification_count;
 
+            this.render();
+
             /* re-render if the model changes */
             this.listenTo(this.model,'change', this.modelChanged);
 
