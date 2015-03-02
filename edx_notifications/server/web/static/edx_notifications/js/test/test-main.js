@@ -14,6 +14,7 @@ requirejs.config({
         'underscore': 'static/edx_notifications/js/vendor/dev/underscore',
         'backbone': 'static/edx_notifications/js/vendor/dev/backbone',
         'text': 'static/edx_notifications/js/vendor/dev/text',
+        'date': 'static/edx_notifications/js/vendor/dev/date',
         'counter_icon_view' : 'static/edx_notifications/js/views/counter_icon_view',
         'counter_icon_model': 'static/edx_notifications/js/models/counter_icon_model',
         'notification_pane_view': 'static/edx_notifications/js/views/notification_pane_view',

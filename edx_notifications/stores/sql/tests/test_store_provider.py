@@ -121,6 +121,47 @@ class TestSQLStoreProvider(TestCase):
 
         self._save_new_notification()
 
+    def test_mark_user_notification_read(self):
+        """
+
+        """
+        msg_type = self._save_notification_type()
+        for __ in range(10):
+            msg = self.provider.save_notification_message(NotificationMessage(
+                namespace='namespace1',
+                msg_type=msg_type,
+                payload={
+                    'foo': 'bar'
+                }
+            ))
+
+            self.provider.save_user_notification(UserNotification(
+                user_id=self.test_user_id,
+                msg=msg
+            ))
+
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'namespace': 'namespace1',
+                }
+            ),
+            10
+        )
+        self.provider.mark_user_notifications_read(self.test_user_id)
+
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'namespace': 'namespace1',
+                    'read': False
+                }
+            ),
+            0
+        )
+
     def test_update_notification(self):
         """
         Save and then update notification

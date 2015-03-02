@@ -11,23 +11,32 @@ This HTML snippet assumes that jQuery been included in the page that is using th
 <div id="edx_notification_pane"></div>
 
 <script type="text/javascript">
-
-RequireJS.require([
-    'notifications_app'
-], function (NotificationApp) {
-    'use strict';
-
-    var app = new NotificationApp({
+var edxnotificationsAppConfiguration = {
         endpoints: {
             unread_notification_count: "{% autoescape off %}{{ endpoints.unread_notification_count }}{% endautoescape %}",
-            user_notifications: "{% autoescape off %}{{ endpoints.user_notifications }}{% endautoescape %}",
+            mark_all_user_notifications_read: "{% autoescape off %}{{ endpoints.mark_all_user_notifications_read }}{% endautoescape %}",
+            user_notifications_all: "{% autoescape off %}{{ endpoints.user_notifications_all }}{% endautoescape %}",
+            user_notifications_unread_only: "{% autoescape off %}{{ endpoints.user_notifications_unread_only }}{% endautoescape %}",
             renderer_templates_urls: "{% autoescape off %}{{ endpoints.renderer_templates_urls }}{% endautoescape %}"
+        },
+        global_variables: {
+            app_name: "{{ global_variables.app_name }}"
+        },
+        refresh_watcher: {
+            name: "{{refresh_watcher.name}}",
+            args: {
+            {% if refresh_watcher.name == 'short-poll' %}
+                poll_period_secs: {{ refresh_watcher.args.poll_period_secs }}
+            {% endif %}
+            }
         },
         view_templates: {
             notification_icon: "{% autoescape off %}{{ view_templates.notification_icon }}{% endautoescape %}",
-            notification_pane: "{% autoescape off %}{{ view_templates.notification_pane }}{% endautoescape %}",
+            notification_pane: "{% autoescape off %}{{ view_templates.notification_pane }}{% endautoescape %}"
+        },
+        view_audios: {
+            notification_alert: "{% autoescape off %}{{ view_audios.notification_alert }}{% endautoescape %}"
         }
-    });
-});
+};
 </script>
 

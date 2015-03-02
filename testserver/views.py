@@ -80,18 +80,30 @@ def index(request):
 
     template = loader.get_template('index.html')
 
-    context_dict = {
-        'user': request.user,
-        'notification_types': get_all_notification_types(),
-    }
 
     # call to the helper method to build up all the context we need
     # to render the "notification_widget" that is embedded in our
     # test page
-    context_dict.update(get_notifications_widget_context())
-
-    # we always need to pass along the URL to the RequireJS main
-    context_dict['requirejs_main_url'] = static('js/main.js')
+    context_dict = get_notifications_widget_context({
+        'user': request.user,
+        'notification_types': get_all_notification_types(),
+        'global_variables': {
+            'app_name': 'Notification Test Server',
+        },
+        # for test purposes, set up a short-poll which contacts the server
+        # every 10 seconds to see if there is a new notification
+        #
+        # NOTE: short-poll technique should not be used in a production setting with
+        # any reasonable number of concurrent users. This is just for
+        # testing purposes.
+        #
+        'refresh_watcher': {
+            'name': 'short-poll',
+            'args': {
+                'poll_period_secs': 10,
+            },
+        },
+    })
 
     return HttpResponse(template.render(RequestContext(request, context_dict)))
 

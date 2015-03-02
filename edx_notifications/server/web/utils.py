@@ -18,7 +18,19 @@ def get_template_path(template_name):
     )
 
 
-def get_notifications_widget_context():
+def get_audio_path(audio_name):
+    """
+    returns a full URL path to audio directory
+    """
+
+    return static(
+        'edx_notifications/audio/{audio_name}'.format(
+            audio_name=audio_name
+        )
+    )
+
+
+def get_notifications_widget_context(override_context=None):
     """
     As a convenience method, this will return all required
     context properties that the notifications_widget needs
@@ -29,14 +41,34 @@ def get_notifications_widget_context():
             'unread_notification_count': (
                 '{base_url}?read=False&unread=True'
             ). format(base_url=reverse('edx_notifications.consumer.notifications.count')),
-
-            'user_notifications': reverse('edx_notifications.consumer.notifications'),
+            'mark_all_user_notifications_read': (
+                '{base_url}'
+            ). format(base_url=reverse('edx_notifications.consumer.notifications.mark_notifications')),
+            'user_notifications_unread_only': (
+                '{base_url}?read=False&unread=True'
+            ). format(base_url=reverse('edx_notifications.consumer.notifications')),
+            'user_notifications_all': (
+                '{base_url}?read=True&unread=True'
+            ). format(base_url=reverse('edx_notifications.consumer.notifications')),
             'renderer_templates_urls': reverse('edx_notifications.consumer.renderers.templates'),
+        },
+        'global_variables': {
+            'app_name': 'Your App Name Here',
         },
         'view_templates': {
             'notification_icon': get_template_path('notification_icon.html'),
             'notification_pane': get_template_path('notification_pane.html'),
-        }
+        },
+        'refresh_watchers': {
+            'name': 'none',
+            'args': {},
+        },
+        'view_audios': {
+            'notification_alert': get_audio_path('notification_alert.mp3'),
+        },
     }
+
+    if override_context:
+        context.update(override_context)
 
     return context
