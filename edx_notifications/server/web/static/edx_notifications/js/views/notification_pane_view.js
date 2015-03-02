@@ -39,12 +39,10 @@ define([
         },
 
         events: {
-            'click #user_notifications_all': 'allUserNotificationsClicked',
-            'click #unread_notifications': 'unreadNotificationsClicked',
-            'click #mark_notifications_read': 'markNotificationsRead',
-            'click #hide_pane': 'hidePane',
-            'click body': 'hidePaneWhenClickedOutside'
-
+            'click .user_notifications_all': 'allUserNotificationsClicked',
+            'click .unread_notifications': 'unreadNotificationsClicked',
+            'click .mark_notifications_read': 'markNotificationsRead',
+            'click .hide_pane': 'hidePane'
         },
 
         template: null,
@@ -95,7 +93,7 @@ define([
                     self.render();
                     if (e && e.currentTarget) {
                         self.$el.find($('ul.notifications_list_tab > li')).removeClass('active');
-                        self.$el.find('#'+e.currentTarget.id).addClass('active');
+                        self.$el.find('.'+e.currentTarget.className).addClass('active');
                     }
                 }
             });
@@ -158,7 +156,7 @@ define([
         markNotificationsRead: function(e) {
             var count = this.counter_icon_view.model.get('count');
             // mark all notifications True, when the user notifications count should be > 0
-            if (count !== undefined && count > 0) {
+            if (count > 0) {
                 /* set the API endpoint that was passed into our initializer */
                 this.collection.url = this.endpoints.mark_all_user_notifications_read;
 
@@ -167,7 +165,7 @@ define([
                 /* will call into the rendering */
                 var self = this;
                 self.$el.addClass('ui-loading');
-                this.collection.fetch(
+                self.collection.fetch(
                     {
                         data: {
                             csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').prop('value')
@@ -177,19 +175,12 @@ define([
                         success: function () {
                             self.$el.removeClass('ui-loading');
                             self.render();
+
+                            // fetch the latest notification count
+                            self.counter_icon_view.model.fetch();
                         }
                     }
                 );
-
-                // display the unread notification view
-                self.unreadNotificationsClicked(e);
-
-                // fetch the latest notification count
-                this.counter_icon_view.model.fetch();
-            }
-            else {
-                $('ul.notifications_list_tab > li').removeClass('active');
-                $('#'+e.currentTarget.id).addClass('active');
             }
         },
         hidePane: function() {
