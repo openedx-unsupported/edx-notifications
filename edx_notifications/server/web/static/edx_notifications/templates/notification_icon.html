@@ -1,2 +1,4 @@
-<img class='edx-notifications-icon' src='/static/edx_notifications/img/notification_icon.jpg' />
+<img class='edx-notifications-icon' src='/static/edx_notifications/img/notification_icon.jpg' width=20 height=20/>
+<% if (typeof(count) !== "undefined" && count > 0) { %>
 <span class='edx-notifications-count-number'><%= count %></span>
+<% } %>
