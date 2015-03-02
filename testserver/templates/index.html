@@ -1,32 +1,21 @@
 <html>
 <head>
-    <script src="static/js/require.js"></script>
-    <script src="static/js/RequireJS-namespace.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,300italic,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="static/css/styles.css">
 
     <script type="text/javascript">
-        RequireJS.config({
-            paths: {
-                jquery: '/static/js/jquery-1.11.2.min',
-                backbone: '/static/js/backbone',
-                underscore: '/static/js/underscore',
-                text: '/static/js/text',
-                notifications_app: '/static/edx_notifications/js/app',
-                counter_icon_view: '/static/edx_notifications/js/views/counter_icon_view',
-                counter_icon_model: '/static/edx_notifications/js/models/counter_icon_model',
-                notification_pane_view: '/static/edx_notifications/js/views/notification_pane_view',
-                notification_collection: '/static/edx_notifications/js/collections/notification_collection',
-                user_notification_model: '/static/edx_notifications/js/models/user_notification_model',
-                notification_pane_template: '/static/edx_notifications/templates/notification_pane.html',
-                notification_icon_template: '/static/edx_notifications/templates/notification_icon.html'
-            },
-            shim: {
-                "backbone": {
-                    deps: ["underscore", "jquery"],
-                    exports: "Backbone"  //attaches "Backbone" to the window object
-                }
-            }
-        });
+        var _edxnotifications_requirejs_path_overrides = {
+            jquery: '/static/js/jquery-1.11.2.min',
+            backbone: '/static/js/backbone',
+            underscore: '/static/js/underscore',
+            text: '/static/js/text',
+            date: '/static/js/date'
+        }
     </script>
+
+    <script src="static/js/require.js" data-main="/static/edx_notifications/js/main"></script>
+    <script src="static/js/RequireJS-namespace.js"></script>
+
 </head>
 <body>
 
