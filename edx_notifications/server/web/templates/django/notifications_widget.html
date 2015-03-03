@@ -8,8 +8,7 @@ page that is using this widget
 
 {% endcomment %}
 
-<div id='edx_notification_counter'></div>
-<div id="edx_notification_pane"></div>
+
 {% csrf_token %}
 
 <script src="{{ STATIC_URL }}edx_notifications/js/models/counter_icon_model.js"></script>
@@ -19,13 +18,11 @@ page that is using this widget
 <script src="{{ STATIC_URL }}edx_notifications/js/views/counter_icon_view.js"></script>
 <script src="{{ STATIC_URL }}edx_notifications/js/views/notification_pane_view.js"></script>
 
-<script type="text/template" id="notification-icon-template">
-    <img class='edx-notifications-icon' src='/static/edx_notifications/img/notification_icon.jpg' width=24 height=24/>
-    <span class='edx-notifications-count-number'>
-        <% if (typeof count !== 'undefined' && count > 0) { %>
-        <%= count %>
-        <% } %>
-    </span>
+
+<script type="text/template" id="notification-counter-template">
+    <% if (typeof count !== 'undefined' && count > 0) { %>
+    <%= count %>
+    <% } %>
 </script>
 
 <script type="text/template" id="notification-pane-template">
@@ -65,8 +62,9 @@ page that is using this widget
 
 <script type="text/javascript">
     var notification_counter_icon = new CounterIconView({
-        el: $("#edx_notification_counter"),
-        pane_el: $("#edx_notification_pane"),
+        el: $(".edx-notifications-icon"),
+        count_el: $(".edx-notifications-count-number"),
+        pane_el: $(".edx-notification-pane"),
         endpoints: {
             unread_notification_count: "{% autoescape off %}{{ endpoints.unread_notification_count }}{% endautoescape %}",
             mark_all_user_notifications_read: "{% autoescape off %}{{ endpoints.mark_all_user_notifications_read }}{% endautoescape %}",

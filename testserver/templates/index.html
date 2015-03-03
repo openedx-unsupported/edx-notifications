@@ -17,8 +17,13 @@
 
     <h1>Notifications List</h1>
 
-    {# use the "drop-in" widget that is defined in edx_notifications/server/web/templates/django #}
+    <div>
+        <img class="edx-notifications-icon" src="/static/edx_notifications/img/notification_icon.jpg" />
+        <span class='edx-notifications-count-number'></span>
+    </div>
+    <div class="edx-notification-pane"></div>
 
+    {# use the "drop-in" widget that is defined in edx_notifications/server/web/templates/django #}
     {% include "django/notifications_widget.html" %}
 
     <hr />

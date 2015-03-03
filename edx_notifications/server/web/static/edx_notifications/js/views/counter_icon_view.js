@@ -1,6 +1,7 @@
 var CounterIconView = Backbone.View.extend({
   initialize: function(options){
       this.options = options;
+      this.count_el = options.count_el;
       this.endpoints = options.endpoints;
       this.global_variables = options.global_variables;
       this.view_templates = options.view_templates;
@@ -12,7 +13,7 @@ var CounterIconView = Backbone.View.extend({
       this.model.url = this.endpoints.unread_notification_count;
 
       /* get out main underscore view template */
-      this.template = _.template($('#notification-icon-template').html());
+      this.template = _.template($('#notification-counter-template').html());
 
       this.render();
 
@@ -32,7 +33,7 @@ var CounterIconView = Backbone.View.extend({
   },
 
   events: {
-      'click .edx-notifications-icon': 'showPane'
+      'click': 'showPane'
   },
 
   /* cached notifications pane view */
@@ -49,7 +50,7 @@ var CounterIconView = Backbone.View.extend({
 
   render: function () {
       var html = this.template(this.model.toJSON())
-      this.$el.html(html);
+      this.count_el.html(html);
  },
 
  showPane: function(e) {
