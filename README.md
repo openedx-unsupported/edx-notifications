@@ -138,6 +138,10 @@ To run the tests in normal mode with coverage enabled use following command
 
 ```
 gulp test
+
+- or (depending on search paths) -
+
+node node_modules/gulp/bin/gulp.js test
 ```
 
 To run the tests in debug mode use
