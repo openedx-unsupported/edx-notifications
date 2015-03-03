@@ -19,7 +19,6 @@ script:
     - ./manage.py migrate --settings=testserver.settings
     - coverage run ./manage.py test edx_notifications
     - coverage report -m
-    - gulp test
     - bash ./run_bokchoy_tests.sh
     - pep8 edx_notifications
     - pylint edx_notifications --report=no

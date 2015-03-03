@@ -103,6 +103,7 @@ def index(request):
                 'poll_period_secs': 10,
             },
         },
+        'include_framework_js': True,
     })
 
     return HttpResponse(template.render(RequestContext(request, context_dict)))

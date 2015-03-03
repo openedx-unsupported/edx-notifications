@@ -25,11 +25,4 @@ class TestUtils(TestCase):
         self.assertIn('unread_notification_count', endpoints)
         self.assertIn('user_notifications_all', endpoints)
         self.assertIn('renderer_templates_urls', endpoints)
-
-        self.assertIn('view_templates', render_context)
-        view_templates = render_context['view_templates']
-
-        self.assertIn('view_templates', render_context)
-
         self.assertIn('ok', render_context['test_settings'])
-        self.assertIn('notification_pane', view_templates)

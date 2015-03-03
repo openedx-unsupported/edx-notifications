@@ -30,11 +30,7 @@ class LoggedInHomePage(PageObject):
         """
         Clicks on add notification button
         """
-        self.wait_for_element_visibility('.edx-notifications-count-number', 'Notification count not found')
-        if int(self.q(css='.edx-notifications-count-number').text[0]):
-            initial_count = int(self.q(css='.edx-notifications-count-number').text[0])
-        else:
-            initial_count = 0
+        initial_count = self.get_notifications_count()
         self.wait_for_element_visibility('input[name="add_notifications"]', 'Add notification button not found')
         self.q(css='input[name="add_notifications"]').click()
         self.wait_for_element_visibility('.edx-notifications-count-number', 'Notification count not found')
@@ -49,7 +45,9 @@ class LoggedInHomePage(PageObject):
         :return:
         """
         self.wait_for_element_visibility('.edx-notifications-count-number', 'Notification count not found')
-        return int(self.q(css='.edx-notifications-count-number').text[0])
+        count_text = self.q(css='.edx-notifications-count-number').text[0]
+        # HTML will not contain a 0 if there are no unread messages
+        return int(count_text if count_text else 0)
 
     def verify_notifications_container_is_invisible(self):
         """
@@ -151,3 +149,5 @@ class LoggedInHomePage(PageObject):
         """
         self.q(css='.edx-notifications-container .mark_notifications_read>a').click()
         self.wait_for_ajax()
+        self.wait_for_element_visibility('.edx-notifications-content', 'Notification messages list not found')
+        return self.q(css='.edx-notifications-content').text
