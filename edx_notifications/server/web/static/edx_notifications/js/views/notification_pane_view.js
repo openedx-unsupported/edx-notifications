@@ -43,9 +43,7 @@ define([
             'click .user_notifications_all': 'allUserNotificationsClicked',
             'click .unread_notifications': 'unreadNotificationsClicked',
             'click .mark_notifications_read': 'markNotificationsRead',
-            'click .hide_pane': 'hidePane',
-            'click': 'preventHidingWhenClickedInside'
-
+            'click .hide_pane': 'hidePane'
         },
 
         template: null,
@@ -191,9 +189,6 @@ define([
         },
         showPane: function() {
             $('.edx-notifications-container').show();
-        },
-        preventHidingWhenClickedInside: function(e) {
-          e.stopPropagation();
         },
         isVisible: function() {
           if ($('.edx-notifications-container').is(':visible')) {

@@ -54,7 +54,6 @@ define([
         modelChanged: function() {
             this.render();
         },
-
         render: function () {
 
             if (!this.template)
@@ -65,8 +64,7 @@ define([
                 )
             );
        },
-
-       showPane: function(e) {
+        showPane: function(e) {
             if (!this.notification_pane) {
 
                 this.notification_pane = new NotificationPaneView({
@@ -108,11 +106,14 @@ define([
                }
            });
         },
-
-       hidePaneWhenClickedOutside: function() {
-         $('.edx-notifications-container').hide();
-         $('body').unbind('click');
-       }
+        hidePaneWhenClickedOutside: function() {
+            if(!$(event.target).closest('.edx-notifications-container').length) {
+                if($('.edx-notifications-container').is(":visible")) {
+                    $('.edx-notifications-container').hide();
+                    $('body').unbind('click');
+                }
+            }
+        }
     });
 });
 })(define || RequireJS.define);
