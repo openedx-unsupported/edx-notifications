@@ -114,12 +114,14 @@ var NotificationPaneView = Backbone.View.extend({
                     var msg = user_msg.get("msg");
                     var msg_type = msg.msg_type;
                     var renderer_class_name = msg_type.renderer;
-                    user_notifications.push({
-                        user_msg: user_msg,
-                        msg: msg,
-                        /* render the particular NotificationMessage */
-                        html: this.renderer_templates[renderer_class_name](msg.payload)
-                    });
+                    if (renderer_class_name in this.renderer_templates) {
+                        user_notifications.push({
+                            user_msg: user_msg,
+                            msg: msg,
+                            /* render the particular NotificationMessage */
+                            html: this.renderer_templates[renderer_class_name](msg.payload)
+                        });
+                    }
                 }
             }
 
@@ -162,8 +164,8 @@ var NotificationPaneView = Backbone.View.extend({
             self.$el.addClass('ui-loading');
             self.collection.fetch(
                 {
-                    data: {
-                        csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').prop('value')
+                    headers: {
+                        "X-CSRFToken": $('input[name="csrfmiddlewaretoken"]').prop('value')
                     }
                     ,
                     type: 'POST',
