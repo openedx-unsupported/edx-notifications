@@ -10,7 +10,7 @@ page that is using this widget
 
 <div id='edx_notification_counter'></div>
 <div id="edx_notification_pane"></div>
-
+{% csrf_token %}
 
 <script src="{{ STATIC_URL }}edx_notifications/js/models/counter_icon_model.js"></script>
 <script src="{{ STATIC_URL }}edx_notifications/js/models/user_notification_model.js"></script>
