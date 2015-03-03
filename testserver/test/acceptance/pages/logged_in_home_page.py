@@ -30,11 +30,7 @@ class LoggedInHomePage(PageObject):
         """
         Clicks on add notification button
         """
-        self.wait_for_element_visibility('.edx-notifications-count-number', 'Notification count not found')
-        if int(self.q(css='.edx-notifications-count-number').text[0]):
-            initial_count = int(self.q(css='.edx-notifications-count-number').text[0])
-        else:
-            initial_count = 0
+        initial_count = self.get_notifications_count()
         self.wait_for_element_visibility('input[name="add_notifications"]', 'Add notification button not found')
         self.q(css='input[name="add_notifications"]').click()
         self.wait_for_element_visibility('.edx-notifications-count-number', 'Notification count not found')

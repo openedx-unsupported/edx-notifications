@@ -24,7 +24,7 @@ var NotificationPaneView = Backbone.View.extend({
         /* re-render if the model changes */
         this.listenTo(this.collection, 'change', this.collectionChanged);
 
-        this.hydrate();
+        this.hydrate('unread_notifications');
 
         this.render();
     },
@@ -71,7 +71,7 @@ var NotificationPaneView = Backbone.View.extend({
         }
     },
 
-    hydrate: function(e) {
+    hydrate: function(selected_tab_classname) {
         /* This function will load the bound collection */
 
         /* add and remove a class when we do the initial loading */
@@ -83,10 +83,11 @@ var NotificationPaneView = Backbone.View.extend({
             success: function(){
                 self.$el.removeClass('ui-loading');
                 self.render();
-                if (e && e.currentTarget) {
-                    self.$el.find($('ul.notifications_list_tab > li')).removeClass('active');
-                    self.$el.find('.'+e.currentTarget.className).addClass('active');
-                }
+            }
+        }).done(function(){
+            if (selected_tab_classname) {
+                self.$el.find($('ul.notifications_list_tab > li')).removeClass('active');
+                self.$el.find('.'+selected_tab_classname).addClass('active');
             }
         });
     },
@@ -132,17 +133,20 @@ var NotificationPaneView = Backbone.View.extend({
         }
     },
     allUserNotificationsClicked: function(e) {
-
-        /* set the API endpoint that was passed into our initializer */
-        this.collection.url = this.endpoints.user_notifications_all;
-
-        this.hydrate(e);
+        // check if the event.currentTarget class has already been active or not
+        if ($.inArray( "active", e.currentTarget.classList) <= 0) {
+            /* set the API endpoint that was passed into our initializer */
+            this.collection.url = this.endpoints.user_notifications_all;
+            this.hydrate('user_notifications_all');
+        }
     },
     unreadNotificationsClicked: function(e) {
-        /* set the API endpoint that was passed into our initializer */
-        this.collection.url = this.endpoints.user_notifications_unread_only;
-
-        this.hydrate(e);
+        // check if the event.currentTarget class has already been active or not
+        if ($.inArray( "active", e.currentTarget.classList) <= 0) {
+            /* set the API endpoint that was passed into our initializer */
+            this.collection.url = this.endpoints.user_notifications_unread_only;
+            this.hydrate('unread_notifications');
+        }
     },
     markNotificationsRead: function(e) {
         var count = this.counter_icon_view.model.get('count');
