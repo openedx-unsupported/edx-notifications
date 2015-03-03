@@ -51,6 +51,13 @@ CANNED_TEST_PAYLOAD = {
         'thread_title': 'A demo posting to the discussion forums',
         'link_to_thread': 'http://localhost',
     },
+    'open-edx.lms.discussions.comment-upvoted': {
+        'original_poster_id': 1,
+        'action_user_id': 2,
+        'action_username': 'testuser',
+        'thread_title': 'A demo posting to the discussion forums',
+        'link_to_thread': 'http://localhost',
+    },
     'testserver.type1': {
         'subject': 'Test Notification',
         'body': 'Here is test notification that has a simple subject and body',
