@@ -94,7 +94,7 @@ class LoggedInHomePage(PageObject):
         """
         Click on view all tab
         """
-        self.q(css='.edx-notifications-content .user_notifications_all').click()
+        self.q(css='.edx-notifications-content .user_notifications_all>a').click()
         self.wait_for_element_visibility(
             '.edx-notifications-content .user_notifications_all.active',
             'wait for tab to get selected'

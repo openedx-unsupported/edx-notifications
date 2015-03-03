@@ -174,12 +174,12 @@ class TestAddNotifications(WebAppTest):
         self.home_page.go_to_login_page()
         self.login_page.provide_credentials(user_name, password)
         self.login_page.submit_correct_credentials()
+        self.logged_in_home_page.show_notifications_container()
+        self.logged_in_home_page.verify_notifications_container_is_visible()
+        initial_unread_notification_count = self.logged_in_home_page.return_unread_notifications_count()
+        self.logged_in_home_page.hide_notification_container()
+        self.logged_in_home_page.verify_notifications_container_is_invisible()
         for key, value in self.notification_dict.iteritems():
-            self.logged_in_home_page.show_notifications_container()
-            self.logged_in_home_page.verify_notifications_container_is_visible()
-            initial_unread_notification_count = self.logged_in_home_page.return_unread_notifications_count()
-            self.logged_in_home_page.hide_notification_container()
-            self.logged_in_home_page.verify_notifications_container_is_invisible()
             self.assertTrue(self.logged_in_home_page.select_notification_type(key))
             self.logged_in_home_page.add_notification()
             self.logged_in_home_page.show_notifications_container()
@@ -188,6 +188,7 @@ class TestAddNotifications(WebAppTest):
             self.logged_in_home_page.hide_notification_container()
             self.logged_in_home_page.verify_notifications_container_is_invisible()
             self.assertEqual(final_unread_notification_count, initial_unread_notification_count + 1)
+            initial_unread_notification_count = final_unread_notification_count
 
     def test_09_verify_notifications_count_from_view_all_tab(self):
         """
@@ -201,13 +202,13 @@ class TestAddNotifications(WebAppTest):
         self.home_page.go_to_login_page()
         self.login_page.provide_credentials(user_name, password)
         self.login_page.submit_correct_credentials()
+        self.logged_in_home_page.show_notifications_container()
+        self.logged_in_home_page.verify_notifications_container_is_visible()
+        self.logged_in_home_page.select_view_all_tab()
+        initial_notification_count = self.logged_in_home_page.return_view_all_notifications_count()
+        self.logged_in_home_page.hide_notification_container()
+        self.logged_in_home_page.verify_notifications_container_is_invisible()
         for key, value in self.notification_dict.iteritems():
-            self.logged_in_home_page.show_notifications_container()
-            self.logged_in_home_page.verify_notifications_container_is_visible()
-            self.logged_in_home_page.select_view_all_tab()
-            initial_notification_count = self.logged_in_home_page.return_view_all_notifications_count()
-            self.logged_in_home_page.hide_notification_container()
-            self.logged_in_home_page.verify_notifications_container_is_invisible()
             self.assertTrue(self.logged_in_home_page.select_notification_type(key))
             self.logged_in_home_page.add_notification()
             self.logged_in_home_page.show_notifications_container()
@@ -217,6 +218,7 @@ class TestAddNotifications(WebAppTest):
             self.logged_in_home_page.hide_notification_container()
             self.logged_in_home_page.verify_notifications_container_is_invisible()
             self.assertEqual(final_notification_count, initial_notification_count + 1)
+            initial_notification_count = final_notification_count
 
     def test_10_verify_unread_notifications_text(self):
         """
