@@ -92,10 +92,11 @@ define([
                 success: function(){
                     self.$el.removeClass('ui-loading');
                     self.render();
-                    if (e && e.currentTarget) {
-                        self.$el.find($('ul.notifications_list_tab > li')).removeClass('active');
-                        self.$el.find('.'+e.currentTarget.className).addClass('active');
-                    }
+                }
+            }).done(function(){
+                if (e && e.currentTarget) {
+                    self.$el.find($('ul.notifications_list_tab > li')).removeClass('active');
+                    self.$el.find('.'+e.currentTarget.className).addClass('active');
                 }
             });
         },
@@ -142,17 +143,22 @@ define([
             }
         },
         allUserNotificationsClicked: function(e) {
+            // check if the event.currentTarget class has already been active or not
+            if ($.inArray( "active", e.currentTarget.classList) <= 0) {
+                /* set the API endpoint that was passed into our initializer */
+                this.collection.url = this.endpoints.user_notifications_all;
 
-            /* set the API endpoint that was passed into our initializer */
-            this.collection.url = this.endpoints.user_notifications_all;
-
-            this.hydrate(e);
+                this.hydrate(e);
+            }
         },
         unreadNotificationsClicked: function(e) {
-            /* set the API endpoint that was passed into our initializer */
-            this.collection.url = this.endpoints.user_notifications_unread_only;
+            // check if the event.currentTarget class has already been active or not
+            if ($.inArray( "active", e.currentTarget.classList) <= 0) {
+                /* set the API endpoint that was passed into our initializer */
+                this.collection.url = this.endpoints.user_notifications_unread_only;
 
-            this.hydrate(e);
+                this.hydrate(e);
+            }
         },
         markNotificationsRead: function(e) {
             var count = this.counter_icon_view.model.get('count');
