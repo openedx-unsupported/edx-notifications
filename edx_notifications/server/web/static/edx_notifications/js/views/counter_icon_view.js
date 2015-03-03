@@ -63,7 +63,7 @@ define([
                     this.model.toJSON()
                 )
             );
-       },
+        },
         showPane: function(e) {
             if (!this.notification_pane) {
 
@@ -76,35 +76,35 @@ define([
                 });
                 $('body').bind('click', this.hidePaneWhenClickedOutside);
             }
-           else {
-              if (this.notification_pane.isVisible()) {
-                this.notification_pane.hidePane();
-                $('body').unbind('click');
-              }
-              else {
-                this.notification_pane.showPane();
-                $('body').bind('click', this.hidePaneWhenClickedOutside);
-              }
-           }
-
-           e.stopPropagation();
+            else {
+                if (this.notification_pane.isVisible()) {
+                    this.notification_pane.hidePane();
+                    $('body').unbind('click');
+                }
+                else {
+                    this.notification_pane.showPane();
+                    $('body').bind('click', this.hidePaneWhenClickedOutside);
+                }
+            }
+            //stop propagating to the body click event
+            e.stopPropagation();
         },
 
         autoRefreshNotifications: function(counterView) {
-           var currentModel = new CounterIconModel();
-           currentModel.url = counterView.endpoints.unread_notification_count;
-           currentModel.fetch().done(function(){
-               // if notification counter is incremented.
-               if(currentModel.get('count') > counterView.model.get('count')){
-                   var notification_alert = new Audio(counterView.view_audios.notification_alert);
-                   counterView.model = currentModel;
-                   notification_alert.play();
-                   counterView.render();
-                   if (counterView.notification_pane) {
-                       counterView.notification_pane.hydrate();
-                   }
-               }
-           });
+            var currentModel = new CounterIconModel();
+            currentModel.url = counterView.endpoints.unread_notification_count;
+            currentModel.fetch().done(function(){
+                // if notification counter is incremented.
+                if(currentModel.get('count') > counterView.model.get('count')){
+                    var notification_alert = new Audio(counterView.view_audios.notification_alert);
+                    counterView.model = currentModel;
+                    notification_alert.play();
+                    counterView.render();
+                    if (counterView.notification_pane) {
+                        counterView.notification_pane.hydrate();
+                    }
+                }
+            });
         },
         hidePaneWhenClickedOutside: function() {
             if(!$(event.target).closest('.edx-notifications-container').length) {
