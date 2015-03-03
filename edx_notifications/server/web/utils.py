@@ -62,6 +62,7 @@ def get_notifications_widget_context(override_context=None):
         'view_audios': {
             'notification_alert': get_audio_path('notification_alert.mp3'),
         },
+        'add_notification_divs': True,
     }
 
     if override_context:
