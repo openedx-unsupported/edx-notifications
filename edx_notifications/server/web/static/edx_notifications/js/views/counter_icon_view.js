@@ -63,6 +63,7 @@ var CounterIconView = Backbone.View.extend({
               global_variables: this.global_variables,
               view_templates: this.view_templates
           });
+          this.notification_pane.showPane();
           $('body').bind('click', this.hidePaneWhenClickedOutside);
       }
      else {
@@ -97,7 +98,7 @@ var CounterIconView = Backbone.View.extend({
   },
 
  hidePaneWhenClickedOutside: function() {
-   $('.edx-notifications-container').hide();
+   $(".edx-notification-pane").hide();
    $('body').unbind('click');
  }
 });

@@ -181,10 +181,10 @@ var NotificationPaneView = Backbone.View.extend({
         }
     },
     hidePane: function() {
-        $('.edx-notifications-container').hide();
+        this.$el.hide();
     },
     showPane: function() {
-        $('.edx-notifications-container').show();
+        this.$el.show();
     },
     preventHidingWhenClickedInside: function(e) {
       e.stopPropagation();
