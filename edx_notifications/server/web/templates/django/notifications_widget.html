@@ -3,31 +3,89 @@
 This is a "drop-in" Django template widget to instantiate the edx-notifications front end application
 which is a Backbone application that is defined in edx_notifications/server/web/static/js
 
-This HTML snippet assumes that jQuery been included in the page that is using this widget
+This HTML snippet assumes that jQuery, Backbone, DateJS, and Underscore have been included in the
+page that is using this widget
 
 {% endcomment %}
 
-<div id='edx_notification_counter'></div>
-<div id="edx_notification_pane"></div>
+
+{% csrf_token %}
+
+<script src="{{ STATIC_URL }}edx_notifications/js/models/counter_icon_model.js"></script>
+<script src="{{ STATIC_URL }}edx_notifications/js/models/user_notification_model.js"></script>
+<script src="{{ STATIC_URL }}edx_notifications/js/collections/notification_collection.js"></script>
+
+<script src="{{ STATIC_URL }}edx_notifications/js/views/counter_icon_view.js"></script>
+<script src="{{ STATIC_URL }}edx_notifications/js/views/notification_pane_view.js"></script>
+
+
+<script type="text/template" id="notification-counter-template">
+    <% if (typeof count !== 'undefined' && count > 0) { %>
+    <%= count %>
+    <% } %>
+</script>
+
+<script type="text/template" id="notification-pane-template">
+    <div class="edx-notifications-container">
+        <div class="edx-notifications-content">
+            <h2>Notifications</h2>
+            <div class="actions">
+                <ul class="notifications_list_tab">
+                    <li class="unread_notifications active"><a  href="#">View unread</a></li>
+                    <li class="user_notifications_all"><a href="#">View all</a></li>
+                    <li class="mark_notifications_read"><a href="#">Mark as read</a></li>
+                    <li class="hide_pane"><a href="#">Hide</a></li>
+                </ul>
+            </div>
+            <ul>
+                <% if (typeof user_notifications == 'undefined' || user_notifications.length == 0) { %>
+                    <li>
+                        <p class="description">You have no unread notifications.</p>
+                    </li>
+                <% } else { %>
+                <% _.each(user_notifications, function(user_notification){ %>
+
+                <li>
+                    <h3 class="borderB padB5 uppercase bold marB10">Announcement</h3>
+                    <h3 class="marT0"><a href="">Welcome to <%= global_variables.app_name %></a></h3>
+                    <div class="date">
+                        <%= new Date(user_notification.msg.created).toString('MMMM dd, yyyy') %>
+                    </div>
+                    <p class="description"><%= user_notification.html %></p>
+                </li>
+                <% }); %>
+                <% } %>
+            </ul>
+        </div>
+    </div>
+</script>
 
 <script type="text/javascript">
-
-RequireJS.require([
-    'notifications_app'
-], function (NotificationApp) {
-    'use strict';
-
-    var app = new NotificationApp({
+    var notification_counter_icon = new CounterIconView({
+        el: $(".edx-notifications-icon"),
+        count_el: $(".edx-notifications-count-number"),
+        pane_el: $(".edx-notification-pane"),
         endpoints: {
             unread_notification_count: "{% autoescape off %}{{ endpoints.unread_notification_count }}{% endautoescape %}",
-            user_notifications: "{% autoescape off %}{{ endpoints.user_notifications }}{% endautoescape %}",
+            mark_all_user_notifications_read: "{% autoescape off %}{{ endpoints.mark_all_user_notifications_read }}{% endautoescape %}",
+            user_notifications_all: "{% autoescape off %}{{ endpoints.user_notifications_all }}{% endautoescape %}",
+            user_notifications_unread_only: "{% autoescape off %}{{ endpoints.user_notifications_unread_only }}{% endautoescape %}",
             renderer_templates_urls: "{% autoescape off %}{{ endpoints.renderer_templates_urls }}{% endautoescape %}"
         },
-        view_templates: {
-            notification_icon: "{% autoescape off %}{{ view_templates.notification_icon }}{% endautoescape %}",
-            notification_pane: "{% autoescape off %}{{ view_templates.notification_pane }}{% endautoescape %}",
+        global_variables: {
+            app_name: "{{ global_variables.app_name }}"
+        },
+        refresh_watcher: {
+            name: "{{refresh_watcher.name}}",
+            args: {
+            {% if refresh_watcher.name == 'short-poll' %}
+                poll_period_secs: {{ refresh_watcher.args.poll_period_secs }}
+            {% endif %}
+            }
+        },
+        view_audios: {
+            notification_alert: "{% autoescape off %}{{ view_audios.notification_alert }}{% endautoescape %}"
         }
     });
-});
 </script>
 

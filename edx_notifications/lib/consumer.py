@@ -99,3 +99,19 @@ def mark_notification_read(user_id, msg_id, read=True):
         user_msg.read_at = None
 
     store.save_user_notification(user_msg)
+
+
+@contract(user_id='int,>0')
+def mark_all_user_notification_as_read(user_id):
+    """
+    Will mark a given user notifications as 'read'
+
+    ARGS:
+        - user_id: The user that wishes to mark the msg as read/unread
+
+    NOTE: If the corresponding user_id cannot be found, then this will raise
+    a ItemNotFoundError().
+    """
+
+    store = notification_store()
+    store.mark_user_notifications_read(user_id)

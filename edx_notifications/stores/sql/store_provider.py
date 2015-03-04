@@ -4,6 +4,8 @@ Concrete MySQL implementation of the data provider interface
 
 import copy
 import pylru
+import pytz
+from datetime import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -276,6 +278,21 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         result_set = [item.to_data_object() for item in query]
 
         return result_set
+
+    def mark_user_notifications_read(self, user_id):
+        """
+        This should mark all the user notifications as read
+
+        ARGS:
+            - user_id: The id of the user
+        """
+
+        query = self._get_prepaged_notifications(
+            user_id,
+            filters={'read': False, 'unread': True}
+        )
+
+        query.update(read_at=datetime.now(pytz.UTC))
 
     def save_user_notification(self, user_msg):
         """
