@@ -32,3 +32,17 @@ class CommentUpvotedRenderer(UnderscoreStaticFileRenderer):
     Renders a post-upvoted notification
     """
     underscore_template_name = 'forums/comment_upvoted.html'
+
+
+class CohortedThreadAddedRenderer(UnderscoreStaticFileRenderer):
+    """
+    Renders a post-upvoted notification
+    """
+    underscore_template_name = 'forums/cohorted_thread_added.html'
+
+
+class CohortedCommentAddedRenderer(UnderscoreStaticFileRenderer):
+    """
+    Renders a post-upvoted notification
+    """
+    underscore_template_name = 'forums/cohorted_comment_added.html'
