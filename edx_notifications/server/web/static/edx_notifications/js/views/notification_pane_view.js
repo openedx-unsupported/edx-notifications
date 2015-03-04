@@ -105,15 +105,15 @@ var NotificationPaneView = Backbone.View.extend({
         var grouped_user_notifications = [];
 
         if (this.selected_pane == 'unread_notifications') {
-            grouped_user_notifications = this.get_grouped_notifications('type');
+            notification_group_renderings = this.get_notification_group_renderings('type');
         } else {
-            grouped_user_notifications = this.get_grouped_notifications('date');
+            notification_group_renderings = this.get_notification_group_renderings('date');
         }
 
         /* now render template with our model */
         var _html = this.template({
             global_variables: this.global_variables,
-            grouped_user_notifications: grouped_user_notifications
+            grouped_user_notifications: notification_group_renderings
         });
 
         this.$el.html(_html);
@@ -122,26 +122,27 @@ var NotificationPaneView = Backbone.View.extend({
         this.$el.find($('ul.notifications_list_tab > li')).removeClass('active');
         this.$el.find('.'+this.selected_pane).addClass('active');
     },
-    get_grouped_notifications: function(group_by) {
+    get_notification_group_renderings: function(group_by) {
+        var user_msgs = this.collection.toJSON();
         var grouped_data = {}
         var notification_groups = [];
         if (group_by == 'type') {
             // use Underscores built in group by function
             grouped_data = _.groupBy(
-                this.collection.models,
-                function(model) {
+                user_msgs,
+                function(user_msg) {
                     // group by msg_type name family
-                    var name = model.get('msg').msg_type.name;
+                    var name = user_msg.msg.msg_type.name;
                     return name.substring(0, name.lastIndexOf("."));
                 }
             );
         } else {
             // use Underscores built in group by function
             grouped_data = _.groupBy(
-                this.collection.models,
-                function(model) {
+                user_msgs,
+                function(user_msg) {
                     // group by create date
-                    var date = model.get('msg').created;
+                    var date = user_msg.msg.created;
                     return new Date(date).toString('MMMM dd, yyyy');
                 }
             );
@@ -161,8 +162,8 @@ var NotificationPaneView = Backbone.View.extend({
                 // by create date, descending, so call reverse()
                 var sorted_data = _.sortBy(
                     grouped_data[group_key],
-                    function(model) {
-                        return model.get('msg').created;
+                    function(user_msg) {
+                        return user_msg.msg.created;
                     }
                 ).reverse();
 
@@ -172,16 +173,16 @@ var NotificationPaneView = Backbone.View.extend({
                 // Loop through each msg in the current group
                 // and create a rendering of it
                 for (var j = 0; j < sorted_data.length; j++) {
-                    var model = sorted_data[j];
-                    var msg = model.get('msg');
+                    var user_msg = sorted_data[j];
+                    var msg = user_msg.msg;
                     var renderer_class_name = msg.msg_type.renderer;
 
                     // check to make sure we have the Underscore rendering
                     // template loaded, if not, then skip it.
                     if (renderer_class_name in this.renderer_templates) {
                         notification_group['messages'].push({
-                            user_msg: model,
-                            msg: model.get('msg'),
+                            user_msg: user_msg,
+                            msg: msg,
                             /* render the particular NotificationMessage */
                             html: this.renderer_templates[renderer_class_name](msg.payload)
                         });
