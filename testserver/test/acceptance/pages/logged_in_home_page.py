@@ -61,7 +61,7 @@ class LoggedInHomePage(PageObject):
         """
         self.wait_for_element_visibility('.edx-notifications-icon', 'Notification icon not found')
         self.q(css='.edx-notifications-icon[src="/static/edx_notifications/img/notification_icon.jpg"]').click()
-        # self.wait_for_ajax()
+        self.wait_for_ajax()
 
     def click_notification_icon_again(self):
         """
