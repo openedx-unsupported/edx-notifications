@@ -107,32 +107,80 @@ var NotificationPaneView = Backbone.View.extend({
         /* and render each one */
 
         if (this.fetched_template !== null) {
-            var user_notifications =[];
-            if (this.collection !== null && this.renderer_templates !== null) {
-                for (var i=0; i<this.collection.length; i++) {
-                    var user_msg = this.collection.at(i);
-                    var msg = user_msg.get("msg");
-                    var msg_type = msg.msg_type;
-                    var renderer_class_name = msg_type.renderer;
-                    if (renderer_class_name in this.renderer_templates) {
-                        user_notifications.push({
-                            user_msg: user_msg,
-                            msg: msg,
-                            /* render the particular NotificationMessage */
-                            html: this.renderer_templates[renderer_class_name](msg.payload)
-                        });
-                    }
+            var url = event.currentTarget.responseURL;
+            var query_params = {};
+            var action_type = null;
+            if (typeof url !== 'undefined') {
+                 query_params = this.get_query_params(url);
+            }
+            var grouped_user_notifications = [];
+
+            if (!$.isEmptyObject(query_params)) {
+                if (query_params['read'] === 'True' && query_params['unread'] === 'True'){
+                    this.get_grouped_notifications(grouped_user_notifications, 'date');
+                }
+                if (query_params['read'] === 'False' && query_params['unread'] === 'True'){
+                    this.get_grouped_notifications(grouped_user_notifications, 'type');
                 }
             }
-
             /* now render template with our model */
             var _html = this.template({
                 global_variables: this.global_variables,
-                user_notifications: user_notifications
+                grouped_user_notifications: grouped_user_notifications
             });
 
             this.$el.html(_html);
         }
+    },
+    get_grouped_notifications: function(grouped_user_notifications, group_by){
+        var current_group_type = null;
+        var notification_group = {};
+        var old_group_type = '';
+        if (this.collection !== null && this.renderer_templates !== null) {
+            for (var i = 0; i < this.collection.length; i++) {
+                var user_msg = this.collection.at(i);
+                var msg = user_msg.get("msg");
+                var msg_type = msg.msg_type;
+                var renderer_class_name = msg_type.renderer;
+                if (group_by === 'type') {
+                    current_group_type = msg_type.name.substring(0, msg_type.name.lastIndexOf("."));
+                    current_group_type = current_group_type.substring(current_group_type.lastIndexOf(".") + 1);
+                }
+                else if (group_by === 'date') {
+                    current_group_type = new Date(msg.created).toString('MMMM dd, yyyy');
+                }
+                if (old_group_type !== current_group_type) {
+                    if (old_group_type) {
+                        grouped_user_notifications.push(notification_group);
+                    }
+                    notification_group = {};
+
+                    notification_group['group_title'] = current_group_type;
+                    notification_group['messages'] = [];
+                    old_group_type = current_group_type;
+                }
+                notification_group['messages'].push({
+                    user_msg: user_msg,
+                    msg: msg,
+                    /* render the particular NotificationMessage */
+                    html: this.renderer_templates[renderer_class_name](msg.payload)
+                });
+            }
+            if (!$.isEmptyObject(notification_group)) {
+                grouped_user_notifications.push(notification_group);
+            }
+        }
+    },
+    get_query_params: function (url) {
+        var pos = url.indexOf("?");
+        if(pos==-1) return [];
+        url = url.substr(pos+1);
+        var result = {};
+        url.split("&").forEach(function(part) {
+            var item = part.split("=");
+            result[item[0]] = decodeURIComponent(item[1]);
+        });
+        return result;
     },
     allUserNotificationsClicked: function(e) {
         // check if the event.currentTarget class has already been active or not

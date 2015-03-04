@@ -38,21 +38,22 @@ page that is using this widget
                 </ul>
             </div>
             <ul>
-                <% if (typeof user_notifications == 'undefined' || user_notifications.length == 0) { %>
+                <% if (typeof grouped_user_notifications == 'undefined' || grouped_user_notifications.length == 0) { %>
                     <li>
                         <p class="description">You have no unread notifications.</p>
                     </li>
                 <% } else { %>
-                <% _.each(user_notifications, function(user_notification){ %>
-
-                <li>
-                    <h3 class="borderB padB5 uppercase bold marB10">Announcement</h3>
+                <% _.each(grouped_user_notifications, function(grouped_user_notification){ %>
+                    <h3 class="borderB padB5 uppercase bold marB10"><%= grouped_user_notification.group_title %></h3>
                     <h3 class="marT0"><a href="">Welcome to <%= global_variables.app_name %></a></h3>
-                    <div class="date">
-                        <%= new Date(user_notification.msg.created).toString('MMMM dd, yyyy') %>
-                    </div>
-                    <p class="description"><%= user_notification.html %></p>
-                </li>
+                    <% _.each(grouped_user_notification.messages, function(message){ %>
+                        <li class="marB10 padB5 borderB">
+                            <div class="date">
+                                <%= new Date(message.msg.created).toString('MMMM dd, yyyy') %>
+                            </div>
+                            <p class="description"><%= message.html %></p>
+                        </li>
+                    <% }); %>
                 <% }); %>
                 <% } %>
             </ul>
