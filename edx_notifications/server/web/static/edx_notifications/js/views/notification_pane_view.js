@@ -39,6 +39,8 @@ var NotificationPaneView = Backbone.View.extend({
 
     template: null,
 
+    selected_pane: 'unread_notifications',
+
     process_renderer_templates_urls: function(data) {
         /*
         This will go through all Underscore Notification Renderer Templates
@@ -107,22 +109,14 @@ var NotificationPaneView = Backbone.View.extend({
         /* and render each one */
 
         if (this.fetched_template !== null) {
-            var url = event.currentTarget.responseURL;
-            var query_params = {};
-            var action_type = null;
-            if (typeof url !== 'undefined') {
-                 query_params = this.get_query_params(url);
-            }
             var grouped_user_notifications = [];
 
-            if (!$.isEmptyObject(query_params)) {
-                if (query_params['read'] === 'True' && query_params['unread'] === 'True'){
-                    this.get_grouped_notifications(grouped_user_notifications, 'date');
-                }
-                if (query_params['read'] === 'False' && query_params['unread'] === 'True'){
-                    this.get_grouped_notifications(grouped_user_notifications, 'type');
-                }
+            if (this.selected_pane == 'unread_notifications') {
+                this.get_grouped_notifications(grouped_user_notifications, 'type');
+            } else {
+                this.get_grouped_notifications(grouped_user_notifications, 'date');
             }
+
             /* now render template with our model */
             var _html = this.template({
                 global_variables: this.global_variables,
@@ -171,62 +165,49 @@ var NotificationPaneView = Backbone.View.extend({
             }
         }
     },
-    get_query_params: function (url) {
-        var pos = url.indexOf("?");
-        if(pos==-1) return [];
-        url = url.substr(pos+1);
-        var result = {};
-        url.split("&").forEach(function(part) {
-            var item = part.split("=");
-            result[item[0]] = decodeURIComponent(item[1]);
-        });
-        return result;
-    },
     allUserNotificationsClicked: function(e) {
         // check if the event.currentTarget class has already been active or not
-        if ($.inArray( "active", e.currentTarget.classList) <= 0) {
+        if (this.selected_pane != 'user_notifications_all') {
             /* set the API endpoint that was passed into our initializer */
             this.collection.url = this.endpoints.user_notifications_all;
-            this.hydrate('user_notifications_all');
+            this.selected_pane = 'user_notifications_all';
+            this.hydrate(this.selected_pane);
         }
     },
     unreadNotificationsClicked: function(e) {
         // check if the event.currentTarget class has already been active or not
-        if ($.inArray( "active", e.currentTarget.classList) <= 0) {
+        if (this.selected_pane = 'unread_notifications') {
             /* set the API endpoint that was passed into our initializer */
             this.collection.url = this.endpoints.user_notifications_unread_only;
-            this.hydrate('unread_notifications');
+            this.selected_pane = 'unread_notifications';
+            this.hydrate(this.selected_pane);
         }
     },
     markNotificationsRead: function(e) {
-        var count = this.counter_icon_view.model.get('count');
-        // mark all notifications True, when the user notifications count should be > 0
-        if (count > 0) {
-            /* set the API endpoint that was passed into our initializer */
-            this.collection.url = this.endpoints.mark_all_user_notifications_read;
+        /* set the API endpoint that was passed into our initializer */
+        this.collection.url = this.endpoints.mark_all_user_notifications_read;
 
-            /* make the async call to the backend REST API */
-            /* after it loads, the listenTo event will file and */
-            /* will call into the rendering */
-            var self = this;
-            self.$el.addClass('ui-loading');
-            self.collection.fetch(
-                {
-                    headers: {
-                        "X-CSRFToken": $('input[name="csrfmiddlewaretoken"]').prop('value')
-                    }
-                    ,
-                    type: 'POST',
-                    success: function () {
-                        self.$el.removeClass('ui-loading');
-                        self.render();
+        /* make the async call to the backend REST API */
+        /* after it loads, the listenTo event will file and */
+        /* will call into the rendering */
+        var self = this;
+        self.$el.addClass('ui-loading');
+        self.collection.fetch(
+            {
+                headers: {
+                    "X-CSRFToken": $('input[name="csrfmiddlewaretoken"]').prop('value')
+                },
+                type: 'POST',
+                success: function () {
+                    self.$el.removeClass('ui-loading');
+                    self.selected_pane = 'unread_notifications';
+                    self.render();
 
-                        // fetch the latest notification count
-                        self.counter_icon_view.model.fetch();
-                    }
+                    // fetch the latest notification count
+                    self.counter_icon_view.model.fetch();
                 }
-            );
-        }
+            }
+        );
     },
     hidePane: function() {
         this.$el.hide();
