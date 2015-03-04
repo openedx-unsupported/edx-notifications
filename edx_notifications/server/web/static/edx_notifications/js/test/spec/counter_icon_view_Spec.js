@@ -1,35 +1,27 @@
-;(function (define) {
-
-define([
-    'jquery',
-    'backbone',
-    'counter_icon_view',
-    'text!notification_icon_template',
-    'text!notification_pane_template'
-], function ($, Backbone, CounterIconView, NotificationIcon, NotificationPane) {
-    'use strict';
-
 describe("CounterIconView", function(){
 
     beforeEach(function(){
         this.server = sinon.fakeServer.create();
-        setFixtures('<div id="edx_notification_container"></div><div id="edx_notification_pane"></div>');
-
+        setFixtures('<div><img class="edx-notifications-icon" src="/static/edx_notifications/img/notification_icon.jpg" /> <span class="edx-notifications-count-number"></span> </div><div class="edx-notification-pane"></div><script type="text/template" id="notification-counter-template"><%= count %></script>');
         this.counter_view = new CounterIconView({
-            el: $("#edx_notification_container"),
-            pane_el: $("#notification_pane"),
-
+            el: $(".edx-notifications-icon"),
+            count_el: $(".edx-notifications-count-number"),
+            pane_el: $(".edx-notification-pane"),
             endpoints: {
-                unread_notification_count: "/count/unread",
-                user_notifications: "/notification/pane",
+                unread_notification_count: "/unread/count",
+                mark_all_user_notifications_read: "mark/as/read",
+                user_notifications_all:"all/notifications",
+                user_notifications_unread_only: "unread/notifications",
                 renderer_templates_urls: "/renderer/templates"
             },
-            view_templates: {
-                notification_icon: NotificationIcon,
-                notification_pane: NotificationPane
+            global_variables: {
+                app_name: "none"
             },
             refresh_watcher: {
                 name: "none"
+            },
+            view_audios: {
+                notification_alert: "none"
             }
         });
         this.counter_view.render();
@@ -39,35 +31,39 @@ describe("CounterIconView", function(){
         this.server.restore();
     });
 
-    it("set unread notifications count url", function(){
-        expect(this.counter_view.model.url).toBe("/count/unread")
+    it("assigns unread notifications count url as model url", function(){
+        expect(this.counter_view.model.url).toBe('/unread/count')
     });
 
-    it("should return unread_notification_count url in endpoint", function(){
-        expect(this.counter_view.endpoints.unread_notification_count).toEqual('/count/unread');
+    it("checks if emplate function is defined", function(){
+        expect(this.counter_view.template).toBeDefined()
     });
 
-    it("should return user_notifications url in endpoint", function(){
-        expect(this.counter_view.endpoints.user_notifications).toBe('/notification/pane');
+    it("returns unread_notification_count url in endpoint", function(){
+        expect(this.counter_view.endpoints.unread_notification_count).toEqual('/unread/count');
     });
 
-    it("should return renderer_templates_urls in endpoints", function(){
+    it("returns mark_all_user_notifications_read url in endpoint", function(){
+        expect(this.counter_view.endpoints.mark_all_user_notifications_read).toEqual('mark/as/read');
+    });
+
+    it("returns all_notifications url in endpoint", function(){
+        expect(this.counter_view.endpoints.user_notifications_all).toBe('all/notifications');
+    });
+
+    it("returns unread_notifications url in endpoint", function(){
+        expect(this.counter_view.endpoints.user_notifications_unread_only).toBe('unread/notifications');
+    });
+
+    it("returns renderer_templates_urls in endpoints", function(){
         expect(this.counter_view.endpoints.renderer_templates_urls).toEqual('/renderer/templates');
     });
 
-    it('get html for notification icon', function(){
-        expect(this.counter_view.view_templates.notification_icon.split(" ")).toContain("count");
-    });
-
-    it('get html for notification pane', function(){
-        expect(this.counter_view.view_templates.notification_pane).toContain("Notifications");
-    });
-
-    it("get unread notifications count", function(){
+    xit("gets unread notifications count", function(){
         var unread_count = 2030;
         this.server.respondWith(
             "GET",
-            "/count/unread",
+            "/unread/count",
             [
                 200,
                 { "Content-Type": "application/json" },
@@ -78,13 +74,11 @@ describe("CounterIconView", function(){
         expect(this.counter_view.$el.html()).toContain(unread_count)
     });
 
-    it("should call showPane function on clicking notification icon", function(){
+    it("calls showPane function on clicking notification icon", function(){
         var target = $(".edx-notifications-icon");
         var showPaneSpy = spyOn(this.counter_view, 'showPane');
         this.counter_view.delegateEvents();
         target.click();
         expect(showPaneSpy).toHaveBeenCalled();
     });
-  });
 });
-})(define || RequireJS.define);

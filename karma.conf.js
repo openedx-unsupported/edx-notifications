@@ -18,7 +18,6 @@ module.exports = function(config) {
     //plugins required for running the karma tests
     plugins:[
         'karma-jasmine',
-        'karma-requirejs',
         'karma-jasmine-jquery',
         'karma-firefox-launcher',
         'karma-phantomjs-launcher',
@@ -28,21 +27,28 @@ module.exports = function(config) {
     ],
 
     // start the browser
-    browsers: ['Firefox'],
+    browsers: ['PhantomJS'],
 
     //frameworks to use
-    frameworks: ['jasmine-jquery', 'jasmine', 'requirejs', 'sinon'],
+    frameworks: ['jasmine-jquery', 'jasmine', 'sinon'],
 
     //patterns to load all files in child folders
     files: [
-        {pattern: 'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/*.js', included:false},
-        {pattern: 'edx_notifications/server/web/static/edx_notifications/img/*.jpg', included:false},
-        {pattern: 'edx_notifications/server/web/static/edx_notifications/templates/*.html', included:false},
-        {pattern: 'edx_notifications/server/web/static/edx_notifications/js/collections/*.js', included:false},
-        {pattern: 'edx_notifications/server/web/static/edx_notifications/js/models/*.js', included:false},
-        {pattern: 'edx_notifications/server/web/static/edx_notifications/js/views/*.js', included:false},
-        {pattern: 'edx_notifications/server/web/static/edx_notifications/js/test/**/*Spec.js', included:false},
-        'edx_notifications/server/web/static/edx_notifications/js/test/test-main.js'
+        'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/jquery.js',
+        'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/underscore.js',
+        'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/backbone.js',
+        'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/date.js',
+        'edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.html',
+        'edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/reply_to_thread.html',
+        'edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.html',
+        'edx_notifications/server/web/static/edx_notifications/templates/renderers/course_announcements/new_announcement.html',
+        'edx_notifications/server/web/static/edx_notifications/templates/renderers/basic_subject_body.html',
+        'edx_notifications/server/web/static/edx_notifications/js/models/user_notification_model.js',
+        'edx_notifications/server/web/static/edx_notifications/js/models/counter_icon_model.js',
+        'edx_notifications/server/web/static/edx_notifications/js/collections/notification_collection.js',
+        'edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js',
+        'edx_notifications/server/web/static/edx_notifications/js/views/counter_icon_view.js',
+        'edx_notifications/server/web/static/edx_notifications/js/test/spec/counter_icon_view_Spec.js'
     ],
 
     // preprocess matching files before serving them to the browser
