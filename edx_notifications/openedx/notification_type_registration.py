@@ -45,6 +45,14 @@ def register_notification_types(sender, **kwargs):  # pylint: disable=unused-arg
         )
     )
 
+    # someone voting the comment use-case
+    register_notification_type(
+        NotificationType(
+            name='open-edx.lms.discussions.comment-upvoted',
+            renderer='edx_notifications.openedx.forums.CommentUpvotedRenderer',
+        )
+    )
+
     # updates/announcements in the course use-case.
     register_notification_type(
         NotificationType(

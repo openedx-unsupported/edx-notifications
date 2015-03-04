@@ -25,3 +25,10 @@ class PostUpvotedRenderer(UnderscoreStaticFileRenderer):
     Renders a post-upvoted notification
     """
     underscore_template_name = 'forums/post_upvoted.html'
+
+
+class CommentUpvotedRenderer(UnderscoreStaticFileRenderer):
+    """
+    Renders a post-upvoted notification
+    """
+    underscore_template_name = 'forums/comment_upvoted.html'
