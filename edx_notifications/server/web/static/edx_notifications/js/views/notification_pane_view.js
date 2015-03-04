@@ -24,9 +24,7 @@ var NotificationPaneView = Backbone.View.extend({
         /* re-render if the model changes */
         this.listenTo(this.collection, 'change', this.collectionChanged);
 
-        this.hydrate('unread_notifications');
-
-        this.render();
+        this.hydrate();
     },
 
     events: {
@@ -38,6 +36,8 @@ var NotificationPaneView = Backbone.View.extend({
     },
 
     template: null,
+
+    selected_pane: 'unread_notifications',
 
     process_renderer_templates_urls: function(data) {
         /*
@@ -71,7 +71,7 @@ var NotificationPaneView = Backbone.View.extend({
         }
     },
 
-    hydrate: function(selected_tab_classname) {
+    hydrate: function() {
         /* This function will load the bound collection */
 
         /* add and remove a class when we do the initial loading */
@@ -84,16 +84,11 @@ var NotificationPaneView = Backbone.View.extend({
                 self.$el.removeClass('ui-loading');
                 self.render();
             }
-        }).done(function(){
-            if (selected_tab_classname) {
-                self.$el.find($('ul.notifications_list_tab > li')).removeClass('active');
-                self.$el.find('.'+selected_tab_classname).addClass('active');
-            }
         });
     },
 
     /* all notification renderer templates */
-    renderer_templates: null,
+    renderer_templates: {},
 
     collectionChanged: function() {
         /* redraw for now */
@@ -106,127 +101,143 @@ var NotificationPaneView = Backbone.View.extend({
         /* enumerate through all of the notifications we have */
         /* and render each one */
 
-        if (this.fetched_template !== null) {
-            var url = event.currentTarget.responseURL;
-            var query_params = {};
-            var action_type = null;
-            if (typeof url !== 'undefined') {
-                 query_params = this.get_query_params(url);
-            }
-            var grouped_user_notifications = [];
+        var grouped_user_notifications = null;
+        var grouped_user_notifications = [];
 
-            if (!$.isEmptyObject(query_params)) {
-                if (query_params['read'] === 'True' && query_params['unread'] === 'True'){
-                    this.get_grouped_notifications(grouped_user_notifications, 'date');
-                }
-                if (query_params['read'] === 'False' && query_params['unread'] === 'True'){
-                    this.get_grouped_notifications(grouped_user_notifications, 'type');
-                }
-            }
-            /* now render template with our model */
-            var _html = this.template({
-                global_variables: this.global_variables,
-                grouped_user_notifications: grouped_user_notifications
-            });
-
-            this.$el.html(_html);
+        if (this.selected_pane == 'unread_notifications') {
+            notification_group_renderings = this.get_notification_group_renderings('type');
+        } else {
+            notification_group_renderings = this.get_notification_group_renderings('date');
         }
-    },
-    get_grouped_notifications: function(grouped_user_notifications, group_by){
-        var current_group_type = null;
-        var notification_group = {};
-        var old_group_type = '';
-        if (this.collection !== null && this.renderer_templates !== null) {
-            for (var i = 0; i < this.collection.length; i++) {
-                var user_msg = this.collection.at(i);
-                var msg = user_msg.get("msg");
-                var msg_type = msg.msg_type;
-                var renderer_class_name = msg_type.renderer;
-                if (group_by === 'type') {
-                    current_group_type = msg_type.name.substring(0, msg_type.name.lastIndexOf("."));
-                    current_group_type = current_group_type.substring(current_group_type.lastIndexOf(".") + 1);
-                }
-                else if (group_by === 'date') {
-                    current_group_type = new Date(msg.created).toString('MMMM dd, yyyy');
-                }
-                if (old_group_type !== current_group_type) {
-                    if (old_group_type) {
-                        grouped_user_notifications.push(notification_group);
-                    }
-                    notification_group = {};
 
-                    notification_group['group_title'] = current_group_type;
-                    notification_group['messages'] = [];
-                    old_group_type = current_group_type;
-                }
-                notification_group['messages'].push({
-                    user_msg: user_msg,
-                    msg: msg,
-                    /* render the particular NotificationMessage */
-                    html: this.renderer_templates[renderer_class_name](msg.payload)
-                });
-            }
-            if (!$.isEmptyObject(notification_group)) {
-                grouped_user_notifications.push(notification_group);
-            }
-        }
-    },
-    get_query_params: function (url) {
-        var pos = url.indexOf("?");
-        if(pos==-1) return [];
-        url = url.substr(pos+1);
-        var result = {};
-        url.split("&").forEach(function(part) {
-            var item = part.split("=");
-            result[item[0]] = decodeURIComponent(item[1]);
+        /* now render template with our model */
+        var _html = this.template({
+            global_variables: this.global_variables,
+            grouped_user_notifications: notification_group_renderings
         });
-        return result;
+
+        this.$el.html(_html);
+
+        // make sure the right tab is highlighted
+        this.$el.find($('ul.notifications_list_tab > li')).removeClass('active');
+        this.$el.find('.'+this.selected_pane).addClass('active');
+    },
+    get_notification_group_renderings: function(group_by) {
+        var user_msgs = this.collection.toJSON();
+        var grouped_data = {}
+        var notification_groups = [];
+        if (group_by == 'type') {
+            // use Underscores built in group by function
+            grouped_data = _.groupBy(
+                user_msgs,
+                function(user_msg) {
+                    // group by msg_type name family
+                    var name = user_msg.msg.msg_type.name;
+                    return name.substring(0, name.lastIndexOf("."));
+                }
+            );
+        } else {
+            // use Underscores built in group by function
+            grouped_data = _.groupBy(
+                user_msgs,
+                function(user_msg) {
+                    // group by create date
+                    var date = user_msg.msg.created;
+                    return new Date(date).toString('MMMM dd, yyyy');
+                }
+            );
+        }
+
+        // Now iterate over the groups and perform
+        // a sort by date (desc) inside each msg inside the group and also
+        // create a rendering of each message
+        for (var group_key in grouped_data) {
+            if (grouped_data.hasOwnProperty(group_key)) {
+                var notification_group = {
+                    group_title: null,
+                    messages: []
+                };
+
+                // Then within each group we want to sort
+                // by create date, descending, so call reverse()
+                var sorted_data = _.sortBy(
+                    grouped_data[group_key],
+                    function(user_msg) {
+                        return user_msg.msg.created;
+                    }
+                ).reverse();
+
+                notification_group['group_title'] = group_key;
+                notification_group['messages'] = [];
+
+                // Loop through each msg in the current group
+                // and create a rendering of it
+                for (var j = 0; j < sorted_data.length; j++) {
+                    var user_msg = sorted_data[j];
+                    var msg = user_msg.msg;
+                    var renderer_class_name = msg.msg_type.renderer;
+
+                    // check to make sure we have the Underscore rendering
+                    // template loaded, if not, then skip it.
+                    if (renderer_class_name in this.renderer_templates) {
+                        notification_group['messages'].push({
+                            user_msg: user_msg,
+                            msg: msg,
+                            /* render the particular NotificationMessage */
+                            html: this.renderer_templates[renderer_class_name](msg.payload)
+                        });
+                    }
+                }
+
+                notification_groups.push(notification_group)
+            }
+        }
+
+        return notification_groups;
     },
     allUserNotificationsClicked: function(e) {
         // check if the event.currentTarget class has already been active or not
-        if ($.inArray( "active", e.currentTarget.classList) <= 0) {
+        if (this.selected_pane != 'user_notifications_all') {
             /* set the API endpoint that was passed into our initializer */
             this.collection.url = this.endpoints.user_notifications_all;
-            this.hydrate('user_notifications_all');
+            this.selected_pane = 'user_notifications_all';
+            this.hydrate();
         }
     },
     unreadNotificationsClicked: function(e) {
         // check if the event.currentTarget class has already been active or not
-        if ($.inArray( "active", e.currentTarget.classList) <= 0) {
+        if (this.selected_pane = 'unread_notifications') {
             /* set the API endpoint that was passed into our initializer */
             this.collection.url = this.endpoints.user_notifications_unread_only;
-            this.hydrate('unread_notifications');
+            this.selected_pane = 'unread_notifications';
+            this.hydrate();
         }
     },
     markNotificationsRead: function(e) {
-        var count = this.counter_icon_view.model.get('count');
-        // mark all notifications True, when the user notifications count should be > 0
-        if (count > 0) {
-            /* set the API endpoint that was passed into our initializer */
-            this.collection.url = this.endpoints.mark_all_user_notifications_read;
+        /* set the API endpoint that was passed into our initializer */
+        this.collection.url = this.endpoints.mark_all_user_notifications_read;
 
-            /* make the async call to the backend REST API */
-            /* after it loads, the listenTo event will file and */
-            /* will call into the rendering */
-            var self = this;
-            self.$el.addClass('ui-loading');
-            self.collection.fetch(
-                {
-                    headers: {
-                        "X-CSRFToken": $('input[name="csrfmiddlewaretoken"]').prop('value')
-                    }
-                    ,
-                    type: 'POST',
-                    success: function () {
-                        self.$el.removeClass('ui-loading');
-                        self.render();
+        /* make the async call to the backend REST API */
+        /* after it loads, the listenTo event will file and */
+        /* will call into the rendering */
+        var self = this;
+        self.$el.addClass('ui-loading');
+        self.collection.fetch(
+            {
+                headers: {
+                    "X-CSRFToken": $('input[name="csrfmiddlewaretoken"]').prop('value')
+                },
+                type: 'POST',
+                success: function () {
+                    self.$el.removeClass('ui-loading');
+                    self.selected_pane = 'unread_notifications';
+                    self.render();
 
-                        // fetch the latest notification count
-                        self.counter_icon_view.model.fetch();
-                    }
+                    // fetch the latest notification count
+                    self.counter_icon_view.model.fetch();
                 }
-            );
-        }
+            }
+        );
     },
     hidePane: function() {
         this.$el.hide();

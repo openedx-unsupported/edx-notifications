@@ -175,10 +175,10 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
 
         if not (read and unread):
             if read:
-                query = query.filter(read_at__isnull=False).order_by('-msg__created')
+                query = query.filter(read_at__isnull=False)
 
             if unread:
-                query = query.filter(read_at__isnull=True).order_by('msg__msg_type__name', '-msg__created')
+                query = query.filter(read_at__isnull=True)
 
         if type_name:
             query = query.filter(msg__msg_type=type_name)
