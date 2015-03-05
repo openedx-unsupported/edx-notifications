@@ -81,6 +81,9 @@ CANNED_TEST_PAYLOAD = {
     },
     'open-edx.lms.leaderboard.progress.rank-changed': {
         'rank': 2,
+    },
+    'open-edx.lms.leaderboard.gradebook.rank-changed': {
+        'rank': 3,
     }
 }
 
