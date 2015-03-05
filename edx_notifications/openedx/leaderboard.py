@@ -1,6 +1,6 @@
 """
 Notification types that will be used in common use cases for notifications around
-course update announcements.
+Leaderboards
 """
 
 from edx_notifications.data import (
@@ -13,11 +13,11 @@ from edx_notifications.renderers.basic import UnderscoreStaticFileRenderer
 from django.dispatch import receiver
 
 
-class NewCourseAnnouncementRenderer(UnderscoreStaticFileRenderer):
+class ProgressRankChangedRenderer(UnderscoreStaticFileRenderer):
     """
-    Renders a new-course-announcement notification
+    Renders a reply-to-thread notification
     """
-    underscore_template_name = 'course_announcements/new_announcement.html'
+    underscore_template_name = 'leaderboard/progress_rank_changed.html'
 
 
 @receiver(perform_type_registrations)
@@ -28,10 +28,9 @@ def register_notification_types(sender, **kwargs):  # pylint: disable=unused-arg
     receiving the 'perform_type_registrations' signal)
     """
 
-    # updates/announcements in the course use-case.
     register_notification_type(
         NotificationType(
-            name='open-edx.studio.announcements.new-announcement',
-            renderer='edx_notifications.openedx.course_announcements.NewCourseAnnouncementRenderer',
+            name=u'open-edx.lms.leaderboard.progress.rank-changed',
+            renderer='edx_notifications.openedx.leaderboard.ProgressRankChangedRenderer',
         )
     )
