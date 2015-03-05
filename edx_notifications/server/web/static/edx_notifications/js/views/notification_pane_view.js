@@ -124,7 +124,7 @@ var NotificationPaneView = Backbone.View.extend({
     },
     get_notification_group_renderings: function(group_by) {
         var user_msgs = this.collection.toJSON();
-        var grouped_data = {}
+        var grouped_data = {};
         var notification_groups = [];
         if (group_by == 'type') {
             // use Underscores built in group by function
@@ -133,7 +133,8 @@ var NotificationPaneView = Backbone.View.extend({
                 function(user_msg) {
                     // group by msg_type name family
                     var name = user_msg.msg.msg_type.name;
-                    return name.substring(0, name.lastIndexOf("."));
+                    name = name.substring(0, name.lastIndexOf("."));
+                    return name.substring(name.lastIndexOf(".")+1);
                 }
             );
         } else {
