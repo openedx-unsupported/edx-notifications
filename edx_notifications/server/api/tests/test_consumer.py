@@ -461,3 +461,13 @@ class ConsumerAPITests(LoggedInTestCase):
             }
         )
         self.assertEqual(response.status_code, 404)
+
+    def test_mock_uls(self):
+        """
+        Call into the mock urls
+        """
+        url = reverse(
+            'edx_notifications.consumer.notifications.count',
+            'edx_notifications.server.api.urls_mock'
+        )
+        self.assertEqual(url, '/edx_notifications/v1/consumer/notifications/count')

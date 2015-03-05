@@ -54,7 +54,7 @@ class TestPublisherLibrary(TestCase):
         )
         register_notification_type(self.msg_type)
 
-    def test_multiple_type_registrations(self):
+    def test_multiple_types(self):
         """
         Make sure the same type can be registered more than once
         """
@@ -63,7 +63,7 @@ class TestPublisherLibrary(TestCase):
         # not throw an exception
         register_notification_type(self.msg_type)
 
-    def test_publish_notification_to_user(self):
+    def test_publish_notification(self):
         """
         Go through and set up a notification and publish it
         """
@@ -112,7 +112,7 @@ class TestPublisherLibrary(TestCase):
         self.assertEqual(read_user_msg, sent_user_msg)
         self.assertEqual(read_user_msg.msg, sent_user_msg.msg)
 
-    def test_bulk_publish_notification_list(self):
+    def test_bulk_publish_list(self):
         """
         Make sure we can bulk publish to a number of users
         passing in a list
@@ -140,7 +140,7 @@ class TestPublisherLibrary(TestCase):
             self.assertEqual(len(notifications), 1)
             self.assertTrue(isinstance(notifications[0], UserNotification))
 
-    def test_bulk_publish_notification_generator(self):
+    def test_bulk_publish_generator(self):
         """
         Make sure we can bulk publish to a number of users
         passing in a generator function
@@ -155,6 +155,9 @@ class TestPublisherLibrary(TestCase):
         )
 
         def _user_id_generator():
+            """
+            Just spit our an generator that goes from 1 to 100
+            """
             for user_id in range(1, 100):
                 yield user_id
 
@@ -172,7 +175,7 @@ class TestPublisherLibrary(TestCase):
             self.assertEqual(len(notifications), 1)
             self.assertTrue(isinstance(notifications[0], UserNotification))
 
-    def test_bulk_publish_notification_orm_query(self):
+    def test_bulk_publish_orm_query(self):
         """
         Make sure we can bulk publish to a number of users
         passing in a resultset from a Django ORM query
@@ -213,7 +216,7 @@ class TestPublisherLibrary(TestCase):
         """
         Verify proper behavior when marking user notifications as read/unread
         """
-        for i in range(10):
+        for __ in range(10):
             msg = NotificationMessage(
                 namespace='test-runner',
                 msg_type=self.msg_type,
@@ -332,7 +335,7 @@ class TestPublisherLibrary(TestCase):
             0
         )
 
-    def test_marking_invalid_msg_as_read(self):
+    def test_marking_invalid_msg_read(self):
         """
         Makes sure that we can't mark an invalid notification, e.g. someone elses
         """
