@@ -12,6 +12,8 @@ class TestAddNotifications(WebAppTest):
         'open-edx.lms.discussions.reply-to-thread': 'testuser has replied to a discussion posting ',
         'open-edx.lms.discussions.thread-followed': 'testuser is now following your discussion thread',
         'open-edx.lms.discussions.post-upvoted': 'testuser has upvoted your discussion thread',
+        'open-edx.lms.discussions.cohorted-thread-added': 'testuser has added to a new posting to a private discussion',
+        'open-edx.lms.discussions.cohorted-comment-added': 'testuser has added to a new comment to a private discussion',
     }
 
     notifications_container_tabs = ['View unread', 'View all', 'Mark as read', 'Hide']

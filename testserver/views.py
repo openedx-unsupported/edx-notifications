@@ -62,9 +62,23 @@ CANNED_TEST_PAYLOAD = {
         'subject': 'Test Notification',
         'body': 'Here is test notification that has a simple subject and body',
     },
-    'open-edx.studio.announcements.new_announcement': {
+    'open-edx.studio.announcements.new-announcement': {
         'course_name': 'Demo Course',
-    }
+    },
+    'open-edx.lms.discussions.cohorted-thread-added': {
+        'original_poster_id': 1,
+        'action_user_id': 2,
+        'action_username': 'testuser',
+        'thread_title': 'A demo posting to the discussion forums',
+        'link_to_thread': 'http://localhost',
+    },
+    'open-edx.lms.discussions.cohorted-comment-added': {
+        'original_poster_id': 1,
+        'action_user_id': 2,
+        'action_username': 'testuser',
+        'thread_title': 'A demo posting to the discussion forums',
+        'link_to_thread': 'http://localhost',
+    },
 }
 
 

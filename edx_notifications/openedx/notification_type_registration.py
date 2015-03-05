@@ -37,6 +37,22 @@ def register_notification_types(sender, **kwargs):  # pylint: disable=unused-arg
         )
     )
 
+    # new posting in a cohorted/private discussion in the course use-case.
+    register_notification_type(
+        NotificationType(
+            name='open-edx.lms.discussions.cohorted-thread-added',
+            renderer='edx_notifications.openedx.forums.CohortedThreadAddedRenderer',
+        )
+    )
+
+    # new posting in a cohorted/private discussion in the course use-case.
+    register_notification_type(
+        NotificationType(
+            name='open-edx.lms.discussions.cohorted-comment-added',
+            renderer='edx_notifications.openedx.forums.CohortedCommentAddedRenderer',
+        )
+    )
+
     # someone voting the thread use-case
     register_notification_type(
         NotificationType(
@@ -56,7 +72,7 @@ def register_notification_types(sender, **kwargs):  # pylint: disable=unused-arg
     # updates/announcements in the course use-case.
     register_notification_type(
         NotificationType(
-            name='open-edx.studio.announcements.new_announcement',
+            name='open-edx.studio.announcements.new-announcement',
             renderer='edx_notifications.openedx.course_announcements.NewCourseAnnouncementRenderer',
         )
     )
