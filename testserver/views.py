@@ -84,7 +84,11 @@ CANNED_TEST_PAYLOAD = {
     },
     'open-edx.lms.leaderboard.gradebook.rank-changed': {
         'rank': 3,
-    }
+    },
+    'open-edx.xblock.group_project.file_uploaded': {
+        'action_username': 'testuser',
+        'activity_name': 'First Activity',
+    },
 }
 
 
