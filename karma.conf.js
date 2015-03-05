@@ -48,7 +48,7 @@ module.exports = function(config) {
         'edx_notifications/server/web/static/edx_notifications/js/collections/notification_collection.js',
         'edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js',
         'edx_notifications/server/web/static/edx_notifications/js/views/counter_icon_view.js',
-        'edx_notifications/server/web/static/edx_notifications/js/test/spec/counter_icon_view_Spec.js'
+        'edx_notifications/server/web/static/edx_notifications/js/test/spec/*.js'
     ],
 
     // preprocess matching files before serving them to the browser

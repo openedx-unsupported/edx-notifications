@@ -2,7 +2,15 @@ describe("CounterIconView", function(){
 
     beforeEach(function(){
         this.server = sinon.fakeServer.create();
-        setFixtures('<div><img class="edx-notifications-icon" src="/static/edx_notifications/img/notification_icon.jpg" /> <span class="edx-notifications-count-number"></span> </div><div class="edx-notification-pane"></div><script type="text/template" id="notification-counter-template"><%= count %></script>');
+        setFixtures(
+            '<div><img class="edx-notifications-icon" src="/static/edx_notifications/img/notification_icon.jpg" />' +
+            '<span class="edx-notifications-count-number"></span> </div>' +
+            '<div class="edx-notification-pane">' +
+            '<script type="text/template" id="notification-counter-template">' +
+                '<% if (typeof count !== "undefined" && count > 0) { %>' +
+                '<%= count %><% } %>' +
+            '</script>'
+        );
         this.counter_view = new CounterIconView({
             el: $(".edx-notifications-icon"),
             count_el: $(".edx-notifications-count-number"),
@@ -59,19 +67,8 @@ describe("CounterIconView", function(){
         expect(this.counter_view.endpoints.renderer_templates_urls).toEqual('/renderer/templates');
     });
 
-    xit("gets unread notifications count", function(){
-        var unread_count = 2030;
-        this.server.respondWith(
-            "GET",
-            "/unread/count",
-            [
-                200,
-                { "Content-Type": "application/json" },
-                '{"count":' + unread_count + '}'
-            ]
-        );
-        this.server.respond();
-        expect(this.counter_view.$el.html()).toContain(unread_count)
+    it("returns notification icon class in el", function(){
+        expect(this.counter_view.$el).toContain('.edx-notifications-icon')
     });
 
     it("calls showPane function on clicking notification icon", function(){
