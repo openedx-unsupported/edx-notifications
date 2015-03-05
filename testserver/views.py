@@ -79,6 +79,9 @@ CANNED_TEST_PAYLOAD = {
         'thread_title': 'A demo posting to the discussion forums',
         'link_to_thread': 'http://localhost',
     },
+    'open-edx.lms.leaderboard.progress.rank-changed': {
+        'rank': 2,
+    }
 }
 
 
