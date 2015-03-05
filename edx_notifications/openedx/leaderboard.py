@@ -15,9 +15,16 @@ from django.dispatch import receiver
 
 class ProgressRankChangedRenderer(UnderscoreStaticFileRenderer):
     """
-    Renders a reply-to-thread notification
+    Renders a notification when ranking in the progress leaderboard changes
     """
     underscore_template_name = 'leaderboard/progress_rank_changed.html'
+
+
+class GradebookRankChangedRenderer(UnderscoreStaticFileRenderer):
+    """
+    Renders a notification when ranking in the gradebook leaderboard changes
+    """
+    underscore_template_name = 'leaderboard/gradebook_rank_changed.html'
 
 
 @receiver(perform_type_registrations)
@@ -32,5 +39,12 @@ def register_notification_types(sender, **kwargs):  # pylint: disable=unused-arg
         NotificationType(
             name=u'open-edx.lms.leaderboard.progress.rank-changed',
             renderer='edx_notifications.openedx.leaderboard.ProgressRankChangedRenderer',
+        )
+    )
+
+    register_notification_type(
+        NotificationType(
+            name=u'open-edx.lms.leaderboard.gradebook.rank-changed',
+            renderer='edx_notifications.openedx.leaderboard.GradebookRankChangedRenderer',
         )
     )
