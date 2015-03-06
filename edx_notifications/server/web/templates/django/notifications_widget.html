@@ -28,14 +28,16 @@ page that is using this widget
 <script type="text/template" id="notification-pane-template">
     <div class="edx-notifications-container">
         <div class="edx-notifications-content">
-            <h2>Notifications</h2>
-            <div class="actions">
-                <ul class="notifications_list_tab">
-                    <li class="unread_notifications active"><a  href="#">View unread</a></li>
-                    <li class="user_notifications_all"><a href="#">View all</a></li>
-                    <li class="mark_notifications_read"><a href="#">Mark as read</a></li>
-                    <li class="hide_pane"><a href="#">Hide</a></li>
-                </ul>
+            <div class="fixed">
+                <h2>Notifications</h2>
+                <div class="actions">
+                    <ul class="notifications_list_tab">
+                        <li class="unread_notifications active"><a  href="#">View unread</a></li>
+                        <li class="user_notifications_all"><a href="#">View all</a></li>
+                        <li class="mark_notifications_read"><a href="#">Mark as read</a></li>
+                        <li class="hide_pane"><a href="#">Hide</a></li>
+                    </ul>
+                </div>
             </div>
             <ul>
                 <% if (typeof grouped_user_notifications == 'undefined' || grouped_user_notifications.length == 0) { %>
