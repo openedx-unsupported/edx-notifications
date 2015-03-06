@@ -199,10 +199,10 @@ var NotificationPaneView = Backbone.View.extend({
                                 user_msg: user_msg,
                                 msg: msg,
                                 /* render the particular NotificationMessage */
-                                html: this.renderer_templates[renderer_class_name](render_context)
+                                html: notification_html
                             });
                         } catch(err) {
-                            console.log('Could not render Notification type ' + msg.msg_type.name + ' with template ' + renderer_class_name + ': ' + err + '. Skipping....')
+                            console.log('Could not render Notification type ' + msg.msg_type.name + ' with template ' + renderer_class_name + '. Error: "' + err + '". Skipping....')
                         }
                     }
                 }
