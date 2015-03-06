@@ -79,7 +79,7 @@ describe("NotificationPaneView", function(){
     });
 
     it("initializes selected pane with unread notification as default value", function(){
-        expect(this.notification_pane.selected_pane).toEqual('unread_notifications');
+        expect(this.notification_pane.selected_pane).toEqual('unread');
     });
 
     it("calls allUserNotificationsClicked function on clicking .user_notifications_all", function(){
@@ -96,7 +96,7 @@ describe("NotificationPaneView", function(){
 
     it("sets selected pane new value after calling allUserNotificationsClicked function", function(){
         this.all_notifications_target.click();
-        expect(this.notification_pane.selected_pane).toContain('user_notifications_all')
+        expect(this.notification_pane.selected_pane).toContain('all')
     });
 
     it("calls unreadNotificationsClicked function on clicking .unread_notifications", function(){
@@ -113,7 +113,7 @@ describe("NotificationPaneView", function(){
 
     it("sets selected pane new value after calling unreadNotificationsClicked function", function(){
         this.unread_notifications_target.click();
-        expect(this.notification_pane.selected_pane).toContain('unread_notifications');
+        expect(this.notification_pane.selected_pane).toContain('unread');
     });
 
     it("calls markNotificationsRead function on clicking .mark_notifications_read", function(){
@@ -130,7 +130,7 @@ describe("NotificationPaneView", function(){
 
     it("sets selected pane new value after calling markNotificationsRead function", function(){
         this.mark_notifications_read_target.click();
-        expect(this.notification_pane.selected_pane).toContain('unread_notifications');
+        expect(this.notification_pane.selected_pane).toContain('unread');
     });
 
     it("calls hidePane function on clicking .hide_pane", function(){
