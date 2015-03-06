@@ -192,12 +192,18 @@ var NotificationPaneView = Backbone.View.extend({
                     render_context['created'] = msg.created;
 
                     if (renderer_class_name in this.renderer_templates) {
-                        notification_group['messages'].push({
-                            user_msg: user_msg,
-                            msg: msg,
-                            /* render the particular NotificationMessage */
-                            html: this.renderer_templates[renderer_class_name](render_context)
-                        });
+                        try {
+                            var notification_html = this.renderer_templates[renderer_class_name](render_context);
+
+                            notification_group['messages'].push({
+                                user_msg: user_msg,
+                                msg: msg,
+                                /* render the particular NotificationMessage */
+                                html: this.renderer_templates[renderer_class_name](render_context)
+                            });
+                        } catch(err) {
+                            console.log('Could not render Notification type ' + msg.msg_type.name + ' with template ' + renderer_class_name + ': ' + err + '. Skipping....')
+                        }
                     }
                 }
 
