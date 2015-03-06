@@ -28,6 +28,10 @@ from edx_notifications.server.web.utils import get_notifications_widget_context
 
 from .forms import *
 
+# set up three optional namespaces that we can switch through to test proper
+# isolation of Notifications
+NAMESPACES = [None, 'foo/bar/baz', 'test/test/test']
+NAMESPACE = None
 
 CANNED_TEST_PAYLOAD = {
     'open-edx.lms.discussions.reply-to-thread': {
@@ -151,17 +155,23 @@ def index(request):
     """
     Returns a basic HTML snippet rendering of a notification count
     """
+    global NAMESPACE
 
     if request.method == 'POST':
-        type_name = request.POST['notification_type']
-        msg_type = get_notification_type(type_name)
+        if request.POST.get('change_namespace'):
+            namespace_str = request.POST['namespace']
+            NAMESPACE = namespace_str if namespace_str != "None" else None
+        else:
+            type_name = request.POST['notification_type']
+            msg_type = get_notification_type(type_name)
 
-        msg = NotificationMessage(
-            msg_type=msg_type,
-            payload=CANNED_TEST_PAYLOAD[type_name],
-        )
+            msg = NotificationMessage(
+                msg_type=msg_type,
+                namespace=NAMESPACE,
+                payload=CANNED_TEST_PAYLOAD[type_name],
+            )
 
-        publish_notification_to_user(request.user.id, msg)
+            publish_notification_to_user(request.user.id, msg)
 
     template = loader.get_template('index.html')
 
@@ -189,6 +199,7 @@ def index(request):
             },
         },
         'include_framework_js': True,
+        'namespace': NAMESPACE,
     })
 
     return HttpResponse(template.render(RequestContext(request, context_dict)))

@@ -162,6 +162,86 @@ class TestSQLStoreProvider(TestCase):
             0
         )
 
+    def test_mark_read_namespaced(self):
+        """
+
+        """
+
+        msg_type = self._save_notification_type()
+
+        def _gen_notifications(count, namespace):
+            """
+            Helper to generate notifications
+            """
+            for __ in range(count):
+                msg = self.provider.save_notification_message(NotificationMessage(
+                    namespace=namespace,
+                    msg_type=msg_type,
+                    payload={
+                        'foo': 'bar'
+                    }
+                ))
+
+                self.provider.save_user_notification(UserNotification(
+                    user_id=self.test_user_id,
+                    msg=msg
+                ))
+
+        _gen_notifications(5, 'namespace1')
+        _gen_notifications(5, 'namespace2')
+
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'namespace': 'namespace1',
+                }
+            ),
+            5
+        )
+
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'namespace': 'namespace2',
+                }
+            ),
+            5
+        )
+
+        # just mark notifications in namespace1
+        # as read
+        self.provider.mark_user_notifications_read(
+            self.test_user_id,
+            filters={
+                'namespace': 'namespace1'
+            }
+        )
+
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'namespace': 'namespace1',
+                    'read': False
+                }
+            ),
+            0
+        )
+
+        # namespace2's message should still be there
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'namespace': 'namespace2',
+                    'read': False
+                }
+            ),
+            5
+        )
+
     def test_update_notification(self):
         """
         Save and then update notification

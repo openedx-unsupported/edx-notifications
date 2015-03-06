@@ -7,10 +7,18 @@ var CounterIconView = Backbone.View.extend({
       this.view_templates = options.view_templates;
       this.refresh_watcher = options.refresh_watcher;
       this.view_audios = options.view_audios;
+      this.namespace = options.namespace;
 
       /* initialize the model using the API endpoint URL that was passed into us */
       this.model = new CounterIconModel();
-      this.model.url = this.endpoints.unread_notification_count;
+      var model_url = this.endpoints.unread_notification_count;
+
+      // apply namespacing - if set - to our Ajax calls
+      if (this.namespace) {
+          model_url = this.append_url_param(model_url, 'namespace', this.namespace);
+      }
+
+      this.model.url = model_url;
 
       /* get out main underscore view template */
       this.template = _.template($('#notification-counter-template').html());
@@ -31,6 +39,25 @@ var CounterIconView = Backbone.View.extend({
           setInterval(this.autoRefreshNotifications.bind(window, this), period * 1000);
       }
   },
+
+
+  append_url_param: function(baseUrl, key, value) {
+      key = encodeURI(key); value = encodeURIComponent(value);
+      var path = baseUrl.split('?')[0]
+      var kvp = baseUrl.split('?')[1].split('&');
+      var i=kvp.length; var x; while(i--)
+      {
+          x = kvp[i].split('=');
+          if (x[0]==key)
+          {
+              x[1] = value;
+              kvp[i] = x.join('=');
+              break;
+          }
+      }
+      if(i<0) {kvp[kvp.length] = [key,value].join('=');}
+      return path + '?' + kvp.join('&');
+    },
 
   events: {
       'click': 'showPane'
@@ -59,9 +86,10 @@ var CounterIconView = Backbone.View.extend({
           this.notification_pane = new NotificationPaneView({
               counter_icon_view: this,
               el: this.options.pane_el,
-              endpoints: this.endpoints,
+              endpoints: this.options.endpoints,
               global_variables: this.global_variables,
-              view_templates: this.view_templates
+              view_templates: this.view_templates,
+              namespace: this.namespace
           });
           this.notification_pane.showPane();
           $('body').bind('click', this.hidePaneWhenClickedOutside);
@@ -82,7 +110,7 @@ var CounterIconView = Backbone.View.extend({
 
   autoRefreshNotifications: function(counterView) {
      var currentModel = new CounterIconModel();
-     currentModel.url = counterView.endpoints.unread_notification_count;
+     currentModel.url = counterView.model.url;
      currentModel.fetch().done(function(){
          // if notification counter is incremented.
          if(currentModel.get('count') > counterView.model.get('count')){

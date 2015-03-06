@@ -43,7 +43,7 @@ urlpatterns = patterns(  # pylint: disable=invalid-name
     url(
         CONSUMER_NOTIFICATIONS_MARK_NOTIFICATIONS_REGEX,
         mock_handler,
-        name='edx_notifications.consumer.notifications.mark_notifications'
+        name='edx_notifications.consumer.notifications.mark_notifications_as_read'
     ),
     url(
         CONSUMER_NOTIFICATIONS_REGEX,
