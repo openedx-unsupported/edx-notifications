@@ -101,7 +101,7 @@ class BadChannel(BaseNotificationChannelProvider):
         """
         raise super(BadChannel, self).dispatch_notification_to_user(user_id, msg)
 
-    def bulk_dispatch_notification(self, user_ids, msg):
+    def bulk_dispatch_notification(self, user_ids, msg, exclude_user_ids=None):
         """
         Perform a bulk dispatch of the notification message to
         all user_ids that will be enumerated over in user_ids.

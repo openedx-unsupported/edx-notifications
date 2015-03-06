@@ -51,7 +51,7 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
 
         return _user_msg
 
-    def bulk_dispatch_notification(self, user_ids, msg):
+    def bulk_dispatch_notification(self, user_ids, msg, exclude_user_ids=None):
         """
         Perform a bulk dispatch of the notification message to
         all user_ids that will be enumerated over in user_ids.
@@ -68,21 +68,27 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
 
         user_msgs = []
 
+        exclude_user_ids = exclude_user_ids if exclude_user_ids else []
+
         cnt = 0
         total = 0
+
+        # enumerate through the list of user_ids and chunk them
+        # up. Be sure not to include any user_id in the exclude list
         for user_id in user_ids:
-            user_msgs.append(
-                UserNotification(
-                    user_id=user_id,
-                    msg=_msg
+            if user_id not in exclude_user_ids:
+                user_msgs.append(
+                    UserNotification(
+                        user_id=user_id,
+                        msg=_msg
+                    )
                 )
-            )
-            cnt = cnt + 1
-            total = total + 1
-            if cnt == const.MAX_BULK_USER_NOTIFICATION_SIZE:
-                store.bulk_create_user_notification(user_msgs)
-                user_msgs = []
-                cnt = 0
+                cnt = cnt + 1
+                total = total + 1
+                if cnt == const.MAX_BULK_USER_NOTIFICATION_SIZE:
+                    store.bulk_create_user_notification(user_msgs)
+                    user_msgs = []
+                    cnt = 0
 
         if user_msgs:
             store.bulk_create_user_notification(user_msgs)
