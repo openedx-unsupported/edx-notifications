@@ -96,7 +96,7 @@ def publish_notification_to_user(user_id, msg):
 
 
 @contract(msg=NotificationMessage)
-def bulk_publish_notification_to_users(user_ids, msg):
+def bulk_publish_notification_to_users(user_ids, msg, exclude_user_ids=None):
     """
     This top level API method will publish a notification
     to a group (potentially large). We have a distinct entry
@@ -141,7 +141,7 @@ def bulk_publish_notification_to_users(user_ids, msg):
     # have to change this
     channel = get_notification_channel(None, msg.msg_type)
 
-    num_sent = channel.bulk_dispatch_notification(user_ids, msg)
+    num_sent = channel.bulk_dispatch_notification(user_ids, msg, exclude_user_ids=exclude_user_ids)
 
     #
     # Here is where we will tie into the Analytics pipeline

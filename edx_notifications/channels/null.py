@@ -20,7 +20,7 @@ class NullNotificationChannel(BaseNotificationChannelProvider):
 
         return None
 
-    def bulk_dispatch_notification(self, user_ids, msg):
+    def bulk_dispatch_notification(self, user_ids, msg, exclude_user_ids=None):
         """
         Will not send the msg to the list of users
         """

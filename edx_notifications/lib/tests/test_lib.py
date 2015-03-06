@@ -140,6 +140,41 @@ class TestPublisherLibrary(TestCase):
             self.assertEqual(len(notifications), 1)
             self.assertTrue(isinstance(notifications[0], UserNotification))
 
+    def test_bulk_publish_list_exclude(self):
+        """
+        Make sure we can bulk publish to a number of users
+        passing in a list, and also pass in an exclusion list to
+        make sure the people in the exclude list does not get
+        the notification
+        """
+
+        msg = NotificationMessage(
+            namespace='test-runner',
+            msg_type=self.msg_type,
+            payload={
+                'foo': 'bar'
+            }
+        )
+
+        user_ids = [user_id for user_id in range(1, const.MAX_BULK_USER_NOTIFICATION_SIZE * 2 + 1, 2)]
+        exclude_user_ids = [user_id for user_id in range(1, const.MAX_BULK_USER_NOTIFICATION_SIZE * 2 + 1)]
+
+        # now send to more than our internal chunking size
+        bulk_publish_notification_to_users(
+            user_ids,
+            msg,
+            exclude_user_ids=exclude_user_ids
+        )
+
+        # now read them all back
+        for user_id in range(1, const.MAX_BULK_USER_NOTIFICATION_SIZE * 2 + 1):
+            notifications = get_notifications_for_user(user_id)
+
+            self.assertTrue(isinstance(notifications, list))
+            self.assertEqual(len(notifications), 1 if user_id not in exclude_user_ids else 0)
+            if user_id not in exclude_user_ids:
+                self.assertTrue(isinstance(notifications[0], UserNotification))
+
     def test_bulk_publish_generator(self):
         """
         Make sure we can bulk publish to a number of users
