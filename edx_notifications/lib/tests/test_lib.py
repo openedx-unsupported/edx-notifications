@@ -156,8 +156,8 @@ class TestPublisherLibrary(TestCase):
             }
         )
 
-        user_ids = [user_id for user_id in range(1, const.MAX_BULK_USER_NOTIFICATION_SIZE * 2 + 1, 2)]
-        exclude_user_ids = [user_id for user_id in range(1, const.MAX_BULK_USER_NOTIFICATION_SIZE * 2 + 1)]
+        user_ids = [user_id for user_id in range(1, const.MAX_BULK_USER_NOTIFICATION_SIZE * 2 + 1)]
+        exclude_user_ids = [user_id for user_id in range(1, const.MAX_BULK_USER_NOTIFICATION_SIZE * 2 + 1, 2)]
 
         # now send to more than our internal chunking size
         bulk_publish_notification_to_users(
