@@ -85,9 +85,35 @@ CANNED_TEST_PAYLOAD = {
     'open-edx.lms.leaderboard.gradebook.rank-changed': {
         'rank': 3,
     },
-    'open-edx.xblock.group_project.file_uploaded': {
+    'open-edx.xblock.group-project.file-uploaded': {
         'action_username': 'testuser',
         'activity_name': 'First Activity',
+        'verb': 'uploaded a file',
+    },
+    'open-edx.xblock.group-project.uploads-open': {
+        'activity_name': 'First Activity',
+        'verb': 'Uploads are',
+        'status': 'open',
+    },
+    'open-edx.xblock.group-project.uploads-due': {
+        'activity_name': 'First Activity',
+        'verb': 'Uploads are',
+        'status': 'due 4/18/2015',
+    },
+    'open-edx.xblock.group-project.reviews-open': {
+        'activity_name': 'First Activity',
+        'verb': 'Review(s) are',
+        'status': 'open',
+    },
+    'open-edx.xblock.group-project.reviews-due': {
+        'activity_name': 'First Activity',
+        'verb': 'Review(s)',
+        'status': 'due 4/25/2015',
+    },
+    'open-edx.xblock.group-project.grades-posted': {
+        'activity_name': 'First Activity',
+        'verb': 'Grade(s) are',
+        'status': 'posted',
     },
 }
 
