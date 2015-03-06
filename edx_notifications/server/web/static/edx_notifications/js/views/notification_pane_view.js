@@ -32,6 +32,7 @@ var NotificationPaneView = Backbone.View.extend({
         'click .unread_notifications': 'unreadNotificationsClicked',
         'click .mark_notifications_read': 'markNotificationsRead',
         'click .hide_pane': 'hidePane',
+        'click .edx-notifications-content>ul>li': 'visitNotification',
         'click': 'preventHidingWhenClickedInside'
     },
 
@@ -224,12 +225,10 @@ var NotificationPaneView = Backbone.View.extend({
     },
     unreadNotificationsClicked: function(e) {
         // check if the event.currentTarget class has already been active or not
-        if (this.selected_pane != 'unread') {
-            /* set the API endpoint that was passed into our initializer */
-            this.collection.url = this.endpoints.user_notifications_unread_only;
-            this.selected_pane = 'unread';
-            this.hydrate();
-        }
+        /* set the API endpoint that was passed into our initializer */
+        this.collection.url = this.endpoints.user_notifications_unread_only;
+        this.selected_pane = 'unread';
+        this.hydrate();
     },
     markNotificationsRead: function(e) {
         /* set the API endpoint that was passed into our initializer */
@@ -256,6 +255,41 @@ var NotificationPaneView = Backbone.View.extend({
                 }
             }
         );
+    },
+    visitNotification: function(e) {
+        var messageId = $(e.currentTarget).find('span').data('msg-id');
+        var clickLink = $(e.currentTarget).find('span').data('click-link');
+
+        if (this.selected_pane === "unread") {
+            this.collection.url = this.endpoints.user_notification_mark_read + messageId;
+
+            console.log("notification clicked: will fetch: " + this.collection.url);
+            var self = this;
+            self.collection.fetch(
+                {
+                    headers: {
+                        "X-CSRFToken": $('input[name="csrfmiddlewaretoken"]').prop('value')
+                    },
+                    data: {
+                      "mark_as": "read"
+                    },
+                    type: 'POST',
+                    success: function () {
+                        if (clickLink) {
+                            window.location.href = clickLink;
+                        }
+                        else {
+                            self.unreadNotificationsClicked();
+                            // fetch the latest notification count
+                            self.counter_icon_view.model.fetch();
+                        }
+                    }
+                }
+            );
+        }
+        else if (clickLink){
+            window.location.href = clickLink;
+        }
     },
     hidePane: function() {
         this.$el.hide();

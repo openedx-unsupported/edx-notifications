@@ -53,7 +53,9 @@ page that is using this widget
                             <div class="date">
                                 <%= new Date(message.msg.created).toString('MMMM dd, yyyy') %>
                             </div>
-                            <p class="description"><%= message.html %></p>
+                            <p class="description">
+                                <span data-msg-id="<%= message.msg.id %>" data-click-link="<%=message.msg.payload['_click_link']%>"><%= message.html %></span>
+                            </p>
                         </li>
                     <% }); %>
                 <% }); %>
@@ -73,7 +75,8 @@ page that is using this widget
             mark_all_user_notifications_read: "{% autoescape off %}{{ endpoints.mark_all_user_notifications_read }}{% endautoescape %}",
             user_notifications_all: "{% autoescape off %}{{ endpoints.user_notifications_all }}{% endautoescape %}",
             user_notifications_unread_only: "{% autoescape off %}{{ endpoints.user_notifications_unread_only }}{% endautoescape %}",
-            renderer_templates_urls: "{% autoescape off %}{{ endpoints.renderer_templates_urls }}{% endautoescape %}"
+            renderer_templates_urls: "{% autoescape off %}{{ endpoints.renderer_templates_urls }}{% endautoescape %}",
+            user_notification_mark_read: "{% autoescape off %}{{ endpoints.user_notification_mark_read }}{% endautoescape %}"
         },
         global_variables: {
             app_name: "{{ global_variables.app_name }}"

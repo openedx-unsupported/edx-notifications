@@ -209,7 +209,7 @@ class NotificationDetail(AuthenticatedAPIView):
             except ItemNotFoundError:
                 raise Http404()
 
-        return Response({}, status.HTTP_200_OK)
+        return Response([], status.HTTP_200_OK)
 
 
 class MarkNotifications(AuthenticatedAPIView):

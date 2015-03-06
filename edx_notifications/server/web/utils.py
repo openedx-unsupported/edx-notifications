@@ -50,6 +50,9 @@ def get_notifications_widget_context(override_context=None):
             'user_notifications_all': (
                 '{base_url}?read=True&unread=True'
             ). format(base_url=reverse('edx_notifications.consumer.notifications')),
+            'user_notification_mark_read': (
+                '{base_url}'
+            ). format(base_url=reverse('edx_notifications.consumer.notifications.detail.no_param')),
             'renderer_templates_urls': reverse('edx_notifications.consumer.renderers.templates'),
         },
         'global_variables': {
