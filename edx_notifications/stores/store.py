@@ -184,3 +184,10 @@ class BaseNotificationStoreProvider(object):
         RETURNS: type list   i.e. []
         """
         raise NotImplementedError()
+
+    @abc.abstractmethod
+    def mark_user_notifications_read(self, user_id, filters=None):
+        """
+        Marks all notifications for user (with any filtering criteria) as read
+        """
+        raise NotImplementedError()

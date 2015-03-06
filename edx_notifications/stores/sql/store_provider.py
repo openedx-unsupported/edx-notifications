@@ -279,7 +279,7 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
 
         return result_set
 
-    def mark_user_notifications_read(self, user_id):
+    def mark_user_notifications_read(self, user_id, filters=None):
         """
         This should mark all the user notifications as read
 
@@ -287,9 +287,15 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
             - user_id: The id of the user
         """
 
+        _filters = copy.copy(filters) if filters else {}
+        _filters.update({
+            'read': False,
+            'unread': True,
+        })
+
         query = self._get_prepaged_notifications(
             user_id,
-            filters={'read': False, 'unread': True}
+            filters=_filters
         )
 
         query.update(read_at=datetime.now(pytz.UTC))

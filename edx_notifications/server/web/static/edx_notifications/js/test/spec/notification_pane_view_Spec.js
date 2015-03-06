@@ -67,11 +67,10 @@ describe("NotificationPaneView", function(){
     });
 
     it("successfully sets given urls in endpoint", function(){
-        expect(this.notification_pane.endpoints.unread_notification_count).toEqual('/unread/count');
-        expect(this.notification_pane.endpoints.mark_all_user_notifications_read).toEqual('/mark/as/read');
-        expect(this.notification_pane.endpoints.user_notifications_all).toBe('/all/notifications');
-        expect(this.notification_pane.endpoints.user_notifications_unread_only).toBe('/unread/notifications');
-        expect(this.notification_pane.endpoints.renderer_templates_urls).toEqual('/renderer/templates');
+        expect(this.notification_pane.mark_all_read_endpoint).toEqual('/mark/as/read');
+        expect(this.notification_pane.all_msgs_endpoint).toBe('/all/notifications');
+        expect(this.notification_pane.unread_msgs_endpoint).toBe('/unread/notifications');
+        expect(this.notification_pane.renderer_templates_url_endpoint).toEqual('/renderer/templates');
     });
 
     it("initializes collection_url with unread notification endpoints as default value", function(){

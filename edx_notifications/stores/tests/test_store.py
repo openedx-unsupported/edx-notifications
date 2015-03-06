@@ -91,6 +91,15 @@ class BadImplementationStoreProvider(BaseNotificationStoreProvider):
             options=options
         )
 
+    def mark_user_notifications_read(self, user_id, filters=None):
+        """
+        Marks all notifications for user (with any filtering criteria) as read
+        """
+        super(BadImplementationStoreProvider, self).mark_user_notifications_read(
+            user_id,
+            filters=filters,
+        )
+
 
 class TestBaseNotificationDataProvider(TestCase):
     """
@@ -175,3 +184,6 @@ class TestBaseNotificationDataProvider(TestCase):
 
         with self.assertRaises(NotImplementedError):
             bad_provider.get_notifications_for_user(None)
+
+        with self.assertRaises(NotImplementedError):
+            bad_provider.mark_user_notifications_read(None)

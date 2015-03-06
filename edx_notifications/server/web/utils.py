@@ -43,7 +43,7 @@ def get_notifications_widget_context(override_context=None):
             ). format(base_url=reverse('edx_notifications.consumer.notifications.count')),
             'mark_all_user_notifications_read': (
                 '{base_url}'
-            ). format(base_url=reverse('edx_notifications.consumer.notifications.mark_notifications')),
+            ). format(base_url=reverse('edx_notifications.consumer.notifications.mark_notifications_as_read')),
             'user_notifications_unread_only': (
                 '{base_url}?read=False&unread=True'
             ). format(base_url=reverse('edx_notifications.consumer.notifications')),
@@ -64,7 +64,10 @@ def get_notifications_widget_context(override_context=None):
         },
         'view_audios': {
             'notification_alert': get_audio_path('notification_alert.mp3'),
-        }
+        },
+        # global notifications by default, callers should override this if they want to only
+        # display notifications within a namespace
+        'namespace': None,
     }
 
     if override_context:

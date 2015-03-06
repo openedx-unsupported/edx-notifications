@@ -102,7 +102,7 @@ def mark_notification_read(user_id, msg_id, read=True):
 
 
 @contract(user_id='int,>0')
-def mark_all_user_notification_as_read(user_id):
+def mark_all_user_notification_as_read(user_id, filters=None):
     """
     Will mark a given user notifications as 'read'
 
@@ -114,4 +114,4 @@ def mark_all_user_notification_as_read(user_id):
     """
 
     store = notification_store()
-    store.mark_user_notifications_read(user_id)
+    store.mark_user_notifications_read(user_id, filters=filters)

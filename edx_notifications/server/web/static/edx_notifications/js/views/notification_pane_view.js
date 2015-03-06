@@ -1,30 +1,62 @@
 var NotificationPaneView = Backbone.View.extend({
     initialize: function(options){
-        this.endpoints = options.endpoints;
         this.global_variables = options.global_variables;
         this.view_templates = options.view_templates;
         this.counter_icon_view = options.counter_icon_view;
+        this.namespace = options.namespace;
 
         var self = this;
 
         /* get out main underscore view template */
         this.template = _.template($('#notification-pane-template').html());
 
+        // set up our URLs for the API
+        this.unread_msgs_endpoint = options.endpoints.user_notifications_unread_only;
+        this.all_msgs_endpoint = options.endpoints.user_notifications_all;
+        this.mark_all_read_endpoint = options.endpoints.mark_all_user_notifications_read;
+        this.mark_notification_read_endpoint = options.endpoints.user_notification_mark_read;
+
+        this.renderer_templates_url_endpoint = options.endpoints.renderer_templates_urls
+
         /* query endpoints to get a list of all renderer template URLS */
-        $.get(this.endpoints.renderer_templates_urls).done(function(data){
+        $.get(this.renderer_templates_url_endpoint).done(function(data){
             self.process_renderer_templates_urls(data);
         });
+
+        // apply namespacing - if set - to our Ajax calls
+        if (this.namespace) {
+            this.unread_msgs_endpoint = this.append_url_param(this.unread_msgs_endpoint, 'namespace', this.namespace);
+            this.all_msgs_endpoint = this.append_url_param(this.all_msgs_endpoint, 'namespace', this.namespace);
+        }
 
         /* set up our collection */
         this.collection = new UserNotificationCollection();
 
         /* set the API endpoint that was passed into our initializer */
-        this.collection.url = this.endpoints.user_notifications_unread_only;
+        this.collection.url = this.unread_msgs_endpoint;
 
         /* re-render if the model changes */
         this.listenTo(this.collection, 'change', this.collectionChanged);
 
         this.hydrate();
+    },
+
+    append_url_param: function(baseUrl, key, value) {
+      key = encodeURI(key); value = encodeURIComponent(value);
+      var path = baseUrl.split('?')[0]
+      var kvp = baseUrl.split('?')[1].split('&');
+      var i=kvp.length; var x; while(i--)
+      {
+          x = kvp[i].split('=');
+          if (x[0]==key)
+          {
+              x[1] = value;
+              kvp[i] = x.join('=');
+              break;
+          }
+      }
+      if(i<0) {kvp[kvp.length] = [key,value].join('=');}
+      return path + '?' + kvp.join('&');
     },
 
     events: {
@@ -218,7 +250,7 @@ var NotificationPaneView = Backbone.View.extend({
         // check if the event.currentTarget class has already been active or not
         if (this.selected_pane != 'all') {
             /* set the API endpoint that was passed into our initializer */
-            this.collection.url = this.endpoints.user_notifications_all;
+            this.collection.url = this.all_msgs_endpoint;
             this.selected_pane = 'all';
             this.hydrate();
         }
@@ -226,25 +258,32 @@ var NotificationPaneView = Backbone.View.extend({
     unreadNotificationsClicked: function(e) {
         // check if the event.currentTarget class has already been active or not
         /* set the API endpoint that was passed into our initializer */
-        this.collection.url = this.endpoints.user_notifications_unread_only;
+        this.collection.url = this.unread_msgs_endpoint;
         this.selected_pane = 'unread';
         this.hydrate();
     },
     markNotificationsRead: function(e) {
         /* set the API endpoint that was passed into our initializer */
-        this.collection.url = this.endpoints.mark_all_user_notifications_read;
+        this.collection.url = this.mark_all_read_endpoint;
 
         /* make the async call to the backend REST API */
         /* after it loads, the listenTo event will file and */
         /* will call into the rendering */
         var self = this;
         self.$el.addClass('ui-loading');
+        var data = {}
+        if (this.namespace) {
+            data = {
+                namespace: this.namespace
+            }
+        }
         self.collection.fetch(
             {
                 headers: {
                     "X-CSRFToken": $('input[name="csrfmiddlewaretoken"]').prop('value')
                 },
                 type: 'POST',
+                data: data,
                 success: function () {
                     self.$el.removeClass('ui-loading');
                     self.selected_pane = 'unread';
@@ -261,9 +300,8 @@ var NotificationPaneView = Backbone.View.extend({
         var clickLink = $(e.currentTarget).find('span').data('click-link');
 
         if (this.selected_pane === "unread") {
-            this.collection.url = this.endpoints.user_notification_mark_read + messageId;
+            this.collection.url = this.mark_notification_read_endpoint + messageId;
 
-            console.log("notification clicked: will fetch: " + this.collection.url);
             var self = this;
             self.collection.fetch(
                 {

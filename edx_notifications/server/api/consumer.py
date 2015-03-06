@@ -212,7 +212,7 @@ class NotificationDetail(AuthenticatedAPIView):
         return Response([], status.HTTP_200_OK)
 
 
-class MarkNotifications(AuthenticatedAPIView):
+class MarkNotificationsAsRead(AuthenticatedAPIView):
     """
     Mark all the user notifications as read
     """
@@ -222,7 +222,18 @@ class MarkNotifications(AuthenticatedAPIView):
         HTTP POST Handler which is used for such use-cases as 'mark as read'
         """
 
-        mark_all_user_notification_as_read(int(request.user.id))
+        filters = None
+
+        # get the namespace from the POST parameters
+        if 'namespace' in request.POST:
+            filters = {
+                'namespace': request.POST['namespace']
+            }
+
+        mark_all_user_notification_as_read(
+            int(request.user.id),
+            filters=filters
+        )
 
         return Response([], status.HTTP_200_OK)
 

@@ -27,10 +27,19 @@
     {% include "django/notifications_widget.html" %}
 
     <hr />
-    <h2>Here are some actions you can take</h2>
+
+        <h2>CURRENT NAMESPACE: {{namespace}}<h2>
+    <h3>Here are some actions you can take</h3>
     <form method='POST'>
         {% csrf_token %}
-        <label>Notification Type</label><select name='notification_type' />
+        <label>Change Namespace</label>
+        <select name='namespace'>
+            <option value='None'>None</option>
+            <option value='foo/bar/baz'>foo/bar/baz</option>
+            <option value='test/test/test'>test/test/test</option>
+        </select>
+        <input type='submit' name='change_namespace' value='Change Namespace' />
+        <label>Notification Type</label><select name='notification_type' >
             {% for t in notification_types %}
                 <option value='{{t.name}}'>{{t.name}}</option>
             {% endfor %}
