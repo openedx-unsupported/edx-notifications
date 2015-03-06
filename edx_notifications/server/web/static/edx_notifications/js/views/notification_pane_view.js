@@ -260,31 +260,36 @@ var NotificationPaneView = Backbone.View.extend({
         var messageId = $(e.currentTarget).find('span').data('msg-id');
         var clickLink = $(e.currentTarget).find('span').data('click-link');
 
-        this.collection.url = this.endpoints.user_notification_mark_read.replace("/0", "/" + messageId);
+        if (this.selected_pane === "unread") {
+            this.collection.url = this.endpoints.user_notification_mark_read.replace("/0", "/" + messageId);
 
-        console.log("notification clicked: will fetch: " + this.collection.url);
-        var self = this;
-        self.collection.fetch(
-            {
-                headers: {
-                    "X-CSRFToken": $('input[name="csrfmiddlewaretoken"]').prop('value')
-                },
-                data: {
-                  "mark_as": "read"
-                },
-                type: 'POST',
-                success: function () {
-                    if (clickLink) {
-                        window.location.href = clickLink;
-                    }
-                    else {
-                        self.unreadNotificationsClicked();
-                        // fetch the latest notification count
-                        self.counter_icon_view.model.fetch();
+            console.log("notification clicked: will fetch: " + this.collection.url);
+            var self = this;
+            self.collection.fetch(
+                {
+                    headers: {
+                        "X-CSRFToken": $('input[name="csrfmiddlewaretoken"]').prop('value')
+                    },
+                    data: {
+                      "mark_as": "read"
+                    },
+                    type: 'POST',
+                    success: function () {
+                        if (clickLink) {
+                            window.location.href = clickLink;
+                        }
+                        else {
+                            self.unreadNotificationsClicked();
+                            // fetch the latest notification count
+                            self.counter_icon_view.model.fetch();
+                        }
                     }
                 }
-            }
-        );
+            );
+        }
+        else if (clickLink){
+            window.location.href = clickLink;
+        }
     },
     hidePane: function() {
         this.$el.hide();
