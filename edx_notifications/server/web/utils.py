@@ -52,7 +52,7 @@ def get_notifications_widget_context(override_context=None):
             ). format(base_url=reverse('edx_notifications.consumer.notifications')),
             'user_notification_mark_read': (
                 '{base_url}'
-            ). format(base_url=reverse('edx_notifications.consumer.notifications.detail', args={'0'})),
+            ). format(base_url=reverse('edx_notifications.consumer.notifications.detail.no_param')),
             'renderer_templates_urls': reverse('edx_notifications.consumer.renderers.templates'),
         },
         'global_variables': {

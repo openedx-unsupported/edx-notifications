@@ -261,7 +261,7 @@ var NotificationPaneView = Backbone.View.extend({
         var clickLink = $(e.currentTarget).find('span').data('click-link');
 
         if (this.selected_pane === "unread") {
-            this.collection.url = this.endpoints.user_notification_mark_read.replace("/0", "/" + messageId);
+            this.collection.url = this.endpoints.user_notification_mark_read + messageId;
 
             console.log("notification clicked: will fetch: " + this.collection.url);
             var self = this;

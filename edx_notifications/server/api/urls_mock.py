@@ -7,9 +7,12 @@ from django.conf.urls import patterns, url
 from django.http import HttpResponseBadRequest
 
 from .url_regex import (
-    CONSUMER_NOTIFICATIONS_COUNT_REGEX, CONSUMER_NOTIFICATION_DETAIL_REGEX,
-    CONSUMER_NOTIFICATIONS_MARK_NOTIFICATIONS_REGEX, CONSUMER_NOTIFICATIONS_REGEX,
+    CONSUMER_NOTIFICATIONS_COUNT_REGEX,
+    CONSUMER_NOTIFICATION_DETAIL_REGEX,
+    CONSUMER_NOTIFICATIONS_MARK_NOTIFICATIONS_REGEX,
+    CONSUMER_NOTIFICATIONS_REGEX,
     CONSUMER_RENDERERS_TEMPLATES_REGEX,
+    CONSUMER_NOTIFICATION_DETAIL_NO_PARAM_REGEX,
 )
 
 
@@ -31,6 +34,11 @@ urlpatterns = patterns(  # pylint: disable=invalid-name
         CONSUMER_NOTIFICATION_DETAIL_REGEX,
         mock_handler,
         name='edx_notifications.consumer.notifications.detail'
+    ),
+    url(
+        CONSUMER_NOTIFICATION_DETAIL_NO_PARAM_REGEX,
+        mock_handler,
+        name='edx_notifications.consumer.notifications.detail.no_param'
     ),
     url(
         CONSUMER_NOTIFICATIONS_MARK_NOTIFICATIONS_REGEX,
