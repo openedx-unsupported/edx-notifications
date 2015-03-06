@@ -13,11 +13,11 @@ from edx_notifications.renderers.basic import UnderscoreStaticFileRenderer
 from django.dispatch import receiver
 
 
-class GroupProjectFileUploadedRenderer(UnderscoreStaticFileRenderer):
+class GroupProjectGenericRenderer(UnderscoreStaticFileRenderer):
     """
     Renders a notification when ranking in the progress leaderboard changes
     """
-    underscore_template_name = 'group_project/file_uploaded.html'
+    underscore_template_name = 'group_project/generic.html'
 
 
 @receiver(perform_type_registrations)
@@ -30,7 +30,42 @@ def register_notification_types(sender, **kwargs):  # pylint: disable=unused-arg
 
     register_notification_type(
         NotificationType(
-            name=u'open-edx.xblock.group_project.file_uploaded',
-            renderer='edx_notifications.openedx.group_project.GroupProjectFileUploadedRenderer',
+            name=u'open-edx.xblock.group-project.file-uploaded',
+            renderer='edx_notifications.openedx.group_project.GroupProjectGenericRenderer',
+        )
+    )
+
+    register_notification_type(
+        NotificationType(
+            name=u'open-edx.xblock.group-project.uploads-open',
+            renderer='edx_notifications.openedx.group_project.GroupProjectGenericRenderer',
+        )
+    )
+
+    register_notification_type(
+        NotificationType(
+            name=u'open-edx.xblock.group-project.uploads-due',
+            renderer='edx_notifications.openedx.group_project.GroupProjectGenericRenderer',
+        )
+    )
+
+    register_notification_type(
+        NotificationType(
+            name=u'open-edx.xblock.group-project.reviews-open',
+            renderer='edx_notifications.openedx.group_project.GroupProjectGenericRenderer',
+        )
+    )
+
+    register_notification_type(
+        NotificationType(
+            name=u'open-edx.xblock.group-project.reviews-due',
+            renderer='edx_notifications.openedx.group_project.GroupProjectGenericRenderer',
+        )
+    )
+
+    register_notification_type(
+        NotificationType(
+            name=u'open-edx.xblock.group-project.grades-posted',
+            renderer='edx_notifications.openedx.group_project.GroupProjectGenericRenderer',
         )
     )

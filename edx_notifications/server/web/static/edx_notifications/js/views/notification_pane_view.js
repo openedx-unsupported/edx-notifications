@@ -37,7 +37,7 @@ var NotificationPaneView = Backbone.View.extend({
 
     template: null,
 
-    selected_pane: 'unread_notifications',
+    selected_pane: 'unread',
 
     process_renderer_templates_urls: function(data) {
         /*
@@ -104,7 +104,7 @@ var NotificationPaneView = Backbone.View.extend({
         var grouped_user_notifications = null;
         var grouped_user_notifications = [];
 
-        if (this.selected_pane == 'unread_notifications') {
+        if (this.selected_pane == 'unread') {
             notification_group_renderings = this.get_notification_group_renderings('type');
         } else {
             notification_group_renderings = this.get_notification_group_renderings('date');
@@ -120,7 +120,8 @@ var NotificationPaneView = Backbone.View.extend({
 
         // make sure the right tab is highlighted
         this.$el.find($('ul.notifications_list_tab > li')).removeClass('active');
-        this.$el.find('.'+this.selected_pane).addClass('active');
+        var class_to_activate = (this.selected_pane == 'unread') ? 'unread_notifications' : 'user_notifications_all';
+        this.$el.find('.'+class_to_activate).addClass('active');
     },
     get_notification_group_renderings: function(group_by) {
         var user_msgs = this.collection.toJSON();
@@ -180,12 +181,22 @@ var NotificationPaneView = Backbone.View.extend({
 
                     // check to make sure we have the Underscore rendering
                     // template loaded, if not, then skip it.
+                    var render_context = jQuery.extend(true, {}, msg.payload);
+
+                    // pass in the selected_view in case the
+                    // Underscore templates will how different
+                    // renderings depending on which tab is selected
+                    render_context['selected_view'] = this.selected_pane;
+
+                    // also pass in the date the notification was created
+                    render_context['created'] = msg.created;
+
                     if (renderer_class_name in this.renderer_templates) {
                         notification_group['messages'].push({
                             user_msg: user_msg,
                             msg: msg,
                             /* render the particular NotificationMessage */
-                            html: this.renderer_templates[renderer_class_name](msg.payload)
+                            html: this.renderer_templates[renderer_class_name](render_context)
                         });
                     }
                 }
@@ -198,19 +209,19 @@ var NotificationPaneView = Backbone.View.extend({
     },
     allUserNotificationsClicked: function(e) {
         // check if the event.currentTarget class has already been active or not
-        if (this.selected_pane != 'user_notifications_all') {
+        if (this.selected_pane != 'all') {
             /* set the API endpoint that was passed into our initializer */
             this.collection.url = this.endpoints.user_notifications_all;
-            this.selected_pane = 'user_notifications_all';
+            this.selected_pane = 'all';
             this.hydrate();
         }
     },
     unreadNotificationsClicked: function(e) {
         // check if the event.currentTarget class has already been active or not
-        if (this.selected_pane = 'unread_notifications') {
+        if (this.selected_pane != 'unread') {
             /* set the API endpoint that was passed into our initializer */
             this.collection.url = this.endpoints.user_notifications_unread_only;
-            this.selected_pane = 'unread_notifications';
+            this.selected_pane = 'unread';
             this.hydrate();
         }
     },
@@ -231,7 +242,7 @@ var NotificationPaneView = Backbone.View.extend({
                 type: 'POST',
                 success: function () {
                     self.$el.removeClass('ui-loading');
-                    self.selected_pane = 'unread_notifications';
+                    self.selected_pane = 'unread';
                     self.render();
 
                     // fetch the latest notification count
