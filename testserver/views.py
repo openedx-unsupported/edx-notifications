@@ -64,7 +64,7 @@ CANNED_TEST_PAYLOAD = {
     },
     'testserver.type1': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': '',
         'subject': 'Test Notification',
         'body': 'Here is test notification that has a simple subject and body',
     },
