@@ -28,7 +28,6 @@ page that is using this widget
 <script type="text/template" id="notification-pane-template">
     <div class="edx-notifications-container">
         <div class="edx-notifications-content">
-            <div class="fixed">
                 <h2>Notifications</h2>
                 <div class="actions">
                     <ul class="notifications_list_tab">
@@ -38,7 +37,6 @@ page that is using this widget
                         <li class="hide_pane"><a href="#">Hide</a></li>
                     </ul>
                 </div>
-            </div>
             <ul>
                 <% if (typeof grouped_user_notifications == 'undefined' || grouped_user_notifications.length == 0) { %>
                     <li>
