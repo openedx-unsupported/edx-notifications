@@ -28,3 +28,9 @@ class NullNotificationChannel(BaseNotificationChannelProvider):
         # we did not send any, so return zero as a count of number of
         # dispatches
         return 0
+
+    def resolve_msg_link(self, msg, link_name, params):
+        """
+        Generates the appropriate link given a msg, a link_name, and params
+        """
+        return None
