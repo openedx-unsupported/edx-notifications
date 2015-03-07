@@ -71,6 +71,18 @@ SOUTH_MIGRATION_MODULES = {
 # to prevent run-away queries from happening
 MAX_NOTIFICATION_LIST_SIZE = 100
 
+# a mapping table which is used by the MsgTypeToUrlLinkResolver
+# to map a notification type to a statically defined URL path
+NOTIFICATION_CLICK_LINK_URL_MAPS = {
+    # To serve as a test exampe this will convert
+    # msg type 'open-edx.edx_notifications.lib.tests.test_publisher'
+    # to /path/to/{param1}/url/{param2} with param subsitutations
+    # that are passed in with the message
+    'open-edx.edx_notifications.lib.tests.test_publisher': '/path/to/{param1}/url/{param2}',
+    'open-edx.edx_notifications.lib.tests.*': '/alternate/path/to/{param1}/url/{param2}',
+    'open-edx-edx_notifications.lib.*': '/third/way/to/get/to/{param1}/url/{param2}',
+}
+
 # list all known channel providers
 NOTIFICATION_CHANNEL_PROVIDERS = {
     'durable': {
@@ -84,12 +96,7 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
                 'msg_type_to_url': {
                     'class': 'edx_notifications.channels.link_resolvers.MsgTypeToUrlLinkResolver',
                     'config': {
-                        '_click_url': {
-                            # this will conver msg type 'test-type.type-with-links'
-                            # to /path/to/{param1}/url/{param2} with param subsitutations
-                            # that are passed in with the message
-                            'open-edx.edx_notifications.lib.tests.test_publisher': '/path/to/{param1}/url/{param2}'
-                        }
+                        '_click_url': NOTIFICATION_CLICK_LINK_URL_MAPS,
                     }
                 }
             }

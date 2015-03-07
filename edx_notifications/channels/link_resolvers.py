@@ -16,7 +16,7 @@ class BaseLinkResolver(object):
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
-    def resolve(self, msg_type_name, link_name, params):
+    def resolve(self, msg_type_name, link_name, params, exact_match_only=False):
         """
         Takes a msg, link_name, and a set of dictionary params
         and returns a URL path
@@ -38,7 +38,7 @@ class MsgTypeToUrlLinkResolver(BaseLinkResolver):
 
         self.mappings = mappings
 
-    def resolve(self, msg_type_name, link_name, params):
+    def resolve(self, msg_type_name, link_name, params, exact_match_only=False):
         """
         Takes a msg, link_name, and a set of dictionary params
         and returns a URL path
@@ -48,12 +48,39 @@ class MsgTypeToUrlLinkResolver(BaseLinkResolver):
         if link_name not in self.mappings:
             return None
 
-        # do we have this msg-type?
-        if msg_type_name not in self.mappings[link_name]:
+        maps = self.mappings[link_name]
+
+        # do we have this msg-type? First look for exact map
+        # and then work upwards in wildcard cope
+
+        search_name = msg_type_name
+
+        mapping = maps.get(search_name)
+        if not mapping and not exact_match_only:
+            #
+            # We support hierarchies of mappings so that
+            # msg_types that are similar can all point to the
+            # same URL
+            #
+            search_name, __, __ = search_name.rpartition('.')
+
+            # loop over all possible wildcards throughout the namespace
+            # from most specific to generic
+            while not mapping and search_name:
+                mapping = maps.get(search_name + '.*')
+                if not mapping:
+                    search_name, __, __ = search_name.rpartition('.')
+
+            if not mapping:
+                if '*' in maps:
+                    mapping = maps['*']
+
+        if not mapping:
+            # coulnd't find any match, so say that we don't have a type to URL resolver
             return None
 
         try:
-            return self.mappings[link_name][msg_type_name].format(**params)  # pylint:disable=star-args
+            return mapping.format(**params)  # pylint:disable=star-args
         except KeyError, ex:
             err_msg = (
                 'TypeToURLResolver: attempted to resolve link_name "{link_name}" '
@@ -63,7 +90,7 @@ class MsgTypeToUrlLinkResolver(BaseLinkResolver):
             ).format(
                 link_name=link_name,
                 msg_type=msg_type_name,
-                format_string=self.mappings[link_name][msg_type_name],
+                format_string=mapping,
                 params=params,
                 ex_msg=str(ex)
             )

@@ -115,6 +115,14 @@ class NotificationMessage(BaseDataObject):
     # it is not stored in the database
     resolve_links = DictField()
 
+    @property
+    def _click_link_keyname(self):
+        """
+        Hide this constant so that other's don't need to know
+        how internal schemas
+        """
+        return '_click_link'
+
     def validate(self):
         """
         Validator for this DataObject
@@ -128,6 +136,79 @@ class NotificationMessage(BaseDataObject):
 
         if not self.msg_type:
             raise ValidationError("Missing required property: msg_type")
+
+    def set_click_link(self, click_link):
+        """
+        If we have a "click link" associate with the notification,
+        this will store it in the system defined meta-field
+        in the payload which the Backbone presentation tier
+        knows about.
+
+        IMPORTANT: If click links are generated through
+        the LinkResolvers in the NotificationChannels
+        then it will be overwritten. This happens when
+        self.resolve_links != None
+        """
+
+        if not self.payload:
+            self.payload = {}
+
+        self.payload[self._click_link_keyname] = click_link
+
+    def get_click_link(self):
+        """
+        Return the click link associated with this message,
+        if it was set.
+
+        IMPORTANT: If click links are generated through
+        the LinkResolvers in the NotificationChannels
+        then it will be overwritten. This happens when
+        self.resolve_links != None
+        """
+
+        if not self.payload:
+            return None
+
+        return self.payload[self._click_link_keyname]
+
+    def add_resolve_link_params(self, link_name, params):
+        """
+        Helper method to set resolve_links field when the message
+        gets published to a channel and we need to add meta-links
+        to the message, e.g. to - say - link to a webpage
+        """
+
+        if not self.resolve_links:
+            self.resolve_links = {}
+
+        if link_name in self.resolve_links:
+            # the link_name already exists, so we should update
+            # the parameters associated with it
+            self.resolve_links[link_name].update(params)
+        else:
+            # new link name, so let's add the whole thing
+            self.resolve_links.update({
+                link_name: params
+            })
+
+    def add_click_link_params(self, params):
+        """
+        Helper method to set a system defined '_click_link'
+        payload value, which can be handled
+        by the front-end Backbone application to
+        signify a click through link
+        """
+
+        self.add_resolve_link_params(self._click_link_keyname, params)
+
+    def get_click_link_params(self):
+        """
+        Helper method to get all click links, so that calling
+        applications need to know that we store that under
+        a key named '_click_link'
+        """
+
+        return self.resolve_links.get(self._click_link_keyname)
 
 
 class UserNotification(BaseDataObject):
