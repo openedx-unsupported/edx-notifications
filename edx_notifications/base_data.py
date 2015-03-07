@@ -5,6 +5,7 @@ Base objects that data.py uses
 import json
 import inspect
 import dateutil.parser
+import copy
 
 from datetime import datetime, timedelta
 
@@ -336,6 +337,25 @@ class BaseDataObject(object):
         """
 
         return unicode(self.get_fields())
+
+    @classmethod
+    def clone(cls, src):
+        """
+        Create a cloned object
+        """
+
+        instance = cls()
+        for attr_name, __ in inspect.getmembers(cls, lambda attr: isinstance(attr, TypedField)):
+            if hasattr(src, attr_name):
+                val = getattr(src, attr_name)
+                # when cloning a dict, make a copy
+                # in case caller alters it
+                if isinstance(val, dict):
+                    val = copy.deepcopy(val)
+
+                setattr(instance, attr_name, val)
+
+        return instance
 
     def get_fields(self):
         """
