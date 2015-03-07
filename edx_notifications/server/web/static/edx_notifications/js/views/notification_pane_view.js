@@ -280,7 +280,7 @@ var NotificationPaneView = Backbone.View.extend({
         self.collection.fetch(
             {
                 headers: {
-                    "X-CSRFToken": $('input[name="csrfmiddlewaretoken"]').prop('value')
+                    "X-CSRFToken": this.getCSRFToken()
                 },
                 type: 'POST',
                 data: data,
@@ -295,6 +295,22 @@ var NotificationPaneView = Backbone.View.extend({
             }
         );
     },
+    getCSRFToken: function() {
+        var cookieValue = null;
+        var name='csrftoken';
+        if (document.cookie && document.cookie != '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    },
     visitNotification: function(e) {
         var messageId = $(e.currentTarget).find('span').data('msg-id');
         var clickLink = $(e.currentTarget).find('span').data('click-link');
@@ -306,7 +322,7 @@ var NotificationPaneView = Backbone.View.extend({
             self.collection.fetch(
                 {
                     headers: {
-                        "X-CSRFToken": $('input[name="csrfmiddlewaretoken"]').prop('value')
+                        "X-CSRFToken": this.getCSRFToken()
                     },
                     data: {
                       "mark_as": "read"
