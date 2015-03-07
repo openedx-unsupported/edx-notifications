@@ -25,3 +25,23 @@ class DataTests(TestCase):
 
         with self.assertRaises(ValidationError):
             msg.validate()
+
+    def test_cloning(self):
+        """
+        Make sure cloning works
+        """
+
+        msg = NotificationMessage(
+            payload={'foo': 'bar'}
+        )
+
+        clone = NotificationMessage.clone(msg)
+
+        self.assertEqual(msg, clone)
+
+        # now change the cloned payload and assert that the original one
+        # did not change
+
+        clone.payload['foo'] = 'changed'
+        self.assertEqual(msg.payload['foo'], 'bar')
+        self.assertEqual(clone.payload['foo'], 'changed')

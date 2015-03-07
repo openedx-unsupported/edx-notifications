@@ -12,7 +12,8 @@ from edx_notifications.channels.channel import BaseNotificationChannelProvider
 from edx_notifications.stores.store import notification_store
 
 from edx_notifications.data import (
-    UserNotification
+    UserNotification,
+    NotificationMessage,
 )
 
 
@@ -61,6 +62,10 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
             for link_name, link_params in msg.resolve_links.iteritems():
                 resolved_link = self.resolve_msg_link(msg, link_name, link_params)
                 if resolved_link:
+                    # copy the msg because we are going to alter it and we don't want to affect
+                    # the passed in version
+                    msg = NotificationMessage.clone(msg)
+
                     # if we could resolve, then store the resolved link in the payload itself
                     msg.payload[link_name] = resolved_link
 
