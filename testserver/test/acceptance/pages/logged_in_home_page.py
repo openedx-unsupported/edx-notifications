@@ -1,6 +1,8 @@
 from bok_choy.page_object import PageObject
 from bok_choy.promise import EmptyPromise
 from . import user_name
+from notification_target_page import NotificationTargetPage
+from logout_page import LoggedOut
 
 
 class LoggedInHomePage(PageObject):
@@ -34,8 +36,9 @@ class LoggedInHomePage(PageObject):
         self.wait_for_element_visibility('input[name="add_notifications"]', 'Add notification button not found')
         self.q(css='input[name="add_notifications"]').click()
         self.wait_for_element_visibility('.edx-notifications-count-number', 'Notification count not found')
+        final_count = str(initial_count + 1)
         EmptyPromise(
-            lambda: int(self.q(css='.edx-notifications-count-number').text[0]) == initial_count + 1,
+            lambda: self.q(css='.edx-notifications-count-number').text[0] == final_count,
             'wait for count to increase'
         ).fulfill()
 
@@ -44,6 +47,7 @@ class LoggedInHomePage(PageObject):
         Return notification count
         :return:
         """
+        self.wait_for_ajax()
         self.wait_for_element_visibility('.edx-notifications-count-number', 'Notification count not found')
         count_text = self.q(css='.edx-notifications-count-number').text[0]
         # HTML will not contain a 0 if there are no unread messages
@@ -151,3 +155,18 @@ class LoggedInHomePage(PageObject):
         self.wait_for_ajax()
         self.wait_for_element_visibility('.edx-notifications-content', 'Notification messages list not found')
         return self.q(css='.edx-notifications-content').text
+
+    def click_on_notification(self):
+        self.wait_for_element_visibility('.edx-notifications-content>ul>li>p', 'list not found')
+        notification_link = self.q(css='.edx-notifications-content>ul>li>p>span').first.attrs('data-click-link')
+        self.q(css='.edx-notifications-content>ul>li>p>span').first.click()
+        NotificationTargetPage(self.browser).wait_for_page()
+        return notification_link[0]
+
+    def log_out(self):
+        self.wait_for_element_visibility('a[href="/logout/"]', 'logout link not found')
+        self.q(css='a[href="/logout/"]').click()
+        LoggedOut(self.browser).wait_for_page()
+
+
+
