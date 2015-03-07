@@ -3,11 +3,28 @@ File containing link resolvers
 """
 
 import logging
+import abc
 
 log = logging.getLogger(__name__)
 
 
-class MsgTypeToUrlResolver(object):
+class BaseLinkResolver(object):
+    """
+    The abstract base class that all link resolvers will need to implement
+    """
+
+    __metaclass__ = abc.ABCMeta
+
+    @abc.abstractmethod
+    def resolve(self, msg_type_name, link_name, params):
+        """
+        Takes a msg, link_name, and a set of dictionary params
+        and returns a URL path
+        """
+        raise NotImplementedError()
+
+
+class MsgTypeToUrlLinkResolver(BaseLinkResolver):
     """
     This resolver will convert a msg-type to a URL through
     static mappings defined in our settings configuration

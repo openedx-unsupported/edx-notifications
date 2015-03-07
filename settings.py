@@ -82,7 +82,7 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
                 # attempts to look up the msg type (key) via
                 # matching on the value
                 'msg_type_to_url': {
-                    'class': 'edx_notifications.channels.link_resolvers.MsgTypeToUrlResolver',
+                    'class': 'edx_notifications.channels.link_resolvers.MsgTypeToUrlLinkResolver',
                     'config': {
                         '_click_url': {
                             # this will conver msg type 'test-type.type-with-links'
