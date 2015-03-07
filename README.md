@@ -95,6 +95,9 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
             }
         }
     },
+    # A null channel basically implements the Channel interface, but does not
+    # do anything. This is useful for when you want to not dispatch certain notification
+    # types.
     'null': {
         'class': 'edx_notifications.channels.null.NullNotificationChannel',
         'options': {}
