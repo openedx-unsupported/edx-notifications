@@ -57,7 +57,7 @@ class MsgTypeToUrlLinkResolverTests(TestCase):
         """
 
         self.resolver_maps_config = {
-            '_click_url': {
+            '_click_link': {
                 # this will conver msg type 'test-type.type-with-links'
                 # to /path/to/{param1}/url/{param2} with param subsitutations
                 # that are passed in with the message
@@ -81,7 +81,7 @@ class MsgTypeToUrlLinkResolverTests(TestCase):
 
         url = resolver.resolve(
             'test-type.type-with-links',
-            '_click_url',
+            '_click_link',
             resolve_params
         )
         self.assertEqual(url, '/path/to/foo/url/bar')
@@ -89,7 +89,7 @@ class MsgTypeToUrlLinkResolverTests(TestCase):
         # now see if first wildcard properly resolves
         url = resolver.resolve(
             'test-type.different',
-            '_click_url',
+            '_click_link',
             resolve_params
         )
         self.assertEqual(url, '/parent/foo')
@@ -97,7 +97,7 @@ class MsgTypeToUrlLinkResolverTests(TestCase):
         # now see if the global wildcard resolves
         url = resolver.resolve(
             'only-match-at-root',
-            '_click_url',
+            '_click_link',
             resolve_params
         )
         self.assertEqual(url, '/root')
@@ -108,7 +108,7 @@ class MsgTypeToUrlLinkResolverTests(TestCase):
         """
 
         resolver = MsgTypeToUrlLinkResolver({
-            '_click_url': {
+            '_click_link': {
                 # this will conver msg type 'test-type.type-with-links'
                 # to /path/to/{param1}/url/{param2} with param subsitutations
                 # that are passed in with the message
@@ -118,7 +118,7 @@ class MsgTypeToUrlLinkResolverTests(TestCase):
 
         url = resolver.resolve(
             'test-type.missing-type',
-            '_click_url',
+            '_click_link',
             {
                 'param1': 'foo',
                 'param2': 'bar',
@@ -132,7 +132,7 @@ class MsgTypeToUrlLinkResolverTests(TestCase):
         """
 
         resolver = MsgTypeToUrlLinkResolver({
-            '_click_url': {
+            '_click_link': {
                 # this will conver msg type 'test-type.type-with-links'
                 # to /path/to/{param1}/url/{param2} with param subsitutations
                 # that are passed in with the message
@@ -156,7 +156,7 @@ class MsgTypeToUrlLinkResolverTests(TestCase):
         """
 
         resolver = MsgTypeToUrlLinkResolver({
-            '_click_url': {
+            '_click_link': {
                 # this will conver msg type 'test-type.type-with-links'
                 # to /path/to/{param1}/url/{param2} with param subsitutations
                 # that are passed in with the message
@@ -166,7 +166,7 @@ class MsgTypeToUrlLinkResolverTests(TestCase):
 
         url = resolver.resolve(
             'test-type.type-with-links',
-            '_click_url',
+            '_click_link',
             {
                 'param1': 'foo',
             }
