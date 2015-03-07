@@ -34,6 +34,17 @@ NAMESPACES = [None, 'foo/bar/baz', 'test/test/test']
 NAMESPACE = None
 
 CANNED_TEST_PAYLOAD = {
+    'testserver.type1': {
+        '_schema_version': 1,
+        '_click_link': '',
+        'subject': 'Test Notification',
+        'body': 'Here is test notification that has a simple subject and body',
+    },
+    'testserver.msg-with-resolved-click-link': {
+        '_schema_version': 1,
+        'subject': 'Clickable Notification',
+        'body': 'You should be able to click and redirect on this Notification',
+    },
     'open-edx.lms.discussions.reply-to-thread': {
         '_schema_version': 1,
         '_click_link': 'http://localhost',
@@ -65,12 +76,6 @@ CANNED_TEST_PAYLOAD = {
         'action_user_id': 2,
         'action_username': 'testuser',
         'thread_title': 'A demo posting to the discussion forums',
-    },
-    'testserver.type1': {
-        '_schema_version': 1,
-        '_click_link': '',
-        'subject': 'Test Notification',
-        'body': 'Here is test notification that has a simple subject and body',
     },
     'open-edx.studio.announcements.new-announcement': {
         '_schema_version': 1,
@@ -170,6 +175,12 @@ def index(request):
                 namespace=NAMESPACE,
                 payload=CANNED_TEST_PAYLOAD[type_name],
             )
+
+            if type_name == 'testserver.msg-with-resolved-click-link':
+                msg.add_click_link_params({
+                    'param1': 'param_val1',
+                    'param2': 'param_val2',
+                })
 
             publish_notification_to_user(request.user.id, msg)
 

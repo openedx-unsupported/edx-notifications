@@ -4,6 +4,7 @@ that saves Notifications to a database for later
 retrieval
 """
 
+import logging
 from importlib import import_module
 
 from edx_notifications import const
@@ -16,6 +17,8 @@ from edx_notifications.data import (
     NotificationMessage,
 )
 
+log = logging.getLogger(__name__)
+
 
 class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
     """
@@ -27,36 +30,31 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
 
     _cached_resolvers = {}
 
-    def dispatch_notification_to_user(self, user_id, msg):
+    def _get_linked_resolved_msg(self, msg):
         """
-        Send a notification to a user, which - in a durable Notification -
-        is simply store it in the database, and - soon in the future -
-        raise some signal to a waiting client that a message is available
+        This helper will attempt to resolve all
+        links that are present in the message
+
+        resolve any links that may need conversion into URL paths
+        This uses a subdict named "_resolve_links" in the msg.resolve_links
+        field:
+
+            resolve_links = {
+                "_resolve_links": {
+                    "_click_link": {
+                       "param1": "val1",
+                       "param2": "param2"
+                    },
+                    :
+                },
+             :
+            }
+
+        This above will try to resolve the URL for the link named "_click_link" (for
+        example, when a user clicks on a notification, the should go to that URL), with the
+        URL parameters "param1"="val1" and "param2"="val2", and put that link name back in
+        the main payload dictionary as "_click_link"
         """
-
-        store = notification_store()
-
-        #
-        # resolve any links that may need conversion into URL paths
-        # This uses a subdict named "_resolve_links" in the msg.resolve_links
-        # field:
-        #
-        #  resolve_links = {
-        #        "_resolve_links": {
-        #            "_click_link": {
-        #               "param1": "val1",
-        #               "param2": "param2"
-        #            },
-        #            :
-        #        },
-        #     :
-        #  }
-        #
-        # This above will try to resolve the URL for the link named "_click_link" (for
-        # example, when a user clicks on a notification, the should go to that URL), with the
-        # URL parameters "param1"="val1" and "param2"="val2", and put that link name back in
-        # the main payload dictionary as "_click_link"
-        #
 
         if msg.resolve_links:
             for link_name, link_params in msg.resolve_links.iteritems():
@@ -69,6 +67,22 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
                     # if we could resolve, then store the resolved link in the payload itself
                     msg.payload[link_name] = resolved_link
 
+        # return the msg which could be a clone of the original one
+        return msg
+
+    def dispatch_notification_to_user(self, user_id, msg):
+        """
+        Send a notification to a user, which - in a durable Notification -
+        is simply store it in the database, and - soon in the future -
+        raise some signal to a waiting client that a message is available
+        """
+
+        store = notification_store()
+
+        # get a msg (cloned from original) with resolved links
+        msg = self._get_linked_resolved_msg(msg)
+
+        # persist the message in our Store Provide
         _msg = store.save_notification_message(msg)
 
         # create a new UserNotification and point to the new message
@@ -102,6 +116,10 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
 
         store = notification_store()
 
+        # get a msg (cloned from original) with resolved links
+        msg = self._get_linked_resolved_msg(msg)
+
+        # persist the message in our Store Provide
         _msg = store.save_notification_message(msg)
 
         user_msgs = []

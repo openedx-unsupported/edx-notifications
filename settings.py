@@ -96,7 +96,7 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
                 'msg_type_to_url': {
                     'class': 'edx_notifications.channels.link_resolvers.MsgTypeToUrlLinkResolver',
                     'config': {
-                        '_click_url': NOTIFICATION_CLICK_LINK_URL_MAPS,
+                        '_click_link': NOTIFICATION_CLICK_LINK_URL_MAPS,
                     }
                 }
             }
