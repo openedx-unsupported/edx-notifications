@@ -45,3 +45,48 @@ class DataTests(TestCase):
         clone.payload['foo'] = 'changed'
         self.assertEqual(msg.payload['foo'], 'bar')
         self.assertEqual(clone.payload['foo'], 'changed')
+
+    def test_click_links_params(self):
+        """
+        Make sure the helper methods work
+        """
+
+        msg = NotificationMessage(
+            payload={'foo': 'bar'}
+        )
+
+        msg.add_click_link_params({
+            'param1': 'val1',
+            'param2': 'val2',
+        })
+
+        click_links = msg.get_click_link_params()
+
+        self.assertIsNotNone(click_links)
+        self.assertEqual(click_links['param1'], 'val1')
+        self.assertEqual(click_links['param2'], 'val2')
+
+        msg.add_click_link_params({
+            'param3': 'val3',
+        })
+
+        click_links = msg.get_click_link_params()
+
+        self.assertEqual(click_links['param1'], 'val1')
+        self.assertEqual(click_links['param2'], 'val2')
+        self.assertEqual(click_links['param3'], 'val3')
+
+    def test_click_link(self):
+        """
+        Tests around the click_link property of NotificationMessages
+        """
+
+        msg = NotificationMessage()
+
+        self.assertIsNone(msg.get_click_link())
+
+        msg.set_click_link('/foo/bar/baz')
+        self.assertEqual(msg.get_click_link(), '/foo/bar/baz')
+
+        msg.set_click_link('/updated')
+        self.assertEqual(msg.get_click_link(), '/updated')

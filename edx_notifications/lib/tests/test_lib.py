@@ -123,16 +123,15 @@ class TestPublisherLibrary(TestCase):
             msg_type=self.msg_type,
             payload={
                 'foo': 'bar'
-            },
-            # this resolve_links resolutions are defined in settings.py
-            # for testing purposes
-            resolve_links={
-                '_click_url': {
-                    'param1': 'foo_param',
-                    'param2': 'bar_param',
-                }
             }
         )
+
+        # this resolve_links resolutions are defined in settings.py
+        # for testing purposes
+        msg.add_click_link_params({
+            'param1': 'foo_param',
+            'param2': 'bar_param',
+        })
 
         # make sure it asserts that user_id is an integer
         with self.assertRaises(ContractNotRespected):
@@ -143,17 +142,16 @@ class TestPublisherLibrary(TestCase):
 
         # now make sure the links got resolved and put into
         # the payload
-
-        self.assertTrue('_click_url' in sent_user_msg.msg.payload)
+        self.assertIsNotNone(sent_user_msg.msg.get_click_link())
 
         # make sure the resolution is what we expect
         # NOTE: the mappings are defined in settings.py for testing purposes
-        self.assertEqual(sent_user_msg.msg.payload['_click_url'], '/path/to/foo_param/url/bar_param')
+        self.assertEqual(sent_user_msg.msg.get_click_link(), '/path/to/foo_param/url/bar_param')
 
         # now do it all over again since there is caching of link resolvers
         sent_user_msg = publish_notification_to_user(self.test_user_id, msg)
-        self.assertTrue('_click_url' in sent_user_msg.msg.payload)
-        self.assertEqual(sent_user_msg.msg.payload['_click_url'], '/path/to/foo_param/url/bar_param')
+        self.assertTrue(sent_user_msg.msg.get_click_link())
+        self.assertEqual(sent_user_msg.msg.get_click_link(), '/path/to/foo_param/url/bar_param')
 
     def test_bulk_publish_list(self):
         """
