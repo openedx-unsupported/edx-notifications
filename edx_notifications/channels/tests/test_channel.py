@@ -108,6 +108,12 @@ class BadChannel(BaseNotificationChannelProvider):
         """
         raise super(BadChannel, self).bulk_dispatch_notification(user_ids, msg)
 
+    def resolve_msg_link(self, msg, link_name, params):
+        """
+        Generates the appropriate link given a msg, a link_name, and params
+        """
+        raise super(BadChannel, self).resolve_msg_link(msg, link_name, params)
+
 
 @override_settings(NOTIFICATION_CHANNEL_PROVIDERS=_NOTIFICATION_CHANNEL_PROVIDERS)
 @override_settings(NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS=_NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS)
@@ -237,6 +243,9 @@ class ChannelTests(TestCase):
 
         with self.assertRaises(NotImplementedError):
             BadChannel().bulk_dispatch_notification(None, None)
+
+        with self.assertRaises(NotImplementedError):
+            BadChannel().resolve_msg_link(None, None, None)
 
     def test_null_channel(self):
         """

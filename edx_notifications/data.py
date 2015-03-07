@@ -110,6 +110,11 @@ class NotificationMessage(BaseDataObject):
     created = DateTimeField()
     modified = DateTimeField()
 
+    # links to resolve by the NotificationChannel when dispatching. Note, we
+    # resolve at dispatch time so if the Message is persisted (aka durable)
+    # it is not stored in the database
+    resolve_links = DictField()
+
     def validate(self):
         """
         Validator for this DataObject

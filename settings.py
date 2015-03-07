@@ -75,7 +75,25 @@ MAX_NOTIFICATION_LIST_SIZE = 100
 NOTIFICATION_CHANNEL_PROVIDERS = {
     'durable': {
         'class': 'edx_notifications.channels.durable.BaseDurableNotificationChannel',
-        'options': {}
+        'options': {
+            # list out all link resolvers
+            'link_resolvers': {
+                # right now the only defined resolver is 'type_to_url', which
+                # attempts to look up the msg type (key) via
+                # matching on the value
+                'msg_type_to_url': {
+                    'class': 'edx_notifications.channels.link_resolvers.MsgTypeToUrlResolver',
+                    'config': {
+                        '_click_url': {
+                            # this will conver msg type 'test-type.type-with-links'
+                            # to /path/to/{param1}/url/{param2} with param subsitutations
+                            # that are passed in with the message
+                            'open-edx.edx_notifications.lib.tests.test_publisher': '/path/to/{param1}/url/{param2}'
+                        }
+                    }
+                }
+            }
+        }
     },
     'null': {
         'class': 'edx_notifications.channels.null.NullNotificationChannel',
