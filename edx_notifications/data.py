@@ -15,7 +15,8 @@ from edx_notifications.base_data import (
     IntegerField,
     EnumField,
     RelatedObjectField,
-    BaseDataObject
+    BaseDataObject,
+    BooleanField,
 )
 
 
@@ -253,3 +254,60 @@ class NotificationTypeUserChannelPreference(BaseDataObject):
     # dict containing any user specific context for this channel, for example a mobile # for SMS
     # message, or email address
     channel_context = DictField()
+
+
+class NotificationCallbackTimer(BaseDataObject):
+    """
+    Registers a callback to occur after a timestamp. This can be used by the
+    application tier to evaluate if conditions are met to trigger
+    a notification message to be sent.
+
+    A callback can be periodic, in which case, when one callback
+    is completed another is schedule as <now>+periodicity_mind. It will reuse the
+    same context as when the first was created.
+
+    IMPORTANT: Do not register a lot of high frequency callbacks as
+    each reiteration will take up another row in the database to store
+    the re-registration of the callback and the results. There is a system limit
+    - which is configurable - on the minimum minutes, for example no less than
+    60 minutes (hourly job)
+
+    IMPORTANT: the class that is registered to be called back *must*
+    implement the NotificationCallbackTimerHandler interface
+    """
+
+    @property
+    def id(self):
+        """
+        Alias the timer name as the id, since all data objects have names
+        """
+        return self.name
+
+    # timer name, must be unique!
+    name = StringField()
+
+    # earliest to callback at
+    callback_at = DateTimeField()
+
+    # the entry point "e.g. myapp.module.NotificationAsyncCallbackHandler"
+    class_name = StringField()
+
+    # is active
+    is_active = BooleanField()
+
+    # any specific context that should be passed into the callback
+    context = DictField()
+
+    # if this is a recurring timer entry, what is the periodicity
+    # in minutes
+    periodicity_min = IntegerField()
+
+    # when the callback was called
+    executed_at = DateTimeField()
+
+    # any unhandled messages associated with the callback
+    err_msg = StringField()
+
+    # timestamps
+    created = DateTimeField()
+    modified = DateTimeField()

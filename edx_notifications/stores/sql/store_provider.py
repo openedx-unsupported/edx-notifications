@@ -18,7 +18,8 @@ from edx_notifications import const
 from edx_notifications.stores.sql.models import (
     SQLNotificationMessage,
     SQLNotificationType,
-    SQLUserNotification
+    SQLUserNotification,
+    SQLNotificationCallbackTimer,
 )
 
 
@@ -345,3 +346,52 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
             objs.append(SQLUserNotification.from_data_object(user_msg))
 
         SQLUserNotification.objects.bulk_create(objs, batch_size=const.NOTIFICATION_BULK_PUBLISH_CHUNK_SIZE)
+
+    def save_notification_timer(self, timer):
+        """
+        Will save (create or update) a NotificationCallbackTimer in the
+        StorageProvider
+        """
+
+        obj = None
+        if timer.name:
+            # see if it exists
+            try:
+                obj = SQLNotificationCallbackTimer.objects.get(name=timer.name)
+                obj.load_from_data_object(timer)
+            except ObjectDoesNotExist:
+                pass
+        if not obj:
+            obj = SQLNotificationCallbackTimer.from_data_object(timer)
+
+        obj.save()
+        return obj.to_data_object()
+
+    def get_notification_timer(self, name):
+        """
+        Will return a single NotificationCallbackTimer
+        """
+        try:
+            obj = SQLNotificationCallbackTimer.objects.get(name=name)
+        except ObjectDoesNotExist:
+            raise ItemNotFoundError()
+
+        return obj.to_data_object()
+
+    def get_all_active_timers(self, until_time=None, include_executed=False):
+        """
+        Will return all active timers that are expired as a list
+
+        If until_time is not passed in, then we will use our
+        current system time
+        """
+
+        objs = SQLNotificationCallbackTimer.objects.filter(
+            callback_at__lte=until_time if until_time else datetime.now(pytz.UTC),
+            is_active=True
+        )
+
+        if not include_executed:
+            objs = objs.filter(executed_at__isnull=True)
+
+        return [obj.to_data_object() for obj in objs]

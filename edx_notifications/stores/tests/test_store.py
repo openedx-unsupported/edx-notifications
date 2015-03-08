@@ -100,6 +100,28 @@ class BadImplementationStoreProvider(BaseNotificationStoreProvider):
             filters=filters,
         )
 
+    def save_notification_timer(self, timer):
+        """
+        Will save (create or update) a NotificationCallbackTimer in the
+        StorageProvider
+        """
+        super(BadImplementationStoreProvider, self).save_notification_timer(None)
+
+    def get_notification_timer(self, name):
+        """
+        Will return a single NotificationCallbackTimer
+        """
+        super(BadImplementationStoreProvider, self).get_notification_timer(None)
+
+    def get_all_active_timers(self, until_time=None, include_executed=False):
+        """
+        Will return all active timers that are expired.
+
+        If until_time is not passed in, then we will use our
+        current system time
+        """
+        super(BadImplementationStoreProvider, self).get_all_active_timers(until_time=until_time)
+
 
 class TestBaseNotificationDataProvider(TestCase):
     """
@@ -187,3 +209,12 @@ class TestBaseNotificationDataProvider(TestCase):
 
         with self.assertRaises(NotImplementedError):
             bad_provider.mark_user_notifications_read(None)
+
+        with self.assertRaises(NotImplementedError):
+            bad_provider.save_notification_timer(None)
+
+        with self.assertRaises(NotImplementedError):
+            bad_provider.get_notification_timer(None)
+
+        with self.assertRaises(NotImplementedError):
+            bad_provider.get_all_active_timers()
