@@ -108,7 +108,7 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
         Perform a bulk dispatch of the notification message to
         all user_ids that will be enumerated over in user_ids.
 
-        NOTE: We will chunk together up to MAX_BULK_USER_NOTIFICATION_SIZE
+        NOTE: We will chunk together up to NOTIFICATION_BULK_PUBLISH_CHUNK_SIZE
 
         user_ids should be a list, a generator function, or a django.db.models.query.ValuesListQuerySet
         when directly feeding in a Django ORM queryset, where we select just the id column of the user
@@ -141,7 +141,7 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
                 )
                 cnt = cnt + 1
                 total = total + 1
-                if cnt == const.MAX_BULK_USER_NOTIFICATION_SIZE:
+                if cnt == const.NOTIFICATION_BULK_PUBLISH_CHUNK_SIZE:
                     store.bulk_create_user_notification(user_msgs)
                     user_msgs = []
                     cnt = 0

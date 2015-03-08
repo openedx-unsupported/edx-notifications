@@ -348,15 +348,15 @@ class TestSQLStoreProvider(TestCase):
                 self.provider.get_notifications_for_user(self.test_user_id)
             )
 
-    @mock.patch('edx_notifications.const.MAX_NOTIFICATION_LIST_SIZE', 1)
+    @mock.patch('edx_notifications.const.NOTIFICATION_MAX_LIST_SIZE', 1)
     def test_over_limit_counting(self):
         """
         Verifies that our counting operations will work as expected even when
-        our count is greater that the MAX_NOTIFICATION_LIST_SIZE which is
+        our count is greater that the NOTIFICATION_MAX_LIST_SIZE which is
         the maximum page size
         """
 
-        self.assertEqual(const.MAX_NOTIFICATION_LIST_SIZE, 1)
+        self.assertEqual(const.NOTIFICATION_MAX_LIST_SIZE, 1)
 
         msg_type = self._save_notification_type()
 
@@ -654,7 +654,7 @@ class TestSQLStoreProvider(TestCase):
             self.provider.get_notifications_for_user(
                 self.test_user_id,
                 options={
-                    'limit': const.MAX_NOTIFICATION_LIST_SIZE + 1
+                    'limit': const.NOTIFICATION_MAX_LIST_SIZE + 1
                 }
             )
 
@@ -725,7 +725,7 @@ class TestSQLStoreProvider(TestCase):
         ))
 
         user_msgs = []
-        for user_id in range(const.MAX_BULK_USER_NOTIFICATION_SIZE):
+        for user_id in range(const.NOTIFICATION_BULK_PUBLISH_CHUNK_SIZE):
             user_msgs.append(
                 UserNotification(user_id=user_id, msg=msg)
             )
@@ -736,7 +736,7 @@ class TestSQLStoreProvider(TestCase):
             self.provider.bulk_create_user_notification(user_msgs)
 
         # now make sure that we can query each one
-        for user_id in range(const.MAX_BULK_USER_NOTIFICATION_SIZE):
+        for user_id in range(const.NOTIFICATION_BULK_PUBLISH_CHUNK_SIZE):
             notifications = self.provider.get_notifications_for_user(user_id)
 
             self.assertEqual(len(notifications), 1)

@@ -200,12 +200,12 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
             options=options
         )
 
-        limit = _options.get('limit', const.MAX_NOTIFICATION_LIST_SIZE)
+        limit = _options.get('limit', const.NOTIFICATION_MAX_LIST_SIZE)
         offset = _options.get('offset', 0)
 
         # make sure passed in limit is allowed
         # as we don't want to blow up the query too large here
-        if limit > const.MAX_NOTIFICATION_LIST_SIZE:
+        if limit > const.NOTIFICATION_MAX_LIST_SIZE:
             raise ValueError('Max limit is {limit}'.format(limit=limit))
 
         return query[offset:offset + limit]
@@ -333,10 +333,10 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         NOTE: It is assumed that user_msgs is already chunked in an appropriate size.
         """
 
-        if len(user_msgs) > const.MAX_BULK_USER_NOTIFICATION_SIZE:
+        if len(user_msgs) > const.NOTIFICATION_BULK_PUBLISH_CHUNK_SIZE:
             msg = (
                 'You have passed in a user_msgs list of size {length} but the size '
-                'limit is {max}.'.format(length=len(user_msgs), max=const.MAX_BULK_USER_NOTIFICATION_SIZE)
+                'limit is {max}.'.format(length=len(user_msgs), max=const.NOTIFICATION_BULK_PUBLISH_CHUNK_SIZE)
             )
             raise BulkOperationTooLarge(msg)
 
@@ -344,4 +344,4 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         for user_msg in user_msgs:
             objs.append(SQLUserNotification.from_data_object(user_msg))
 
-        SQLUserNotification.objects.bulk_create(objs, batch_size=const.MAX_BULK_USER_NOTIFICATION_SIZE)
+        SQLUserNotification.objects.bulk_create(objs, batch_size=const.NOTIFICATION_BULK_PUBLISH_CHUNK_SIZE)

@@ -69,7 +69,7 @@ SOUTH_MIGRATION_MODULES = {
 }
 
 # to prevent run-away queries from happening
-MAX_NOTIFICATION_LIST_SIZE = 100
+NOTIFICATION_MAX_LIST_SIZE = 100
 
 # a mapping table which is used by the MsgTypeToUrlLinkResolver
 # to map a notification type to a statically defined URL path
