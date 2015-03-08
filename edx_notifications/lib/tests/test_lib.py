@@ -169,12 +169,12 @@ class TestPublisherLibrary(TestCase):
 
         # now send to more than our internal chunking size
         bulk_publish_notification_to_users(
-            [user_id for user_id in range(1, const.MAX_BULK_USER_NOTIFICATION_SIZE * 2 + 1)],
+            [user_id for user_id in range(1, const.NOTIFICATION_BULK_PUBLISH_CHUNK_SIZE * 2 + 1)],
             msg
         )
 
         # now read them all back
-        for user_id in range(1, const.MAX_BULK_USER_NOTIFICATION_SIZE * 2 + 1):
+        for user_id in range(1, const.NOTIFICATION_BULK_PUBLISH_CHUNK_SIZE * 2 + 1):
             notifications = get_notifications_for_user(user_id)
 
             self.assertTrue(isinstance(notifications, list))
@@ -197,8 +197,8 @@ class TestPublisherLibrary(TestCase):
             }
         )
 
-        user_ids = [user_id for user_id in range(1, const.MAX_BULK_USER_NOTIFICATION_SIZE * 2 + 1)]
-        exclude_user_ids = [user_id for user_id in range(1, const.MAX_BULK_USER_NOTIFICATION_SIZE * 2 + 1, 2)]
+        user_ids = [user_id for user_id in range(1, const.NOTIFICATION_BULK_PUBLISH_CHUNK_SIZE * 2 + 1)]
+        exclude_user_ids = [user_id for user_id in range(1, const.NOTIFICATION_BULK_PUBLISH_CHUNK_SIZE * 2 + 1, 2)]
 
         # now send to more than our internal chunking size
         bulk_publish_notification_to_users(
@@ -208,7 +208,7 @@ class TestPublisherLibrary(TestCase):
         )
 
         # now read them all back
-        for user_id in range(1, const.MAX_BULK_USER_NOTIFICATION_SIZE * 2 + 1):
+        for user_id in range(1, const.NOTIFICATION_BULK_PUBLISH_CHUNK_SIZE * 2 + 1):
             notifications = get_notifications_for_user(user_id)
 
             self.assertTrue(isinstance(notifications, list))
