@@ -103,7 +103,6 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
         # notification that has just been dispatched
         #
 
-
         #
         # Here is where we will tie into the Analytics pipeline
         #
