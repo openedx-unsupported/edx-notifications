@@ -10,19 +10,25 @@ from datetime import datetime, timedelta
 
 from importlib import import_module
 
+from django.dispatch import receiver
+
 from edx_notifications.stores.store import notification_store
 from edx_notifications import const
+
+from edx_notifications.signals import perform_notification_scan
 
 log = logging.getLogger(__name__)
 
 
-def poll_and_execute_timers():
+@receiver(perform_notification_scan)  # tie into the background_check management command execution
+def poll_and_execute_timers(**kwargs):  # pylint: disable=unused-argument
     """
     Will look in our registry of timers and see which should be executed now. It is not
     advised to call this method on any webservers that are serving HTTP traffic as
     this can take an arbitrary amount of time
     """
 
+    print 'here'
     log.info('Starting poll_and_execute_timers()...')
     store = notification_store()
 

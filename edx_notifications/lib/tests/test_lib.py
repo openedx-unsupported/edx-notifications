@@ -11,6 +11,7 @@ from edx_notifications.lib.publisher import (
     publish_notification_to_user,
     bulk_publish_notification_to_users,
     register_notification_type,
+    publish_notification_to_scope,
 )
 
 from edx_notifications.lib.consumer import (
@@ -33,6 +34,9 @@ from edx_notifications.exceptions import (
 from edx_notifications.renderers.renderer import (
     clear_renderers
 )
+
+from edx_notifications.scopes import register_user_scope_resolver
+from edx_notifications.tests.test_scopes import TestListScopeResolver
 
 
 class TestPublisherLibrary(TestCase):
@@ -283,6 +287,39 @@ class TestPublisherLibrary(TestCase):
         # now read them back
         for user in User.objects.all():
             notifications = get_notifications_for_user(user.id)
+
+            self.assertTrue(isinstance(notifications, list))
+            self.assertEqual(len(notifications), 1)
+            self.assertTrue(isinstance(notifications[0], UserNotification))
+
+    def test_publish_to_scope(self):
+        """
+        Make sure we can bulk publish to a number of users
+        passing in a resultset from a Django ORM query
+        """
+
+        register_user_scope_resolver("list_scope", TestListScopeResolver())
+
+        msg = NotificationMessage(
+            namespace='test-runner',
+            msg_type=self.msg_type,
+            payload={
+                'foo': 'bar'
+            }
+        )
+
+        publish_notification_to_scope(
+            scope_name="list_scope",
+            # the TestListScopeResolver expects a "range" property in the context
+            scope_context={"range": 5},
+            msg=msg
+        )
+
+        for user_id in range(4):
+            # have to fudge this a bit as the contract on user_id
+            # says > 0 only allowed
+            user_id = user_id + 1
+            notifications = get_notifications_for_user(user_id)
 
             self.assertTrue(isinstance(notifications, list))
             self.assertEqual(len(notifications), 1)

@@ -24,6 +24,7 @@ from edx_notifications.data import (
 from edx_notifications.renderers.renderer import (
     register_renderer
 )
+from edx_notifications.scopes import resolve_user_scope
 
 
 @contract(msg_type=NotificationType)
@@ -94,10 +95,6 @@ def publish_notification_to_user(user_id, msg):
 
     user_msg = channel.dispatch_notification_to_user(user_id, msg)
 
-    #
-    # Here is where we will tie into the Analytics pipeline
-    #
-
     return user_msg
 
 
@@ -149,11 +146,38 @@ def bulk_publish_notification_to_users(user_ids, msg, exclude_user_ids=None):
 
     num_sent = channel.bulk_dispatch_notification(user_ids, msg, exclude_user_ids=exclude_user_ids)
 
-    #
-    # Here is where we will tie into the Analytics pipeline
-    #
-
     return num_sent
+
+
+@contract(msg=NotificationMessage)
+def publish_notification_to_scope(scope_name, scope_context, msg, exclude_user_ids=None):
+    """
+    This top level API method will publish a notification
+    to a UserScope (potentially large). Basically this is a convenience method
+    which simple resolves the scope and then called into
+    bulk_publish_notifications_to_scope()
+
+    IMPORTANT: In general one will want to call into this method behind a
+    Celery task
+
+    For built in Scope Resolvers ('course_group', 'course_enrollments')
+
+        scope_context:
+            if scope='course_group' then context = {'course_id': xxxx, 'group_id': xxxxx}
+            if scope='course_enrollments' then context = {'course_id'}
+
+    """
+
+    user_ids = resolve_user_scope(scope_name, scope_context)
+
+    if not user_ids:
+        err_msg = (
+            'Could not find scope resolver named "{name}" with scope_context: {context}'
+        ).format(name=scope_name, context=scope_context)
+
+        raise TypeError(err_msg)
+
+    return bulk_publish_notification_to_users(user_ids, msg, exclude_user_ids)
 
 
 @contract(msg=NotificationMessage, send_at=datetime.datetime, scope_name=basestring, scope_context=dict)
