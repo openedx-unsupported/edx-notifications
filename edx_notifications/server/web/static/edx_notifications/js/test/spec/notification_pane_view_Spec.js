@@ -17,7 +17,6 @@ describe("NotificationPaneView", function(){
                                 '<li class="unread_notifications active"><a  href="#">View unread</a></li>' +
                                 '<li class="user_notifications_all"><a href="#">View all</a></li>' +
                                 '<li class="mark_notifications_read"><a href="#">Mark as read</a></li>' +
-                                '<li class="hide_pane"><a href="#">Hide</a></li>' +
                             '</ul>' +
                         '</div>' +
                         '<ul>' +
@@ -55,7 +54,6 @@ describe("NotificationPaneView", function(){
         this.all_notifications_target = $(".user_notifications_all");
         this.unread_notifications_target = $(".unread_notifications");
         this.mark_notifications_read_target = $(".mark_notifications_read");
-        this.hide_pane_target = $(".hide_pane");
     });
 
     afterEach(function() {
@@ -131,12 +129,4 @@ describe("NotificationPaneView", function(){
         this.mark_notifications_read_target.click();
         expect(this.notification_pane.selected_pane).toContain('unread');
     });
-
-    it("calls hidePane function on clicking .hide_pane", function(){
-        var hidePaneSpy = spyOn(this.notification_pane, 'hidePane');
-        this.notification_pane.delegateEvents();
-        this.hide_pane_target.click();
-        expect(hidePaneSpy).toHaveBeenCalled();
-    });
-
 });
