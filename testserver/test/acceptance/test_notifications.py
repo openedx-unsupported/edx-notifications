@@ -15,7 +15,7 @@ class TestAddNotifications(WebAppTest):
         'open-edx.lms.discussions.thread-followed': 'testuser is now following your discussion thread',
         'open-edx.lms.discussions.post-upvoted': 'testuser has upvoted your discussion thread',
         'open-edx.lms.discussions.cohorted-thread-added': 'testuser has added to a new posting to a private discussion',
-        'open-edx.lms.discussions.cohorted-comment-added': 'testuser has added to a new comment to a private discussion',
+        'open-edx.lms.discussions.cohorted-comment-added': 'testuser has added to a new comment',
         'open-edx.lms.discussions.comment-upvoted': 'testuser has upvoted your comment',
         'open-edx.lms.leaderboard.progress.rank-changed': 'You are now #2 in Progress in the cohort!',
         'open-edx.lms.leaderboard.gradebook.rank-changed': 'You are now #3 for Proficiency in the cohort!',
@@ -24,7 +24,8 @@ class TestAddNotifications(WebAppTest):
         'open-edx.xblock.group-project.uploads-due': 'First Activity: Uploads are due',
         'open-edx.xblock.group-project.reviews-open': 'First Activity: Review(s) are open',
         'open-edx.xblock.group-project.reviews-due': 'First Activity: Review(s) due',
-        'open-edx.xblock.group-project.grades-posted': 'First Activity: Grade(s) are posted'
+        'open-edx.xblock.group-project.grades-posted': 'First Activity: Grade(s) are posted',
+        'testserver.type1': 'Here is test notification'
     }
 
     notifications_container_tabs = ['View unread', 'View all', 'Mark as read', 'Hide']
@@ -149,7 +150,7 @@ class TestAddNotifications(WebAppTest):
         self.logged_in_home_page.hide_notification_container()
         self.logged_in_home_page.verify_notifications_container_is_invisible()
         for key, value in self.notification_dict.iteritems():
-            self.assertTrue(self.logged_in_home_page.select_notification_type(key))
+            self.logged_in_home_page.select_notification_type(key)
             self.logged_in_home_page.add_notification()
             self.logged_in_home_page.show_notifications_container()
             self.logged_in_home_page.verify_notifications_container_is_visible()
@@ -175,7 +176,7 @@ class TestAddNotifications(WebAppTest):
         self.logged_in_home_page.hide_notification_container()
         self.logged_in_home_page.verify_notifications_container_is_invisible()
         for key, value in self.notification_dict.iteritems():
-            self.assertTrue(self.logged_in_home_page.select_notification_type(key))
+            self.logged_in_home_page.select_notification_type(key)
             self.logged_in_home_page.add_notification()
             self.logged_in_home_page.show_notifications_container()
             self.logged_in_home_page.verify_notifications_container_is_visible()
@@ -199,7 +200,7 @@ class TestAddNotifications(WebAppTest):
         """
         self.login()
         for key, value in self.notification_dict.iteritems():
-            self.assertTrue(self.logged_in_home_page.select_notification_type(key))
+            self.logged_in_home_page.select_notification_type(key)
             self.logged_in_home_page.add_notification()
             self.logged_in_home_page.show_notifications_container()
             self.logged_in_home_page.verify_notifications_container_is_visible()
@@ -221,7 +222,7 @@ class TestAddNotifications(WebAppTest):
         """
         self.login()
         for key, value in self.notification_dict.iteritems():
-            self.assertTrue(self.logged_in_home_page.select_notification_type(key))
+            self.logged_in_home_page.select_notification_type(key)
             self.logged_in_home_page.add_notification()
             self.logged_in_home_page.show_notifications_container()
             self.logged_in_home_page.verify_notifications_container_is_visible()
@@ -243,7 +244,7 @@ class TestAddNotifications(WebAppTest):
         """
         self.login()
         for key, value in self.notification_dict.iteritems():
-            self.assertTrue(self.logged_in_home_page.select_notification_type(key))
+            self.logged_in_home_page.select_notification_type(key)
             self.logged_in_home_page.add_notification()
         self.logged_in_home_page.show_notifications_container()
         self.logged_in_home_page.verify_notifications_container_is_visible()
@@ -265,46 +266,82 @@ class TestAddNotifications(WebAppTest):
         And the resulting page url should be same as click link
         """
         for key, value in self.notification_dict.iteritems():
-            self.login()
-            self.assertTrue(self.logged_in_home_page.select_notification_type(key))
-            self.logged_in_home_page.add_notification()
-            self.logged_in_home_page.show_notifications_container()
-            self.logged_in_home_page.verify_notifications_container_is_visible()
-            notification_link = self.logged_in_home_page.click_on_notification()
-            self.notification_target_page.verify_target_page_url(notification_link)
-            self.browser.back()
-            self.logged_in_home_page.log_out()
+            if key != 'testserver.type1':
+                self.login()
+                self.logged_in_home_page.select_notification_type(key)
+                self.logged_in_home_page.add_notification()
+                self.logged_in_home_page.show_notifications_container()
+                self.logged_in_home_page.verify_notifications_container_is_visible()
+                notification_link = self.logged_in_home_page.click_on_notification()
+                self.notification_target_page.verify_target_page_url(notification_link)
+                self.browser.back()
+                self.logged_in_home_page.log_out()
 
-    def test_12_verify_on_clicking_notification_its_status_changes_to_read(self):
+    def test_12_verify_page_refresh_on_clicking_notifications_without_target_link(self):
         """
-        Scenario: When user clicks on any notification, it should redirect user to a specific page
+        Scenario: When user clicks on any notification without target link, it should just refresh
+        the page
         Given that I am on the notification home page
         And there are some notifications present
         When I click on any notification
-        Then it should redirect me to a specific page
-        And the resulting page url should be same as click link
+        Then it should just refresh the page
+        """
+        self.login()
+        self.logged_in_home_page.select_notification_type('testserver.type1')
+        self.logged_in_home_page.add_notification()
+        self.logged_in_home_page.show_notifications_container()
+        self.logged_in_home_page.verify_notifications_container_is_visible()
+        notification_link = self.logged_in_home_page.click_on_notification()
+        self.assertTrue(notification_link == 'No target link')
+
+    def test_13_verify_on_clicking_notification_its_status_changes_to_read(self):
+        """
+        Scenario: When user clicks on any unread notification, it should change
+        it's status to read
+        When I click on any unread notification
+        Then it's status should change to unread
         """
         self.login()
         self.logged_in_home_page.add_notification()
         self.logged_in_home_page.show_notifications_container()
         self.logged_in_home_page.verify_notifications_container_is_visible()
-        notification_count = self.logged_in_home_page.return_unread_notifications_count()
+        unread_notification_count = self.logged_in_home_page.return_unread_notifications_count()
         self.logged_in_home_page.click_on_notification()
         self.browser.back()
         self.logged_in_home_page.log_out()
         self.login()
         self.logged_in_home_page.show_notifications_container()
         self.logged_in_home_page.verify_notifications_container_is_visible()
-        new_notification_count = self.logged_in_home_page.get_notifications_count()
-        self.assertTrue(new_notification_count == notification_count - 1)
+        new_unread_notification_count = self.logged_in_home_page.get_notifications_count()
+        self.assertTrue(new_unread_notification_count == unread_notification_count - 1)
 
-    def test_13_verify_notification_count_decrease_on_clicking_notification(self):
+    def test_14_verify_on_clicking_notification_without_target_link_its_status_changes_to_read(self):
+        """
+        Scenario: When user clicks on any unread notification, it should change
+        it's status to read
+        When I click on any unread notification
+        Then it's status should change to unread
+        """
+        self.login()
+        self.logged_in_home_page.select_notification_type('testserver.type1')
+        self.logged_in_home_page.add_notification()
+        self.logged_in_home_page.show_notifications_container()
+        self.logged_in_home_page.verify_notifications_container_is_visible()
+        unread_notification_count = self.logged_in_home_page.return_unread_notifications_count()
+        self.logged_in_home_page.click_on_notification()
+        self.logged_in_home_page.hide_notification_container()
+        self.logged_in_home_page.show_notifications_container()
+        self.logged_in_home_page.verify_notifications_container_is_visible()
+        new_unread_notification_count = self.logged_in_home_page.return_unread_notifications_count()
+        self.assertTrue(new_unread_notification_count == unread_notification_count - 1)
+
+    def test_15_verify_notification_count_decrease_on_clicking_notification(self):
         """
         Scenario: When user clicks on any notification, the notification count should decrease
         by 1
         Given that I am on the notification home page
         And there are some notifications present
-        When I click on any notification
+        When I click on any unread notification
         Then it the main notification count should be decreased by 1
         """
         self.login()
@@ -316,6 +353,25 @@ class TestAddNotifications(WebAppTest):
         self.browser.back()
         self.logged_in_home_page.log_out()
         self.login()
+        new_notification_count = self.logged_in_home_page.get_notifications_count()
+        self.assertTrue(new_notification_count == notification_count - 1)
+
+    def test_16_verify_notification_count_decreases_on_clicking_notification_without_target_link(self):
+        """
+        Scenario: When user clicks on any notification, the notification count should decrease
+        by 1
+        Given that I am on the notification home page
+        And there are some notifications present
+        When I click on any unread notification
+        Then it the main notification count should be decreased by 1
+        """
+        self.login()
+        self.logged_in_home_page.select_notification_type('testserver.type1')
+        self.logged_in_home_page.add_notification()
+        self.logged_in_home_page.show_notifications_container()
+        self.logged_in_home_page.verify_notifications_container_is_visible()
+        notification_count = self.logged_in_home_page.get_notifications_count()
+        self.logged_in_home_page.click_on_notification()
         new_notification_count = self.logged_in_home_page.get_notifications_count()
         self.assertTrue(new_notification_count == notification_count - 1)
 

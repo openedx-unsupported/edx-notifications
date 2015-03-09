@@ -26,7 +26,10 @@ class LoggedInHomePage(PageObject):
         """
         self.wait_for_element_visibility('select[name="notification_type"]', 'Notification type drop down not found')
         self.q(css='select[name="notification_type"] option[value="{}"]'.format(notification_type)).first.click()
-        return self.q(css='select[name="notification_type"] option[value="{}"]'.format(notification_type)).selected
+        EmptyPromise(
+            lambda: self.q(css='select[name="notification_type"] option[value="{}"]'.format(notification_type)).selected
+            , "selected notification type is not correct"
+        ).fulfill()
 
     def add_notification(self):
         """
@@ -160,13 +163,14 @@ class LoggedInHomePage(PageObject):
         self.wait_for_element_visibility('.edx-notifications-content>ul>li>p', 'list not found')
         notification_link = self.q(css='.edx-notifications-content>ul>li>p>span').first.attrs('data-click-link')
         self.q(css='.edx-notifications-content>ul>li>p>span').first.click()
-        NotificationTargetPage(self.browser).wait_for_page()
-        return notification_link[0]
+        if notification_link[0] != "":
+            NotificationTargetPage(self.browser).wait_for_page()
+            return notification_link[0]
+        else:
+            self.wait_for_ajax()
+            return "No target link"
 
     def log_out(self):
         self.wait_for_element_visibility('a[href="/logout/"]', 'logout link not found')
         self.q(css='a[href="/logout/"]').click()
         LoggedOut(self.browser).wait_for_page()
-
-
-
