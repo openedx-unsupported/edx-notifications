@@ -308,6 +308,9 @@ class NotificationCallbackTimer(BaseDataObject):
     # any unhandled messages associated with the callback
     err_msg = StringField()
 
+    # any stats the the callback handler returned
+    results = DictField()
+
     # timestamps
     created = DateTimeField()
     modified = DateTimeField()

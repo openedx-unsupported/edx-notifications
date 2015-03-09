@@ -43,6 +43,18 @@ class NullNotificationCallbackTimerHandler(NotificationCallbackTimerHandler):
         return {}
 
 
+class ExceptionNotificationCallbackTimerHandler(NotificationCallbackTimerHandler):
+    """
+    Raises an exception when called
+    """
+
+    def notification_timer_callback(self, timer):
+        """
+        Raise exception
+        """
+        raise Exception('This did not work!')
+
+
 class TimerTests(TestCase):
     """
     Test cases for timer.py
@@ -130,6 +142,28 @@ class TimerTests(TestCase):
         self.assertIsNotNone(updated_timer.executed_at)
         self.assertIsNotNone(updated_timer.err_msg)
 
+    def test_error_in_execution(self):
+        """
+        Make sure recurring timers work
+        """
+
+        timer = NotificationCallbackTimer(
+            name='foo',
+            class_name='edx_notifications.tests.test_timer.ExceptionNotificationCallbackTimerHandler',
+            callback_at=datetime.now(pytz.UTC) - timedelta(days=1),
+            context={},
+            is_active=True
+        )
+
+        self.store.save_notification_timer(timer)
+
+        poll_and_execute_timers()
+
+        updated_timer = self.store.get_notification_timer(timer.name)
+
+        self.assertIsNotNone(updated_timer.executed_at)
+        self.assertIsNotNone(updated_timer.err_msg)
+
 
 class TimedNotificationsTests(TestCase):
     """
@@ -182,9 +216,40 @@ class TimedNotificationsTests(TestCase):
 
         self.assertIsNotNone(updated_timer.executed_at)
         self.assertIsNone(updated_timer.err_msg)
+        self.assertIsNotNone(updated_timer.results)
 
         # assert we now have a notification due to the timer executing
         self.assertEquals(self.store.get_num_notifications_for_user(1), 1)
+
+    def test_erred_timed_notifications(self):
+        """
+        Tests that we can create a timed notification and make sure it gets
+        executed with the timer polling
+        """
+
+        # assert we start have with no notifications
+        self.assertEquals(self.store.get_num_notifications_for_user(1), 0)
+
+        # set up a timer that is due in the past
+        timer = publish_timed_notification(
+            msg=self.msg,
+            send_at=datetime.now(pytz.UTC) - timedelta(seconds=1),
+            scope_name='user',
+            scope_context={}  # missing user_id
+        )
+
+        poll_and_execute_timers()
+
+        # fetch the timer from the DB as it should be updated
+        updated_timer = self.store.get_notification_timer(timer.name)
+
+        self.assertIsNotNone(updated_timer.executed_at)
+        self.assertIsNotNone(updated_timer.err_msg)
+        self.assertIsNotNone(updated_timer.results)
+        self.assertIsNotNone(updated_timer.results['errors'])
+
+        # should be no notifications
+        self.assertEquals(self.store.get_num_notifications_for_user(1), 0)
 
     def test_timed_broadcast(self):
         """

@@ -253,6 +253,7 @@ class SQLNotificationCallbackTimer(TimeStampedModel):
     periodicity_min = models.IntegerField(null=True)
     executed_at = models.DateTimeField(null=True)
     err_msg = models.TextField(null=True)
+    results = models.TextField(null=True)
 
     def to_data_object(self, options=None):  # pylint: disable=unused-argument
         """
@@ -269,7 +270,8 @@ class SQLNotificationCallbackTimer(TimeStampedModel):
             executed_at=self.executed_at,
             err_msg=self.err_msg,
             created=self.created,
-            modified=self.modified
+            modified=self.modified,
+            results=DictField.from_json(self.results)
         )
 
     @classmethod
@@ -295,3 +297,4 @@ class SQLNotificationCallbackTimer(TimeStampedModel):
         self.periodicity_min = notification_timer.periodicity_min
         self.executed_at = notification_timer.executed_at
         self.err_msg = notification_timer.err_msg
+        self.results = DictField.to_json(notification_timer.results)

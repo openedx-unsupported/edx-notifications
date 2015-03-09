@@ -5,6 +5,7 @@ a callback when the timer expires
 
 import logging
 import pytz
+import copy
 from datetime import datetime, timedelta
 
 from importlib import import_module
@@ -41,6 +42,10 @@ def poll_and_execute_timers():
             handler = class_()
 
             results = handler.notification_timer_callback(timer)
+
+            # store a copy of the results in the database record
+            # for the timer
+            timer.results = copy.deepcopy(results)
 
             if not results.get('errors'):
                 # successful, see if we should reschedule

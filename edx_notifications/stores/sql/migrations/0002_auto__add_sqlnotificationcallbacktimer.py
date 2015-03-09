@@ -20,6 +20,7 @@ class Migration(SchemaMigration):
             ('periodicity_min', self.gf('django.db.models.fields.IntegerField')(null=True)),
             ('executed_at', self.gf('django.db.models.fields.DateTimeField')(null=True)),
             ('err_msg', self.gf('django.db.models.fields.TextField')(null=True)),
+            ('results', self.gf('django.db.models.fields.TextField')(null=True)),
         ))
         db.send_create_signal('edx_notifications', ['SQLNotificationCallbackTimer'])
 
@@ -41,7 +42,8 @@ class Migration(SchemaMigration):
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True', 'db_index': 'True'}),
             'modified': ('model_utils.fields.AutoLastModifiedField', [], {'default': 'datetime.datetime.now'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'primary_key': 'True'}),
-            'periodicity_min': ('django.db.models.fields.IntegerField', [], {'null': 'True'})
+            'periodicity_min': ('django.db.models.fields.IntegerField', [], {'null': 'True'}),
+            'results': ('django.db.models.fields.TextField', [], {'null': 'True'})
         },
         'edx_notifications.sqlnotificationchannel': {
             'Meta': {'object_name': 'SQLNotificationChannel', 'db_table': "'edx_notifications_notificationchannel'"},
