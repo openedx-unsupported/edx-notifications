@@ -43,7 +43,6 @@ page that is using this widget
                 <% } else { %>
                 <% _.each(grouped_user_notifications, function(grouped_user_notification){ %>
                     <h3 class="borderB padB5 uppercase bold marB10"><%= grouped_user_notification.group_title %></h3>
-                    <h3 class="marT0"><a href="">Welcome to <%= global_variables.app_name %></a></h3>
                     <% _.each(grouped_user_notification.messages, function(message){ %>
                         <li class="marB10 padB5 borderB">
                             <div class="date">
