@@ -5,6 +5,7 @@ from pages.registration_page import RegistrationPage, RegistrationSuccess
 from pages.login_page import LoginPage
 from pages.logged_in_home_page import LoggedInHomePage
 from pages.notification_target_page import NotificationTargetPage
+from unittest import skip
 
 
 class TestAddNotifications(WebAppTest):
@@ -28,7 +29,7 @@ class TestAddNotifications(WebAppTest):
         'testserver.type1': 'Here is test notification'
     }
 
-    notifications_container_tabs = ['View unread', 'View all', 'Mark as read', 'Hide']
+    notifications_container_tabs = ['View unread', 'View all', 'Mark as read']
 
     def setUp(self):
         """
@@ -72,22 +73,7 @@ class TestAddNotifications(WebAppTest):
         self.logged_in_home_page.hide_notification_container()
         self.logged_in_home_page.verify_notifications_container_is_invisible()
 
-    def test_02_hide_notifications_container_by_clicking_hide_tab(self):
-        """
-        Scenario: User is able to hide the notification container
-        Given that I am on the notification home page
-        And notifications container is visible
-        When I click on the hide tab
-        Then notification container should hide
-        """
-        self.login()
-        self.logged_in_home_page.verify_notifications_container_is_invisible()
-        self.logged_in_home_page.show_notifications_container()
-        self.logged_in_home_page.verify_notifications_container_is_visible()
-        self.logged_in_home_page.hide_notification_container()
-        self.logged_in_home_page.verify_notifications_container_is_invisible()
-
-    def test_03_hide_notifications_container_by_clicking_notification_icon_again(self):
+    def test_03_hide_notifications_container(self):
         """
         Scenario: User is able to hide the notification container
         Given that I am on the notification home page
@@ -99,9 +85,10 @@ class TestAddNotifications(WebAppTest):
         self.logged_in_home_page.verify_notifications_container_is_invisible()
         self.logged_in_home_page.show_notifications_container()
         self.logged_in_home_page.verify_notifications_container_is_visible()
-        self.logged_in_home_page.click_notification_icon_again()
+        self.logged_in_home_page.hide_notification_container()
         self.logged_in_home_page.verify_notifications_container_is_invisible()
 
+    @skip('this test will become valid once hide tab is removed from code')
     def test_04_verify_tabs_in_notifications_container(self):
         """
         Scenario: User is able to view 4 tabs namely view unread, view all, Mark as read and hide
@@ -117,7 +104,7 @@ class TestAddNotifications(WebAppTest):
         self.logged_in_home_page.show_notifications_container()
         self.logged_in_home_page.verify_notifications_container_is_visible()
         fetched_notifications_container_tabs = self.logged_in_home_page.return_notifications_container_tabs()
-        self.assertEqual(fetched_notifications_container_tabs, self.notifications_container_tabs)
+        self.assertAlmostEqual(fetched_notifications_container_tabs, self.notifications_container_tabs)
 
     def test_05_verify_default_tab_selection(self):
         """

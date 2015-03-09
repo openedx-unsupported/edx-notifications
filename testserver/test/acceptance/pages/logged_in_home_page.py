@@ -70,7 +70,7 @@ class LoggedInHomePage(PageObject):
         self.q(css='.edx-notifications-icon[src="/static/edx_notifications/img/notification_icon.jpg"]').click()
         self.wait_for_ajax()
 
-    def click_notification_icon_again(self):
+    def hide_notification_container(self):
         """
         Clicks on notification icon again to hide notification container
         """
@@ -82,12 +82,6 @@ class LoggedInHomePage(PageObject):
         Verify that notification container is visible
         """
         self.wait_for_element_visibility('.edx-notifications-container', 'Notification container is not visible')
-
-    def hide_notification_container(self):
-        """
-        Click the Hide tab to hide the notification container
-        """
-        self.q(css='.edx-notifications-container .hide_pane>a').click()
 
     def return_notifications_container_tabs(self):
         """
