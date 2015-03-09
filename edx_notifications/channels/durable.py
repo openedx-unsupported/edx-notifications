@@ -96,10 +96,16 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
 
         _user_msg = store.save_user_notification(user_msg)
 
+        #
         # When we support in-broswer push notifications
         # such as Comet/WebSockets, this is where we should
         # signal the client to come fetch the
-        # notification
+        # notification that has just been dispatched
+        #
+
+        #
+        # Here is where we will tie into the Analytics pipeline
+        #
 
         return _user_msg
 

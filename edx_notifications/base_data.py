@@ -137,6 +137,14 @@ class IntegerField(TypedField):
     _expected_types = [int, long]
 
 
+class BooleanField(TypedField):
+    """
+    Specialized subclass of TypedField(bool) as a convienence
+    """
+
+    _expected_types = [bool]
+
+
 class DictField(TypedField):
     """
     Specialized subclass of TypedField(dict) as a convienence

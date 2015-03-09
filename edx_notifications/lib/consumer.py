@@ -2,6 +2,10 @@
 All in-proc API endpoints for acting as a Notifications Consumer
 NOTE that we can only query for notifications that are "durable", i.e.
 persisted in our database
+
+IMPORTANT: All methods exposed here will also be exposed in as a
+xBlock runtime service named 'notifications'. Be aware that adding
+any new methods here will also be exposed to xBlocks!!!!
 """
 
 import pytz

@@ -191,3 +191,28 @@ class BaseNotificationStoreProvider(object):
         Marks all notifications for user (with any filtering criteria) as read
         """
         raise NotImplementedError()
+
+    @abc.abstractmethod
+    def save_notification_timer(self, timer):
+        """
+        Will save (create or update) a NotificationCallbackTimer in the
+        StorageProvider
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_notification_timer(self, name):
+        """
+        Will return a single NotificationCallbackTimer
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_all_active_timers(self, until_time=None, include_executed=False):
+        """
+        Will return all active timers that are expired.
+
+        If until_time is not passed in, then we will use our
+        current system time
+        """
+        raise NotImplementedError()

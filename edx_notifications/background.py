@@ -2,12 +2,11 @@
 All code to support background Notification triggers
 """
 
-from django.dispatch import Signal
+from edx_notifications.signals import perform_notification_scan
 
-
-# Signal to all receivers that they should go through and perform any checks
-# as to conditions when
-perform_notification_scan = Signal(providing_args=[])  # pylint: disable=invalid-name
+# import edx_notifications.timer because it will register a signal receiver
+# and if that Python module is not loaded, it will not be hooked up
+import edx_notifications.timer  # pylint: disable=unused-import
 
 
 def fire_background_notification_check():

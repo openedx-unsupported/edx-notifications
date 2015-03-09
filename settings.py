@@ -1,6 +1,7 @@
 """
 Django settings file for local development purposes
 """
+import sys
 
 DEBUG=True
 TEST_MODE=True
