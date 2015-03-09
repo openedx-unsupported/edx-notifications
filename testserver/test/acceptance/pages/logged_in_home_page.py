@@ -80,7 +80,7 @@ class LoggedInHomePage(PageObject):
         """
         Click the Hide tab to hide the notification container
         """
-        self.q(css='.edx-notifications-container .hide_pane>a').click()
+        self.q(css='.edx-notifications-container .edx-notifications-icon').click()
 
     def return_notifications_container_tabs(self):
         """
