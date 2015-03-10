@@ -46,7 +46,7 @@ page that is using this widget
                         <li class="marB10 padB5 borderB">
                             <% if (selected_pane == 'unread') { %>
                             <div class="date">
-                                <% if (Date.equals(new Date(message.msg.created).clearTime(), Date.today())) { %>
+                                <% if ((new Date(message.msg.created).clearTime()) === Date.today()) { %>
                                     Today at <%= new Date(message.msg.created).toString("h:mmtt") %>
                                 <%} else {%>
                                     <%= new Date(message.msg.created).toString("MMMM dd, yyyy") %> at <%= new Date(message.msg.created).toString("h:mmtt") %>
