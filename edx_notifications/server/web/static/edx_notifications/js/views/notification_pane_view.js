@@ -138,15 +138,16 @@ var NotificationPaneView = Backbone.View.extend({
         var grouped_user_notifications = [];
 
         if (this.selected_pane == 'unread') {
-            notification_group_renderings = this.get_notification_group_renderings('type');
+            notification_group_renderings = this.render_notifications_by_type();
         } else {
-            notification_group_renderings = this.get_notification_group_renderings('date');
+            notification_group_renderings = this.render_notifications_by_day();
         }
 
         /* now render template with our model */
         var _html = this.template({
             global_variables: this.global_variables,
-            grouped_user_notifications: notification_group_renderings
+            grouped_user_notifications: notification_group_renderings,
+            selected_pane: this.selected_pane
         });
 
         this.$el.html(_html);
@@ -156,95 +157,224 @@ var NotificationPaneView = Backbone.View.extend({
         var class_to_activate = (this.selected_pane == 'unread') ? 'unread_notifications' : 'user_notifications_all';
         this.$el.find('.'+class_to_activate).addClass('active');
     },
-    get_notification_group_renderings: function(group_by) {
+    /* this describes how we want to group together notification types into visual groups */
+    grouping_config: {
+        /* this will ultimately be served up by the server */
+        groups: {
+            'announcements': {
+                name: 'announcements',
+                display_name: 'Announcements',
+                group_order: 1
+            },
+            'group_work': {
+                name: 'group_work',
+                display_name: 'Group Work',
+                group_order: 2
+            },
+            'leaderboards': {
+                name: 'leaderboards',
+                display_name: 'Leaderboards',
+                group_order: 3
+            },
+            'discussions': {
+                name: 'discussions',
+                display_name: 'Discussion',
+                group_order: 4
+            },
+            '_default': {
+                name: '_default',
+                display_name: 'Other',
+                group_order: 5
+            }
+        },
+        type_mapping: {
+            'open-edx.lms.discussions.cohorted-thread-added': 'group_work',
+            'open-edx.lms.discussions.cohorted-comment-added': 'group_work',
+            'open-edx.lms.discussions.*': 'discussions',
+            'open-edx.lms.leaderboard.*': 'leaderboards',
+            'open-edx.studio.announcements.*': 'announcements',
+            'open-edx.xblock.group-project.*': 'group_work',
+            '*': '_default'
+        }
+    },
+    get_group_name_for_msg_type: function(msg_type) {
+        /* see if there is an exact match */
+        if (msg_type in this.grouping_config.type_mapping) {
+            var group_name = this.grouping_config.type_mapping[msg_type];
+            if (group_name in this.grouping_config.groups) {
+                return group_name;
+            }
+        }
+
+        /* no exact match so lets look upwards for wildcards */
+        var search_type = msg_type;
+        var dot_index = search_type.lastIndexOf('.');
+        while (dot_index != -1 && search_type != '*') {
+            search_type = search_type.substring(0, dot_index);
+
+            var key = search_type + '.*';
+
+            if (key in this.grouping_config.type_mapping) {
+                var group_name = this.grouping_config.type_mapping[key];
+                if (group_name in this.grouping_config.groups) {
+                    return group_name;
+                }
+            }
+            dot_index = search_type.lastIndexOf('.');
+        }
+
+        /* look for global wildcard */
+        if ('*' in this.grouping_config.type_mapping) {
+            var key = '*';
+            var group_name = this.grouping_config.type_mapping[key];
+            if (group_name in this.grouping_config.groups) {
+                return group_name;
+            }
+        }
+
+        /* this really shouldn't happen. This means misconfiguration */
+        return null;
+    },
+    render_notifications_by_type: function() {
         var user_msgs = this.collection.toJSON();
         var grouped_data = {};
         var notification_groups = [];
-        if (group_by == 'type') {
-            // use Underscores built in group by function
-            grouped_data = _.groupBy(
-                user_msgs,
-                function(user_msg) {
-                    // group by msg_type name family
-                    var name = user_msg.msg.msg_type.name;
-                    name = name.substring(0, name.lastIndexOf("."));
-                    return name.substring(name.lastIndexOf(".")+1);
-                }
-            );
-        } else {
-            // use Underscores built in group by function
-            grouped_data = _.groupBy(
-                user_msgs,
-                function(user_msg) {
-                    // group by create date
-                    var date = user_msg.msg.created;
-                    return new Date(date).toString('MMMM dd, yyyy');
-                }
-            );
+        var group_orderings = null;
+        var self = this;
+
+        // use Underscores built in group by function
+        grouped_data = _.groupBy(
+            user_msgs,
+            function(user_msg) {
+                // group together according to the group rules in grouping_config
+                return self.get_group_name_for_msg_type(user_msg.msg.msg_type.name)
+            }
+        );
+
+        // then we want to order the groups according to the grouping_config
+        // so we can specify which groups go up at the top
+        group_orderings = _.sortBy(
+            this.grouping_config.groups,
+            function(group) {
+                return group.group_order;
+            }
+        );
+
+        // Now iterate over the groups and perform
+        // a sort by date (desc) inside each msg inside the group and also
+        // create a rendering of each message
+        _.each(group_orderings, function(group_ordering) {
+            var group_key = group_ordering.name;
+            if (group_key in grouped_data) {
+                notification_groups.push({
+                    // pull the header name from the grouping_config
+                    group_title: self.grouping_config.groups[group_key].display_name,
+                    messages: self.get_group_rendering(grouped_data[group_key])
+                });
+            }
+        });
+
+        return notification_groups;
+    },
+    render_notifications_by_day: function() {
+        var user_msgs = this.collection.toJSON();
+        var grouped_data = {};
+        var notification_groups = [];
+        var group_orderings = null;
+        var self = this;
+
+        // group by create date
+        grouped_data = _.groupBy(
+            user_msgs,
+            function(user_msg) {
+                var date = user_msg.msg.created;
+                // remove the time of day portion of our create time
+                // to group things by day
+                // NOTE what about timezone changes? We
+                // could clean things up post hydation?
+                return new Date(date).clearTime();
+            }
+        );
+
+        // now compute orderings
+        group_orderings = [];
+        for (key in grouped_data) {
+            group_orderings.push(key)
         }
 
         // Now iterate over the groups and perform
         // a sort by date (desc) inside each msg inside the group and also
         // create a rendering of each message
-        for (var group_key in grouped_data) {
-            if (grouped_data.hasOwnProperty(group_key)) {
-                var notification_group = {
-                    group_title: null,
-                    messages: []
-                };
+        _.each(group_orderings, function(group_key) {
+            if (group_key in grouped_data) {
+                var group_data = grouped_data[group_key];
 
-                // Then within each group we want to sort
-                // by create date, descending, so call reverse()
-                var sorted_data = _.sortBy(
-                    grouped_data[group_key],
-                    function(user_msg) {
-                        return user_msg.msg.created;
-                    }
-                ).reverse();
+                // on the by date grouping, also inject the 'type group' information
+                // on every notification
+                _.each(group_data, function(item){
+                    item.group_name = self.get_group_name_for_msg_type(item.msg.msg_type.name)
+                });
+                notification_groups.push({
+                    // pull the header name from the first time in the group
+                    // since they are all on the same day
+                    group_title: new Date(group_data[0].msg.created).toString('MMM dd, yyyy'),
+                    messages: self.get_group_rendering(group_data)
+                });
+            }
+        });
 
-                notification_group['group_title'] = group_key;
-                notification_group['messages'] = [];
+        return notification_groups;
+    },
+    get_group_rendering: function(group_data) {
 
-                // Loop through each msg in the current group
-                // and create a rendering of it
-                for (var j = 0; j < sorted_data.length; j++) {
-                    var user_msg = sorted_data[j];
-                    var msg = user_msg.msg;
-                    var renderer_class_name = msg.msg_type.renderer;
+        var renderings = [];
 
-                    // check to make sure we have the Underscore rendering
-                    // template loaded, if not, then skip it.
-                    var render_context = jQuery.extend(true, {}, msg.payload);
+        // Then within each group we want to sort
+        // by create date, descending, so call reverse()
+        var sorted_data = _.sortBy(
+            group_data,
+            function(user_msg) {
+                return user_msg.msg.created;
+            }
+        ).reverse();
 
-                    // pass in the selected_view in case the
-                    // Underscore templates will how different
-                    // renderings depending on which tab is selected
-                    render_context['selected_view'] = this.selected_pane;
+        // Loop through each msg in the current group
+        // and create a rendering of it
+        for (var j = 0; j < sorted_data.length; j++) {
+            var user_msg = sorted_data[j];
+            var msg = user_msg.msg;
+            var renderer_class_name = msg.msg_type.renderer;
 
-                    // also pass in the date the notification was created
-                    render_context['created'] = msg.created;
+            // check to make sure we have the Underscore rendering
+            // template loaded, if not, then skip it.
+            var render_context = jQuery.extend(true, {}, msg.payload);
 
-                    if (renderer_class_name in this.renderer_templates) {
-                        try {
-                            var notification_html = this.renderer_templates[renderer_class_name](render_context);
+            // pass in the selected_view in case the
+            // Underscore templates will how different
+            // renderings depending on which tab is selected
+            render_context['selected_view'] = this.selected_pane;
 
-                            notification_group['messages'].push({
-                                user_msg: user_msg,
-                                msg: msg,
-                                /* render the particular NotificationMessage */
-                                html: notification_html
-                            });
-                        } catch(err) {
-                            console.log('Could not render Notification type ' + msg.msg_type.name + ' with template ' + renderer_class_name + '. Error: "' + err + '". Skipping....')
-                        }
-                    }
+            // also pass in the date the notification was created
+            render_context['created'] = msg.created;
+
+            if (renderer_class_name in this.renderer_templates) {
+                try {
+                    var notification_html = this.renderer_templates[renderer_class_name](render_context);
+
+                    renderings.push({
+                        user_msg: user_msg,
+                        msg: msg,
+                        /* render the particular NotificationMessage */
+                        html: notification_html,
+                        group_name: this.get_group_name_for_msg_type(msg.msg_type.name)
+                    });
+                } catch(err) {
+                    console.log('Could not render Notification type ' + msg.msg_type.name + ' with template ' + renderer_class_name + '. Error: "' + err + '". Skipping....')
                 }
-
-                notification_groups.push(notification_group)
             }
         }
 
-        return notification_groups;
+        return renderings;
     },
     allUserNotificationsClicked: function(e) {
         // check if the event.currentTarget class has already been active or not

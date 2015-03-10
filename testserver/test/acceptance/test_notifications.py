@@ -26,7 +26,6 @@ class TestAddNotifications(WebAppTest):
         'open-edx.xblock.group-project.reviews-open': 'First Activity: Review(s) are open',
         'open-edx.xblock.group-project.reviews-due': 'First Activity: Review(s) due',
         'open-edx.xblock.group-project.grades-posted': 'First Activity: Grade(s) are posted',
-        'testserver.type1': 'Here is test notification'
     }
 
     notifications_container_tabs = ['View unread', 'View all', 'Mark as read']
@@ -191,7 +190,7 @@ class TestAddNotifications(WebAppTest):
             self.logged_in_home_page.add_notification()
             self.logged_in_home_page.show_notifications_container()
             self.logged_in_home_page.verify_notifications_container_is_visible()
-            unread_notification_list = self.logged_in_home_page.return_unread_notifications_list()
+            unread_notification_list = self.logged_in_home_page.return_notifications_list(key)
             self.logged_in_home_page.hide_notification_container()
             self.logged_in_home_page.verify_notifications_container_is_invisible()
             self.assertIn(value, unread_notification_list[0])
@@ -214,7 +213,7 @@ class TestAddNotifications(WebAppTest):
             self.logged_in_home_page.show_notifications_container()
             self.logged_in_home_page.verify_notifications_container_is_visible()
             self.logged_in_home_page.select_view_all_tab()
-            notification_list = self.logged_in_home_page.return_view_all_notifications_list()
+            notification_list = self.logged_in_home_page.return_notifications_list(key)
             self.logged_in_home_page.hide_notification_container()
             self.logged_in_home_page.verify_notifications_container_is_invisible()
             self.assertIn(value, notification_list[0])

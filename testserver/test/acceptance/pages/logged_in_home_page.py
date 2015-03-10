@@ -130,19 +130,24 @@ class LoggedInHomePage(PageObject):
                 return 0
         return notifications_count
 
-    def return_unread_notifications_list(self):
+    def return_notifications_list(self, key):
         """
         :return:List of all unread notifications
         """
+        group = ''
+        if 'announcements' in key:
+            group = 'announcements'
+        elif 'group-project' in key:
+            group = 'group_work'
+        elif 'discussions' in key:
+            if 'discussions.cohorted' in key:
+                group = 'group_work'
+            else:
+                group = 'discussions'
+        elif 'leaderboard' in key:
+            group = 'leaderboards'
         self.wait_for_element_visibility('.edx-notifications-content>ul>li>p', 'list not found')
-        return self.q(css='.edx-notifications-content>ul>li>p').text
-
-    def return_view_all_notifications_list(self):
-        """
-        :return:List of all notifications in view all tab
-        """
-        self.wait_for_element_visibility('.edx-notifications-content>ul>li>p', 'list not found')
-        return self.q(css='.edx-notifications-content>ul>li>p').text
+        return self.q(css='.edx-notifications-content>ul>li>p>span[class="' + group + '"]').text
 
     def mark_as_read(self):
         """
