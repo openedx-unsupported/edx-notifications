@@ -21,8 +21,8 @@ class LoggedInHomePage(PageObject):
     def select_notification_type(self, notification_type):
         """
         Gets notification type as parameter and select this notification type from drop down.
+        Also checks if the correct notification type is selected successfully
         :param notification_type:
-        :return:True if the correct notification type is selected successfully
         """
         self.wait_for_element_visibility('select[name="notification_type"]', 'Notification type drop down not found')
         self.q(css='select[name="notification_type"] option[value="{}"]'.format(notification_type)).first.click()
@@ -159,6 +159,11 @@ class LoggedInHomePage(PageObject):
         return self.q(css='.edx-notifications-content').text
 
     def click_on_notification(self):
+        """
+        Click on individual notification, if it contains a valid url, go to this
+        site and return url otherwise just return text "No target link"
+        :return:
+        """
         self.wait_for_element_visibility('.edx-notifications-content>ul>li>p', 'list not found')
         notification_link = self.q(css='.edx-notifications-content>ul>li>p>span').first.attrs('data-click-link')
         self.q(css='.edx-notifications-content>ul>li>p>span').first.click()
@@ -170,6 +175,29 @@ class LoggedInHomePage(PageObject):
             return "No target link"
 
     def log_out(self):
+        """
+        Click on the logout link
+        """
         self.wait_for_element_visibility('a[href="/logout/"]', 'logout link not found')
         self.q(css='a[href="/logout/"]').click()
         LoggedOut(self.browser).wait_for_page()
+
+    def set_namespace(self, namespace):
+        """
+        Select value of namespace from drop down and set the selected namespace,
+        check if it is set or not
+        :param namespace:
+        """
+        self.wait_for_element_visibility('select[name="namespace"]', 'Notification type drop down not found')
+        self.q(css='select[name="namespace"] option[value="{}"]'.format(namespace)).first.click()
+        EmptyPromise(
+            lambda: self.q(css='select[name="namespace"] option[value="{}"]'.format(namespace)).selected,
+            "selected notification type is not correct"
+        ).fulfill()
+        self.wait_for_element_visibility('input[name="change_namespace"]', 'button not found')
+        self.q(css='input[name="change_namespace"]').click()
+        self.wait_for_ajax()
+        EmptyPromise(
+            lambda: namespace in self.q(css='html>body>h2:nth-of-type(1)').text[0],
+            "name space is not changed"
+        ).fulfill()
