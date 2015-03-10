@@ -174,6 +174,7 @@ class TestAddNotifications(WebAppTest):
             self.assertEqual(final_notification_count, initial_notification_count + 1)
             initial_notification_count = final_notification_count
 
+    @skip('skip until notifications grouping functionality is implemented')
     def test_08_verify_unread_notifications_text(self):
         """
         Scenario: When user adds a new notification type, the relevant message for this notification type
@@ -196,6 +197,7 @@ class TestAddNotifications(WebAppTest):
             self.logged_in_home_page.verify_notifications_container_is_invisible()
             self.assertIn(value, unread_notification_list[0])
 
+    @skip('skip until notifications grouping functionality is implemented')
     def test_09_verify_view_all_notifications_text(self):
         """
         Scenario: When user adds a new notification type, the relevant message for this notification type
