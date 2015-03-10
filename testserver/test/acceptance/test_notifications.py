@@ -29,6 +29,7 @@ class TestAddNotifications(WebAppTest):
     }
 
     notifications_container_tabs = ['View unread', 'View all', 'Mark as read']
+    namespaces = ['foo/bar/baz', 'test/test/test']
 
     def setUp(self):
         """
@@ -135,7 +136,7 @@ class TestAddNotifications(WebAppTest):
         initial_unread_notification_count = self.logged_in_home_page.return_unread_notifications_count()
         self.logged_in_home_page.hide_notification_container()
         self.logged_in_home_page.verify_notifications_container_is_invisible()
-        for key, value in self.notification_dict.iteritems():
+        for key in self.notification_dict:
             self.logged_in_home_page.select_notification_type(key)
             self.logged_in_home_page.add_notification()
             self.logged_in_home_page.show_notifications_container()
@@ -161,7 +162,7 @@ class TestAddNotifications(WebAppTest):
         initial_notification_count = self.logged_in_home_page.return_view_all_notifications_count()
         self.logged_in_home_page.hide_notification_container()
         self.logged_in_home_page.verify_notifications_container_is_invisible()
-        for key, value in self.notification_dict.iteritems():
+        for key in self.notification_dict:
             self.logged_in_home_page.select_notification_type(key)
             self.logged_in_home_page.add_notification()
             self.logged_in_home_page.show_notifications_container()
@@ -173,6 +174,7 @@ class TestAddNotifications(WebAppTest):
             self.assertEqual(final_notification_count, initial_notification_count + 1)
             initial_notification_count = final_notification_count
 
+    @skip('skip until notifications grouping functionality is implemented')
     def test_08_verify_unread_notifications_text(self):
         """
         Scenario: When user adds a new notification type, the relevant message for this notification type
@@ -195,6 +197,7 @@ class TestAddNotifications(WebAppTest):
             self.logged_in_home_page.verify_notifications_container_is_invisible()
             self.assertIn(value, unread_notification_list[0])
 
+    @skip('skip until notifications grouping functionality is implemented')
     def test_09_verify_view_all_notifications_text(self):
         """
         Scenario: When user adds a new notification type, the relevant message for this notification type
@@ -229,13 +232,11 @@ class TestAddNotifications(WebAppTest):
         And notification count on panel should also become 0
         """
         self.login()
-        for key, value in self.notification_dict.iteritems():
-            self.logged_in_home_page.select_notification_type(key)
-            self.logged_in_home_page.add_notification()
+        self.logged_in_home_page.add_notification()
         self.logged_in_home_page.show_notifications_container()
         self.logged_in_home_page.verify_notifications_container_is_visible()
         unread_notification_count = self.logged_in_home_page.return_unread_notifications_count()
-        self.assertTrue(unread_notification_count > 1)
+        self.assertTrue(unread_notification_count > 0)
         self.logged_in_home_page.mark_as_read()
         unread_notification_count = self.logged_in_home_page.return_unread_notifications_count()
         self.assertTrue(unread_notification_count == 0)
@@ -251,7 +252,7 @@ class TestAddNotifications(WebAppTest):
         Then it should redirect me to a specific page
         And the resulting page url should be same as click link
         """
-        for key, value in self.notification_dict.iteritems():
+        for key in self.notification_dict:
             if key != 'testserver.type1':
                 self.login()
                 self.logged_in_home_page.select_notification_type(key)
@@ -360,6 +361,84 @@ class TestAddNotifications(WebAppTest):
         self.logged_in_home_page.click_on_notification()
         new_notification_count = self.logged_in_home_page.get_notifications_count()
         self.assertTrue(new_notification_count == notification_count - 1)
+
+    def test_17_adding_notifications_in_one_namespace_does_not_change_count_in_other(self):
+        """
+        Scenario: When user adds notification in first namespace, it does not change
+        notification count in 2nd namespace
+        Given that I am on the notification home page
+        And all name spaces have been initialized to 0 count
+        When I add notifications in any namespace
+        Then the notification count in other namespace remains unchanged
+        """
+        self.login()
+        for namespace in self.namespaces:
+            self.logged_in_home_page.set_namespace(namespace)
+            self.logged_in_home_page.show_notifications_container()
+            self.logged_in_home_page.verify_notifications_container_is_visible()
+            self.logged_in_home_page.mark_as_read()
+            display_notification_count = self.logged_in_home_page.get_notifications_count()
+            self.assertTrue(display_notification_count == 0)
+        self.logged_in_home_page.set_namespace(self.namespaces[0])
+        self.logged_in_home_page.add_notification()
+        notification_count_for_namespace_1 = self.logged_in_home_page.get_notifications_count()
+        self.assertTrue(notification_count_for_namespace_1 == 1)
+        self.logged_in_home_page.set_namespace(self.namespaces[1])
+        notification_count_for_namespace_2 = self.logged_in_home_page.get_notifications_count()
+        self.assertTrue(notification_count_for_namespace_2 == 0)
+
+    def test_18_adding_notifications_in_one_namespace_does_not_change_unread_count_in_other(self):
+        """
+        Scenario: When user adds notification in first namespace, it does not change
+        unread notification count in other namespace
+        Given that I am on the notification home page
+        And all name spaces have been initialized to 0 count
+        When I add notifications in any namespace
+        Then the unread notification count in other namespace remains unchanged
+        """
+        self.login()
+        for namespace in self.namespaces:
+            self.logged_in_home_page.set_namespace(namespace)
+            self.logged_in_home_page.show_notifications_container()
+            self.logged_in_home_page.verify_notifications_container_is_visible()
+            self.logged_in_home_page.mark_as_read()
+            display_notification_count = self.logged_in_home_page.get_notifications_count()
+            self.assertTrue(display_notification_count == 0)
+        self.logged_in_home_page.set_namespace(self.namespaces[1])
+        self.logged_in_home_page.add_notification()
+        self.logged_in_home_page.show_notifications_container()
+        self.logged_in_home_page.verify_notifications_container_is_visible()
+        unread_notification_count_for_namespace_2 = self.logged_in_home_page.return_unread_notifications_count()
+        self.assertTrue(unread_notification_count_for_namespace_2 == 1)
+        self.logged_in_home_page.set_namespace(self.namespaces[0])
+        self.logged_in_home_page.show_notifications_container()
+        self.logged_in_home_page.verify_notifications_container_is_visible()
+        unread_notification_count_for_namespace_1 = self.logged_in_home_page.return_unread_notifications_count()
+        self.assertTrue(unread_notification_count_for_namespace_1 == 0)
+
+    def test_19_marking_notifications_as_read_in_one_namespace_does_not_impact_other(self):
+        """
+        Scenario: When user marks notifications in first namespace as read, it does not change
+        notifications status in 2nd namespace
+        Given that I am on the notification home page
+        And all name spaces have some notifications
+        When I mark notifications as read in one name space
+        Then the notification status in other namespace remains unchanged
+        """
+        self.login()
+        for namespace in self.namespaces:
+            self.logged_in_home_page.set_namespace(namespace)
+            self.logged_in_home_page.add_notification()
+        self.logged_in_home_page.set_namespace(self.namespaces[0])
+        self.logged_in_home_page.show_notifications_container()
+        self.logged_in_home_page.verify_notifications_container_is_visible()
+        self.logged_in_home_page.mark_as_read()
+        notification_count_for_namespace_1 = self.logged_in_home_page.get_notifications_count()
+        self.assertTrue(notification_count_for_namespace_1 == 0)
+        self.logged_in_home_page.set_namespace(self.namespaces[1])
+        notification_count_for_namespace_2 = self.logged_in_home_page.get_notifications_count()
+        self.assertTrue(notification_count_for_namespace_2 > 0)
+
 
     def login(self):
         """
