@@ -25,7 +25,7 @@ page that is using this widget
 
 <script type="text/template" id="notification-pane-template">
     <div class="edx-notifications-container">
-        <div class="edx-notifications-content">
+        <div class="edx-notifications-content <%= selected_pane %>">
                 <h2>Notifications</h2>
                 <div class="actions">
                     <ul class="notifications_list_tab">
@@ -36,7 +36,7 @@ page that is using this widget
                     </ul>
                 </div>
             <ul>
-                <% if (typeof grouped_user_notifications == 'undefined' || grouped_user_notifications.length == 0) { %>
+                <% if (typeof grouped_user_notifications === 'undefined' || grouped_user_notifications.length == 0) { %>
                     <li>
                         <p class="description">You have no unread notifications.</p>
                     </li>
@@ -45,11 +45,13 @@ page that is using this widget
                     <h3 class="borderB padB5 uppercase bold marB10"><%= grouped_user_notification.group_title %></h3>
                     <% _.each(grouped_user_notification.messages, function(message){ %>
                         <li class="marB10 padB5 borderB">
+                            <% if (selected_pane == 'unread') { %>
                             <div class="date">
                                 <%= new Date(message.msg.created).toString('MMMM dd, yyyy') %>
                             </div>
+                            <% } %>
                             <p class="description">
-                                <span data-msg-id="<%= message.msg.id %>" data-click-link="<%=message.msg.payload['_click_link']%>"><%= message.html %></span>
+                                <span data-msg-id="<%= message.msg.id %>" data-click-link="<%=message.msg.payload['_click_link']%>" class='<%= message.group_name %>'><%= message.html %></span>
                             </p>
                         </li>
                     <% }); %>
