@@ -7,6 +7,7 @@ describe("NotificationPaneView", function(){
             '<img class="edx-notifications-icon" src="/static/edx_notifications/img/notification_icon.jpg" />' +
             '<span class="edx-notifications-count-number"></span>' +
             '</div>' +
+            '<div class="edx-notification-pane">' +
             '<script type="text/template" id="notification-pane-template">' +
             ' <div class="edx-notifications-container">' +
              '<div class="edx-notifications-content">' +
@@ -54,10 +55,10 @@ describe("NotificationPaneView", function(){
             count_el: $(".edx-notifications-count-number"),
             pane_el: $(".edx-notification-pane"),
             endpoints: {
-                unread_notification_count: "/unread/count",
+                unread_notification_count: "/unread/count/?read=False&unread=True",
                 mark_all_user_notifications_read: "/mark/as/read",
-                user_notifications_all:"/all/notifications",
-                user_notifications_unread_only: "/unread/notifications",
+                user_notifications_all:"/all/notifications/?read=True&unread=True",
+                user_notifications_unread_only: "unread/notifications/?read=False&unread=True",
                 renderer_templates_urls: "/renderer/templates",
                 user_notification_mark_read: "read/notifications"
             },
@@ -70,6 +71,7 @@ describe("NotificationPaneView", function(){
         this.unread_notifications_target = $(".unread_notifications");
         this.mark_notifications_read_target = $(".mark_notifications_read");
         this.notification_content_target = $(".edx-notifications-content>ul>li");
+        this.prevent_click_target = $(".edx-notifications-content");
     });
 
     afterEach(function() {
@@ -82,17 +84,21 @@ describe("NotificationPaneView", function(){
 
     it("successfully sets given urls in endpoint", function(){
         expect(this.notification_pane.mark_all_read_endpoint).toEqual('/mark/as/read');
-        expect(this.notification_pane.all_msgs_endpoint).toBe('/all/notifications');
-        expect(this.notification_pane.unread_msgs_endpoint).toBe('/unread/notifications');
+        expect(this.notification_pane.all_msgs_endpoint).toBe('/all/notifications/?read=True&unread=True');
+        expect(this.notification_pane.unread_msgs_endpoint).toBe('unread/notifications/?read=False&unread=True');
         expect(this.notification_pane.renderer_templates_url_endpoint).toEqual('/renderer/templates');
     });
 
     it("initializes collection_url with unread notification endpoints as default value", function(){
-        expect(this.notification_pane.collection.url).toEqual('/unread/notifications');
+        expect(this.notification_pane.collection.url).toEqual('unread/notifications/?read=False&unread=True');
     });
 
     it("initializes selected pane with unread notification as default value", function(){
         expect(this.notification_pane.selected_pane).toEqual('unread');
+    });
+
+    it("intilizes .edx-notifications-content htm", function(){
+        expect(this.notification_content_target.html()).toContain('You have no unread notifications')
     });
 
     it("calls allUserNotificationsClicked function on clicking .user_notifications_all", function(){
@@ -121,7 +127,7 @@ describe("NotificationPaneView", function(){
 
     it("sets collection url new value after calling unreadNotificationsClicked function", function(){
         this.unread_notifications_target.click();
-        expect(this.notification_pane.collection.url).toContain('/unread/notifications');
+        expect(this.notification_pane.collection.url).toContain('unread/notifications/?read=False&unread=True');
     });
 
     it("sets selected pane new value after calling unreadNotificationsClicked function", function(){
@@ -158,5 +164,16 @@ describe("NotificationPaneView", function(){
         expect(this.notification_pane.collection.url).toContain('read/notificationsundefined');
     });
 
+    it("sets notification_content_target.html calling visitNotification function", function(){
+        this.notification_content_target.click();
+        expect(this.notification_content_target.html()).toContain('You have no unread notifications')
+    });
+
+    it("calls preventHidingWhenClickedInside function on clicking .edx-notifications-content", function(){
+        var preventHidingWhenClickedInsideSpy = spyOn(this.notification_pane, 'preventHidingWhenClickedInside');
+        this.notification_pane.delegateEvents();
+        this.prevent_click_target.click();
+        expect(preventHidingWhenClickedInsideSpy).toHaveBeenCalled();
+    });
 
 });

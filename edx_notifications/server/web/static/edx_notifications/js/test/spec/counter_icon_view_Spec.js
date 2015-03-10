@@ -16,21 +16,24 @@ describe("CounterIconView", function(){
             count_el: $(".edx-notifications-count-number"),
             pane_el: $(".edx-notification-pane"),
             endpoints: {
-                unread_notification_count: "/unread/count",
+                unread_notification_count: "/unread/count/?read=False&unread=True",
                 mark_all_user_notifications_read: "mark/as/read",
-                user_notifications_all:"all/notifications",
-                user_notifications_unread_only: "unread/notifications",
+                user_notifications_all:"all/notifications/?read=True&unread=True",
+                user_notifications_unread_only: "unread/notifications/?read=False&unread=True",
                 renderer_templates_urls: "/renderer/templates"
             },
             global_variables: {
-                app_name: "none"
+                app_name: "mcka"
             },
             refresh_watcher: {
-                name: "none"
+                name: "none",
+                args: "refresh"
             },
             view_audios: {
-                notification_alert: "none"
-            }
+                notification_alert: "chirp"
+            },
+
+            namespace: "/foo/bar/baz"
         });
         this.counter_view.render();
     });
@@ -39,8 +42,25 @@ describe("CounterIconView", function(){
         this.server.restore();
     });
 
+    it("assigns value to namespace", function(){
+        expect(this.counter_view.namespace).toBe('/foo/bar/baz')
+    });
+
+    it("assigns value to audio", function(){
+        expect(this.counter_view.view_audios.notification_alert).toBe('chirp')
+    });
+
+    it("assigns value to global variables", function(){
+        expect(this.counter_view.global_variables.app_name).toBe('mcka')
+    });
+
+    it("assigns value to refresh watchers", function(){
+        expect(this.counter_view.refresh_watcher.args).toBe('refresh')
+    });
+
+
     it("assigns unread notifications count url as model url", function(){
-        expect(this.counter_view.model.url).toBe('/unread/count')
+        expect(this.counter_view.model.url).toBe('/unread/count/?read=False&unread=True&namespace=%2Ffoo%2Fbar%2Fbaz')
     });
 
     it("checks if emplate function is defined", function(){
@@ -48,7 +68,7 @@ describe("CounterIconView", function(){
     });
 
     it("returns unread_notification_count url in endpoint", function(){
-        expect(this.counter_view.endpoints.unread_notification_count).toEqual('/unread/count');
+        expect(this.counter_view.endpoints.unread_notification_count).toEqual('/unread/count/?read=False&unread=True');
     });
 
     it("returns mark_all_user_notifications_read url in endpoint", function(){
@@ -56,11 +76,11 @@ describe("CounterIconView", function(){
     });
 
     it("returns all_notifications url in endpoint", function(){
-        expect(this.counter_view.endpoints.user_notifications_all).toBe('all/notifications');
+        expect(this.counter_view.endpoints.user_notifications_all).toBe('all/notifications/?read=True&unread=True');
     });
 
     it("returns unread_notifications url in endpoint", function(){
-        expect(this.counter_view.endpoints.user_notifications_unread_only).toBe('unread/notifications');
+        expect(this.counter_view.endpoints.user_notifications_unread_only).toContain('unread/notifications/');
     });
 
     it("returns renderer_templates_urls in endpoints", function(){
@@ -71,6 +91,7 @@ describe("CounterIconView", function(){
         expect(this.counter_view.$el).toContain('.edx-notifications-icon')
     });
 
+
     it("calls showPane function on clicking notification icon", function(){
         var target = $(".edx-notifications-icon");
         var showPaneSpy = spyOn(this.counter_view, 'showPane');
@@ -78,4 +99,5 @@ describe("CounterIconView", function(){
         target.click();
         expect(showPaneSpy).toHaveBeenCalled();
     });
+
 });
