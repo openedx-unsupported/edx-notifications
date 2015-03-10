@@ -11,7 +11,7 @@ class NotificationTargetPage(PageObject):
         Return true if title contains the word page
         :return:
         """
-        return 'page' in self.browser.title
+        return 'error!!' not in self.browser.title
 
     def verify_target_page_url(self, target_link):
         """
