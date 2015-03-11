@@ -43,7 +43,7 @@ page that is using this widget
             <div class="list">
                 <ul class="notification-items">
                     <% if (typeof grouped_user_notifications == 'undefined' || grouped_user_notifications.length == 0) { %>
-                        <li>
+                        <li class='empty-list'>
                             <p class="description">You have no unread notifications.</p>
                         </li>
                     <% } else { %>
@@ -60,7 +60,7 @@ page that is using this widget
                                     <% } %>
                                 </div>
                                 <% } %>
-                                <p class="description">
+                                <p class="description body">
                                     <span data-msg-id="<%= message.msg.id %>" data-click-link="<%=message.msg.payload['_click_link']%>" class='<%= message.group_name %>'><%= message.html %></span>
                                 </p>
                             </li>

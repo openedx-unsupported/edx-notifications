@@ -115,10 +115,10 @@ class LoggedInHomePage(PageObject):
         If number of items is 1, check whether it is a message of empty list, if so return o
         :return:
         """
-        self.wait_for_element_visibility('.edx-notifications-content>ul>li>p', 'list not found')
-        unread_notifications_count = len(self.q(css='.edx-notifications-content>ul>li>p'))
-        if unread_notifications_count == 1:
-            check_text = self.q(css='.edx-notifications-content>ul>li>p').text[0]
+        self.wait_for_element_visibility('.notification-items', 'list not found')
+        unread_notifications_count = len(self.q(css='.notification-items .item'))
+        if unread_notifications_count == 0:
+            check_text = self.q(css='.notification-items .empty-list').text[0]
             if 'no unread notifications' in check_text:
                 return 0
         return unread_notifications_count
@@ -129,10 +129,10 @@ class LoggedInHomePage(PageObject):
         If number of items is 1, check whether it is a message of empty list, if so return o
         :return:
         """
-        self.wait_for_element_visibility('.edx-notifications-content>ul>li>p', 'list not found')
-        notifications_count = len(self.q(css='.edx-notifications-content>ul>li>p'))
-        if notifications_count == 1:
-            check_text = self.q(css='.edx-notifications-content>ul>li>p').text[0]
+        self.wait_for_element_visibility('.notification-items', 'list not found')
+        notifications_count = len(self.q(css='.notification-items .item'))
+        if notifications_count == 0:
+            check_text = self.q(css='.notification-items .empty-list').text[0]
             if 'no unread notifications' in check_text:
                 return 0
         return notifications_count
@@ -153,8 +153,8 @@ class LoggedInHomePage(PageObject):
                 group = 'discussions'
         elif 'leaderboard' in key:
             group = 'leaderboards'
-        self.wait_for_element_visibility('.edx-notifications-content>ul>li>p', 'list not found')
-        return self.q(css='.edx-notifications-content>ul>li>p>span[class="' + group + '"]').text
+        self.wait_for_element_visibility('.notification-items', 'list not found')
+        return self.q(css='.notification-items .item .body>span[class="' + group + '"]').text
 
     def mark_as_read(self):
         """
@@ -171,9 +171,9 @@ class LoggedInHomePage(PageObject):
         site and return url otherwise just return text "No target link"
         :return:
         """
-        self.wait_for_element_visibility('.edx-notifications-content>ul>li>p', 'list not found')
-        notification_link = self.q(css='.edx-notifications-content>ul>li>p>span').first.attrs('data-click-link')
-        self.q(css='.edx-notifications-content>ul>li>p>span').first.click()
+        self.wait_for_element_visibility('.notification-items', 'list not found')
+        notification_link = self.q(css='.notification-items .item .body>span').first.attrs('data-click-link')
+        self.q(css='.notification-items .item>p>span').first.click()
         if notification_link[0] != "":
             NotificationTargetPage(self.browser).wait_for_page()
             return notification_link[0]
