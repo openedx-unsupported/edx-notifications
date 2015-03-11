@@ -28,6 +28,9 @@ class RecursiveDictionary(dict):
         self.iter_rec_update(third.iteritems())
 
     def iter_rec_update(self, iterator):
+        """
+        Implements an iterator over the dictionary
+        """
         for (key, value) in iterator:
             if key in self and \
                isinstance(self[key], dict) and isinstance(value, dict):
