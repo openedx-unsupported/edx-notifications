@@ -77,6 +77,13 @@ class LoggedInHomePage(PageObject):
         self.wait_for_element_visibility('.edx-notifications-icon', 'Notification icon not found')
         self.q(css='.edx-notifications-icon[src="/static/edx_notifications/img/notification_icon.jpg"]').click()
 
+    def hide_notification_container_using_hide_link(self):
+        """
+        Clicks on hide link to hide notification container
+        """
+        self.wait_for_element_visibility('.hide_pane>a', 'Hide link not found')
+        self.q(css='.hide_pane>a').click()
+
     def verify_notifications_container_is_visible(self):
         """
         Verify that notification container is visible
