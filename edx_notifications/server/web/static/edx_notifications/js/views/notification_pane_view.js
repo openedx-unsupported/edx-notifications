@@ -64,7 +64,7 @@ var NotificationPaneView = Backbone.View.extend({
         'click .unread_notifications': 'unreadNotificationsClicked',
         'click .mark_notifications_read': 'markNotificationsRead',
         'click .hide_pane': 'hidePane',
-        'click .edx-notifications-content>ul>li': 'visitNotification',
+        'click .notification-items .item': 'visitNotification',
         'click': 'preventHidingWhenClickedInside'
     },
 

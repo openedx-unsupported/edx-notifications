@@ -25,7 +25,7 @@ page that is using this widget
 
 <script type="text/template" id="notification-pane-template">
     <div class="edx-notifications-container">
-        <div class="edx-notifications-content">
+        <div class="edx-notifications-content <%= selected_pane %>">
             <div class="fixed">
                 <h2>Notifications</h2>
                 <div class="actions">
@@ -40,33 +40,35 @@ page that is using this widget
                     </ul>
                 </div>
             </div>
-            <ul class="notification-items">
-                <% if (typeof grouped_user_notifications == 'undefined' || grouped_user_notifications.length == 0) { %>
-                    <li>
-                        <p class="description">You have no unread notifications.</p>
-                    </li>
-                <% } else { %>
-                <% _.each(grouped_user_notifications, function(grouped_user_notification){ %>
-                    <h3 class="borderB padB5 uppercase bold marB10 notifications-group"><%= grouped_user_notification.group_title %></h3>
-                    <% _.each(grouped_user_notification.messages, function(message){ %>
-                        <li class="marB10 padB5 borderB">
-                            <% if (selected_pane == 'unread') { %>
-                            <div class="date">
-                                <% if ((new Date(message.msg.created).clearTime()) === Date.today()) { %>
-                                    Today at <%= new Date(message.msg.created).toString("h:mmtt") %>
-                                <%} else {%>
-                                    <%= new Date(message.msg.created).toString("MMMM dd, yyyy") %> at <%= new Date(message.msg.created).toString("h:mmtt") %>
-                                <% } %>
-                            </div>
-                            <% } %>
-                            <p class="description">
-                                <span data-msg-id="<%= message.msg.id %>" data-click-link="<%=message.msg.payload['_click_link']%>" class='<%= message.group_name %>'><%= message.html %></span>
-                            </p>
+            <div class="list">
+                <ul class="notification-items">
+                    <% if (typeof grouped_user_notifications == 'undefined' || grouped_user_notifications.length == 0) { %>
+                        <li>
+                            <p class="description">You have no unread notifications.</p>
                         </li>
+                    <% } else { %>
+                    <% _.each(grouped_user_notifications, function(grouped_user_notification){ %>
+                        <h3 class="borderB padB5 uppercase bold marB10 notifications-group"><%= grouped_user_notification.group_title %></h3>
+                        <% _.each(grouped_user_notification.messages, function(message){ %>
+                            <li class="marB10 padB5 borderB item">
+                                <% if (selected_pane == 'unread') { %>
+                                <div class="date">
+                                    <% if (Date.equals(new Date(message.msg.created).clearTime(), Date.today())) { %>
+                                        Today at <%= new Date(message.msg.created).toString("h:mmtt") %>
+                                    <%} else {%>
+                                        <%= new Date(message.msg.created).toString("MMMM dd, yyyy") %> at <%= new Date(message.msg.created).toString("h:mmtt") %>
+                                    <% } %>
+                                </div>
+                                <% } %>
+                                <p class="description">
+                                    <span data-msg-id="<%= message.msg.id %>" data-click-link="<%=message.msg.payload['_click_link']%>" class='<%= message.group_name %>'><%= message.html %></span>
+                                </p>
+                            </li>
+                        <% }); %>
                     <% }); %>
-                <% }); %>
-                <% } %>
-            </ul>
+                    <% } %>
+                </ul>
+            </div>
         </div>
     </div>
 </script>
