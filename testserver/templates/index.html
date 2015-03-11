@@ -15,19 +15,6 @@
     <p>Welcome {{ user.username }} !!!</p>
     <a href="/logout/">Logout</a>
 
-    <h1>Notifications List</h1>
-
-    <div>
-        <img class="edx-notifications-icon" src="/static/edx_notifications/img/notification_icon.jpg" />
-        <span class='edx-notifications-count-number'></span>
-    </div>
-    <div class="edx-notification-pane"></div>
-
-    {# use the "drop-in" widget that is defined in edx_notifications/server/web/templates/django #}
-    {% include "django/notifications_widget.html" %}
-
-    <hr />
-
         <h2>CURRENT NAMESPACE: {{namespace}}<h2>
     <h3>Here are some actions you can take</h3>
     <form method='POST'>
@@ -49,5 +36,16 @@
         </select>
         <input type='submit' name='add_notifications' value='add a notification' />
     </form>
+
+    <hr />
+
+    <div>
+        <img class="xns-icon" src="/static/edx_notifications/img/notification_icon.jpg" />
+        <span class='xns-counter'></span>
+    </div>
+    <div class="xns-pane"></div>
+
+    {# use the "drop-in" widget that is defined in edx_notifications/server/web/templates/django #}
+    {% include "django/notifications_widget.html" %}
 </body>
 </html>

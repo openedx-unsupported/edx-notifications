@@ -94,6 +94,7 @@ def get_notifications_widget_context(override_context=None):
         },
         'global_variables': {
             'app_name': 'Your App Name Here',
+            'always_show_dates_on_unread': True,
         },
         'refresh_watchers': {
             'name': 'none',
@@ -108,6 +109,6 @@ def get_notifications_widget_context(override_context=None):
     })
 
     if override_context:
-        context.update(override_context)
+        context.update(RecursiveDictionary(override_context))
 
     return context

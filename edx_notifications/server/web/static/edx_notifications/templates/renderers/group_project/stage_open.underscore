@@ -1,0 +1,1 @@
+<span class='xns-title'><%= activity_name %></span>: <%= stage_name %> are <span class='xns-alert'>open</span>

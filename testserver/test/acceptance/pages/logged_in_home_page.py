@@ -38,10 +38,10 @@ class LoggedInHomePage(PageObject):
         initial_count = self.get_notifications_count()
         self.wait_for_element_visibility('input[name="add_notifications"]', 'Add notification button not found')
         self.q(css='input[name="add_notifications"]').click()
-        self.wait_for_element_visibility('.edx-notifications-count-number', 'Notification count not found')
+        self.wait_for_element_visibility('.xns-counter', 'Notification count not found')
         final_count = str(initial_count + 1)
         EmptyPromise(
-            lambda: self.q(css='.edx-notifications-count-number').text[0] == final_count,
+            lambda: self.q(css='.xns-counter').text[0] == final_count,
             'wait for count to increase'
         ).fulfill()
 
@@ -51,8 +51,8 @@ class LoggedInHomePage(PageObject):
         :return:
         """
         self.wait_for_ajax()
-        self.wait_for_element_visibility('.edx-notifications-count-number', 'Notification count not found')
-        count_text = self.q(css='.edx-notifications-count-number').text[0]
+        self.wait_for_element_visibility('.xns-counter', 'Notification count not found')
+        count_text = self.q(css='.xns-counter').text[0]
         # HTML will not contain a 0 if there are no unread messages
         return int(count_text if count_text else 0)
 
@@ -60,54 +60,54 @@ class LoggedInHomePage(PageObject):
         """
         Verify that notification container is not visible
         """
-        self.wait_for_element_invisibility('.edx-notifications-container', 'Notification container is visible')
+        self.wait_for_element_invisibility('.xns-container', 'Notification container is visible')
 
     def show_notifications_container(self):
         """
         Clicks on notification icon to display notification container
         """
-        self.wait_for_element_visibility('.edx-notifications-icon', 'Notification icon not found')
-        self.q(css='.edx-notifications-icon[src="/static/edx_notifications/img/notification_icon.jpg"]').click()
+        self.wait_for_element_visibility('.xns-icon', 'Notification icon not found')
+        self.q(css='.xns-icon[src="/static/edx_notifications/img/notification_icon.jpg"]').click()
         self.wait_for_ajax()
 
     def hide_notification_container(self):
         """
         Clicks on notification icon again to hide notification container
         """
-        self.wait_for_element_visibility('.edx-notifications-icon', 'Notification icon not found')
-        self.q(css='.edx-notifications-icon[src="/static/edx_notifications/img/notification_icon.jpg"]').click()
+        self.wait_for_element_visibility('.xns-icon', 'Notification icon not found')
+        self.q(css='.xns-icon[src="/static/edx_notifications/img/notification_icon.jpg"]').click()
 
     def hide_notification_container_using_hide_link(self):
         """
         Clicks on hide link to hide notification container
         """
-        self.wait_for_element_visibility('.hide_pane>a', 'Hide link not found')
-        self.q(css='.hide_pane>a').click()
+        self.wait_for_element_visibility('.xns-hide-pane>a', 'Hide link not found')
+        self.q(css='.xns-hide-pane>a').click()
 
     def verify_notifications_container_is_visible(self):
         """
         Verify that notification container is visible
         """
-        self.wait_for_element_visibility('.edx-notifications-container', 'Notification container is not visible')
+        self.wait_for_element_visibility('.xns-container', 'Notification container is not visible')
 
     def return_notifications_container_tabs(self):
         """
         :return: The text of all notification tabs
         """
-        return self.q(css='.edx-notifications-container .notifications_list_tab>li>a').text
+        return self.q(css='.xns-container .xns-tab-list>li>a').text
 
     def select_view_all_tab(self):
         """
         Click on view all tab
         """
-        self.q(css='.edx-notifications-content .user_notifications_all>a').click()
+        self.q(css='.xns-content .xns-all-action>a').click()
         self.wait_for_element_visibility(
-            '.edx-notifications-content .user_notifications_all.active',
+            '.xns-content .xns-all-action.active',
             'wait for tab to get selected'
         )
 
     def return_selected_tab(self):
-        return self.q(css='.actions>.notifications_list_tab>li[class*="active"]>a').text[0]
+        return self.q(css='.xns-actions>.xns-tab-list>li[class*="active"]>a').text[0]
 
     def return_unread_notifications_count(self):
         """
@@ -115,12 +115,8 @@ class LoggedInHomePage(PageObject):
         If number of items is 1, check whether it is a message of empty list, if so return o
         :return:
         """
-        self.wait_for_element_visibility('.notification-items', 'list not found')
-        unread_notifications_count = len(self.q(css='.notification-items .item'))
-        if unread_notifications_count == 0:
-            check_text = self.q(css='.notification-items .empty-list').text[0]
-            if 'no unread notifications' in check_text:
-                return 0
+        self.wait_for_element_visibility('.xns-items', 'list not found')
+        unread_notifications_count = len(self.q(css='.xns-item-body'))
         return unread_notifications_count
 
     def return_view_all_notifications_count(self):
@@ -129,12 +125,8 @@ class LoggedInHomePage(PageObject):
         If number of items is 1, check whether it is a message of empty list, if so return o
         :return:
         """
-        self.wait_for_element_visibility('.notification-items', 'list not found')
-        notifications_count = len(self.q(css='.notification-items .item'))
-        if notifications_count == 0:
-            check_text = self.q(css='.notification-items .empty-list').text[0]
-            if 'no unread notifications' in check_text:
-                return 0
+        self.wait_for_element_visibility('.xns-items', 'list not found')
+        notifications_count = len(self.q(css='.xns-item-body'))
         return notifications_count
 
     def return_notifications_list(self, key):
@@ -153,17 +145,17 @@ class LoggedInHomePage(PageObject):
                 group = 'discussions'
         elif 'leaderboard' in key:
             group = 'leaderboards'
-        self.wait_for_element_visibility('.notification-items', 'list not found')
-        return self.q(css='.notification-items .item .body>span[class="' + group + '"]').text
+        self.wait_for_element_visibility('.xns-items', 'list not found')
+        return self.q(css='.xns-items .xns-item .xns-item-body>span[class="xns-' + group + '"]').text
 
     def mark_as_read(self):
         """
         Click on mark as read link to mark all unread notifications as read
         """
-        self.q(css='.edx-notifications-container .mark_notifications_read>a').click()
+        self.q(css='.xns-mark-read-action>a').click()
         self.wait_for_ajax()
-        self.wait_for_element_visibility('.edx-notifications-content', 'Notification messages list not found')
-        return self.q(css='.edx-notifications-content').text
+        self.wait_for_element_visibility('.xns-content', 'Notification messages list not found')
+        return self.q(css='.xns-content').text
 
     def click_on_notification(self):
         """
@@ -171,9 +163,9 @@ class LoggedInHomePage(PageObject):
         site and return url otherwise just return text "No target link"
         :return:
         """
-        self.wait_for_element_visibility('.notification-items', 'list not found')
-        notification_link = self.q(css='.notification-items .item .body>span').first.attrs('data-click-link')
-        self.q(css='.notification-items .item>p>span').first.click()
+        self.wait_for_element_visibility('.xns-items', 'list not found')
+        notification_link = self.q(css='.xns-items .xns-item-body>span').first.attrs('data-click-link')
+        self.q(css='.xns-items .xns-item-body>span').first.click()
         if notification_link[0] != "":
             NotificationTargetPage(self.browser).wait_for_page()
             return notification_link[0]

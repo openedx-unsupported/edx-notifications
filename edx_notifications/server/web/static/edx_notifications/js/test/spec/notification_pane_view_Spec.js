@@ -4,65 +4,65 @@ describe("NotificationPaneView", function(){
         this.server = sinon.fakeServer.create();
         setFixtures(
             '<div>' +
-            '<img class="edx-notifications-icon" src="/static/edx_notifications/img/notification_icon.jpg" />' +
-            '<span class="edx-notifications-count-number"></span>' +
+            '<img class="xns-icon" src="/static/edx_notifications/img/notification_icon.jpg" />' +
+            '<span class="xns-counter"></span>' +
             '</div>' +
-            '<div class="edx-notification-pane">' +
-            '<script type="text/template" id="notification-pane-template">' +
-'    <div class="edx-notifications-container"> ' +
-'        <div class="edx-notifications-content <%= selected_pane %>"> ' +
-'            <div class="fixed"> ' +
-'                <h2>Notifications</h2> ' +
-'                <div class="actions"> ' +
-'                    <ul class="notifications_list_tab"> ' +
-'                        <li class="unread_notifications active"><a  href="#">View unread</a></li> ' +
-'                        <li class="user_notifications_all"><a href="#">View all</a></li> ' +
-'                        <li class="mark_notifications_read"><a href="#">Mark as read</a></li> ' +
-'                        <% if (typeof this.global_variables.hide_link_is_visible != "undefined" && ' +
-'                        this.global_variables.hide_link_is_visible != "False") { %> ' +
-'                            <li class="hide_pane"><a href="#">Hide</a></li> ' +
-'                        <% } %> ' +
-'                    </ul> ' +
-'                </div> ' +
-'            </div> ' +
-'            <div class="list"> ' +
-'                <ul class="notification-items"> ' +
-'                    <% if (typeof grouped_user_notifications == "undefined" || grouped_user_notifications.length == 0) { %> ' +
-'                        <li class="empty-list"> ' +
-'                            <p class="description">You have no unread notifications.</p> ' +
-'                        </li> ' +
-'                    <% } else { %> ' +
-'                   <% _.each(grouped_user_notifications, function(grouped_user_notification){ %> ' +
-'                       <h3 class="borderB padB5 uppercase bold marB10 notifications-group"><%= grouped_user_notification.group_title %></h3> ' +
-'                        <% _.each(grouped_user_notification.messages, function(message){ %> ' +
-'                            <li class="marB10 padB5 borderB item"> ' +
-'                                <% if (selected_pane == "unread") { %> ' +
-'                                <div class="date"> ' +
-'                                    <% if (Date.equals(new Date(message.msg.created).clearTime(), Date.today())) { %> ' +
-'                                        Today at <%= new Date(message.msg.created).toString("h:mmtt") %> ' +
-'                                    <%} else {%> ' +
-'                                        <%= new Date(message.msg.created).toString("MMMM dd, yyyy") %> at <%= new Date(message.msg.created).toString("h:mmtt") %> ' +
-'                                    <% } %> ' +
-'                                </div> ' +
-'                               <% } %> ' +
-'                                <p class="description body"> ' +
-'                                    <span data-msg-id="<%= message.msg.id %>" data-click-link="<%=message.msg.payload["_click_link"]%>" class="<%= message.group_name %>"><%= message.html %></span> ' +
-'                                </p> ' +
-'                            </li> ' +
-'                        <% }); %> ' +
-'                    <% }); %> ' +
-'                    <% } %> ' +
-'                </ul> ' +
-'            </div> ' +
-'        </div> ' +
+            '<div class="xns-pane">' +
+'<script type="text/template" id="xns-pane-template">' +
+'    <div class="xns-container">' +
+'        <div class="xns-content <%= selected_pane %>">' +
+'            <div class="xns-list-header">' +
+'               <h2>Notifications</h2>' +
+'                <div class="xns-actions">' +
+'                    <ul class="xns-tab-list">' +
+'                        <li class="xns-unread-action active"><a  href="#">View unread</a></li>' +
+'                        <li class="xns-all-action"><a href="#">View all</a></li>' +
+'                        <li class="xns-mark-read-action"><a href="#">Mark as read</a></li>' +
+'                        <% if (typeof this.global_variables.hide_link_is_visible != "undefined" &&' +
+'                        this.global_variables.hide_link_is_visible != "False") { %>' +
+'                            <li class="xns-hide-pane"><a href="#">Hide</a></li>' +
+'                        <% } %>' +
+'                    </ul>' +
+'                </div>' +
+'            </div>' +
+'            <div class="nxs-list-body">' +
+'                <ul class="xns-items">' +
+'                    <% if (typeof grouped_user_notifications == "undefined" || grouped_user_notifications.length == 0) { %>' +
+'                        <li class="xns-empty-list">' +
+'                            <p class="xns-no-notifications-msg xns-item">You have no unread notifications.</p>' +
+'                        </li>' +
+'                    <% } else { %>' +
+'                        <% _.each(grouped_user_notifications, function(grouped_user_notification){ %>' +
+'                            <h3 class="borderB padB5 uppercase bold marB10 xns-group"><%= grouped_user_notification.group_title %></h3>' +
+'                            <% _.each(grouped_user_notification.messages, function(message){ %>' +
+'                                <li class="marB10 padB5 borderB xns-item">' +
+'                                    <% if (selected_pane == "unread" && always_show_dates_on_unread) { %>' +
+'                                        <div class="xns-date">' +
+'                                            <% if (Date.equals(new Date(message.msg.created).clearTime(), Date.today())) { %>' +
+'                                                Today at <%= new Date(message.msg.created).toString("h:mmtt") %>' +
+'                                            <%} else {%>' +
+'                                                <%= new Date(message.msg.created).toString("MMMM dd, yyyy") %> at <%= new Date(message.msg.created).toString("h:mmtt") %>' +
+'                                            <% } %>' +
+'                                        </div>' +
+'                                    <% } %>' +
+'                                    <div class="xns-body">' +
+'                                        <span data-msg-id="<%= message.msg.id %>" data-click-link="<%=message.msg.payload["_click_link"]%>" class="xns-<%= message.group_name %>"><%= message.html %></span>' +
+'                                    </div>' +
+'                                </li>' +
+'                            <% }); %>' +
+'                        <% }); %>' +
+'                    <% } %>' +
+'                </ul>' +
+'            </div>' +
+'        </div>' +
 '    </div>' +
-' </script>' +
+'</script>' +
 '</div>'
         );
         this.notification_pane = new NotificationPaneView({
-            el: $(".edx-notifications-icon"),
-            count_el: $(".edx-notifications-count-number"),
-            pane_el: $(".edx-notification-pane"),
+            el: $(".xns-icon"),
+            count_el: $(".xns-counter"),
+            pane_el: $(".xns-pane"),
             endpoints: {
                 unread_notification_count: "/unread/count/?read=False&unread=True",
                 mark_all_user_notifications_read: "/mark/as/read",
@@ -76,12 +76,12 @@ describe("NotificationPaneView", function(){
             }
         });
         this.notification_pane.render();
-        this.all_notifications_target = $(".user_notifications_all");
-        this.unread_notifications_target = $(".unread_notifications");
-        this.mark_notifications_read_target = $(".mark_notifications_read");
-        this.notification_content_target = $(".notification-items .item");
-        this.prevent_click_target = $(".edx-notifications-content");
-        this.empty_list_target = $(".notification-items .empty-list .description");
+        this.all_notifications_target = $(".xns-all-action");
+        this.unread_notifications_target = $(".xns-unread-action");
+        this.mark_notifications_read_target = $(".xns-mark-read-action");
+        this.notification_content_target = $(".xns-items .xns-item");
+        this.prevent_click_target = $(".xns-content");
+        this.empty_list_target = $(".xns-no-notifications-msg");
     });
 
     afterEach(function() {
@@ -107,7 +107,7 @@ describe("NotificationPaneView", function(){
         expect(this.notification_pane.selected_pane).toEqual('unread');
     });
 
-    it("intilizes .edx-notifications-content htm", function(){
+    it("intilizes .xns-content htm", function(){
         expect(this.empty_list_target.html()).toContain('You have no unread notifications');
     });
 
@@ -180,7 +180,7 @@ describe("NotificationPaneView", function(){
         expect(this.empty_list_target.html()).toContain('You have no unread notifications');
     });
 
-    it("calls preventHidingWhenClickedInside function on clicking .edx-notifications-content", function(){
+    it("calls preventHidingWhenClickedInside function on clicking .xns-content", function(){
         var preventHidingWhenClickedInsideSpy = spyOn(this.notification_pane, 'preventHidingWhenClickedInside');
         this.notification_pane.delegateEvents();
         this.prevent_click_target.click();

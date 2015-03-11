@@ -1,0 +1,1 @@
+<span class='xns-username'><%= action_username %></span> responded to your post in <span class='xns-title'><%=thread_title %></span>

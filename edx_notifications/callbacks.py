@@ -98,6 +98,12 @@ class NotificationDispatchMessageCallback(NotificationCallbackTimerHandler):
             scope_name = context['distribution_scope']['scope_name']
             scope_context = context['distribution_scope']['scope_context']
 
+            log_msg = (
+                'Firing timed Notification to scope name "{scope_name}" and scope '
+                'context {scope_context} with message_id: {msg_id}'
+            ).format(scope_name=scope_name, scope_context=scope_context, msg_id=msg_id)
+            log.info(log_msg)
+
             try:
                 notification_msg = notification_store().get_notification_message_by_id(msg_id)
             except ItemNotFoundError:

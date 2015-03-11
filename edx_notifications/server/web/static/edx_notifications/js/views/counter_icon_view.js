@@ -21,7 +21,7 @@ var CounterIconView = Backbone.View.extend({
       this.model.url = model_url;
 
       /* get out main underscore view template */
-      this.template = _.template($('#notification-counter-template').html());
+      this.template = _.template($('#xns-counter-template').html());
 
       this.render();
 
@@ -43,7 +43,7 @@ var CounterIconView = Backbone.View.extend({
 
   append_url_param: function(baseUrl, key, value) {
       key = encodeURI(key); value = encodeURIComponent(value);
-      var path = baseUrl.split('?')[0]
+      var path = baseUrl.split('?')[0];
       var kvp = baseUrl.split('?')[1].split('&');
       var i=kvp.length; var x; while(i--)
       {
@@ -75,8 +75,13 @@ var CounterIconView = Backbone.View.extend({
       this.render();
   },
 
+  refresh: function() {
+    this.model.fetch();
+    this.render();
+  },
+
   render: function () {
-      var html = this.template(this.model.toJSON())
+      var html = this.template(this.model.toJSON());
       this.count_el.html(html);
  },
 
@@ -126,7 +131,7 @@ var CounterIconView = Backbone.View.extend({
   },
 
  hidePaneWhenClickedOutside: function() {
-   $(".edx-notification-pane").hide();
+   $(".xns-pane").hide();
    $('body').unbind('click');
  }
 });

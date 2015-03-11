@@ -1,0 +1,1 @@
+<span class='xns-title'><%=thread_title%></span> was followed <%=num_followers%> times
