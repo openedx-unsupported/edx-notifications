@@ -16,7 +16,7 @@ var NotificationPaneView = Backbone.View.extend({
         this.mark_all_read_endpoint = options.endpoints.mark_all_user_notifications_read;
         this.mark_notification_read_endpoint = options.endpoints.user_notification_mark_read;
 
-        this.renderer_templates_url_endpoint = options.endpoints.renderer_templates_urls
+        this.renderer_templates_url_endpoint = options.endpoints.renderer_templates_urls;
 
         /* query endpoints to get a list of all renderer template URLS */
         $.get(this.renderer_templates_url_endpoint).done(function(data){
@@ -43,7 +43,7 @@ var NotificationPaneView = Backbone.View.extend({
 
     append_url_param: function(baseUrl, key, value) {
       key = encodeURI(key); value = encodeURIComponent(value);
-      var path = baseUrl.split('?')[0]
+      var path = baseUrl.split('?')[0];
       var kvp = baseUrl.split('?')[1].split('&');
       var i=kvp.length; var x; while(i--)
       {
@@ -64,7 +64,7 @@ var NotificationPaneView = Backbone.View.extend({
         'click .unread_notifications': 'unreadNotificationsClicked',
         'click .mark_notifications_read': 'markNotificationsRead',
         'click .hide_pane': 'hidePane',
-        'click .edx-notifications-content>ul>li': 'visitNotification',
+        'click .notification-items': 'visitNotification',
         'click': 'preventHidingWhenClickedInside'
     },
 
@@ -134,7 +134,6 @@ var NotificationPaneView = Backbone.View.extend({
         /* enumerate through all of the notifications we have */
         /* and render each one */
 
-        var grouped_user_notifications = null;
         var grouped_user_notifications = [];
 
         if (this.selected_pane == 'unread') {
@@ -247,7 +246,7 @@ var NotificationPaneView = Backbone.View.extend({
             user_msgs,
             function(user_msg) {
                 // group together according to the group rules in grouping_config
-                return self.get_group_name_for_msg_type(user_msg.msg.msg_type.name)
+                return self.get_group_name_for_msg_type(user_msg.msg.msg_type.name);
             }
         );
 
@@ -312,7 +311,7 @@ var NotificationPaneView = Backbone.View.extend({
                 // on the by date grouping, also inject the 'type group' information
                 // on every notification
                 _.each(group_data, function(item){
-                    item.group_name = self.get_group_name_for_msg_type(item.msg.msg_type.name)
+                    item.group_name = self.get_group_name_for_msg_type(item.msg.msg_type.name);
                 });
                 notification_groups.push({
                     // pull the header name from the first time in the group
@@ -401,11 +400,11 @@ var NotificationPaneView = Backbone.View.extend({
         /* will call into the rendering */
         var self = this;
         self.$el.addClass('ui-loading');
-        var data = {}
+        var data = {};
         if (this.namespace) {
             data = {
                 namespace: this.namespace
-            }
+            };
         }
         self.collection.fetch(
             {

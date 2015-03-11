@@ -1,11 +1,12 @@
 from bok_choy.web_app_test import WebAppTest
+from testserver.bokchoy_settings import HIDE_LINK_IS_VISIBLE
 from pages import user_name, user_email, password
 from pages.home_page import HomePage
 from pages.registration_page import RegistrationPage, RegistrationSuccess
 from pages.login_page import LoginPage
 from pages.logged_in_home_page import LoggedInHomePage
 from pages.notification_target_page import NotificationTargetPage
-from unittest import skip
+from unittest import skipUnless
 
 
 class TestAddNotifications(WebAppTest):
@@ -28,7 +29,11 @@ class TestAddNotifications(WebAppTest):
         'open-edx.xblock.group-project.grades-posted': 'First Activity: Grade(s) are posted',
     }
 
-    notifications_container_tabs = ['View unread', 'View all', 'Mark as read']
+    if HIDE_LINK_IS_VISIBLE:
+        notifications_container_tabs = ['View unread', 'View all', 'Mark as read', 'Hide']
+    else:
+        notifications_container_tabs = ['View unread', 'View all', 'Mark as read']
+
     namespaces = ['foo/bar/baz', 'test/test/test']
 
     def setUp(self):
@@ -73,7 +78,7 @@ class TestAddNotifications(WebAppTest):
         self.logged_in_home_page.hide_notification_container()
         self.logged_in_home_page.verify_notifications_container_is_invisible()
 
-    def test_03_hide_notifications_container(self):
+    def test_02_hide_notifications_container(self):
         """
         Scenario: User is able to hide the notification container
         Given that I am on the notification home page
@@ -88,7 +93,22 @@ class TestAddNotifications(WebAppTest):
         self.logged_in_home_page.hide_notification_container()
         self.logged_in_home_page.verify_notifications_container_is_invisible()
 
-    @skip('this test will become valid once hide tab is removed from code')
+    @skipUnless(HIDE_LINK_IS_VISIBLE, "Test only runs if Hide link is visible")
+    def test_03_hide_notifications_container_using_hide_tab_link(self):
+        """
+        Scenario: User is able to hide the notification container
+        Given that I am on the notification home page
+        And notifications container is visible
+        When I click on the notification icon again
+        Then notification container should hide
+        """
+        self.login()
+        self.logged_in_home_page.verify_notifications_container_is_invisible()
+        self.logged_in_home_page.show_notifications_container()
+        self.logged_in_home_page.verify_notifications_container_is_visible()
+        self.logged_in_home_page.hide_notification_container_using_hide_link()
+        self.logged_in_home_page.verify_notifications_container_is_invisible()
+
     def test_04_verify_tabs_in_notifications_container(self):
         """
         Scenario: User is able to view 4 tabs namely view unread, view all, Mark as read and hide
@@ -104,7 +124,7 @@ class TestAddNotifications(WebAppTest):
         self.logged_in_home_page.show_notifications_container()
         self.logged_in_home_page.verify_notifications_container_is_visible()
         fetched_notifications_container_tabs = self.logged_in_home_page.return_notifications_container_tabs()
-        self.assertAlmostEqual(fetched_notifications_container_tabs, self.notifications_container_tabs)
+        self.assertEqual(fetched_notifications_container_tabs, self.notifications_container_tabs)
 
     def test_05_verify_default_tab_selection(self):
         """
@@ -174,7 +194,6 @@ class TestAddNotifications(WebAppTest):
             self.assertEqual(final_notification_count, initial_notification_count + 1)
             initial_notification_count = final_notification_count
 
-    @skip('skip until notifications grouping functionality is implemented')
     def test_08_verify_unread_notifications_text(self):
         """
         Scenario: When user adds a new notification type, the relevant message for this notification type
@@ -197,7 +216,6 @@ class TestAddNotifications(WebAppTest):
             self.logged_in_home_page.verify_notifications_container_is_invisible()
             self.assertIn(value, unread_notification_list[0])
 
-    @skip('skip until notifications grouping functionality is implemented')
     def test_09_verify_view_all_notifications_text(self):
         """
         Scenario: When user adds a new notification type, the relevant message for this notification type

@@ -12,6 +12,7 @@ from django.contrib.auth import logout
 from django.views.decorators.csrf import csrf_protect
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
+from django.conf import settings
 from django.templatetags.static import static
 
 from edx_notifications.lib.publisher import (
@@ -195,6 +196,7 @@ def index(request):
         'notification_types': get_all_notification_types(),
         'global_variables': {
             'app_name': 'Notification Test Server',
+            'hide_link_is_visible': settings.HIDE_LINK_IS_VISIBLE
         },
         # for test purposes, set up a short-poll which contacts the server
         # every 10 seconds to see if there is a new notification

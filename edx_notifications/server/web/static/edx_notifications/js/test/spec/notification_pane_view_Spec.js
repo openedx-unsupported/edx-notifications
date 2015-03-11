@@ -9,46 +9,55 @@ describe("NotificationPaneView", function(){
             '</div>' +
             '<div class="edx-notification-pane">' +
             '<script type="text/template" id="notification-pane-template">' +
-            ' <div class="edx-notifications-container">' +
-             '<div class="edx-notifications-content">' +
-                '<h2>Notifications</h2>' +
-                '<div class="actions">' +
-                    '<ul class="notifications_list_tab">' +
-                        '<li class="unread_notifications active"><a  href="#">View unread</a></li>' +
-                        '<li class="user_notifications_all"><a href="#">View all</a></li>' +
-                        '<li class="mark_notifications_read"><a href="#">Mark as read</a></li>' +
-                    '</ul>' +
-                '</div>' +
-            '<ul>' +
-                '<% if (typeof grouped_user_notifications == "undefined" || grouped_user_notifications.length == 0)' +
-            '{ %>' +
-                   ' <li>' +
-                        '<p class="description">You have no unread notifications.</p>' +
-                   ' </li>' +
-                '<% } else { %>' +
-                '<% _.each(grouped_user_notifications, function(grouped_user_notification){ %>' +
-                    '<h3 class="borderB padB5 uppercase bold marB10">' +
-                    '<%= grouped_user_notification.group_title %></h3>' +
-                    '<h3 class="marT0"><a href="">Welcome to <%= global_variables.app_name %></a></h3>' +
-                    '<% _.each(grouped_user_notification.messages, function(message){ %>' +
-                        '<li class="marB10 padB5 borderB">' +
-                            '<div class="date">' +
-                                '<%= new Date(message.msg.created).toString("MMMM dd, yyyy") %>' +
-                            '</div>' +
-                            '<p class="description">' +
-                               '<span data-msg-id="<%= message.msg.id %>" ' +
-                                'data-click-link="<%=message.msg.payload["_click_link"]%>">' +
-							   '<%= message.html %></span>' +
-                            '</p>' +
-                        '</li>' +
-                    '<% }); %>' +
-                '<% }); %>' +
-                '<% } %>' +
-            '</ul>' +
-        '</div>' +
-    '</div>' +
-'</script>' +
-            '</div>'
+'    <div class="edx-notifications-container"> ' +
+'        <div class="edx-notifications-content <%= selected_pane %>"> ' +
+'            <div class="fixed"> ' +
+'                <h2>Notifications</h2> ' +
+'                <div class="actions"> ' +
+'                    <ul class="notifications_list_tab"> ' +
+'                        <li class="unread_notifications active"><a  href="#">View unread</a></li> ' +
+'                        <li class="user_notifications_all"><a href="#">View all</a></li> ' +
+'                        <li class="mark_notifications_read"><a href="#">Mark as read</a></li> ' +
+'                        <% if (typeof this.global_variables.hide_link_is_visible != "undefined" && ' +
+'                        this.global_variables.hide_link_is_visible != "False") { %> ' +
+'                            <li class="hide_pane"><a href="#">Hide</a></li> ' +
+'                        <% } %> ' +
+'                    </ul> ' +
+'                </div> ' +
+'            </div> ' +
+'            <div class="list"> ' +
+'                <ul class="notification-items"> ' +
+'                    <% if (typeof grouped_user_notifications == "undefined" || grouped_user_notifications.length == 0) { %> ' +
+'                        <li class="empty-list"> ' +
+'                            <p class="description">You have no unread notifications.</p> ' +
+'                        </li> ' +
+'                    <% } else { %> ' +
+'                   <% _.each(grouped_user_notifications, function(grouped_user_notification){ %> ' +
+'                       <h3 class="borderB padB5 uppercase bold marB10 notifications-group"><%= grouped_user_notification.group_title %></h3> ' +
+'                        <% _.each(grouped_user_notification.messages, function(message){ %> ' +
+'                            <li class="marB10 padB5 borderB item"> ' +
+'                                <% if (selected_pane == "unread") { %> ' +
+'                                <div class="date"> ' +
+'                                    <% if (Date.equals(new Date(message.msg.created).clearTime(), Date.today())) { %> ' +
+'                                        Today at <%= new Date(message.msg.created).toString("h:mmtt") %> ' +
+'                                    <%} else {%> ' +
+'                                        <%= new Date(message.msg.created).toString("MMMM dd, yyyy") %> at <%= new Date(message.msg.created).toString("h:mmtt") %> ' +
+'                                    <% } %> ' +
+'                                </div> ' +
+'                               <% } %> ' +
+'                                <p class="description body"> ' +
+'                                    <span data-msg-id="<%= message.msg.id %>" data-click-link="<%=message.msg.payload["_click_link"]%>" class="<%= message.group_name %>"><%= message.html %></span> ' +
+'                                </p> ' +
+'                            </li> ' +
+'                        <% }); %> ' +
+'                    <% }); %> ' +
+'                    <% } %> ' +
+'                </ul> ' +
+'            </div> ' +
+'        </div> ' +
+'    </div>' +
+' </script>' +
+'</div>'
         );
         this.notification_pane = new NotificationPaneView({
             el: $(".edx-notifications-icon"),
@@ -70,8 +79,9 @@ describe("NotificationPaneView", function(){
         this.all_notifications_target = $(".user_notifications_all");
         this.unread_notifications_target = $(".unread_notifications");
         this.mark_notifications_read_target = $(".mark_notifications_read");
-        this.notification_content_target = $(".edx-notifications-content>ul>li");
+        this.notification_content_target = $(".notification-items .item");
         this.prevent_click_target = $(".edx-notifications-content");
+        this.empty_list_target = $(".notification-items .empty-list .description");
     });
 
     afterEach(function() {
@@ -79,7 +89,7 @@ describe("NotificationPaneView", function(){
     });
 
     it("checks if template function is defined", function(){
-        expect(this.notification_pane.template).toBeDefined()
+        expect(this.notification_pane.template).toBeDefined();
     });
 
     it("successfully sets given urls in endpoint", function(){
@@ -98,7 +108,7 @@ describe("NotificationPaneView", function(){
     });
 
     it("intilizes .edx-notifications-content htm", function(){
-        expect(this.notification_content_target.html()).toContain('You have no unread notifications')
+        expect(this.empty_list_target.html()).toContain('You have no unread notifications');
     });
 
     it("calls allUserNotificationsClicked function on clicking .user_notifications_all", function(){
@@ -115,7 +125,7 @@ describe("NotificationPaneView", function(){
 
     it("sets selected pane new value after calling allUserNotificationsClicked function", function(){
         this.all_notifications_target.click();
-        expect(this.notification_pane.selected_pane).toContain('all')
+        expect(this.notification_pane.selected_pane).toContain('all');
     });
 
     it("calls unreadNotificationsClicked function on clicking .unread_notifications", function(){
@@ -152,21 +162,22 @@ describe("NotificationPaneView", function(){
         expect(this.notification_pane.selected_pane).toContain('unread');
     });
 
-    it("calls visitNotification function on clicking .edx-notifications-content>ul>li", function(){
+    it("calls visitNotification function on clicking notification item", function(){
         var visitNotificationSpy = spyOn(this.notification_pane, 'visitNotification');
         this.notification_pane.delegateEvents();
-        this.notification_content_target.click();
+        /* we don't have any notifications, so the only thing to click on is the empty message */
+        this.empty_list_target.click();
         expect(visitNotificationSpy).toHaveBeenCalled();
     });
 
     it("sets collection url new value after calling visitNotification function", function(){
         this.notification_content_target.click();
-        expect(this.notification_pane.collection.url).toContain('read/notificationsundefined');
+        expect(this.notification_pane.collection.url).toContain('read/notifications');
     });
 
     it("sets notification_content_target.html calling visitNotification function", function(){
         this.notification_content_target.click();
-        expect(this.notification_content_target.html()).toContain('You have no unread notifications')
+        expect(this.empty_list_target.html()).toContain('You have no unread notifications');
     });
 
     it("calls preventHidingWhenClickedInside function on clicking .edx-notifications-content", function(){
