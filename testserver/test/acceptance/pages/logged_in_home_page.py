@@ -15,7 +15,7 @@ class LoggedInHomePage(PageObject):
         :return:
         """
         welcome_message = "Welcome " + user_name + " !!!"
-        self.wait_for_element_visibility('html>body>p', 'Para not found')
+        self.wait_for_element_visibility('html>body>p', 'Para not found', timeout=20)
         return welcome_message in self.q(css='html>body>p').text[0]
 
     def select_notification_type(self, notification_type):
@@ -24,11 +24,17 @@ class LoggedInHomePage(PageObject):
         Also checks if the correct notification type is selected successfully
         :param notification_type:
         """
-        self.wait_for_element_visibility('select[name="notification_type"]', 'Notification type drop down not found')
+        self.wait_for_element_visibility(
+            'select[name="notification_type"]',
+            'Notification type drop down not found',
+            timeout=20
+        )
         self.q(css='select[name="notification_type"] option[value="{}"]'.format(notification_type)).first.click()
         EmptyPromise(
-            lambda: self.q(css='select[name="notification_type"] option[value="{}"]'.format(notification_type)).selected
-            , "selected notification type is not correct"
+            lambda:
+            self.q(css='select[name="notification_type"] option[value="{}"]'.format(notification_type)).selected,
+            "selected notification type is not correct",
+            timeout=20
         ).fulfill()
 
     def add_notification(self):
@@ -36,13 +42,20 @@ class LoggedInHomePage(PageObject):
         Clicks on add notification button
         """
         initial_count = self.get_notifications_count()
-        self.wait_for_element_visibility('input[name="add_notifications"]', 'Add notification button not found')
+        self.wait_for_element_visibility(
+            'input[name="add_notifications"]',
+            'Add notification button not found',
+            timeout=20)
         self.q(css='input[name="add_notifications"]').click()
-        self.wait_for_element_visibility('.edx-notifications-count-number', 'Notification count not found')
+        self.wait_for_element_visibility(
+            '.edx-notifications-count-number',
+            'Notification count not found',
+            timeout=20)
         final_count = str(initial_count + 1)
         EmptyPromise(
             lambda: self.q(css='.edx-notifications-count-number').text[0] == final_count,
-            'wait for count to increase'
+            'wait for count to increase',
+            timeout=20
         ).fulfill()
 
     def get_notifications_count(self):
@@ -51,7 +64,11 @@ class LoggedInHomePage(PageObject):
         :return:
         """
         self.wait_for_ajax()
-        self.wait_for_element_visibility('.edx-notifications-count-number', 'Notification count not found')
+        self.wait_for_element_visibility(
+            '.edx-notifications-count-number',
+            'Notification count not found',
+            timeout=20
+        )
         count_text = self.q(css='.edx-notifications-count-number').text[0]
         # HTML will not contain a 0 if there are no unread messages
         return int(count_text if count_text else 0)
@@ -60,13 +77,17 @@ class LoggedInHomePage(PageObject):
         """
         Verify that notification container is not visible
         """
-        self.wait_for_element_invisibility('.edx-notifications-container', 'Notification container is visible')
+        self.wait_for_element_invisibility(
+            '.edx-notifications-container',
+            'Notification container is visible',
+            timeout=20,
+        )
 
     def show_notifications_container(self):
         """
         Clicks on notification icon to display notification container
         """
-        self.wait_for_element_visibility('.edx-notifications-icon', 'Notification icon not found')
+        self.wait_for_element_visibility('.edx-notifications-icon', 'Notification icon not found', timeout=20)
         self.q(css='.edx-notifications-icon[src="/static/edx_notifications/img/notification_icon.jpg"]').click()
         self.wait_for_ajax()
 
@@ -74,21 +95,25 @@ class LoggedInHomePage(PageObject):
         """
         Clicks on notification icon again to hide notification container
         """
-        self.wait_for_element_visibility('.edx-notifications-icon', 'Notification icon not found')
+        self.wait_for_element_visibility('.edx-notifications-icon', 'Notification icon not found', timeout=20)
         self.q(css='.edx-notifications-icon[src="/static/edx_notifications/img/notification_icon.jpg"]').click()
 
     def hide_notification_container_using_hide_link(self):
         """
         Clicks on hide link to hide notification container
         """
-        self.wait_for_element_visibility('.hide_pane>a', 'Hide link not found')
+        self.wait_for_element_visibility('.hide_pane>a', 'Hide link not found', timeout=20)
         self.q(css='.hide_pane>a').click()
 
     def verify_notifications_container_is_visible(self):
         """
         Verify that notification container is visible
         """
-        self.wait_for_element_visibility('.edx-notifications-container', 'Notification container is not visible')
+        self.wait_for_element_visibility(
+            '.edx-notifications-container',
+            'Notification container is not visible',
+            timeout=20
+        )
 
     def return_notifications_container_tabs(self):
         """
@@ -103,7 +128,8 @@ class LoggedInHomePage(PageObject):
         self.q(css='.edx-notifications-content .user_notifications_all>a').click()
         self.wait_for_element_visibility(
             '.edx-notifications-content .user_notifications_all.active',
-            'wait for tab to get selected'
+            'wait for tab to get selected',
+            timeout=20
         )
 
     def return_selected_tab(self):
@@ -115,7 +141,7 @@ class LoggedInHomePage(PageObject):
         If number of items is 1, check whether it is a message of empty list, if so return o
         :return:
         """
-        self.wait_for_element_visibility('.notification-items', 'list not found')
+        self.wait_for_element_visibility('.notification-items', 'list not found', timeout=20)
         unread_notifications_count = len(self.q(css='.notification-items .item'))
         if unread_notifications_count == 0:
             check_text = self.q(css='.notification-items .empty-list').text[0]
@@ -129,7 +155,7 @@ class LoggedInHomePage(PageObject):
         If number of items is 1, check whether it is a message of empty list, if so return o
         :return:
         """
-        self.wait_for_element_visibility('.notification-items', 'list not found')
+        self.wait_for_element_visibility('.notification-items', 'list not found', timeout=20)
         notifications_count = len(self.q(css='.notification-items .item'))
         if notifications_count == 0:
             check_text = self.q(css='.notification-items .empty-list').text[0]
@@ -153,7 +179,7 @@ class LoggedInHomePage(PageObject):
                 group = 'discussions'
         elif 'leaderboard' in key:
             group = 'leaderboards'
-        self.wait_for_element_visibility('.notification-items', 'list not found')
+        self.wait_for_element_visibility('.notification-items', 'list not found', timeout=20)
         return self.q(css='.notification-items .item .body>span[class="' + group + '"]').text
 
     def mark_as_read(self):
@@ -162,7 +188,11 @@ class LoggedInHomePage(PageObject):
         """
         self.q(css='.edx-notifications-container .mark_notifications_read>a').click()
         self.wait_for_ajax()
-        self.wait_for_element_visibility('.edx-notifications-content', 'Notification messages list not found')
+        self.wait_for_element_visibility(
+            '.edx-notifications-content',
+            'Notification messages list not found',
+            timeout=20
+        )
         return self.q(css='.edx-notifications-content').text
 
     def click_on_notification(self):
@@ -171,7 +201,7 @@ class LoggedInHomePage(PageObject):
         site and return url otherwise just return text "No target link"
         :return:
         """
-        self.wait_for_element_visibility('.notification-items', 'list not found')
+        self.wait_for_element_visibility('.notification-items', 'list not found', timeout=20)
         notification_link = self.q(css='.notification-items .item .body>span').first.attrs('data-click-link')
         self.q(css='.notification-items .item>p>span').first.click()
         if notification_link[0] != "":
@@ -185,7 +215,7 @@ class LoggedInHomePage(PageObject):
         """
         Click on the logout link
         """
-        self.wait_for_element_visibility('a[href="/logout/"]', 'logout link not found')
+        self.wait_for_element_visibility('a[href="/logout/"]', 'logout link not found', timeout=20)
         self.q(css='a[href="/logout/"]').click()
         LoggedOut(self.browser).wait_for_page()
 
@@ -195,16 +225,22 @@ class LoggedInHomePage(PageObject):
         check if it is set or not
         :param namespace:
         """
-        self.wait_for_element_visibility('select[name="namespace"]', 'Notification type drop down not found')
+        self.wait_for_element_visibility(
+            'select[name="namespace"]',
+            'Notification type drop down not found',
+            timeout=20
+        )
         self.q(css='select[name="namespace"] option[value="{}"]'.format(namespace)).first.click()
         EmptyPromise(
             lambda: self.q(css='select[name="namespace"] option[value="{}"]'.format(namespace)).selected,
-            "selected notification type is not correct"
+            "selected notification type is not correct",
+            timeout=20
         ).fulfill()
-        self.wait_for_element_visibility('input[name="change_namespace"]', 'button not found')
+        self.wait_for_element_visibility('input[name="change_namespace"]', 'button not found', timeout=20)
         self.q(css='input[name="change_namespace"]').click()
         self.wait_for_ajax()
         EmptyPromise(
             lambda: namespace in self.q(css='html>body>h2:nth-of-type(1)').text[0],
-            "name space is not changed"
+            "name space is not changed",
+            timeout=20
         ).fulfill()

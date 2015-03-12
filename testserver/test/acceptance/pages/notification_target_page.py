@@ -20,4 +20,8 @@ class NotificationTargetPage(PageObject):
         :param target_link:
         :return:
         """
-        EmptyPromise(lambda: target_link in self.browser.current_url, 'target url is not correct').fulfill()
+        EmptyPromise(
+            lambda: target_link in self.browser.current_url,
+            'target url is not correct',
+            timeout=20
+        ).fulfill()

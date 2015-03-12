@@ -9,5 +9,5 @@ class LoggedOut(PageObject):
         """
         True if login button is present on page
         """
-        self.wait_for_element_visibility('input[value="Login"]', 'Login button not found')
+        self.wait_for_element_visibility('input[value="Login"]', 'Login button not found', timeout=20)
         return True

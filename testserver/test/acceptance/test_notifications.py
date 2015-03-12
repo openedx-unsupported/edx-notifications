@@ -29,6 +29,14 @@ class TestAddNotifications(WebAppTest):
         'open-edx.xblock.group-project.grades-posted': 'First Activity: Grade(s) are posted',
     }
 
+    short_notification_dict = {
+        'open-edx.studio.announcements.new-announcement': 'There is a new Course Update available',
+        'open-edx.lms.discussions.reply-to-thread': 'testuser has replied to a discussion posting ',
+        'open-edx.lms.discussions.cohorted-comment-added': 'testuser has added to a new comment',
+        'open-edx.lms.leaderboard.progress.rank-changed': 'You are now #2 in Progress in the cohort!',
+        'open-edx.xblock.group-project.grades-posted': 'First Activity: Grade(s) are posted'
+    }
+
     if HIDE_LINK_IS_VISIBLE:
         notifications_container_tabs = ['View unread', 'View all', 'Mark as read', 'Hide']
     else:
@@ -182,7 +190,7 @@ class TestAddNotifications(WebAppTest):
         initial_notification_count = self.logged_in_home_page.return_view_all_notifications_count()
         self.logged_in_home_page.hide_notification_container()
         self.logged_in_home_page.verify_notifications_container_is_invisible()
-        for key in self.notification_dict:
+        for key in self.short_notification_dict:
             self.logged_in_home_page.select_notification_type(key)
             self.logged_in_home_page.add_notification()
             self.logged_in_home_page.show_notifications_container()
@@ -228,7 +236,7 @@ class TestAddNotifications(WebAppTest):
         And a relevant message for the added notification type should be visible in view all notification tab
         """
         self.login()
-        for key, value in self.notification_dict.iteritems():
+        for key, value in self.short_notification_dict.iteritems():
             self.logged_in_home_page.select_notification_type(key)
             self.logged_in_home_page.add_notification()
             self.logged_in_home_page.show_notifications_container()
@@ -457,7 +465,6 @@ class TestAddNotifications(WebAppTest):
         notification_count_for_namespace_2 = self.logged_in_home_page.get_notifications_count()
         self.assertTrue(notification_count_for_namespace_2 > 0)
 
-
     def login(self):
         """
         Go to home page and login using correct credentials
@@ -467,4 +474,3 @@ class TestAddNotifications(WebAppTest):
         self.login_page.provide_credentials(user_name, password)
         self.login_page.submit_correct_credentials()
         self.assertTrue(self.logged_in_home_page.is_browser_on_page())
-

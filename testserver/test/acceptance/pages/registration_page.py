@@ -38,7 +38,7 @@ class RegistrationSuccess(PageObject):
         Return True if registration success message is present on page
         :return:
         """
-        self.wait_for_element_visibility('html>body>h1', 'Heading not found')
+        self.wait_for_element_visibility('html>body>h1', 'Heading not found', timeout=20)
         return 'Registration Completed Successfully' in self.q(css='html>body>h1').text[0]
 
     def go_to_login_page(self):
