@@ -42,7 +42,7 @@ until $(curl --output /dev/null --silent --head --fail http://127.0.0.1:8000); d
 done
 
 echo "Running acceptance tests..."
-nosetests testserver/test/acceptance --with-coverage
+nosetests testserver/test/acceptance
 
 # capture the exit code from the test.  Anything more than 0 indicates failed cases.
 EXIT_CODE=$?
