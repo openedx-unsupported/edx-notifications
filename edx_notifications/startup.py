@@ -9,6 +9,8 @@ from edx_notifications.signals import perform_type_registrations
 # in their signal receivers
 from edx_notifications.openedx import notification_type_registration  # pylint: disable=unused-import
 
+from edx_notifications.scopes import register_user_scope_resolver, SingleUserScopeResolver
+
 # This is unfortunate, but to have the standard Open edX
 # NotificationTypes get registered on startup we have
 # to import the modules, otherwise, they will
@@ -23,3 +25,5 @@ def initialize():
     # alert the application tiers that they should register their
     # notification types
     perform_type_registrations.send(sender=None)
+
+    register_user_scope_resolver('user', SingleUserScopeResolver(), {})

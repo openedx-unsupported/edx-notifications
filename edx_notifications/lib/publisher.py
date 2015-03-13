@@ -9,12 +9,14 @@ any new methods here will also be exposed to xBlocks!!!!
 import logging
 import types
 import datetime
+import pytz
 from contracts import contract
 
 from django.db.models.query import ValuesListQuerySet
 
 from edx_notifications.channels.channel import get_notification_channel
 from edx_notifications.stores.store import notification_store
+from edx_notifications.exceptions import ItemNotFoundError
 
 from edx_notifications.data import (
     NotificationType,
@@ -25,7 +27,7 @@ from edx_notifications.data import (
 from edx_notifications.renderers.renderer import (
     register_renderer
 )
-from edx_notifications.scopes import resolve_user_scope
+from edx_notifications.scopes import resolve_user_scope, has_user_scope_resolver
 
 log = logging.getLogger(__name__)
 
@@ -202,7 +204,7 @@ def publish_notification_to_scope(scope_name, scope_context, msg, exclude_user_i
 
 
 @contract(msg=NotificationMessage, send_at=datetime.datetime, scope_name=basestring, scope_context=dict)
-def publish_timed_notification(msg, send_at, scope_name, scope_context, timer_name=None):
+def publish_timed_notification(msg, send_at, scope_name, scope_context, timer_name=None, ignore_if_past_due=False):  # pylint: disable=too-many-arguments
     """
     Registers a new notification message to be dispatched
     at a particular time.
@@ -223,6 +225,8 @@ def publish_timed_notification(msg, send_at, scope_name, scope_context, timer_na
 
         timer_name: if we know the name of the timer we want to use rather than auto-generating it.
                     use caution not to mess with other code's timers!!!
+        ignore_if_past_due: If the notification should not be put into the timers, if the send date
+                    is in the past
 
     RETURNS: instance of NotificationCallbackTimer
     """
@@ -232,6 +236,17 @@ def publish_timed_notification(msg, send_at, scope_name, scope_context, timer_na
         'context {scope_context} to be sent at "{send_at} with message: {msg}'
     ).format(scope_name=scope_name, scope_context=scope_context, send_at=send_at, msg=msg)
     log.info(log_msg)
+
+    now = datetime.datetime.now(pytz.UTC)
+    if now > send_at and ignore_if_past_due:
+        log.info('Timed Notification is past due and the caller said to ignore_if_past_due. Dropping notification...')
+
+    # make sure we can resolve the scope_name
+    if not has_user_scope_resolver(scope_name):
+        err_msg = (
+            'There is no registered scope resolver for scope_name "{name}"'
+        ).format(name=scope_name)
+        raise ValueError(err_msg)
 
     store = notification_store()
 
@@ -258,3 +273,27 @@ def publish_timed_notification(msg, send_at, scope_name, scope_context, timer_na
     saved_timer = store.save_notification_timer(timer)
 
     return saved_timer
+
+
+@contract(timer_name=basestring)
+def cancel_timed_notification(timer_name):
+    """
+    Cancels a previously published timed notification
+    """
+
+    log_msg = (
+        'Cancelling timed Notification named "{timer_name}"'
+    ).format(timer_name=timer_name)
+    log.info(log_msg)
+
+    store = notification_store()
+    try:
+        timer = store.get_notification_timer(timer_name)
+        timer.is_active = False  # simply make is_active=False
+        store.save_notification_timer(timer)
+    except ItemNotFoundError:
+        err_msg = (
+            'Tried to call cancel_timed_notification for timer_name "{name}" '
+            'but it does not exist. Skipping...'
+        ).format(name=timer_name)
+        log.error(err_msg)
