@@ -50,7 +50,6 @@ CANNED_TEST_PAYLOAD = {
         '_schema_version': 1,
         '_click_link': 'http://localhost',
         'original_poster_id': 1,
-        'action_user_id': 2,
         'action_username': 'testuser',
         'thread_title': 'A demo posting to the discussion forums',
     },
@@ -58,30 +57,30 @@ CANNED_TEST_PAYLOAD = {
         '_schema_version': 1,
         '_click_link': 'http://localhost',
         'original_poster_id': 1,
-        'action_user_id': 2,
         'action_username': 'testuser',
         'thread_title': 'A demo posting to the discussion forums',
+        'num_followers': 3,
     },
     'open-edx.lms.discussions.post-upvoted': {
         '_schema_version': 1,
         '_click_link': 'http://localhost',
         'original_poster_id': 1,
-        'action_user_id': 2,
         'action_username': 'testuser',
         'thread_title': 'A demo posting to the discussion forums',
+        'num_upvotes': 5,
     },
     'open-edx.lms.discussions.comment-upvoted': {
         '_schema_version': 1,
         '_click_link': 'http://localhost',
-        'original_poster_id': 1,
-        'action_user_id': 2,
         'action_username': 'testuser',
         'thread_title': 'A demo posting to the discussion forums',
+        'num_upvotes': 5,
     },
     'open-edx.studio.announcements.new-announcement': {
         '_schema_version': 1,
         '_click_link': 'http://localhost',
-        'course_name': 'Demo Course',
+        'title': 'Gettysburg Address',
+        'excerpt': 'Four score and seven years ago our fathers brought forth on this continent, a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal.'
     },
     'open-edx.lms.discussions.cohorted-thread-added': {
         '_schema_version': 1,
@@ -90,7 +89,7 @@ CANNED_TEST_PAYLOAD = {
         'action_user_id': 2,
         'action_username': 'testuser',
         'thread_title': 'A demo posting to the discussion forums',
-        'link_to_thread': 'http://localhost',
+        'excerpt': 'Four score and seven years ago our fathers brought forth on this continent, a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal.'
     },
     'open-edx.lms.discussions.cohorted-comment-added': {
         '_schema_version': 1,
@@ -99,17 +98,19 @@ CANNED_TEST_PAYLOAD = {
         'action_user_id': 2,
         'action_username': 'testuser',
         'thread_title': 'A demo posting to the discussion forums',
-        'link_to_thread': 'http://localhost',
+        'excerpt': 'Four score and seven years ago our fathers brought forth on this continent, a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal.'
     },
     'open-edx.lms.leaderboard.progress.rank-changed': {
         '_schema_version': 1,
         '_click_link': 'http://localhost',
         'rank': 2,
+        'leaderboard_name': 'Progress'
     },
     'open-edx.lms.leaderboard.gradebook.rank-changed': {
         '_schema_version': 1,
         '_click_link': 'http://localhost',
         'rank': 3,
+        'leaderboard_name': 'Proficiency'
     },
     'open-edx.xblock.group-project.file-uploaded': {
         '_schema_version': 1,
@@ -122,36 +123,32 @@ CANNED_TEST_PAYLOAD = {
         '_schema_version': 1,
         '_click_link': 'http://localhost',
         'activity_name': 'First Activity',
-        'verb': 'Uploads are',
-        'status': 'open',
+        'stage_name': 'Upload(s)',
     },
     'open-edx.xblock.group-project.uploads-due': {
         '_schema_version': 1,
         '_click_link': 'http://localhost',
         'activity_name': 'First Activity',
-        'verb': 'Uploads are',
-        'status': 'due 4/18/2015',
+        'stage_name': 'Upload(s)',
+        'due_date': '4/25'
     },
     'open-edx.xblock.group-project.reviews-open': {
         '_schema_version': 1,
         '_click_link': 'http://localhost',
         'activity_name': 'First Activity',
-        'verb': 'Review(s) are',
-        'status': 'open',
+        'stage_name': 'Review(s)',
     },
     'open-edx.xblock.group-project.reviews-due': {
         '_schema_version': 1,
         '_click_link': 'http://localhost',
         'activity_name': 'First Activity',
-        'verb': 'Review(s)',
-        'status': 'due 4/25/2015',
+        'stage_name': 'Review(s)',
+        'due_date': '5/1'
     },
     'open-edx.xblock.group-project.grades-posted': {
         '_schema_version': 1,
         '_click_link': 'http://localhost',
         'activity_name': 'First Activity',
-        'verb': 'Grade(s) are',
-        'status': 'posted',
     },
 }
 
@@ -196,7 +193,8 @@ def index(request):
         'notification_types': get_all_notification_types(),
         'global_variables': {
             'app_name': 'Notification Test Server',
-            'hide_link_is_visible': settings.HIDE_LINK_IS_VISIBLE
+            'hide_link_is_visible': settings.HIDE_LINK_IS_VISIBLE,
+            'always_show_dates_on_unread': True,
         },
         # for test purposes, set up a short-poll which contacts the server
         # every 10 seconds to see if there is a new notification

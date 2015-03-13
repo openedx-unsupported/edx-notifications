@@ -6,6 +6,7 @@ xBlock runtime service named 'notifications'. Be aware that adding
 any new methods here will also be exposed to xBlocks!!!!
 """
 
+import logging
 import types
 import datetime
 from contracts import contract
@@ -26,12 +27,16 @@ from edx_notifications.renderers.renderer import (
 )
 from edx_notifications.scopes import resolve_user_scope
 
+log = logging.getLogger(__name__)
+
 
 @contract(msg_type=NotificationType)
 def register_notification_type(msg_type):
     """
     Registers a new notification type
     """
+
+    log.info('Registering NotificationType: {msg_type}'.format(msg_type=str(msg_type)))
 
     # do validation
     msg_type.validate()
@@ -80,6 +85,11 @@ def publish_notification_to_user(user_id, msg):
         fields
     """
 
+    log_msg = (
+        'Publishing Notification to user_id {user_id} with message: {msg}'
+    ).format(user_id=user_id, msg=msg)
+    log.info(log_msg)
+
     # validate the msg, this will raise a ValidationError if there
     # is something malformatted or missing in the NotificationMessage
     msg.validate()
@@ -124,6 +134,12 @@ def bulk_publish_notification_to_users(user_ids, msg, exclude_user_ids=None):
 
     """
 
+    log.info('Publishing bulk Notification with message: {msg}'.format(msg=msg))
+
+    # validate the msg, this will raise a ValidationError if there
+    # is something malformatted or missing in the NotificationMessage
+    msg.validate()
+
     if (not isinstance(user_ids, list) and not
             isinstance(user_ids, types.GeneratorType) and not
             isinstance(user_ids, ValuesListQuerySet)):
@@ -167,6 +183,11 @@ def publish_notification_to_scope(scope_name, scope_context, msg, exclude_user_i
             if scope='course_enrollments' then context = {'course_id'}
 
     """
+    log_msg = (
+        'Publishing scoped Notification to scope name "{scope_name}" and scope '
+        'context {scope_context} with message: {msg}'
+    ).format(scope_name=scope_name, scope_context=scope_context, msg=msg)
+    log.info(log_msg)
 
     user_ids = resolve_user_scope(scope_name, scope_context)
 
@@ -205,6 +226,12 @@ def publish_timed_notification(msg, send_at, scope_name, scope_context, timer_na
 
     RETURNS: instance of NotificationCallbackTimer
     """
+
+    log_msg = (
+        'Publishing timed Notification to scope name "{scope_name}" and scope '
+        'context {scope_context} to be sent at "{send_at} with message: {msg}'
+    ).format(scope_name=scope_name, scope_context=scope_context, send_at=send_at, msg=msg)
+    log.info(log_msg)
 
     store = notification_store()
 

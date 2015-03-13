@@ -8,7 +8,7 @@ var NotificationPaneView = Backbone.View.extend({
         var self = this;
 
         /* get out main underscore view template */
-        this.template = _.template($('#notification-pane-template').html());
+        this.template = _.template($('#xns-pane-template').html());
 
         // set up our URLs for the API
         this.unread_msgs_endpoint = options.endpoints.user_notifications_unread_only;
@@ -60,11 +60,11 @@ var NotificationPaneView = Backbone.View.extend({
     },
 
     events: {
-        'click .user_notifications_all': 'allUserNotificationsClicked',
-        'click .unread_notifications': 'unreadNotificationsClicked',
-        'click .mark_notifications_read': 'markNotificationsRead',
-        'click .hide_pane': 'hidePane',
-        'click .notification-items': 'visitNotification',
+        'click .xns-all-action': 'allUserNotificationsClicked',
+        'click .xns-unread-action': 'unreadNotificationsClicked',
+        'click .xns-mark-read-action': 'markNotificationsRead',
+        'click .xns-hide_pane': 'hidePane',
+        'click .xns-item': 'visitNotification',
         'click': 'preventHidingWhenClickedInside'
     },
 
@@ -88,20 +88,21 @@ var NotificationPaneView = Backbone.View.extend({
 
         var renderer_templates = {};
 
-        for (var renderer_class in data) {
-            if (data.hasOwnProperty(renderer_class)) {
-                var url = data[renderer_class];
-                $.ajax({url: url, context: renderer_class}).done(function(template_data) {
-                    number_to_fetch--;
-                    renderer_templates[this] = _.template(template_data);
-                    if (number_to_fetch === 0) {
-                        /* when we've loaded them all, then call render() again */
-                        self.renderer_templates = renderer_templates;
-                        self.render();
-                    }
-                });
-            }
-        }
+        _.each(data, function(url, renderer_class) {
+            $.ajax({url: url, context: renderer_class})
+            .error(function(){
+                console.error('Could not load template ' + renderer_class + ' at ' + url);
+                number_to_fetch--;
+            })
+            .done(function(template_data) {
+                renderer_templates[renderer_class] = _.template(template_data);
+                number_to_fetch--;
+                if (number_to_fetch === 0) {
+                    self.renderer_templates = renderer_templates;
+                    self.render();
+                }
+            });
+        });
     },
 
     hydrate: function() {
@@ -142,18 +143,21 @@ var NotificationPaneView = Backbone.View.extend({
             notification_group_renderings = this.render_notifications_by_day();
         }
 
+        var always_show_dates_on_unread = (typeof this.global_variables.always_show_dates_on_unread != undefined && this.global_variables.always_show_dates_on_unread);
+
         /* now render template with our model */
         var _html = this.template({
             global_variables: this.global_variables,
             grouped_user_notifications: notification_group_renderings,
-            selected_pane: this.selected_pane
+            selected_pane: this.selected_pane,
+            always_show_dates_on_unread: always_show_dates_on_unread
         });
 
         this.$el.html(_html);
 
         // make sure the right tab is highlighted
-        this.$el.find($('ul.notifications_list_tab > li')).removeClass('active');
-        var class_to_activate = (this.selected_pane == 'unread') ? 'unread_notifications' : 'user_notifications_all';
+        this.$el.find($('ul.xns-tab-list > li')).removeClass('active');
+        var class_to_activate = (this.selected_pane == 'unread') ? 'xns-unread-action' : 'xns-all-action';
         this.$el.find('.'+class_to_activate).addClass('active');
     },
     /* this describes how we want to group together notification types into visual groups */
@@ -351,24 +355,40 @@ var NotificationPaneView = Backbone.View.extend({
             // pass in the selected_view in case the
             // Underscore templates will how different
             // renderings depending on which tab is selected
-            render_context['selected_view'] = this.selected_pane;
+            render_context['__view'] = this.selected_pane;
 
             // also pass in the date the notification was created
-            render_context['created'] = msg.created;
+            render_context['__created'] = msg.created;
+
+            // also do a conversaion of the create date to a friendly
+            // display string
+
+            var created_str = '';
+            var created_date = new Date(msg.created);
+            if (Date.equals(new Date(created_date).clearTime(), Date.today())) {
+                created_str = 'Today at '+ created_date.toString("h:mmtt");
+            } else {
+                created_str = created_date.toString("MMMM dd, yyyy") + ' at ' + created_date.toString("h:mmtt");
+            }
+            render_context['__display_created'] = created_str;
 
             if (renderer_class_name in this.renderer_templates) {
                 try {
-                    var notification_html = this.renderer_templates[renderer_class_name](render_context);
+                    if (renderer_class_name in this.renderer_templates) {
+                        var notification_html = this.renderer_templates[renderer_class_name](render_context);
 
-                    renderings.push({
-                        user_msg: user_msg,
-                        msg: msg,
-                        /* render the particular NotificationMessage */
-                        html: notification_html,
-                        group_name: this.get_group_name_for_msg_type(msg.msg_type.name)
-                    });
+                        renderings.push({
+                            user_msg: user_msg,
+                            msg: msg,
+                            /* render the particular NotificationMessage */
+                            html: notification_html,
+                            group_name: this.get_group_name_for_msg_type(msg.msg_type.name)
+                        });
+                    } else {
+                        console.error('Renderer template ' + renderer_class_name + ' not loaded. Skipping rendering message...');
+                    }
                 } catch(err) {
-                    console.log('Could not render Notification type ' + msg.msg_type.name + ' with template ' + renderer_class_name + '. Error: "' + err + '". Skipping....')
+                    console.error('Could not render Notification type ' + msg.msg_type.name + ' with template ' + renderer_class_name + '. Error: "' + err + '". Skipping....')
                 }
             }
         }
@@ -383,6 +403,7 @@ var NotificationPaneView = Backbone.View.extend({
             this.selected_pane = 'all';
             this.hydrate();
         }
+        e.preventDefault();
     },
     unreadNotificationsClicked: function(e) {
         // check if the event.currentTarget class has already been active or not
@@ -390,6 +411,7 @@ var NotificationPaneView = Backbone.View.extend({
         this.collection.url = this.unread_msgs_endpoint;
         this.selected_pane = 'unread';
         this.hydrate();
+        e.preventDefault();
     },
     markNotificationsRead: function(e) {
         /* set the API endpoint that was passed into our initializer */
@@ -423,6 +445,7 @@ var NotificationPaneView = Backbone.View.extend({
                 }
             }
         );
+        e.preventDefault();
     },
     getCSRFToken: function() {
         var cookieValue = null;
@@ -462,15 +485,14 @@ var NotificationPaneView = Backbone.View.extend({
                             window.location.href = clickLink;
                         }
                         else {
-                            self.unreadNotificationsClicked();
+                            self.unreadNotificationsClicked(e);
                             // fetch the latest notification count
-                            self.counter_icon_view.model.fetch();
+                            self.counter_icon_view.refresh();
                         }
                     }
                 }
             );
-        }
-        else if (clickLink){
+        } else if (clickLink){
             window.location.href = clickLink;
         }
     },
@@ -484,7 +506,7 @@ var NotificationPaneView = Backbone.View.extend({
       e.stopPropagation();
     },
     isVisible: function() {
-      if ($('.edx-notifications-container').is(':visible')) {
+      if ($('.xns-container').is(':visible')) {
         return true;
       }
       else {

@@ -3,18 +3,18 @@ describe("CounterIconView", function(){
     beforeEach(function(){
         this.server = sinon.fakeServer.create();
         setFixtures(
-            '<div><img class="edx-notifications-icon" src="/static/edx_notifications/img/notification_icon.jpg" />' +
-            '<span class="edx-notifications-count-number"></span> </div>' +
-            '<div class="edx-notification-pane">' +
-            '<script type="text/template" id="notification-counter-template">' +
+            '<div><img class="xns-icon" src="/static/edx_notifications/img/notification_icon.jpg" />' +
+            '<span class="xns-counter"></span> </div>' +
+            '<div class="xns-pane">' +
+            '<script type="text/template" id="xns-counter-template">' +
                 '<% if (typeof count !== "undefined" && count > 0) { %>' +
                 '<%= count %><% } %>' +
             '</script>'
         );
         this.counter_view = new CounterIconView({
-            el: $(".edx-notifications-icon"),
-            count_el: $(".edx-notifications-count-number"),
-            pane_el: $(".edx-notification-pane"),
+            el: $(".xns-icon"),
+            count_el: $(".xns-counter"),
+            pane_el: $(".xns-pane"),
             endpoints: {
                 unread_notification_count: "/unread/count/?read=False&unread=True",
                 mark_all_user_notifications_read: "mark/as/read",
@@ -88,12 +88,12 @@ describe("CounterIconView", function(){
     });
 
     it("returns notification icon class in el", function(){
-        expect(this.counter_view.$el).toContain('.edx-notifications-icon')
+        expect(this.counter_view.$el).toContain('.xns-icon')
     });
 
 
     it("calls showPane function on clicking notification icon", function(){
-        var target = $(".edx-notifications-icon");
+        var target = $(".xns-icon");
         var showPaneSpy = spyOn(this.counter_view, 'showPane');
         this.counter_view.delegateEvents();
         target.click();

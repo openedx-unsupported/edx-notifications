@@ -17,14 +17,14 @@ class ProgressRankChangedRenderer(UnderscoreStaticFileRenderer):
     """
     Renders a notification when ranking in the progress leaderboard changes
     """
-    underscore_template_name = 'leaderboard/progress_rank_changed.html'
+    underscore_template_name = 'leaderboard/rank_changed.underscore'
 
 
 class GradebookRankChangedRenderer(UnderscoreStaticFileRenderer):
     """
     Renders a notification when ranking in the gradebook leaderboard changes
     """
-    underscore_template_name = 'leaderboard/gradebook_rank_changed.html'
+    underscore_template_name = 'leaderboard/rank_changed.underscore'
 
 
 @receiver(perform_type_registrations)

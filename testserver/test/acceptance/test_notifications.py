@@ -12,18 +12,18 @@ from unittest import skipUnless
 class TestAddNotifications(WebAppTest):
 
     notification_dict = {
-        'open-edx.studio.announcements.new-announcement': 'There is a new Course Update available',
-        'open-edx.lms.discussions.reply-to-thread': 'testuser has replied to a discussion posting ',
-        'open-edx.lms.discussions.thread-followed': 'testuser is now following your discussion thread',
-        'open-edx.lms.discussions.post-upvoted': 'testuser has upvoted your discussion thread',
-        'open-edx.lms.discussions.cohorted-thread-added': 'testuser has added to a new posting to a private discussion',
-        'open-edx.lms.discussions.cohorted-comment-added': 'testuser has added to a new comment',
-        'open-edx.lms.discussions.comment-upvoted': 'testuser has upvoted your comment',
-        'open-edx.lms.leaderboard.progress.rank-changed': 'You are now #2 in Progress in the cohort!',
+        'open-edx.studio.announcements.new-announcement': 'Gettysburg Address',
+        'open-edx.lms.discussions.reply-to-thread': 'testuser responded to your post in ',
+        'open-edx.lms.discussions.thread-followed': 'A demo posting to the discussion forums was followed 3 times',
+        'open-edx.lms.discussions.post-upvoted': 'Your post A demo posting to the discussion forums was upvoted 5 times',
+        'open-edx.lms.discussions.cohorted-thread-added': 'testuser posted: Four score and seven years ago',
+        'open-edx.lms.discussions.cohorted-comment-added': 'testuser responded: Four score and seven years ago',
+        'open-edx.lms.discussions.comment-upvoted': 'Your response to A demo posting to the discussion forums was upvoted 5 times',
+        'open-edx.lms.leaderboard.progress.rank-changed': 'You are now #2 for Progress in the cohort!',
         'open-edx.lms.leaderboard.gradebook.rank-changed': 'You are now #3 for Proficiency in the cohort!',
         'open-edx.xblock.group-project.file-uploaded': 'First Activity: testuser uploaded a file',
-        'open-edx.xblock.group-project.uploads-open': 'First Activity: Uploads are open',
-        'open-edx.xblock.group-project.uploads-due': 'First Activity: Uploads are due',
+        'open-edx.xblock.group-project.uploads-open': 'First Activity: Upload(s) are open',
+        'open-edx.xblock.group-project.uploads-due': 'First Activity: Upload(s) due 4/25',
         'open-edx.xblock.group-project.reviews-open': 'First Activity: Review(s) are open',
         'open-edx.xblock.group-project.reviews-due': 'First Activity: Review(s) due',
         'open-edx.xblock.group-project.grades-posted': 'First Activity: Grade(s) are posted',
@@ -257,9 +257,9 @@ class TestAddNotifications(WebAppTest):
         self.assertTrue(unread_notification_count > 0)
         self.logged_in_home_page.mark_as_read()
         unread_notification_count = self.logged_in_home_page.return_unread_notifications_count()
-        self.assertTrue(unread_notification_count == 0)
+        self.assertEqual(unread_notification_count, 0)
         display_notification_count = self.logged_in_home_page.get_notifications_count()
-        self.assertTrue(display_notification_count == 0)
+        self.assertEqual(display_notification_count, 0)
 
     def test_11_verify_page_redirect_on_clicking_notifications(self):
         """
@@ -297,7 +297,7 @@ class TestAddNotifications(WebAppTest):
         self.logged_in_home_page.show_notifications_container()
         self.logged_in_home_page.verify_notifications_container_is_visible()
         notification_link = self.logged_in_home_page.click_on_notification()
-        self.assertTrue(notification_link == 'No target link')
+        self.assertEqual(notification_link, 'No target link')
 
     def test_13_verify_on_clicking_notification_its_status_changes_to_read(self):
         """
@@ -318,7 +318,7 @@ class TestAddNotifications(WebAppTest):
         self.logged_in_home_page.show_notifications_container()
         self.logged_in_home_page.verify_notifications_container_is_visible()
         new_unread_notification_count = self.logged_in_home_page.get_notifications_count()
-        self.assertTrue(new_unread_notification_count == unread_notification_count - 1)
+        self.assertEqual(new_unread_notification_count, unread_notification_count - 1)
 
     def test_14_verify_on_clicking_notification_without_target_link_its_status_changes_to_read(self):
         """
@@ -338,7 +338,7 @@ class TestAddNotifications(WebAppTest):
         self.logged_in_home_page.show_notifications_container()
         self.logged_in_home_page.verify_notifications_container_is_visible()
         new_unread_notification_count = self.logged_in_home_page.return_unread_notifications_count()
-        self.assertTrue(new_unread_notification_count == unread_notification_count - 1)
+        self.assertEqual(new_unread_notification_count, unread_notification_count - 1)
 
     def test_15_verify_notification_count_decrease_on_clicking_notification(self):
         """
@@ -359,7 +359,7 @@ class TestAddNotifications(WebAppTest):
         self.logged_in_home_page.log_out()
         self.login()
         new_notification_count = self.logged_in_home_page.get_notifications_count()
-        self.assertTrue(new_notification_count == notification_count - 1)
+        self.assertEqual(new_notification_count, notification_count - 1)
 
     def test_16_verify_notification_count_decreases_on_clicking_notification_without_target_link(self):
         """
@@ -378,7 +378,7 @@ class TestAddNotifications(WebAppTest):
         notification_count = self.logged_in_home_page.get_notifications_count()
         self.logged_in_home_page.click_on_notification()
         new_notification_count = self.logged_in_home_page.get_notifications_count()
-        self.assertTrue(new_notification_count == notification_count - 1)
+        self.assertEqual(new_notification_count, notification_count - 1)
 
     def test_17_adding_notifications_in_one_namespace_does_not_change_count_in_other(self):
         """
@@ -396,14 +396,14 @@ class TestAddNotifications(WebAppTest):
             self.logged_in_home_page.verify_notifications_container_is_visible()
             self.logged_in_home_page.mark_as_read()
             display_notification_count = self.logged_in_home_page.get_notifications_count()
-            self.assertTrue(display_notification_count == 0)
+            self.assertEqual(display_notification_count, 0)
         self.logged_in_home_page.set_namespace(self.namespaces[0])
         self.logged_in_home_page.add_notification()
         notification_count_for_namespace_1 = self.logged_in_home_page.get_notifications_count()
-        self.assertTrue(notification_count_for_namespace_1 == 1)
+        self.assertEqual(notification_count_for_namespace_1, 1)
         self.logged_in_home_page.set_namespace(self.namespaces[1])
         notification_count_for_namespace_2 = self.logged_in_home_page.get_notifications_count()
-        self.assertTrue(notification_count_for_namespace_2 == 0)
+        self.assertEqual(notification_count_for_namespace_2, 0)
 
     def test_18_adding_notifications_in_one_namespace_does_not_change_unread_count_in_other(self):
         """
@@ -421,18 +421,18 @@ class TestAddNotifications(WebAppTest):
             self.logged_in_home_page.verify_notifications_container_is_visible()
             self.logged_in_home_page.mark_as_read()
             display_notification_count = self.logged_in_home_page.get_notifications_count()
-            self.assertTrue(display_notification_count == 0)
+            self.assertEqual(display_notification_count, 0)
         self.logged_in_home_page.set_namespace(self.namespaces[1])
         self.logged_in_home_page.add_notification()
         self.logged_in_home_page.show_notifications_container()
         self.logged_in_home_page.verify_notifications_container_is_visible()
         unread_notification_count_for_namespace_2 = self.logged_in_home_page.return_unread_notifications_count()
-        self.assertTrue(unread_notification_count_for_namespace_2 == 1)
+        self.assertEqual(unread_notification_count_for_namespace_2, 1)
         self.logged_in_home_page.set_namespace(self.namespaces[0])
         self.logged_in_home_page.show_notifications_container()
         self.logged_in_home_page.verify_notifications_container_is_visible()
         unread_notification_count_for_namespace_1 = self.logged_in_home_page.return_unread_notifications_count()
-        self.assertTrue(unread_notification_count_for_namespace_1 == 0)
+        self.assertEqual(unread_notification_count_for_namespace_1, 0)
 
     def test_19_marking_notifications_as_read_in_one_namespace_does_not_impact_other(self):
         """
@@ -452,7 +452,7 @@ class TestAddNotifications(WebAppTest):
         self.logged_in_home_page.verify_notifications_container_is_visible()
         self.logged_in_home_page.mark_as_read()
         notification_count_for_namespace_1 = self.logged_in_home_page.get_notifications_count()
-        self.assertTrue(notification_count_for_namespace_1 == 0)
+        self.assertEqual(notification_count_for_namespace_1, 0)
         self.logged_in_home_page.set_namespace(self.namespaces[1])
         notification_count_for_namespace_2 = self.logged_in_home_page.get_notifications_count()
         self.assertTrue(notification_count_for_namespace_2 > 0)

@@ -1,0 +1,1 @@
+<span class='xns-title'><%= activity_name %></span>: <span class='xns-username'><%= action_username %></span> uploaded a file

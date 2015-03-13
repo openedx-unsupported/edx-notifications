@@ -17,42 +17,42 @@ class ReplyToThreadRenderer(UnderscoreStaticFileRenderer):
     """
     Renders a reply-to-thread notification
     """
-    underscore_template_name = 'forums/reply_to_thread.html'
+    underscore_template_name = 'forums/reply_to_thread.underscore'
 
 
 class ThreadFollowedRenderer(UnderscoreStaticFileRenderer):
     """
     Renders a thread-followed notification
     """
-    underscore_template_name = 'forums/thread_followed.html'
+    underscore_template_name = 'forums/thread_followed.underscore'
 
 
 class PostUpvotedRenderer(UnderscoreStaticFileRenderer):
     """
     Renders a post-upvoted notification
     """
-    underscore_template_name = 'forums/post_upvoted.html'
+    underscore_template_name = 'forums/post_upvoted.underscore'
 
 
 class CommentUpvotedRenderer(UnderscoreStaticFileRenderer):
     """
     Renders a post-upvoted notification
     """
-    underscore_template_name = 'forums/comment_upvoted.html'
+    underscore_template_name = 'forums/comment_upvoted.underscore'
 
 
 class CohortedThreadAddedRenderer(UnderscoreStaticFileRenderer):
     """
     Renders a post-upvoted notification
     """
-    underscore_template_name = 'forums/cohorted_thread_added.html'
+    underscore_template_name = 'forums/cohorted_thread_added.underscore'
 
 
 class CohortedCommentAddedRenderer(UnderscoreStaticFileRenderer):
     """
     Renders a post-upvoted notification
     """
-    underscore_template_name = 'forums/cohorted_comment_added.html'
+    underscore_template_name = 'forums/cohorted_comment_added.underscore'
 
 
 @receiver(perform_type_registrations)

@@ -17,7 +17,7 @@ class NewCourseAnnouncementRenderer(UnderscoreStaticFileRenderer):
     """
     Renders a new-course-announcement notification
     """
-    underscore_template_name = 'course_announcements/new_announcement.html'
+    underscore_template_name = 'course_announcements/new_announcement.underscore'
 
 
 @receiver(perform_type_registrations)

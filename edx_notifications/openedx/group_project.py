@@ -13,11 +13,32 @@ from edx_notifications.renderers.basic import UnderscoreStaticFileRenderer
 from django.dispatch import receiver
 
 
-class GroupProjectGenericRenderer(UnderscoreStaticFileRenderer):
+class GroupProjectFileUploadedRenderer(UnderscoreStaticFileRenderer):
     """
     Renders a notification when ranking in the progress leaderboard changes
     """
-    underscore_template_name = 'group_project/generic.html'
+    underscore_template_name = 'group_project/file_uploaded.underscore'
+
+
+class GroupProjectStageDueRenderer(UnderscoreStaticFileRenderer):
+    """
+    Renders a notification when ranking in the progress leaderboard changes
+    """
+    underscore_template_name = 'group_project/stage_due.underscore'
+
+
+class GroupProjectStageOpenRenderer(UnderscoreStaticFileRenderer):
+    """
+    Renders a notification when ranking in the progress leaderboard changes
+    """
+    underscore_template_name = 'group_project/stage_open.underscore'
+
+
+class GroupProjectGradesPostedRenderer(UnderscoreStaticFileRenderer):
+    """
+    Renders a notification when ranking in the progress leaderboard changes
+    """
+    underscore_template_name = 'group_project/grades_posted.underscore'
 
 
 @receiver(perform_type_registrations)
@@ -31,41 +52,41 @@ def register_notification_types(sender, **kwargs):  # pylint: disable=unused-arg
     register_notification_type(
         NotificationType(
             name=u'open-edx.xblock.group-project.file-uploaded',
-            renderer='edx_notifications.openedx.group_project.GroupProjectGenericRenderer',
+            renderer='edx_notifications.openedx.group_project.GroupProjectFileUploadedRenderer',
         )
     )
 
     register_notification_type(
         NotificationType(
             name=u'open-edx.xblock.group-project.uploads-open',
-            renderer='edx_notifications.openedx.group_project.GroupProjectGenericRenderer',
+            renderer='edx_notifications.openedx.group_project.GroupProjectStageOpenRenderer',
         )
     )
 
     register_notification_type(
         NotificationType(
             name=u'open-edx.xblock.group-project.uploads-due',
-            renderer='edx_notifications.openedx.group_project.GroupProjectGenericRenderer',
+            renderer='edx_notifications.openedx.group_project.GroupProjectStageDueRenderer',
         )
     )
 
     register_notification_type(
         NotificationType(
             name=u'open-edx.xblock.group-project.reviews-open',
-            renderer='edx_notifications.openedx.group_project.GroupProjectGenericRenderer',
+            renderer='edx_notifications.openedx.group_project.GroupProjectStageOpenRenderer',
         )
     )
 
     register_notification_type(
         NotificationType(
             name=u'open-edx.xblock.group-project.reviews-due',
-            renderer='edx_notifications.openedx.group_project.GroupProjectGenericRenderer',
+            renderer='edx_notifications.openedx.group_project.GroupProjectStageDueRenderer',
         )
     )
 
     register_notification_type(
         NotificationType(
             name=u'open-edx.xblock.group-project.grades-posted',
-            renderer='edx_notifications.openedx.group_project.GroupProjectGenericRenderer',
+            renderer='edx_notifications.openedx.group_project.GroupProjectGradesPostedRenderer',
         )
     )

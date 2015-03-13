@@ -19,7 +19,7 @@ fi
 echo "Creating new test db and sync data..."
 ./manage.py syncdb --noinput --settings=testserver.bokchoy_settings
 
-ech "Migrate data"
+echo "Migrate data"
 ./manage.py migrate --noinput --settings=testserver.bokchoy_settings
 
 echo "Starting notifications server..."
