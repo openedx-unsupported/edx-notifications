@@ -1,5 +1,14 @@
 #!/bin/bash bash
 
+#setup the log directory
+export LOG_DIR=testserver/test/acceptance/logs
+export SCREENSHOT_DIR=$LOG_DIR
+export SELENIUM_DRIVER_LOG_DIR=$LOG_DIR
+
+# Set up the output logs directory for
+# screenshots and selenium driver logs
+mkdir -p $LOG_DIR
+rm -rf $LOG_DIR/*
 
 # this stops the django servers
 stopServers() {
