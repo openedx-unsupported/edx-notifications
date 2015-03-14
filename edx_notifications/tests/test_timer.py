@@ -15,8 +15,9 @@ from edx_notifications.data import (
 )
 from edx_notifications.tests.test_scopes import TestListScopeResolver
 from edx_notifications.scopes import register_user_scope_resolver
-from edx_notifications.lib.publisher import publish_timed_notification
+from edx_notifications.lib.publisher import publish_timed_notification, cancel_timed_notification
 from edx_notifications.timer import poll_and_execute_timers
+from edx_notifications.exceptions import ItemNotFoundError
 
 
 class BadNotificationCallbackTimerHandler(NotificationCallbackTimerHandler):
@@ -221,6 +222,20 @@ class TimedNotificationsTests(TestCase):
         # assert we now have a notification due to the timer executing
         self.assertEquals(self.store.get_num_notifications_for_user(1), 1)
 
+    def test_bad_scope(self):
+        """
+        Make sure we can't register a timer on a user scope that
+        does not exist
+        """
+
+        with self.assertRaises(ValueError):
+            publish_timed_notification(
+                msg=self.msg,
+                send_at=datetime.now(pytz.UTC) - timedelta(seconds=1),
+                scope_name='bad-scope',
+                scope_context={'user_id': 1}
+            )
+
     def test_erred_timed_notifications(self):
         """
         Tests that we can create a timed notification and make sure it gets
@@ -320,3 +335,40 @@ class TimedNotificationsTests(TestCase):
 
         # assert we now have a notification due to the timer executing
         self.assertEquals(self.store.get_num_notifications_for_user(1), 1)
+
+    def test_cancel_timer(self):
+        """
+        Make sure we a cancel a timer
+        """
+
+        # set up a timer that is due in the past
+        timer = publish_timed_notification(
+            msg=self.msg,
+            send_at=datetime.now(pytz.UTC) - timedelta(days=1),
+            scope_name='user',
+            scope_context={'range': 1}
+        )
+
+        cancel_timed_notification(timer.name)
+
+        # fetch the timer again from DB
+        updated_timer = self.store.get_notification_timer(timer.name)
+
+        # is_active = False
+        self.assertFalse(updated_timer.is_active)
+
+        poll_and_execute_timers()
+
+        # fetch the timer from the DB as it should be updated
+        updated_timer = self.store.get_notification_timer(timer.name)
+
+        # should not have been executed
+        self.assertIsNone(updated_timer.executed_at)
+
+    def test_cancel_non_existing_timer(self):
+        """
+        Make sure canceling a time that does not exist raises a ItemNotFoundError
+        """
+
+        with self.assertRaises(ItemNotFoundError):
+            cancel_timed_notification('no-exist')

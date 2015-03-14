@@ -22,10 +22,8 @@ class TestAddNotifications(WebAppTest):
         'open-edx.lms.leaderboard.progress.rank-changed': 'You are now #2 for Progress in the cohort!',
         'open-edx.lms.leaderboard.gradebook.rank-changed': 'You are now #3 for Proficiency in the cohort!',
         'open-edx.xblock.group-project.file-uploaded': 'First Activity: testuser uploaded a file',
-        'open-edx.xblock.group-project.uploads-open': 'First Activity: Upload(s) are open',
-        'open-edx.xblock.group-project.uploads-due': 'First Activity: Upload(s) due 4/25',
-        'open-edx.xblock.group-project.reviews-open': 'First Activity: Review(s) are open',
-        'open-edx.xblock.group-project.reviews-due': 'First Activity: Review(s) due',
+        'open-edx.xblock.group-project.stage-open': 'First Activity: Upload(s) are open',
+        'open-edx.xblock.group-project.stage-due': 'First Activity: Upload(s) due 4/25',
         'open-edx.xblock.group-project.grades-posted': 'First Activity: Grade(s) are posted',
     }
 

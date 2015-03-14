@@ -119,31 +119,18 @@ CANNED_TEST_PAYLOAD = {
         'activity_name': 'First Activity',
         'verb': 'uploaded a file',
     },
-    'open-edx.xblock.group-project.uploads-open': {
+    'open-edx.xblock.group-project.stage-open': {
         '_schema_version': 1,
         '_click_link': 'http://localhost',
         'activity_name': 'First Activity',
         'stage_name': 'Upload(s)',
     },
-    'open-edx.xblock.group-project.uploads-due': {
+    'open-edx.xblock.group-project.stage-due': {
         '_schema_version': 1,
         '_click_link': 'http://localhost',
         'activity_name': 'First Activity',
         'stage_name': 'Upload(s)',
         'due_date': '4/25'
-    },
-    'open-edx.xblock.group-project.reviews-open': {
-        '_schema_version': 1,
-        '_click_link': 'http://localhost',
-        'activity_name': 'First Activity',
-        'stage_name': 'Review(s)',
-    },
-    'open-edx.xblock.group-project.reviews-due': {
-        '_schema_version': 1,
-        '_click_link': 'http://localhost',
-        'activity_name': 'First Activity',
-        'stage_name': 'Review(s)',
-        'due_date': '5/1'
     },
     'open-edx.xblock.group-project.grades-posted': {
         '_schema_version': 1,

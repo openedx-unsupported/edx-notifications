@@ -5,6 +5,7 @@ All tests regarding scopes.py
 from django.test import TestCase
 
 from edx_notifications.scopes import (
+    SingleUserScopeResolver,
     NotificationUserScopeResolver,
     register_user_scope_resolver,
     clear_user_scope_resolvers,
@@ -102,7 +103,7 @@ class ScopesTests(TestCase):
         Asserts that None is returned when there is scope resolution
         """
 
-        with self.assertRaises(KeyError):
+        with self.assertRaises(TypeError):
             resolve_user_scope('bad_scope', {})
 
     def test_no_instantiation(self):
@@ -135,7 +136,7 @@ class ScopesTests(TestCase):
         via a non-existing scope_name
         """
 
-        with self.assertRaises(KeyError):
+        with self.assertRaises(TypeError):
             resolve_user_scope('non-existing', {})
 
     def test_no_resolution(self):
@@ -146,3 +147,12 @@ class ScopesTests(TestCase):
         register_user_scope_resolver('none_resolver', TestListScopeResolver())
 
         self.assertIsNone(resolve_user_scope('none_resolver', {}))
+
+    def test_single_user_scope_resolver(self):
+        """
+        Assert that we can resolve the system defined SingleUserScopeResolver
+        """
+
+        resolver = SingleUserScopeResolver()
+        user_ids = resolver.resolve('user', {'user_id': 1}, {})
+        self.assertEquals(user_ids, [1])

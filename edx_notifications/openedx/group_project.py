@@ -58,28 +58,14 @@ def register_notification_types(sender, **kwargs):  # pylint: disable=unused-arg
 
     register_notification_type(
         NotificationType(
-            name=u'open-edx.xblock.group-project.uploads-open',
+            name=u'open-edx.xblock.group-project.stage-open',
             renderer='edx_notifications.openedx.group_project.GroupProjectStageOpenRenderer',
         )
     )
 
     register_notification_type(
         NotificationType(
-            name=u'open-edx.xblock.group-project.uploads-due',
-            renderer='edx_notifications.openedx.group_project.GroupProjectStageDueRenderer',
-        )
-    )
-
-    register_notification_type(
-        NotificationType(
-            name=u'open-edx.xblock.group-project.reviews-open',
-            renderer='edx_notifications.openedx.group_project.GroupProjectStageOpenRenderer',
-        )
-    )
-
-    register_notification_type(
-        NotificationType(
-            name=u'open-edx.xblock.group-project.reviews-due',
+            name=u'open-edx.xblock.group-project.stage-due',
             renderer='edx_notifications.openedx.group_project.GroupProjectStageDueRenderer',
         )
     )

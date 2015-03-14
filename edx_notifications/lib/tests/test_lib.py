@@ -292,6 +292,24 @@ class TestPublisherLibrary(TestCase):
             self.assertEqual(len(notifications), 1)
             self.assertTrue(isinstance(notifications[0], UserNotification))
 
+    def test_bulk_publish_bad_type(self):
+        """
+        Make sure we have to pass in the right type
+        """
+        msg = NotificationMessage(
+            namespace='test-runner',
+            msg_type=self.msg_type,
+            payload={
+                'foo': 'bar'
+            }
+        )
+
+        with self.assertRaises(TypeError):
+            bulk_publish_notification_to_users(
+                "this should fail",
+                msg
+            )
+
     def test_publish_to_scope(self):
         """
         Make sure we can bulk publish to a number of users
@@ -324,6 +342,27 @@ class TestPublisherLibrary(TestCase):
             self.assertTrue(isinstance(notifications, list))
             self.assertEqual(len(notifications), 1)
             self.assertTrue(isinstance(notifications[0], UserNotification))
+
+    def test_publish_to_bad_scope(self):
+        """
+        Assert that we can't publish to a scope which can not be resolved
+        """
+
+        msg = NotificationMessage(
+            namespace='test-runner',
+            msg_type=self.msg_type,
+            payload={
+                'foo': 'bar'
+            }
+        )
+
+        with self.assertRaises(TypeError):
+            publish_notification_to_scope(
+                scope_name="bad-scope",
+                # the TestListScopeResolver expects a "range" property in the context
+                scope_context={"range": 5},
+                msg=msg
+            )
 
     def test_mark_all_as_read(self):
         """

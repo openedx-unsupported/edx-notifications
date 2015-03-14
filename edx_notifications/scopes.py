@@ -29,6 +29,28 @@ class NotificationUserScopeResolver(object):
         raise NotImplementedError()
 
 
+class SingleUserScopeResolver(object):
+    """
+    Simple implementation for scope_name='user' where there must
+    be a user_id inside the scope_context
+    """
+
+    def resolve(self, scope_name, scope_context, instance_context):  # pylint: disable=unused-argument
+        """
+        Convert scope_name with scope_context and instance_context to
+        a collection of user_ids as a list, function generator, or
+        ValuesListQuerySet (only!!!)
+        """
+
+        user_ids = None
+        if scope_name == 'user':
+            if 'user_id' in scope_context:
+                user_ids = []
+                user_ids.append(scope_context['user_id'])
+
+        return user_ids
+
+
 def register_user_scope_resolver(scope_name, instance, instance_context=None):
     """
     Adds a ScopeResolver to our list of resolvers. There can be more than
@@ -52,6 +74,14 @@ def clear_user_scope_resolvers():
     _SCOPE_RESOLVERS.clear()
 
 
+def has_user_scope_resolver(scope_name):
+    """
+    Returns true/false if there's a resolver for that scope_name
+    """
+
+    return scope_name in _SCOPE_RESOLVERS
+
+
 def resolve_user_scope(scope_name, scope_context):
     """
     Given a scope and scope context this will go through all
@@ -60,11 +90,11 @@ def resolve_user_scope(scope_name, scope_context):
     ValuesListQuerySet (only!!!)
     """
 
-    if scope_name not in _SCOPE_RESOLVERS:
+    if not has_user_scope_resolver(scope_name):
         err_msg = (
             'Could not find scope resolver "{scope_name}"'.format(scope_name=scope_name)
         )
-        raise KeyError(err_msg)
+        raise TypeError(err_msg)
 
     user_ids = None
     for _, instance_info in _SCOPE_RESOLVERS[scope_name].iteritems():
