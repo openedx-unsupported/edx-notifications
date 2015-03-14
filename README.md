@@ -121,6 +121,12 @@ To run these tests just use the following command
 bash run_bokchoy_tests.sh
 ```
 
+To run an individual test use the above command with test name at end, for example
+
+```
+bash run_bokchoy_tests.sh test_00_show_notification_pane
+```
+
 Jasmine Tests
 --------------
 

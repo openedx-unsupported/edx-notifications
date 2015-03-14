@@ -19,7 +19,7 @@ class HomePage(PageObject):
         """
         Click on the registration link to go to registration page
         """
-        self.wait_for_element_presence('a[href="/register"]', 'Registration link not found')
+        self.wait_for_element_presence('a[href="/register"]', 'Registration link not found', timeout=20)
         self.q(css='a[href="/register"]').click()
         RegistrationPage(self.browser).wait_for_page()
 
@@ -27,5 +27,5 @@ class HomePage(PageObject):
         """
         Click on the login button to go to login page
         """
-        self.wait_for_element_presence('input[value="Login"]', 'Login button not found')
+        self.wait_for_element_presence('input[value="Login"]', 'Login button not found', timeout=20)
         LoginPage(self.browser).wait_for_page()
