@@ -17,7 +17,14 @@ class TestUtils(TestCase):
         Make sure we get the render context that we expect
         """
 
-        render_context = get_notifications_widget_context(override_context={'test_settings': 'ok'})
+        render_context = get_notifications_widget_context(
+            override_context={
+                'test_settings': 'ok',
+                'global_variables': {
+                    'always_show_dates_on_unread': False
+                }
+            }
+        )
 
         self.assertIn('endpoints', render_context)
 
@@ -26,3 +33,8 @@ class TestUtils(TestCase):
         self.assertIn('user_notifications_all', endpoints)
         self.assertIn('renderer_templates_urls', endpoints)
         self.assertIn('ok', render_context['test_settings'])
+
+        # make sure nested dictionary overrides work without destroying
+        # the base values
+        self.assertFalse(render_context['global_variables']['always_show_dates_on_unread'])
+        self.assertEquals(render_context['global_variables']['app_name'], 'Your App Name Here')

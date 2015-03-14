@@ -109,6 +109,6 @@ def get_notifications_widget_context(override_context=None):
     })
 
     if override_context:
-        context.update(RecursiveDictionary(override_context))
+        context.rec_update(override_context)
 
     return context

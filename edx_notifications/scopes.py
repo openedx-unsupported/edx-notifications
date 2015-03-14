@@ -94,7 +94,7 @@ def resolve_user_scope(scope_name, scope_context):
         err_msg = (
             'Could not find scope resolver "{scope_name}"'.format(scope_name=scope_name)
         )
-        raise KeyError(err_msg)
+        raise TypeError(err_msg)
 
     user_ids = None
     for _, instance_info in _SCOPE_RESOLVERS[scope_name].iteritems():

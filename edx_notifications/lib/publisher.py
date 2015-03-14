@@ -194,11 +194,7 @@ def publish_notification_to_scope(scope_name, scope_context, msg, exclude_user_i
     user_ids = resolve_user_scope(scope_name, scope_context)
 
     if not user_ids:
-        err_msg = (
-            'Could not find scope resolver named "{name}" with scope_context: {context}'
-        ).format(name=scope_name, context=scope_context)
-
-        raise TypeError(err_msg)
+        return 0
 
     return bulk_publish_notification_to_users(user_ids, msg, exclude_user_ids)
 
@@ -297,3 +293,4 @@ def cancel_timed_notification(timer_name):
             'but it does not exist. Skipping...'
         ).format(name=timer_name)
         log.error(err_msg)
+        raise
