@@ -13,27 +13,18 @@ class LoginPage(PageObject):
         """
         return self.q(css='input[value="Login"]').present
 
-    def provide_credentials(self, username, password):
+    def login_to_application(self, username, password):
         """
         Get username, password as parameters and provide these in relevant input boxes
+        Click the submit button and check if there is any error return message
+        otherwise go to logged in page
         :param username:
         :param password:
         """
         self.q(css='#id_username').fill(username)
         self.q(css='#id_password').fill(password)
-
-    def submit_incorrect_credentials(self):
-        """
-        Check for error message after incorrect credentials have been provided
-        Return the error message text
-        :return:
-        """
         self.q(css='input[value="Login"]').click()
-        return self.q(css='html>body>p').text[0]
-
-    def submit_correct_credentials(self):
-        """
-        go to logged in home page after clicking login button
-        """
-        self.q(css='input[value="Login"]').click()
-        LoggedInHomePage(self.browser).wait_for_page()
+        if "username and password didn't match" in self.q(css='html>body>p').text[0]:
+            return "User not registered"
+        else:
+            LoggedInHomePage(self.browser).wait_for_page()
