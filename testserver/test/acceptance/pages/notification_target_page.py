@@ -1,5 +1,6 @@
 from bok_choy.page_object import PageObject
 from bok_choy.promise import EmptyPromise
+from . import default_timeout
 
 
 class NotificationTargetPage(PageObject):
@@ -23,5 +24,5 @@ class NotificationTargetPage(PageObject):
         EmptyPromise(
             lambda: target_link in self.browser.current_url,
             'target url is not correct',
-            timeout=20
+            timeout=default_timeout
         ).fulfill()

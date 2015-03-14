@@ -1,5 +1,6 @@
 import os
 import errno
+
 """
 This section is valid only when tests are run from pycharm instead of
 running these using shell script
@@ -36,3 +37,9 @@ base_url = 'http://127.0.0.1:8000/'
 user_name = 'testuser1'
 user_email = 'testuser1@edx.org'
 password = '123'
+
+
+"""
+Define default timeout for waits and promises
+"""
+default_timeout = 20

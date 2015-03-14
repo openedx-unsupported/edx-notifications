@@ -470,4 +470,3 @@ class TestAddNotifications(WebAppTest):
             self.login_page.login_to_application(user_name, password)
             self.assertTrue(self.logged_in_home_page.is_browser_on_page())
         self.assertTrue(self.logged_in_home_page.is_browser_on_page())
-

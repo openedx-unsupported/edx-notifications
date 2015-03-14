@@ -1,6 +1,5 @@
 from bok_choy.page_object import PageObject
 from logged_in_home_page import LoggedInHomePage
-#from registration_page import RegistrationPage
 
 
 class LoginPage(PageObject):
