@@ -13,16 +13,9 @@ from edx_notifications.renderers.basic import UnderscoreStaticFileRenderer
 from django.dispatch import receiver
 
 
-class ProgressRankChangedRenderer(UnderscoreStaticFileRenderer):
+class LeaderboardRankChangedRenderer(UnderscoreStaticFileRenderer):
     """
     Renders a notification when ranking in the progress leaderboard changes
-    """
-    underscore_template_name = 'leaderboard/rank_changed.underscore'
-
-
-class GradebookRankChangedRenderer(UnderscoreStaticFileRenderer):
-    """
-    Renders a notification when ranking in the gradebook leaderboard changes
     """
     underscore_template_name = 'leaderboard/rank_changed.underscore'
 
@@ -38,13 +31,20 @@ def register_notification_types(sender, **kwargs):  # pylint: disable=unused-arg
     register_notification_type(
         NotificationType(
             name=u'open-edx.lms.leaderboard.progress.rank-changed',
-            renderer='edx_notifications.openedx.leaderboard.ProgressRankChangedRenderer',
+            renderer='edx_notifications.openedx.leaderboard.LeaderboardRankChangedRenderer',
         )
     )
 
     register_notification_type(
         NotificationType(
             name=u'open-edx.lms.leaderboard.gradebook.rank-changed',
-            renderer='edx_notifications.openedx.leaderboard.GradebookRankChangedRenderer',
+            renderer='edx_notifications.openedx.leaderboard.LeaderboardRankChangedRenderer',
+        )
+    )
+
+    register_notification_type(
+        NotificationType(
+            name=u'open-edx.lms.leaderboard.engagement.rank-changed',
+            renderer='edx_notifications.openedx.leaderboard.LeaderboardRankChangedRenderer',
         )
     )
