@@ -112,6 +112,12 @@ CANNED_TEST_PAYLOAD = {
         'rank': 3,
         'leaderboard_name': 'Proficiency'
     },
+    'open-edx.lms.leaderboard.engagement.rank-changed': {
+        '_schema_version': 1,
+        '_click_link': 'http://localhost',
+        'rank': 1,
+        'leaderboard_name': 'Engagement'
+    },
     'open-edx.xblock.group-project.file-uploaded': {
         '_schema_version': 1,
         '_click_link': 'http://localhost',
