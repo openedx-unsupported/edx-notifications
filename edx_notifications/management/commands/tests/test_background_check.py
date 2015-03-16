@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from django.test import TestCase
 from django.dispatch import receiver
 
-from edx_notifications.management.commands import background_check
+from edx_notifications.management.commands import background_notification_check
 
 from edx_notifications.stores.store import notification_store
 from edx_notifications.background import (
@@ -42,7 +42,7 @@ class BackgroundCheckTest(TestCase):
         Invoke the Management Command
         """
 
-        background_check.Command().handle()
+        background_notification_check.Command().handle()
 
         self.assertTrue(_SIGNAL_RAISED)
 
@@ -61,7 +61,7 @@ class BackgroundCheckTest(TestCase):
 
         notification_store().save_notification_timer(timer)
 
-        background_check.Command().handle()
+        background_notification_check.Command().handle()
 
         readback_timer = notification_store().get_notification_timer(timer.name)
 
