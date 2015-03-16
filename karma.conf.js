@@ -21,13 +21,14 @@ module.exports = function(config) {
         'karma-jasmine-jquery',
         'karma-firefox-launcher',
         'karma-phantomjs-launcher',
+        'karma-phantomjs2-launcher',
         'karma-chrome-launcher',
         'karma-coverage',
         'karma-sinon'
     ],
 
     // start the browser
-    browsers: ['Firefox'],
+    browsers: ['PhantomJS2'],
 
     //frameworks to use
     frameworks: ['jasmine-jquery', 'jasmine', 'sinon'],
