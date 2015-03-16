@@ -22,6 +22,7 @@ class TestAddNotifications(WebAppTest):
         'open-edx.lms.discussions.comment-upvoted': 'response to A demo posting to the discussion forums was upvoted',
         'open-edx.lms.leaderboard.progress.rank-changed': 'You are now #2 for Progress in the cohort!',
         'open-edx.lms.leaderboard.gradebook.rank-changed': 'You are now #3 for Proficiency in the cohort!',
+        'open-edx.lms.leaderboard.engagement.rank-changed': 'You are now #1 for Engagement in the cohort!',
         'open-edx.xblock.group-project.file-uploaded': 'First Activity: testuser uploaded a file',
         'open-edx.xblock.group-project.stage-open': 'First Activity: Upload(s) are open',
         'open-edx.xblock.group-project.stage-due': 'First Activity: Upload(s) due 4/25',
@@ -35,7 +36,6 @@ class TestAddNotifications(WebAppTest):
         'open-edx.lms.leaderboard.progress.rank-changed': 'You are now #2 for Progress in the cohort!',
         'open-edx.xblock.group-project.grades-posted': 'First Activity: Grade(s) are posted',
     }
-
 
     if HIDE_LINK_IS_VISIBLE:
         notifications_container_tabs = ['View unread', 'View all', 'Mark as read', 'Hide']
