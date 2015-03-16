@@ -27,7 +27,7 @@ module.exports = function(config) {
     ],
 
     // start the browser
-    browsers: ['PhantomJS'],
+    browsers: ['Firefox'],
 
     //frameworks to use
     frameworks: ['jasmine-jquery', 'jasmine', 'sinon'],
@@ -38,11 +38,6 @@ module.exports = function(config) {
         'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/underscore.js',
         'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/backbone.js',
         'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/date.js',
-        'edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.html',
-        'edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/reply_to_thread.html',
-        'edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.html',
-        'edx_notifications/server/web/static/edx_notifications/templates/renderers/course_announcements/new_announcement.html',
-        'edx_notifications/server/web/static/edx_notifications/templates/renderers/basic_subject_body.html',
         'edx_notifications/server/web/static/edx_notifications/js/models/user_notification_model.js',
         'edx_notifications/server/web/static/edx_notifications/js/models/counter_icon_model.js',
         'edx_notifications/server/web/static/edx_notifications/js/collections/notification_collection.js',
