@@ -11,12 +11,10 @@
     "karma-chrome-launcher": "latest",
     "karma-coverage": "latest",
     "karma-firefox-launcher": "latest",
-    "karma-html2js-preprocessor": "latest",
     "karma-jasmine": "latest",
     "karma-jasmine-jquery": "latest",
     "karma-phantomjs-launcher": "latest",
     "karma-phantomjs2-launcher": "^0.1.5",
-    "karma-requirejs": "latest",
     "karma-sinon": "latest",
     "karma-spec-reporter": "latest"
   }
