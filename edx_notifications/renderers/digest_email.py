@@ -3,9 +3,7 @@ from django.templatetags.static import static
 from edx_notifications.renderers.renderer import BaseNotificationRenderer
 
 from edx_notifications.const import (
-    RENDER_FORMAT_UNDERSCORE,
     RENDER_FORMAT_DIGEST)
-
 
 
 def path_to_digest_template(name):
@@ -13,11 +11,10 @@ def path_to_digest_template(name):
     Helper to construct a full path to where we have
     system defined Digest Email rendering templates
     """
-    pass #TODO have to figure it out
-    # return static(
-    #     'edx_notifications/templates/renderers/{name}'.format(name=name)
-    # )
-
+    # pass #TODO have to figure it out
+    return (
+        'django/renderers/{name}'.format(name=name)
+    )
 
 
 class EmailDigestTemplateRenderer(BaseNotificationRenderer):
@@ -26,14 +23,14 @@ class EmailDigestTemplateRenderer(BaseNotificationRenderer):
     These templates will be used to render html for sending out Digest emails.
     """
 
-    digest_notification_template_name = None
+    digest_template_name = None
 
     def __init__(self, template_name=None):
         """
         Initializer
         """
         if template_name:
-            self.digest_notification_template_name = template_name
+            self.digest_template_name = template_name
 
     def can_render_format(self, render_format):
         """
@@ -59,9 +56,16 @@ class EmailDigestTemplateRenderer(BaseNotificationRenderer):
         Return a path to where a client can get the template
         """
 
-        if render_format == RENDER_FORMAT_DIGEST and self.digest_notification_template_name:
-            return path_to_digest_template(self.digest_notification_template_name)
+        if render_format == RENDER_FORMAT_DIGEST and self.digest_template_name:
+            return path_to_digest_template(self.digest_template_name)
 
         raise NotImplementedError()
+
+    def get_html_for_template_path(self, context):
+        """
+        return the rendered html for digest_template_path.
+        """
+        return render_to_string(path_to_digest_template(self.digest_template_name), context)
+
 
 

@@ -49,7 +49,7 @@ def register_notification_type(msg_type):
     # type, note that the multiple msg types can have
     # the same renderer, but only one entry will
     # get placed in the registry
-    register_renderer(msg_type.renderer)
+    register_renderer(msg_type.renderer, digest_renderer='edx_notifications.openedx.course_announcements.NewCourseAnnouncementDigestRenderer')
 
 
 @contract(type_name=basestring)

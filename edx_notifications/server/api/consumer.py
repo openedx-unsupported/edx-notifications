@@ -251,7 +251,7 @@ class RendererTemplatesList(AuthenticatedAPIView):
         result_dict = {}
 
         for class_name, renderer in get_all_renderers().iteritems():
-            if renderer.can_render_format(const.RENDER_FORMAT_UNDERSCORE):
-                result_dict[class_name] = renderer.get_template_path(const.RENDER_FORMAT_UNDERSCORE)
+            if renderer['renderer_instance'].can_render_format(const.RENDER_FORMAT_UNDERSCORE):
+                result_dict[class_name] = renderer['renderer_instance'].get_template_path(const.RENDER_FORMAT_UNDERSCORE)
 
         return Response(result_dict, status.HTTP_200_OK)

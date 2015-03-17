@@ -7,6 +7,7 @@ from edx_notifications.data import (
     NotificationType
 )
 from edx_notifications.lib.publisher import register_notification_type
+from edx_notifications.renderers.digest_email import EmailDigestTemplateRenderer
 from edx_notifications.signals import perform_type_registrations
 from edx_notifications.renderers.basic import UnderscoreStaticFileRenderer
 
@@ -19,6 +20,12 @@ class NewCourseAnnouncementRenderer(UnderscoreStaticFileRenderer):
     """
     underscore_template_name = 'course_announcements/new_announcement.underscore'
 
+
+class NewCourseAnnouncementDigestRenderer(EmailDigestTemplateRenderer):
+    """
+    Renders a new-course-announcement notification
+    """
+    digest_template_name = 'course_announcements/new_announcement.html'
 
 @receiver(perform_type_registrations)
 def register_notification_types(sender, **kwargs):  # pylint: disable=unused-argument
@@ -33,5 +40,13 @@ def register_notification_types(sender, **kwargs):  # pylint: disable=unused-arg
         NotificationType(
             name='open-edx.studio.announcements.new-announcement',
             renderer='edx_notifications.openedx.course_announcements.NewCourseAnnouncementRenderer',
+            digest_renderer='edx_notifications.openedx.course_announcements.NewCourseAnnouncementDigestRenderer',
         )
     )
+
+    # register_notification_type(
+    #     NotificationType(
+    #         name='open-edx.studio.announcements.new-announcement',
+    #         renderer='edx_notifications.openedx.course_announcements.NewCourseAnnouncementDigestRenderer',
+    #     )
+    # )

@@ -57,6 +57,8 @@ class NotificationType(BaseDataObject):
     # this type
     renderer = StringField()
 
+    digest_renderer = StringField()
+
 
 class NotificationMessage(BaseDataObject):
     """

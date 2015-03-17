@@ -12,11 +12,10 @@ NotificationType
 import abc
 
 from importlib import import_module
-
 _RENDERERS = {}
 
 
-def register_renderer(class_name):
+def register_renderer(class_name, digest_renderer):
     """
     Adds a Renderer class - which must derive from BaseNotificationRenderer -
     to our in-proc cache. An instance will be created and a dictionary of
@@ -28,9 +27,19 @@ def register_renderer(class_name):
 
     module_path, _, name = class_name.rpartition('.')
     class_ = getattr(import_module(module_path), name)
-
     renderer_instance = class_()
-    _RENDERERS[class_name] = renderer_instance
+    digest_renderer_instance = None
+    if digest_renderer is not None:
+        module_path1, _, name1 = digest_renderer.rpartition('.')
+        class1_ = getattr(import_module(module_path1), name1)
+        digest_renderer_instance = class1_()
+
+
+
+    _RENDERERS[class_name] = {
+        'renderer_instance': renderer_instance,
+        'digest_renderer_instance': digest_renderer_instance
+    }
 
     return renderer_instance
 
