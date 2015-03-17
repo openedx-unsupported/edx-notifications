@@ -134,6 +134,12 @@ describe("NotificationPaneView", function(){
         expect(this.notification_pane.selected_pane).toEqual('unread');
     });
 
+    it("verifies that render_notification_by_type is called if selected pane is unread", function() {
+        renderSpy = spyOn(this.notification_pane, 'render_notifications_by_type');
+        this.notification_pane.render();
+        expect(renderSpy).toHaveBeenCalled()
+    });
+
     it("initializes .xns-content htm", function(){
         expect(this.empty_list_target.html()).toContain('You have no unread notifications');
     });
