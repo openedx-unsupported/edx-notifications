@@ -481,8 +481,15 @@ var NotificationPaneView = Backbone.View.extend({
                     },
                     type: 'POST',
                     success: function () {
-                        if (clickLink) {
+                        if (clickLink && !$(e.target).hasClass("xns-close-item")) {
                             window.location.href = clickLink;
+                        }
+                        else if ($(e.target).hasClass("xns-close-item")) {
+                            if(!($('#'+messageId).next().is( "li" )) && $('#'+messageId).prev().is( "h3" )){
+                                $('#'+messageId).prev().remove();
+                            }
+                            $('#'+messageId).remove();
+                            self.counter_icon_view.refresh();
                         }
                         else {
                             self.unreadNotificationsClicked(e);
