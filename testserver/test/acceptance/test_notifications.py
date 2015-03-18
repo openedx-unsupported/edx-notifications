@@ -453,6 +453,41 @@ class TestAddNotifications(WebAppTest):
         notification_count_for_namespace_2 = self.logged_in_home_page.get_notifications_count()
         self.assertTrue(notification_count_for_namespace_2 > 0)
 
+    def test_20_close_icon(self):
+        """
+        Scenario: When user clicks on close icon of any notification, it should remain on current
+        page and notification count along with unread count should decrease by 1
+        Given that I am on the notification home page
+        And there are some notifications present
+        When I click on any notification's close icon
+        Then it should stay on the same page
+        And the notification count should decrease by one
+        And unread notification count should also decrease by one
+        """
+        self.login()
+        self.logged_in_home_page.show_notifications_container()
+        self.logged_in_home_page.verify_notifications_container_is_visible()
+        self.logged_in_home_page.mark_as_read()
+        self.logged_in_home_page.hide_notification_container()
+        self.logged_in_home_page.verify_notifications_container_is_invisible()
+        for key in self.notification_dict:
+            self.logged_in_home_page.select_notification_type(key)
+            self.logged_in_home_page.add_notification()
+            initial_notification_count = self.logged_in_home_page.get_notifications_count()
+            self.assertEqual(initial_notification_count, 1)
+            self.logged_in_home_page.show_notifications_container()
+            self.logged_in_home_page.verify_notifications_container_is_visible()
+            initial_unread_notification_count = self.logged_in_home_page.return_unread_notifications_count()
+            self.assertEqual(initial_unread_notification_count, 1)
+            self.logged_in_home_page.verify_notifications_container_is_visible()
+            self.logged_in_home_page.close_notification()
+            self.assertTrue(self.logged_in_home_page.is_browser_on_page())
+            final_unread_notification_count = self.logged_in_home_page.return_unread_notifications_count()
+            self.assertEqual(final_unread_notification_count, 0)
+            final_notification_count = self.logged_in_home_page.get_notifications_count()
+            self.assertEqual(final_notification_count, 0)
+            self.logged_in_home_page.hide_notification_container()
+            self.logged_in_home_page.verify_notifications_container_is_invisible()
 
     def login(self):
         """
@@ -468,3 +503,4 @@ class TestAddNotifications(WebAppTest):
             self.login_page.login_to_application(user_name, password)
             self.assertTrue(self.logged_in_home_page.is_browser_on_page())
         self.assertTrue(self.logged_in_home_page.is_browser_on_page())
+
