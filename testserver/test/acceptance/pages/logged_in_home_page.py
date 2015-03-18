@@ -77,6 +77,7 @@ class LoggedInHomePage(PageObject):
         """
         self.wait_for_element_visibility('.xns-icon', 'Notification icon not found', timeout=default_timeout)
         self.q(css='.xns-icon[src="/static/edx_notifications/img/notification_icon.jpg"]').click()
+        self.wait_for_ajax()
 
     def hide_notification_container(self):
         """

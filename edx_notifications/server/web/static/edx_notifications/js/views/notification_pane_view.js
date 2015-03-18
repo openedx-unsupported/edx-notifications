@@ -63,7 +63,7 @@ var NotificationPaneView = Backbone.View.extend({
         'click .xns-all-action': 'allUserNotificationsClicked',
         'click .xns-unread-action': 'unreadNotificationsClicked',
         'click .xns-mark-read-action': 'markNotificationsRead',
-        'click .xns-hide_pane': 'hidePane',
+        'click .xns-hide-pane': 'hidePane',
         'click .xns-item': 'visitNotification',
         'click': 'preventHidingWhenClickedInside'
     },

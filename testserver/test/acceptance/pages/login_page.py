@@ -1,5 +1,6 @@
 from bok_choy.page_object import PageObject
 from logged_in_home_page import LoggedInHomePage
+from . import default_timeout
 
 
 class LoginPage(PageObject):
@@ -24,6 +25,7 @@ class LoginPage(PageObject):
         self.q(css='#id_username').fill(username)
         self.q(css='#id_password').fill(password)
         self.q(css='input[value="Login"]').click()
+        self.wait_for_element_visibility('html>body>p', 'text not found', timeout=default_timeout)
         if "username and password didn't match" in self.q(css='html>body>p').text[0]:
             return "User not registered"
         else:
