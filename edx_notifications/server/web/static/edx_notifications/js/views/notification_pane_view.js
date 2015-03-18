@@ -65,6 +65,7 @@ var NotificationPaneView = Backbone.View.extend({
         'click .xns-mark-read-action': 'markNotificationsRead',
         'click .xns-hide-pane': 'hidePane',
         'click .xns-item': 'visitNotification',
+        'click .xns-close-item': 'closeNotification',
         'click': 'preventHidingWhenClickedInside'
     },
 
@@ -483,8 +484,7 @@ var NotificationPaneView = Backbone.View.extend({
                     success: function () {
                         if (clickLink) {
                             window.location.href = clickLink;
-                        }
-                        else {
+                        } else {
                             self.unreadNotificationsClicked(e);
                             // fetch the latest notification count
                             self.counter_icon_view.refresh();
@@ -494,6 +494,42 @@ var NotificationPaneView = Backbone.View.extend({
             );
         } else if (clickLink){
             window.location.href = clickLink;
+        }
+    },
+    closeNotification: function(e) {
+        var messageId = $(e.currentTarget).data('msg-id');
+
+        if (this.selected_pane === "unread") {
+            this.collection.url = this.mark_notification_read_endpoint + messageId;
+
+            var self = this;
+            self.collection.fetch(
+                {
+                    headers: {
+                        "X-CSRFToken": this.getCSRFToken()
+                    },
+                    data: {
+                      "mark_as": "read"
+                    },
+                    type: 'POST',
+                    success: function () {
+                        if ($(".xns-items li").length > 1) {
+                            if(!($('#'+messageId).next().is( "li" )) && $('#'+messageId).prev().is( "h3" )){
+                                $('#'+messageId).prev().remove();
+                            }
+                            $('#'+messageId).remove();
+                            self.counter_icon_view.refresh();
+                        }
+                        else {
+                            self.unreadNotificationsClicked(e);
+                            // fetch the latest notification count
+                            self.counter_icon_view.refresh();
+                        }
+                    }
+                }
+            );
+            e.preventDefault();
+            e.stopPropagation();
         }
     },
     hidePane: function() {

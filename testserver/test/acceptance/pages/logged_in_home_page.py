@@ -3,6 +3,7 @@ from bok_choy.promise import EmptyPromise
 from . import user_name, default_timeout
 from notification_target_page import NotificationTargetPage
 from logout_page import LoggedOut
+from selenium.webdriver import ActionChains
 
 
 class LoggedInHomePage(PageObject):
@@ -227,3 +228,19 @@ class LoggedInHomePage(PageObject):
             "name space is not changed",
             timeout=default_timeout
         ).fulfill()
+
+    def close_notification(self):
+        action = ActionChains(self.browser)
+        self.wait_for_element_presence(
+            '.xns-content.unread .xns-close-item',
+            'close icon not found',
+            timeout=default_timeout
+        )
+        notification = self.browser.find_element_by_css_selector('.xns-items .xns-item-body')
+        icon = self.browser.find_element_by_css_selector(".xns-items .xns-close-item-x")
+        action.move_to_element(notification).move_to_element(icon).click().perform()
+        self.wait_for_element_presence(
+            '.xns-content.unread .xns-empty-list',
+            'List is not empty yet',
+            timeout=default_timeout
+        )
