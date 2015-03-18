@@ -235,8 +235,8 @@ class LoggedInHomePage(PageObject):
             'close icon not found',
             timeout=default_timeout
         )
-        notification = self.browser.find_element_by_css_selector('.xns-items .xns-item-body>span')
-        icon = self.browser.find_element_by_css_selector(".xns-items .xns-close-item")
+        notification = self.browser.find_element_by_css_selector('.xns-items .xns-item-body')
+        icon = self.browser.find_element_by_css_selector(".xns-items .xns-close-item-x")
         action.move_to_element(notification).move_to_element(icon).click().perform()
         self.wait_for_element_presence(
             '.xns-content.unread .xns-empty-list',

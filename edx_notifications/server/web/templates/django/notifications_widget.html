@@ -64,7 +64,7 @@ page that is using this widget
                                         <span data-msg-id="<%= message.msg.id %>" data-click-link="<%=message.msg.payload['_click_link']%>" class='xns-<%= message.group_name %>'><%= message.html %></span>
                                     </div>
                                     <% if (selected_pane == 'unread') { %>
-                                          <div class="xns-close-item"><span class='xns-close-item-x'>x</span></div>
+                                          <div data-msg-id="<%= message.msg.id %>" class="xns-close-item"><span class='xns-close-item-x'>x</span></div>
                                     <% } %>
                                 </li>
                             <% }); %>
