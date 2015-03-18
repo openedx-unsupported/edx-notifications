@@ -1,1 +1,1 @@
-<span class='xns-title'><%= activity_name %></span>: <%= stage_name %> <span class='xns-alert'>due <%= due_date %></span>
+<span class='xns-title'><%= activity_name %></span>: <%= stage %> <span class='xns-alert'>due <%= due_date %></span>
