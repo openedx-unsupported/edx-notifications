@@ -129,13 +129,13 @@ CANNED_TEST_PAYLOAD = {
         '_schema_version': 1,
         '_click_link': 'http://localhost',
         'activity_name': 'First Activity',
-        'stage_name': 'Upload(s)',
+        'stage': 'Upload(s)',
     },
     'open-edx.xblock.group-project.stage-due': {
         '_schema_version': 1,
         '_click_link': 'http://localhost',
         'activity_name': 'First Activity',
-        'stage_name': 'Upload(s)',
+        'stage': 'Upload(s)',
         'due_date': '4/25'
     },
     'open-edx.xblock.group-project.grades-posted': {
