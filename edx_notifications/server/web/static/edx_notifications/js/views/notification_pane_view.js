@@ -484,7 +484,7 @@ var NotificationPaneView = Backbone.View.extend({
                         if (clickLink && !$(e.target).hasClass("xns-close-item")) {
                             window.location.href = clickLink;
                         }
-                        else if ($(e.target).hasClass("xns-close-item")) {
+                        else if ($(e.target).hasClass("xns-close-item") && $(".xns-items li").length > 1) {
                             if(!($('#'+messageId).next().is( "li" )) && $('#'+messageId).prev().is( "h3" )){
                                 $('#'+messageId).prev().remove();
                             }
