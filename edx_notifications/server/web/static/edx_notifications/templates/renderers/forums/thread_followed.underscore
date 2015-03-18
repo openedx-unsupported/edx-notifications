@@ -1,1 +1,6 @@
-<span class='xns-title'><%=thread_title%></span> was followed <%=num_followers%> times
+<% if (__view == 'unread') { %>
+    <div class='xns-date'>
+        <%= __display_created %>
+    </div>
+<% } %>
+Your post <span class='xns-title'><%=thread_title%></span> was followed <%=num_followers%> times
