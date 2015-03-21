@@ -111,10 +111,12 @@ class NotificationMessage(BaseDataObject):
     created = DateTimeField()
     modified = DateTimeField()
 
-    # links to resolve by the NotificationChannel when dispatching. Note, we
-    # resolve at dispatch time so if the Message is persisted (aka durable)
-    # it is not stored in the database
+    # links to resolve by the NotificationChannel when dispatching.
     resolve_links = DictField()
+
+    # generic id regarding the object that this notification msg is about
+    # this can be used for lookups
+    object_id = StringField()
 
     @property
     def _click_link_keyname(self):

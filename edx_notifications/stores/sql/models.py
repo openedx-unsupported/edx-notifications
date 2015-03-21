@@ -89,6 +89,10 @@ class SQLNotificationMessage(TimeStampedModel):
 
     priority = models.IntegerField(default=const.NOTIFICATION_PRIORITY_NONE)
 
+    resolve_links = models.TextField(null=True)
+
+    object_id = models.CharField(max_length=256, db_index=True, null=True)
+
     class Meta(object):
         """
         ORM metadata about this class
@@ -113,6 +117,8 @@ class SQLNotificationMessage(TimeStampedModel):
             payload=DictField.from_json(self.payload),  # special case, dict<-->JSON string
             created=self.created,
             modified=self.modified,
+            resolve_links=DictField.from_json(self.resolve_links),  # special case, dict<-->JSON string
+            object_id=self.object_id
         )
 
         return msg
@@ -145,6 +151,8 @@ class SQLNotificationMessage(TimeStampedModel):
         self.expires_at = msg.expires_at
         self.expires_secs_after_read = msg.expires_secs_after_read
         self.payload = DictField.to_json(msg.payload)
+        self.resolve_links = DictField.to_json(msg.resolve_links)
+        self.object_id = msg.object_id
 
 
 class SQLUserNotification(TimeStampedModel):
