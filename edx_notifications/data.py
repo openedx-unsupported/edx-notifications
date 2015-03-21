@@ -43,12 +43,6 @@ class NotificationType(BaseDataObject):
     # the name (including namespace) of the notification, e.g. open-edx.lms.forums.reply-to-post
     name = StringField()
 
-    # the human readible string of the name of the notification
-    display_name = StringField()
-
-    # the human readible string that describes the notification
-    display_description = StringField()
-
     # default delivery channel for this type
     # None = no default
     default_channel = RelatedObjectField(NotificationChannel)
@@ -56,6 +50,9 @@ class NotificationType(BaseDataObject):
     # renderer class - as a string - that will handle the rendering of
     # this type
     renderer = StringField()
+
+    # any context information to pass into the renderer
+    renderer_context = DictField()
 
 
 class NotificationMessage(BaseDataObject):

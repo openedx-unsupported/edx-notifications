@@ -28,6 +28,9 @@ class SQLNotificationType(models.Model):
     # the class of the renderer for this type
     renderer = models.CharField(max_length=255)
 
+    # any context to pass into the above renderer
+    renderer_context = models.TextField(null=True)
+
     class Meta(object):
         """
         ORM metadata about this class
@@ -43,6 +46,7 @@ class SQLNotificationType(models.Model):
         return NotificationType(
             name=self.name,
             renderer=self.renderer,
+            renderer_context=DictField.from_json(self.renderer_context)
         )
 
     @classmethod
@@ -62,6 +66,7 @@ class SQLNotificationType(models.Model):
 
         self.name = msg_type.name  # pylint: disable=attribute-defined-outside-init
         self.renderer = msg_type.renderer
+        self.renderer_context = DictField.to_json(msg_type.renderer_context)
 
 
 class SQLNotificationMessage(TimeStampedModel):
