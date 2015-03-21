@@ -106,6 +106,9 @@ class TestSQLStoreProvider(TestCase):
                 'none': None,
                 'datetime': datetime.utcnow(),
                 'iso8601-fakeout': '--T::',  # something to throw off the iso8601 parser heuristic
+            },
+            resolve_links={
+                'param1': 'value1'
             }
         )
 
@@ -272,6 +275,7 @@ class TestSQLStoreProvider(TestCase):
         self.assertEqual(msg.id, fetched_msg.id)
         self.assertEqual(msg.payload, fetched_msg.payload)
         self.assertEqual(msg.msg_type.name, fetched_msg.msg_type.name)
+        self.assertEqual(msg.resolve_links, fetched_msg.resolve_links)
 
         # by not selecting_related (default True), this will cause another round
         # trip to the database
