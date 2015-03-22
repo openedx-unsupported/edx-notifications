@@ -43,6 +43,9 @@ class TestSQLStoreProvider(TestCase):
         notification_type = NotificationType(
             name='foo.bar.baz',
             renderer='foo.renderer',
+            renderer_context={
+                'param1': 'value1'
+            },
         )
 
         result = self.provider.save_notification_type(notification_type)
@@ -106,7 +109,11 @@ class TestSQLStoreProvider(TestCase):
                 'none': None,
                 'datetime': datetime.utcnow(),
                 'iso8601-fakeout': '--T::',  # something to throw off the iso8601 parser heuristic
-            }
+            },
+            resolve_links={
+                'param1': 'value1'
+            },
+            object_id='foo-item'
         )
 
         with self.assertNumQueries(1):
@@ -272,6 +279,8 @@ class TestSQLStoreProvider(TestCase):
         self.assertEqual(msg.id, fetched_msg.id)
         self.assertEqual(msg.payload, fetched_msg.payload)
         self.assertEqual(msg.msg_type.name, fetched_msg.msg_type.name)
+        self.assertEqual(msg.resolve_links, fetched_msg.resolve_links)
+        self.assertEqual(msg.object_id, fetched_msg.object_id)
 
         # by not selecting_related (default True), this will cause another round
         # trip to the database
