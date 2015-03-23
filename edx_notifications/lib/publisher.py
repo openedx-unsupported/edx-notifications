@@ -236,6 +236,12 @@ def publish_timed_notification(msg, send_at, scope_name, scope_context, timer_na
     now = datetime.datetime.now(pytz.UTC)
     if now > send_at and ignore_if_past_due:
         log.info('Timed Notification is past due and the caller said to ignore_if_past_due. Dropping notification...')
+        if timer_name:
+            # If timer is named and it is past due, it is possibly being updated
+            # so, then we should remove any previously stored
+            # timed notification
+            cancel_timed_notification(timer_name, exception_on_not_found=False)
+        return
 
     # make sure we can resolve the scope_name
     if not has_user_scope_resolver(scope_name):
@@ -272,7 +278,7 @@ def publish_timed_notification(msg, send_at, scope_name, scope_context, timer_na
 
 
 @contract(timer_name=basestring)
-def cancel_timed_notification(timer_name):
+def cancel_timed_notification(timer_name, exception_on_not_found=True):
     """
     Cancels a previously published timed notification
     """
@@ -288,6 +294,9 @@ def cancel_timed_notification(timer_name):
         timer.is_active = False  # simply make is_active=False
         store.save_notification_timer(timer)
     except ItemNotFoundError:
+        if not exception_on_not_found:
+            return
+
         err_msg = (
             'Tried to call cancel_timed_notification for timer_name "{name}" '
             'but it does not exist. Skipping...'

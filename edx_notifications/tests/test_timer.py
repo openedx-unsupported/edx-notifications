@@ -365,6 +365,63 @@ class TimedNotificationsTests(TestCase):
         # should not have been executed
         self.assertIsNone(updated_timer.executed_at)
 
+    def test_update_timer_past_due(self):
+        """
+        Make sure if we register a timer, update it so that it is in the past,
+        that the original timer is cancelled
+        """
+
+        # set up a timer that is due in the future
+        publish_timed_notification(
+            msg=self.msg,
+            send_at=datetime.now(pytz.UTC) + timedelta(days=1),
+            scope_name='user',
+            scope_context={'range': 1},
+            timer_name='test-timer',
+            ignore_if_past_due=True
+        )
+
+        # now update it so that it is in the past
+        publish_timed_notification(
+            msg=self.msg,
+            send_at=datetime.now(pytz.UTC) - timedelta(days=1),
+            scope_name='user',
+            scope_context={'range': 1},
+            timer_name='test-timer',
+            ignore_if_past_due=True
+        )
+
+        # fetch the timer from the DB
+        timer = self.store.get_notification_timer('test-timer')
+
+        # should not be active, the the update operation should
+        # have marked it as cancelled
+        self.assertFalse(timer.is_active)
+
+        poll_and_execute_timers()
+
+        # fetch the timer from the DB as it should be updated
+        updated_timer = self.store.get_notification_timer(timer.name)
+
+        # should not have been executed
+        self.assertIsNone(updated_timer.executed_at)
+
+        # now, re-edit and put back to the future
+        publish_timed_notification(
+            msg=self.msg,
+            send_at=datetime.now(pytz.UTC) + timedelta(days=1),
+            scope_name='user',
+            scope_context={'range': 1},
+            timer_name='test-timer',
+            ignore_if_past_due=True
+        )
+
+        # fetch the timer from the DB
+        timer = self.store.get_notification_timer('test-timer')
+
+        # should  be active again
+        self.assertTrue(timer.is_active)
+
     def test_cancel_non_existing_timer(self):
         """
         Make sure canceling a time that does not exist raises a ItemNotFoundError
