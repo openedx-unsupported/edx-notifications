@@ -830,6 +830,33 @@ class TestSQLStoreProvider(TestCase):
         timer_read = self.provider.get_notification_timer(timer_saved_twice.id)
         self.assertEqual(timer_saved_twice, timer_read)
 
+    def test_update_is_active_timer(self):
+        """
+        Verify that we can change the is_active flag on
+        a timer
+        """
+
+        timer = NotificationCallbackTimer(
+            name='timer1',
+            callback_at=datetime.now(pytz.UTC) - timedelta(0, 1),
+            class_name='foo.bar',
+            context={
+                'one': 'two'
+            },
+            is_active=True,
+            periodicity_min=120,
+        )
+        timer_saved = self.provider.save_notification_timer(timer)
+
+        timer_read = self.provider.get_notification_timer(timer_saved.id)
+
+        timer_read.is_active = False
+
+        timer_saved_twice = self.provider.save_notification_timer(timer_read)
+
+        timer_read = self.provider.get_notification_timer(timer_saved_twice.id)
+        self.assertEqual(timer_saved_twice, timer_read)
+
     def test_get_nonexisting_timer(self):
         """
         Verifies that an exception is thrown when trying to load a non-existing
