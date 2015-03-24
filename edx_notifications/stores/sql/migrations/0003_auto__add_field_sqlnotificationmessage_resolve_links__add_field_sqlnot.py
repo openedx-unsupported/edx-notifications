@@ -15,7 +15,7 @@ class Migration(SchemaMigration):
 
         # Adding field 'SQLNotificationMessage.object_id'
         db.add_column('edx_notifications_notificationmessage', 'object_id',
-                      self.gf('django.db.models.fields.CharField')(max_length=256, null=True, db_index=True),
+                      self.gf('django.db.models.fields.CharField')(max_length=255, null=True, db_index=True),
                       keep_default=False)
 
 
