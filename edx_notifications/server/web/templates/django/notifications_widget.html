@@ -77,6 +77,7 @@ page that is using this widget
 </script>
 
 <script type="text/javascript">
+    Backbone.$.ajaxSetup({ cache: false });
     var notification_counter_icon = new CounterIconView({
         el: $(".xns-icon"),
         count_el: $(".xns-counter"),
@@ -92,7 +93,7 @@ page that is using this widget
         global_variables: {
             app_name: "{{ global_variables.app_name }}",
             hide_link_is_visible: "{{ global_variables.hide_link_is_visible}}",
-            always_show_dates_on_unread: false,
+            always_show_dates_on_unread: false
         },
         refresh_watcher: {
             name: "{{refresh_watcher.name}}",
