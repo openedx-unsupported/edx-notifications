@@ -90,8 +90,8 @@ var NotificationPaneView = Backbone.View.extend({
         var renderer_templates = {};
 
         _.each(data, function(url, renderer_class) {
-            $.ajax({url: url, context: renderer_class})
-            .error(function(){
+            $.ajax({url: url, dataType: "html", context: renderer_class})
+            .error(function(jqXHR, textStatus, errorThrown){
                 console.error('Could not load template ' + renderer_class + ' at ' + url);
                 number_to_fetch--;
             })
