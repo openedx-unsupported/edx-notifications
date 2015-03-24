@@ -96,7 +96,7 @@ class SQLNotificationMessage(TimeStampedModel):
 
     resolve_links = models.TextField(null=True)
 
-    object_id = models.CharField(max_length=256, db_index=True, null=True)
+    object_id = models.CharField(max_length=255, db_index=True, null=True)
 
     class Meta(object):
         """
