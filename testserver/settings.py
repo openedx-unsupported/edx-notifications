@@ -65,6 +65,8 @@ ROOT_URLCONF = 'testserver.urls'
 
 WSGI_APPLICATION = 'testserver.wsgi.application'
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',

@@ -60,12 +60,3 @@ class EmailDigestTemplateRenderer(BaseNotificationRenderer):
             return path_to_digest_template(self.digest_template_name)
 
         raise NotImplementedError()
-
-    def get_html_for_template_path(self, context):
-        """
-        return the rendered html for digest_template_path.
-        """
-        return render_to_string(path_to_digest_template(self.digest_template_name), context)
-
-
-

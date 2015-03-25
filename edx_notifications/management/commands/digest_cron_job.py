@@ -9,6 +9,8 @@ from datetime import datetime
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from django.template import Context, loader
+from django.template.loader import render_to_string
+
 log = logging.getLogger(__file__)
 from edx_notifications import startup
 from edx_notifications.lib.consumer import get_notifications_for_user
@@ -16,6 +18,12 @@ from edx_notifications.renderers.renderer import (
     get_all_renderers,
 )
 from edx_notifications import const
+from django.core.mail import EmailMessage
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import uuid
+import os
 
 # this describes how we want to group together notification types into visual groups
 grouping_config = {
@@ -58,98 +66,91 @@ grouping_config = {
 }
 
 
-def get_path_for_digest_templates():
-    """
-    returns a list of all digest format templates that have been registered in the system.
-    """
-    result_dict = {}
-    for class_name, renderer in get_all_renderers().iteritems():
-        if renderer['digest_renderer_instance'].can_render_format(const.RENDER_FORMAT_DIGEST):
-            result_dict[class_name] = renderer['digest_renderer_instance'].get_template_path(const.RENDER_FORMAT_DIGEST)
-    return result_dict
-
-
-def get_group_name_for_msg_type(msg_type):
-    """
-    Returns the particular group_name for the msg_type
-    else return None if no group_name is found.
-    """
-    if msg_type in grouping_config['type_mapping']:
-        group_name = grouping_config['type_mapping'][msg_type]
-        if group_name in grouping_config['groups']:
-            return group_name
-
-    # no exact match so lets look upwards for wildcards
-    search_type = msg_type
-    dot_index = search_type.rindex('.')
-    while dot_index != -1 and search_type != '*':
-        search_type = search_type[0: dot_index]
-        key = search_type + '.*'
-
-        if key in grouping_config['type_mapping']:
-            group_name = grouping_config['type_mapping'][key]
-            if group_name in grouping_config['groups']:
-                return group_name
-
-        dot_index = search_type.rindex('.')
-
-    # look for global wildcard
-    if '*' in grouping_config['type_mapping']:
-        key = '*'
-        group_name = grouping_config['type_mapping'][key]
-        if group_name in grouping_config['groups']:
-            return group_name
-
-    # this really shouldn't happen. This means misconfiguration
-    return None
-
-
-def get_group_rendering(group_data):
-    """
-    returns the list of the sorted user notifications renderings.
-    """
-    renderings = []
-    result_dict = get_path_for_digest_templates()
-    group_data = sorted(group_data, key=lambda k: k['msg']['created'])
-
-    for user_msg in group_data:
-        msg = user_msg['msg']
-        render_context = msg['payload']
-        created_date = msg['created']
-
-        if datetime.date(created_date) == datetime.today().date():
-            created_str = 'Today at ' + created_date.strftime("%H:%M%p")
-        else:
-            created_str = created_date.strftime("%B %d, %Y") + ' at ' + created_date.strftime("%H:%M%p")
-
-        render_context.update({
-            'display_created': created_str
-        })
-        renderer_class_name = msg['msg_type']['renderer']
-        if renderer_class_name in result_dict:
-            context = Context(render_context)
-            template = loader.get_template(result_dict[renderer_class_name])
-            notification_html = template.render(context)
-            renderings.append({
-                'user_msg': user_msg,
-                'msg': msg,
-                # render the particular NotificationMessage
-                'html': notification_html,
-                'group_name': get_group_name_for_msg_type(msg['msg_type']['name'])
-            })
-
-    return renderings
-
-
 class Command(BaseCommand):
     """
     Django Management command to force a background check of all possible notifications
     """
+    def get_path_for_digest_templates(self):
+        """
+        returns a list of all digest format templates that have been registered in the system.
+        """
+        result_dict = {}
+        for class_name, renderer in get_all_renderers().iteritems():
+            if renderer['digest_renderer_instance'].can_render_format(const.RENDER_FORMAT_DIGEST):
+                result_dict[class_name] = renderer['digest_renderer_instance'].get_template_path(const.RENDER_FORMAT_DIGEST)
+        return result_dict
 
-    def handle(self, *args, **options):
+    def get_group_name_for_msg_type(self, msg_type):
         """
-        Management command entry point, simply call into the signal firiing
+        Returns the particular group_name for the msg_type
+        else return None if no group_name is found.
         """
+        if msg_type in grouping_config['type_mapping']:
+            group_name = grouping_config['type_mapping'][msg_type]
+            if group_name in grouping_config['groups']:
+                return group_name
+
+        # no exact match so lets look upwards for wildcards
+        search_type = msg_type
+        dot_index = search_type.rindex('.')
+        while dot_index != -1 and search_type != '*':
+            search_type = search_type[0: dot_index]
+            key = search_type + '.*'
+
+            if key in grouping_config['type_mapping']:
+                group_name = grouping_config['type_mapping'][key]
+                if group_name in grouping_config['groups']:
+                    return group_name
+
+            dot_index = search_type.rindex('.')
+
+        # look for global wildcard
+        if '*' in grouping_config['type_mapping']:
+            key = '*'
+            group_name = grouping_config['type_mapping'][key]
+            if group_name in grouping_config['groups']:
+                return group_name
+
+        # this really shouldn't happen. This means misconfiguration
+        return None
+
+    def get_group_rendering(self, group_data):
+        """
+        returns the list of the sorted user notifications renderings.
+        """
+        renderings = []
+        result_dict = self.get_path_for_digest_templates()
+        group_data = sorted(group_data, key=lambda k: k['msg']['created'])
+
+        for user_msg in group_data:
+            msg = user_msg['msg']
+            render_context = msg['payload']
+            created_date = msg['created']
+
+            if datetime.date(created_date) == datetime.today().date():
+                created_str = 'Today at ' + created_date.strftime("%H:%M%p")
+            else:
+                created_str = created_date.strftime("%B %d, %Y") + ' at ' + created_date.strftime("%H:%M%p")
+
+            render_context.update({
+                'display_created': created_str
+            })
+            renderer_class_name = msg['msg_type']['renderer']
+            if renderer_class_name in result_dict:
+                context = Context(render_context)
+                template = loader.get_template(result_dict[renderer_class_name])
+                notification_html = template.render(context)
+                renderings.append({
+                    'user_msg': user_msg,
+                    'msg': msg,
+                    # render the particular NotificationMessage
+                    'html': notification_html,
+                    'group_name': self.get_group_name_for_msg_type(msg['msg_type']['name'])
+                })
+
+        return renderings
+
+    def perform_digest_email_notification_rendering(self):
         # initialize the notification subsystem
         startup.initialize()
 
@@ -167,7 +168,7 @@ class Command(BaseCommand):
             grouped_data = {}
 
             # group the user notifications by message type name.
-            for key, group in groupby(result_set, lambda x: get_group_name_for_msg_type(x['msg']['msg_type']['name'])):
+            for key, group in groupby(result_set, lambda x: self.get_group_name_for_msg_type(x['msg']['msg_type']['name'])):
                 for thing in group:
                     if key in grouped_data:
                         grouped_data[key].append(thing)
@@ -183,6 +184,41 @@ class Command(BaseCommand):
                     notification_groups.append(
                         {
                             'group_title': grouping_config['groups'][group_key]['display_name'],
-                            'messages': get_group_rendering(grouped_data[group_key])
+                            'messages': self.get_group_rendering(grouped_data[group_key])
                         }
                     )
+
+    def attach_image(self, img_dict, filename):
+        repo_pth = os.path.dirname(os.path.realpath(__file__))
+        img_path = repo_pth + img_dict['path']
+        with open(img_path, 'rb') as file:
+            msg_image = MIMEImage(file.read(), name=os.path.basename(img_path))
+            msg_image.add_header('Content-ID', '<{}>'.format(img_dict['cid']))
+            msg_image.add_header("Content-Disposition", "inline", filename=filename)
+        return msg_image
+
+    def handle(self, *args, **options):
+        """
+        Management command entry point, simply call into the signal firiing
+        """
+
+        img_logo_1 = dict(title='Image logo 1', path='/logo-placeholder.png', cid=str(uuid.uuid4()))
+        img_logo_2 = dict(title='Image logo 2', path='/edx-openedx-logo-tag.png', cid=str(uuid.uuid4()))
+        html_part = MIMEMultipart(_subtype='related')
+        context = {
+            'img_logo1_cid': img_logo_1['cid'],
+            'img_logo2_cid': img_logo_2['cid']
+        }
+        message = render_to_string("dummy_email_template.html", context)
+        body = MIMEText(message, _subtype='html')
+        html_part.attach(body)
+
+        # html_part.attach(attach_image(img_discussion, 'img_discussion'))
+        html_part.attach(self.attach_image(img_logo_1, 'img_logo1'))
+        html_part.attach(self.attach_image(img_logo_2, 'img_logo2'))
+
+        msg = EmailMessage('Subject Line', None, 'foo@bar.com', ['bar@foo.com'])
+        msg.attach(html_part)
+        msg.send()
+
+        # self.perform_digest_email_notification_rendering()
