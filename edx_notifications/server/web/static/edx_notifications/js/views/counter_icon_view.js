@@ -36,7 +36,8 @@ var CounterIconView = Backbone.View.extend({
       /* adding short-poll capabilities to refresh notification counter */
       if(this.refresh_watcher.name == 'short-poll'){
           var period = this.refresh_watcher.args.poll_period_secs;
-          setInterval(this.autoRefreshNotifications.bind(window, this), period * 1000);
+          var self = this;
+          setInterval(function() { self.autoRefreshNotifications(self); }, period * 1000);
       }
   },
 
@@ -113,15 +114,19 @@ var CounterIconView = Backbone.View.extend({
      e.stopPropagation();
   },
 
-  autoRefreshNotifications: function(counterView) {
+ autoRefreshNotifications: function(counterView) {
      var currentModel = new CounterIconModel();
      currentModel.url = counterView.model.url;
      currentModel.fetch().done(function(){
          // if notification counter is incremented.
          if(currentModel.get('count') > counterView.model.get('count')){
-             var notification_alert = new Audio(counterView.view_audios.notification_alert);
              counterView.model = currentModel;
-             notification_alert.play();
+
+             // Is audio supported e.g. IE 9
+             if (typeof window.Audio != 'undefined') {
+                 var notification_alert = new Audio(counterView.view_audios.notification_alert);
+                 notification_alert.play();
+             }
              counterView.render();
              if (counterView.notification_pane) {
                  counterView.notification_pane.hydrate();
