@@ -127,7 +127,7 @@ var CounterIconView = Backbone.View.extend({
              counterView.model = currentModel;
 
              // Is audio supported e.g. IE 9
-             if (typeof window.Audio != 'undefined') {
+             if (typeof window.Audio != 'undefined' && counterView.view_audios.notification_alert) {
                  var notification_alert = new Audio(counterView.view_audios.notification_alert);
                  notification_alert.play();
              }
