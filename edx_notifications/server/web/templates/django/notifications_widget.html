@@ -104,7 +104,7 @@ page that is using this widget
             }
         },
         view_audios: {
-            notification_alert: "{% autoescape off %}{{ view_audios.notification_alert }}{% endautoescape %}"
+            notification_alert: {% if view_audios.notification_alert %}"{% autoescape off %}{{ view_audios.notification_alert }}{% endautoescape %}"{% else %}null{% endif %}
         },
         namespace: {% if namespace %}"{{namespace}}"{% else %}null{% endif %}
     });
