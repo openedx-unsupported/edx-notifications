@@ -77,8 +77,12 @@ var CounterIconView = Backbone.View.extend({
   },
 
   refresh: function() {
-    this.model.fetch();
-    this.render();
+    var self = this;
+    this.model.fetch({
+        success: function (resp) {
+            self.render();
+        }
+       });
   },
 
   render: function () {
@@ -129,6 +133,7 @@ var CounterIconView = Backbone.View.extend({
              }
              counterView.render();
              if (counterView.notification_pane) {
+                 counterView.notification_pane.collection.url = counterView.options.endpoints.user_notifications_unread_only;
                  counterView.notification_pane.hydrate();
              }
          }
