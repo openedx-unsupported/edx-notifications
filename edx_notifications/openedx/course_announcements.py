@@ -43,10 +43,3 @@ def register_notification_types(sender, **kwargs):  # pylint: disable=unused-arg
             digest_renderer='edx_notifications.openedx.course_announcements.NewCourseAnnouncementDigestRenderer',
         )
     )
-
-    # register_notification_type(
-    #     NotificationType(
-    #         name='open-edx.studio.announcements.new-announcement',
-    #         renderer='edx_notifications.openedx.course_announcements.NewCourseAnnouncementDigestRenderer',
-    #     )
-    # )
