@@ -49,6 +49,14 @@ def clear_renderers():
     _RENDERERS.clear()
 
 
+def get_renderer_for_type(msg_type):
+    """
+    Returns the Renderer instance for the msg_type, None is not found
+    """
+
+    return _RENDERERS.get(msg_type.renderer)
+
+
 class BaseNotificationRenderer(object):
     """
     Abstract Base Class for NotificationRender types.

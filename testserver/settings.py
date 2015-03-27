@@ -151,6 +151,15 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
             }
         }
     },
+    'sms': {
+        'class': 'edx_notifications.channels.sms.TwilioNotificationChannelProvider',
+        'options': {
+            'account_SID': '*****',
+            'account_authtoken': '*****',
+            'from_tel': '****',
+            'to_tel': '****',
+        },
+    },
     'null': {
         'class': 'edx_notifications.channels.null.NullNotificationChannel',
         'options': {}
@@ -159,5 +168,6 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
 
 # list all of the mappings of notification types to channel
 NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS = {
+    # 'open-edx.studio.announcements.new-announcement': 'sms',
     '*': 'durable',  # default global mapping
 }
