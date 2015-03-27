@@ -61,7 +61,7 @@ class TwilioNotificationChannelProvider(BaseNotificationChannelProvider):
         all user_ids that will be enumerated over in user_ids.
         """
         for user_id in user_ids:
-            if user_id not in exclude_user_ids:
+            if not exclude_user_ids or user_id not in exclude_user_ids:
                 self.dispatch_notification_to_user(user_id, msg)
 
     def resolve_msg_link(self, msg, link_name, params):
