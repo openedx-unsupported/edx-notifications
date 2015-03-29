@@ -16,7 +16,7 @@ from edx_notifications.data import (
     NotificationMessage,
 )
 from edx_notifications.const import (
-    RENDER_FORMAT_SMS
+    RENDER_FORMAT_MOBILEPUSH
 )
 
 from push_notifications.apns import apns_send_message
@@ -43,8 +43,8 @@ class MobilePushNotificationChannelProvider(BaseNotificationChannelProvider):
 
         renderer = get_renderer_for_type(msg.msg_type)
 
-        if renderer and renderer.can_render_format(RENDER_FORMAT_SMS):
-            text_msg = renderer.render_subject(msg, RENDER_FORMAT_SMS, None) + ". " + renderer.render_body(msg,RENDER_FORMAT_SMS, None)
+        if renderer and renderer.can_render_format(RENDER_FORMAT_MOBILEPUSH):
+            text_msg = renderer.render_body(msg, RENDER_FORMAT_MOBILEPUSH, None)
 
             # device = APNSDevice.objects.get(registration_id=apns_token)
 
@@ -60,7 +60,7 @@ class MobilePushNotificationChannelProvider(BaseNotificationChannelProvider):
         all user_ids that will be enumerated over in user_ids.
         """
         for user_id in user_ids:
-            if user_id not in exclude_user_ids:
+            if not exclude_user_ids or user_id not in exclude_user_ids:
                 self.dispatch_notification_to_user(user_id, msg)
 
     def resolve_msg_link(self, msg, link_name, params):

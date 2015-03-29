@@ -8,7 +8,8 @@ from edx_notifications.renderers.renderer import BaseNotificationRenderer
 
 from edx_notifications.const import (
     RENDER_FORMAT_UNDERSCORE,
-    RENDER_FORMAT_SMS
+    RENDER_FORMAT_SMS,
+    RENDER_FORMAT_MOBILEPUSH
 )
 
 
@@ -45,7 +46,7 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
         Returns (True/False) whether this renderer provides renderings
         into the requested format.
         """
-        return render_format == RENDER_FORMAT_UNDERSCORE or render_format == RENDER_FORMAT_SMS
+        return render_format == RENDER_FORMAT_UNDERSCORE or render_format == RENDER_FORMAT_SMS or render_format == RENDER_FORMAT_MOBILEPUSH
 
     def render_subject(self, msg, render_format, lang):
         """
@@ -60,6 +61,13 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
         """
         This basic renderer just returns the  body that is in the Msg payload
         """
+        # rendering via templates in MOBILEPUSH format is TBD
+        if render_format == RENDER_FORMAT_MOBILEPUSH:
+            return "Course starting soon! '{course_name}' will be starting on {start_date}.".format(
+                course_name=msg.payload['course_name'],
+                start_date=msg.payload['start_date']
+            )
+
         if 'body' in msg.payload:
             return msg.payload['body']
         if 'excerpt' in msg.payload:
