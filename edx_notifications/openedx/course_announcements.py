@@ -20,6 +20,13 @@ class NewCourseAnnouncementRenderer(UnderscoreStaticFileRenderer):
     underscore_template_name = 'course_announcements/new_announcement.underscore'
 
 
+class CourseStartAnnouncementRenderer(UnderscoreStaticFileRenderer):
+    """
+    Renders a new-course-announcement notification
+    """
+    underscore_template_name = 'course_announcements/course_start_announcement.underscore'
+
+
 @receiver(perform_type_registrations)
 def register_notification_types(sender, **kwargs):  # pylint: disable=unused-argument
     """
@@ -33,5 +40,12 @@ def register_notification_types(sender, **kwargs):  # pylint: disable=unused-arg
         NotificationType(
             name='open-edx.studio.announcements.new-announcement',
             renderer='edx_notifications.openedx.course_announcements.NewCourseAnnouncementRenderer',
+        )
+    )
+
+    register_notification_type(
+        NotificationType(
+            name='open-edx.studio.announcements.course-start-announcement',
+            renderer='edx_notifications.openedx.course_announcements.CourseStartAnnouncementRenderer',
         )
     )

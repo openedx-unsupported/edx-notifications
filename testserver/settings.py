@@ -39,7 +39,7 @@ INSTALLED_APPS = (
 )
 
 PUSH_NOTIFICATIONS_SETTINGS = {
-        "APNS_CERTIFICATE": "/Users/chrisndodge/.ssh/apns.pem",
+        "APNS_CERTIFICATE": "/Users/cdodge/.ssh/apns.pem",
         "APNS_HOST": "gateway.sandbox.push.apple.com",
         "APNS_ERROR_TIMEOUT": 1,
 }
