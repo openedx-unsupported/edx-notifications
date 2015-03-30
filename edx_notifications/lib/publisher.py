@@ -168,7 +168,7 @@ def bulk_publish_notification_to_users(user_ids, msg, exclude_user_ids=None):
 
 
 @contract(msg=NotificationMessage)
-def publish_notification_to_scope(scope_name, scope_context, msg, exclude_user_ids=None):
+def bulk_publish_notification_to_scope(scope_name, scope_context, msg, exclude_user_ids=None):
     """
     This top level API method will publish a notification
     to a UserScope (potentially large). Basically this is a convenience method
