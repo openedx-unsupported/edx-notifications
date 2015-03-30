@@ -185,3 +185,9 @@ def _send_to_scoped_users(msg, scope_name, scope_context):
     )
 
     return num_dispatched
+
+
+class NotificationDigestMessageCallback(NotificationCallbackTimerHandler):
+
+    def notification_timer_callback(self, timer):
+        pass
