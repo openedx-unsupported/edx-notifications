@@ -36,7 +36,8 @@ class MobilePushNotificationChannelProvider(BaseNotificationChannelProvider):
         """
 
         # NOTE: We'd probably want to put this user_id -> apns_token lookup
-        # in some LRU cache
+        # in some LRU cache. New tokens are registered from a mobile client
+        # then we'd invalidate the cache
 
         # hard code for test purposes, otherwise this will come from
         # a look-up table. IMPORTANT it's possible for one user
