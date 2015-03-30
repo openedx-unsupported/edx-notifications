@@ -7,6 +7,7 @@ import pytz
 from datetime import datetime, timedelta
 
 from django.test import TestCase
+from edx_notifications.stores.sql.models import SQLUserNotification
 
 from edx_notifications.stores.sql.store_provider import SQLNotificationStoreProvider
 from edx_notifications.data import (
@@ -586,7 +587,7 @@ class TestSQLStoreProvider(TestCase):
                 self.test_user_id,
                 filters={
                     'start_date': msg1.created.date(),
-                    'end_date': msg2.created.date()
+                    'end_date': msg2.created.date() + timedelta(days=1)
                 }
             ),
             2
@@ -597,22 +598,28 @@ class TestSQLStoreProvider(TestCase):
                 self.test_user_id,
                 filters={
                     'start_date': msg1.created.date(),
-                    'end_date': msg2.created.date()
+                    'end_date': msg2.created.date() + timedelta(days=1)
                 }
             )
             self.assertEqual(len(notifications), 2)
             self.assertEqual(notifications[0].msg, msg2)
             self.assertEqual(notifications[1].msg, msg1)
 
+        # update the created time for msg2 data object.
+        user_msg = SQLUserNotification.objects.get(msg_id=msg2.id)
+        user_msg.created = msg2.created.date() - timedelta(days=1)
+        user_msg.save()
+
+        # now the msg 2 should not be in the filtered_list
         self.assertEqual(
             self.provider.get_num_notifications_for_user(
                 self.test_user_id,
                 filters={
-                    'start_date': msg1.created.date() + timedelta(days=1),
-                    'end_date': msg2.created.date() + timedelta(days=1)
+                    'start_date': msg1.created.date(),
+                    'end_date': datetime.now(pytz.UTC) + timedelta(days=1)
                 }
             ),
-            0
+            1
         )
 
     def test_bad_user_msg_update(self):

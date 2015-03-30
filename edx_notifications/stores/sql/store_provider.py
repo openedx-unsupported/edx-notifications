@@ -6,7 +6,6 @@ import copy
 import pylru
 import pytz
 from datetime import datetime
-from datetime import timedelta
 from django.core.exceptions import ObjectDoesNotExist
 
 from edx_notifications.stores.store import BaseNotificationStoreProvider
@@ -187,7 +186,7 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
             query = query.filter(msg__msg_type=type_name)
 
         if start_date and end_date:
-            query = query.filter(created__gte=start_date, created__lt=end_date + timedelta(days=1))
+            query = query.filter(created__gte=start_date, created__lte=end_date)
 
         return query
 
