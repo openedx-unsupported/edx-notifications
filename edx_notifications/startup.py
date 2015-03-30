@@ -3,7 +3,7 @@ File to support the startup of the Notification subsystem. This should be called
 at least once at the beginning of any process lifecycle
 """
 
-from edx_notifications.signals import perform_type_registrations
+from edx_notifications.signals import perform_type_registrations, perform_timer_registrations
 
 # we need to import the standard notification type registraions so that they can hook in
 # in their signal receivers
@@ -25,5 +25,9 @@ def initialize():
     # alert the application tiers that they should register their
     # notification types
     perform_type_registrations.send(sender=None)
+
+    # alert the application tiers that they should register their
+    # notification timers/callbacks
+    perform_timer_registrations.send(sender=None)
 
     register_user_scope_resolver('user', SingleUserScopeResolver(), {})
