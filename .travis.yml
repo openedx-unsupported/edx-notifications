@@ -25,3 +25,9 @@ script:
     - pylint edx_notifications --report=no
 
 after_success: coveralls
+
+branches:
+    only:
+      - master
+      - cdodge/mcka-master
+      - cdodge/notification-digest
