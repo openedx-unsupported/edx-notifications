@@ -121,7 +121,6 @@ class SQLNotificationMessage(TimeStampedModel):
             expires_secs_after_read=self.expires_secs_after_read,
             payload=DictField.from_json(self.payload),  # special case, dict<-->JSON string
             created=self.created,
-            modified=self.modified,
             resolve_links=DictField.from_json(self.resolve_links),  # special case, dict<-->JSON string
             object_id=self.object_id
         )
@@ -192,7 +191,8 @@ class SQLUserNotification(TimeStampedModel):
             user_id=self.user_id,
             msg=self.msg.to_data_object(),  # pylint: disable=no-member
             read_at=self.read_at,
-            user_context=DictField.from_json(self.user_context)
+            user_context=DictField.from_json(self.user_context),
+            created=self.created
         )
 
     @classmethod
