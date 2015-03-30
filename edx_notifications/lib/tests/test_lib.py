@@ -11,7 +11,7 @@ from edx_notifications.lib.publisher import (
     publish_notification_to_user,
     bulk_publish_notification_to_users,
     register_notification_type,
-    publish_notification_to_scope,
+    bulk_publish_notification_to_scope,
 )
 
 from edx_notifications.lib.consumer import (
@@ -326,7 +326,7 @@ class TestPublisherLibrary(TestCase):
             }
         )
 
-        publish_notification_to_scope(
+        bulk_publish_notification_to_scope(
             scope_name="list_scope",
             # the TestListScopeResolver expects a "range" property in the context
             scope_context={"range": 5},
@@ -357,7 +357,7 @@ class TestPublisherLibrary(TestCase):
         )
 
         with self.assertRaises(TypeError):
-            publish_notification_to_scope(
+            bulk_publish_notification_to_scope(
                 scope_name="bad-scope",
                 # the TestListScopeResolver expects a "range" property in the context
                 scope_context={"range": 5},
