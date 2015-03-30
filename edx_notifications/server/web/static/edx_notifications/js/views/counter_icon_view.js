@@ -132,8 +132,14 @@ var CounterIconView = Backbone.View.extend({
                  notification_alert.play();
              }
              counterView.render();
-             if (counterView.notification_pane) {
-                 counterView.notification_pane.collection.url = counterView.options.endpoints.user_notifications_unread_only;
+             if (counterView.notification_pane && counterView.notification_pane.selected_pane == "unread") {
+                 var url = counterView.options.endpoints.user_notifications_unread_only;
+                 counterView.notification_pane.collection.url = url;
+
+                 // apply namespacing - if set
+                 if (counterView.namespace) {
+                      counterView.notification_pane.collection.url = counterView.notification_pane.append_url_param(url, 'namespace', counterView.namespace)
+                 }
                  counterView.notification_pane.hydrate();
              }
          }
