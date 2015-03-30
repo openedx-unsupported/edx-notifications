@@ -106,7 +106,6 @@ class NotificationMessage(BaseDataObject):
 
     # timestamps
     created = DateTimeField()
-    modified = DateTimeField()
 
     # links to resolve by the NotificationChannel when dispatching.
     resolve_links = DictField()
@@ -233,6 +232,9 @@ class UserNotification(BaseDataObject):
 
     # dict containing any user specific context (e.g. personalization) for the notification
     user_context = DictField()
+
+    # creation timestamp
+    created = DateTimeField()
 
 
 class NotificationTypeUserChannelPreference(BaseDataObject):

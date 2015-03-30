@@ -291,7 +291,7 @@ var NotificationPaneView = Backbone.View.extend({
         grouped_data = _.groupBy(
             user_msgs,
             function(user_msg) {
-                var date = user_msg.msg.created;
+                var date = user_msg.created;
                 // remove the time of day portion of our create time
                 // to group things by day
                 // NOTE what about timezone changes? We
@@ -302,8 +302,8 @@ var NotificationPaneView = Backbone.View.extend({
 
         // now compute orderings
         group_orderings = [];
-        for (key in grouped_data) {
-            group_orderings.push(key)
+        for (var key in grouped_data) {
+            group_orderings.push(key);
         }
 
         // Now iterate over the groups and perform
@@ -321,7 +321,7 @@ var NotificationPaneView = Backbone.View.extend({
                 notification_groups.push({
                     // pull the header name from the first time in the group
                     // since they are all on the same day
-                    group_title: new Date(group_data[0].msg.created).toString('MMM dd, yyyy'),
+                    group_title: new Date(group_data[0].created).toString('MMM dd, yyyy'),
                     messages: self.get_group_rendering(group_data)
                 });
             }
@@ -338,7 +338,7 @@ var NotificationPaneView = Backbone.View.extend({
         var sorted_data = _.sortBy(
             group_data,
             function(user_msg) {
-                return user_msg.msg.created;
+                return user_msg.created;
             }
         ).reverse();
 
@@ -359,13 +359,13 @@ var NotificationPaneView = Backbone.View.extend({
             render_context['__view'] = this.selected_pane;
 
             // also pass in the date the notification was created
-            render_context['__created'] = msg.created;
+            render_context['__created'] = user_msg.created;
 
             // also do a conversaion of the create date to a friendly
             // display string
 
             var created_str = '';
-            var created_date = new Date(msg.created);
+            var created_date = new Date(user_msg.created);
             if (Date.equals(new Date(created_date).clearTime(), Date.today())) {
                 created_str = 'Today at '+ created_date.toString("h:mmtt");
             } else {
