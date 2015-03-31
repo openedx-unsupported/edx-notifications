@@ -2,9 +2,11 @@
 Tests for the timer.py
 """
 
+from freezegun import freeze_time
 import pytz
 from datetime import datetime, timedelta
 from django.test import TestCase
+from edx_notifications.management.commands import background_notification_check
 
 from edx_notifications.stores.store import notification_store
 from edx_notifications.callbacks import NotificationCallbackTimerHandler
@@ -435,3 +437,81 @@ class TimedNotificationsTests(TestCase):
             raised = True
 
         self.assertFalse(raised)
+
+
+class DigestNotificationsTests(TestCase):
+    """
+    Tests the creating of digest notifications
+    """
+
+    def setUp(self):
+        """
+        start up stuff
+        """
+        from edx_notifications import startup
+
+        startup.initialize()
+        self.daily_digest_timer_name = 'daily-digest-timer'
+        self.weekly_digest_timer_name = 'weekly-digest-timer'
+        self.store = notification_store()
+
+    def test_digest_timers_registered(self):
+        """
+        test to check for daily and weekly digest timers are registered
+        """
+        self.assertIsNotNone(self.store.get_notification_timer(self.daily_digest_timer_name))
+        self.assertIsNotNone(self.store.get_notification_timer(self.weekly_digest_timer_name))
+
+    def test_daily_digest_timers(self):
+        """
+        test to check for daily digest timers calling back each day
+        """
+        daily_digest_timer = self.store.get_notification_timer(self.daily_digest_timer_name)
+        previous_callback_at = daily_digest_timer.callback_at
+        background_notification_check.Command().handle()
+
+        # fetch the timer from the DB as it should be updated
+        daily_digest_timer = self.store.get_notification_timer(self.daily_digest_timer_name)
+        current_callback_at = daily_digest_timer.callback_at
+
+        self.assertIsNone(daily_digest_timer.executed_at)
+        self.assertEqual(previous_callback_at, current_callback_at - timedelta(days=1))
+
+        # now reset the time to 1 day from now in future
+        #  in order to execute the daily digest timer again
+        reset_time = datetime.now(pytz.UTC) + timedelta(days=1)
+        with freeze_time(reset_time):
+            # call digest command handle again
+            background_notification_check.Command().handle()
+            # fetch the timer from the DB as it should be updated
+            daily_digest_timer = self.store.get_notification_timer(self.daily_digest_timer_name)
+            freeze_time_callback_at = daily_digest_timer.callback_at
+            self.assertIsNone(daily_digest_timer.executed_at)
+            self.assertEqual(current_callback_at, freeze_time_callback_at - timedelta(days=1))
+
+    def test_weekly_digest_timers(self):
+        """
+        test to check for weekly digest timers calling back each week
+        """
+        weekly_digest_timer_name = self.store.get_notification_timer(self.weekly_digest_timer_name)
+        previous_callback_at = weekly_digest_timer_name.callback_at
+        background_notification_check.Command().handle()
+
+        # fetch the timer from the DB as it should be updated
+        weekly_digest_timer_name = self.store.get_notification_timer(self.weekly_digest_timer_name)
+        current_callback_at = weekly_digest_timer_name.callback_at
+
+        self.assertIsNone(weekly_digest_timer_name.executed_at)
+        self.assertEqual(previous_callback_at, current_callback_at - timedelta(days=7))
+
+        # now reset the time to 7 days(1 Week) from now in future
+        #  in order to execute the daily digest timer again
+        reset_time = datetime.now(pytz.UTC) + timedelta(days=7)
+        with freeze_time(reset_time):
+            # call digest command handle again
+            background_notification_check.Command().handle()
+            # fetch the timer from the DB as it should be updated
+            weekly_digest_timer_name = self.store.get_notification_timer(self.weekly_digest_timer_name)
+            freeze_time_callback_at = weekly_digest_timer_name.callback_at
+            self.assertIsNone(weekly_digest_timer_name.executed_at)
+            self.assertEqual(current_callback_at, freeze_time_callback_at - timedelta(days=7))
