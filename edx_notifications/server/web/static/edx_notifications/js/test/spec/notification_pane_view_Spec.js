@@ -186,6 +186,9 @@ describe("NotificationPaneView", function(){
     });
 
     it("sets collection url new value after calling markNotificationsRead function", function(){
+        // cdodge: we changed behavior of clicking 'mark as read' to only
+        // fetch data when we actually have unread notifications
+        this.notification_pane.collection.add({'foo': 'bar'});
         this.mark_notifications_read_target.click();
         expect(this.notification_pane.collection.url).toContain('/mark/as/read');
     });
