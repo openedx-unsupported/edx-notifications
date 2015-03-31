@@ -34,6 +34,13 @@ def perform_type_registrations_handler(sender, **kwargs):  # pylint: disable=unu
         )
     )
 
+    register_notification_type(
+        NotificationType(
+            name='testserver.msg-with-resolved-click-link',
+            renderer='edx_notifications.renderers.basic.BasicSubjectBodyRenderer',
+        )
+    )
+
 
 def start_up():
     """

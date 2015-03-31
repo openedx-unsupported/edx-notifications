@@ -1,5 +1,5 @@
 from bok_choy.page_object import PageObject
-from login_page import LoginPage
+from registration_success_page import RegistrationSuccess
 
 
 class RegistrationPage(PageObject):
@@ -27,23 +27,3 @@ class RegistrationPage(PageObject):
         self.q(css='#id_password2').fill(password)
         self.q(css='input[value="Register"]').click()
         RegistrationSuccess(self.browser).wait_for_page()
-
-
-class RegistrationSuccess(PageObject):
-
-    url = None
-
-    def is_browser_on_page(self):
-        """
-        Return True if registration success message is present on page
-        :return:
-        """
-        self.wait_for_element_visibility('html>body>h1', 'Heading not found')
-        return 'Registration Completed Successfully' in self.q(css='html>body>h1').text[0]
-
-    def go_to_login_page(self):
-        """
-        Click on the login link to go to login page
-        """
-        self.q(css='html>body>a').click()
-        LoginPage(self.browser).wait_for_page()

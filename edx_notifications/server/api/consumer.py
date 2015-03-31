@@ -13,7 +13,8 @@ from edx_notifications.lib.consumer import (
     get_notifications_count_for_user,
     get_notifications_for_user,
     get_notification_for_user,
-    mark_notification_read
+    mark_notification_read,
+    mark_all_user_notification_as_read
 )
 
 from edx_notifications.renderers.renderer import (
@@ -117,7 +118,7 @@ class NotificationCount(AuthenticatedAPIView):
             return Response({}, status.HTTP_400_BAD_REQUEST)
 
         cnt = get_notifications_count_for_user(
-            request.user.id,
+            int(request.user.id),
             filters=filters
         )
 
@@ -145,7 +146,7 @@ class NotificationsList(AuthenticatedAPIView):
             return Response({}, status.HTTP_400_BAD_REQUEST)
 
         user_msgs = get_notifications_for_user(
-            request.user.id,
+            int(request.user.id),
             filters=filters,
             options=options,
         )
@@ -185,7 +186,7 @@ class NotificationDetail(AuthenticatedAPIView):
         """
 
         # Get msg for user, raise Http404 if not found
-        user_msg = _find_notification_by_id(request.user.id, int(msg_id))
+        user_msg = _find_notification_by_id(int(request.user.id), int(msg_id))
 
         return Response(user_msg.get_fields(), status.HTTP_200_OK)
 
@@ -204,11 +205,37 @@ class NotificationDetail(AuthenticatedAPIView):
             try:
                 # this will raise an ItemNotFoundError if the user_id/msg_id combo
                 # cannot be found
-                mark_notification_read(request.user.id, int(msg_id), read=mark_as_read)
+                mark_notification_read(int(request.user.id), int(msg_id), read=mark_as_read)
             except ItemNotFoundError:
                 raise Http404()
 
-        return Response({}, status.HTTP_200_OK)
+        return Response([], status.HTTP_200_OK)
+
+
+class MarkNotificationsAsRead(AuthenticatedAPIView):
+    """
+    Mark all the user notifications as read
+    """
+
+    def post(self, request):
+        """
+        HTTP POST Handler which is used for such use-cases as 'mark as read'
+        """
+
+        filters = None
+
+        # get the namespace from the POST parameters
+        if 'namespace' in request.POST:
+            filters = {
+                'namespace': request.POST['namespace']
+            }
+
+        mark_all_user_notification_as_read(
+            int(request.user.id),
+            filters=filters
+        )
+
+        return Response([], status.HTTP_200_OK)
 
 
 class RendererTemplatesList(AuthenticatedAPIView):

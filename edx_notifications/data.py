@@ -15,7 +15,8 @@ from edx_notifications.base_data import (
     IntegerField,
     EnumField,
     RelatedObjectField,
-    BaseDataObject
+    BaseDataObject,
+    BooleanField,
 )
 
 
@@ -42,12 +43,6 @@ class NotificationType(BaseDataObject):
     # the name (including namespace) of the notification, e.g. open-edx.lms.forums.reply-to-post
     name = StringField()
 
-    # the human readible string of the name of the notification
-    display_name = StringField()
-
-    # the human readible string that describes the notification
-    display_description = StringField()
-
     # default delivery channel for this type
     # None = no default
     default_channel = RelatedObjectField(NotificationChannel)
@@ -55,6 +50,9 @@ class NotificationType(BaseDataObject):
     # renderer class - as a string - that will handle the rendering of
     # this type
     renderer = StringField()
+
+    # any context information to pass into the renderer
+    renderer_context = DictField()
 
 
 class NotificationMessage(BaseDataObject):
@@ -110,6 +108,21 @@ class NotificationMessage(BaseDataObject):
     created = DateTimeField()
     modified = DateTimeField()
 
+    # links to resolve by the NotificationChannel when dispatching.
+    resolve_links = DictField()
+
+    # generic id regarding the object that this notification msg is about
+    # this can be used for lookups
+    object_id = StringField()
+
+    @property
+    def _click_link_keyname(self):
+        """
+        Hide this constant so that other's don't need to know
+        how internal schemas
+        """
+        return '_click_link'
+
     def validate(self):
         """
         Validator for this DataObject
@@ -123,6 +136,79 @@ class NotificationMessage(BaseDataObject):
 
         if not self.msg_type:
             raise ValidationError("Missing required property: msg_type")
+
+    def set_click_link(self, click_link):
+        """
+        If we have a "click link" associate with the notification,
+        this will store it in the system defined meta-field
+        in the payload which the Backbone presentation tier
+        knows about.
+
+        IMPORTANT: If click links are generated through
+        the LinkResolvers in the NotificationChannels
+        then it will be overwritten. This happens when
+        self.resolve_links != None
+        """
+
+        if not self.payload:
+            self.payload = {}
+
+        self.payload[self._click_link_keyname] = click_link
+
+    def get_click_link(self):
+        """
+        Return the click link associated with this message,
+        if it was set.
+
+        IMPORTANT: If click links are generated through
+        the LinkResolvers in the NotificationChannels
+        then it will be overwritten. This happens when
+        self.resolve_links != None
+        """
+
+        if not self.payload:
+            return None
+
+        return self.payload[self._click_link_keyname]
+
+    def add_resolve_link_params(self, link_name, params):
+        """
+        Helper method to set resolve_links field when the message
+        gets published to a channel and we need to add meta-links
+        to the message, e.g. to - say - link to a webpage
+        """
+
+        if not self.resolve_links:
+            self.resolve_links = {}
+
+        if link_name in self.resolve_links:
+            # the link_name already exists, so we should update
+            # the parameters associated with it
+            self.resolve_links[link_name].update(params)
+        else:
+            # new link name, so let's add the whole thing
+            self.resolve_links.update({
+                link_name: params
+            })
+
+    def add_click_link_params(self, params):
+        """
+        Helper method to set a system defined '_click_link'
+        payload value, which can be handled
+        by the front-end Backbone application to
+        signify a click through link
+        """
+
+        self.add_resolve_link_params(self._click_link_keyname, params)
+
+    def get_click_link_params(self):
+        """
+        Helper method to get all click links, so that calling
+        applications need to know that we store that under
+        a key named '_click_link'
+        """
+
+        return self.resolve_links.get(self._click_link_keyname)
 
 
 class UserNotification(BaseDataObject):
@@ -167,3 +253,63 @@ class NotificationTypeUserChannelPreference(BaseDataObject):
     # dict containing any user specific context for this channel, for example a mobile # for SMS
     # message, or email address
     channel_context = DictField()
+
+
+class NotificationCallbackTimer(BaseDataObject):
+    """
+    Registers a callback to occur after a timestamp. This can be used by the
+    application tier to evaluate if conditions are met to trigger
+    a notification message to be sent.
+
+    A callback can be periodic, in which case, when one callback
+    is completed another is schedule as <now>+periodicity_mind. It will reuse the
+    same context as when the first was created.
+
+    IMPORTANT: Do not register a lot of high frequency callbacks as
+    each reiteration will take up another row in the database to store
+    the re-registration of the callback and the results. There is a system limit
+    - which is configurable - on the minimum minutes, for example no less than
+    60 minutes (hourly job)
+
+    IMPORTANT: the class that is registered to be called back *must*
+    implement the NotificationCallbackTimerHandler interface
+    """
+
+    @property
+    def id(self):
+        """
+        Alias the timer name as the id, since all data objects have names
+        """
+        return self.name
+
+    # timer name, must be unique!
+    name = StringField()
+
+    # earliest to callback at
+    callback_at = DateTimeField()
+
+    # the entry point "e.g. myapp.module.NotificationAsyncCallbackHandler"
+    class_name = StringField()
+
+    # is active
+    is_active = BooleanField()
+
+    # any specific context that should be passed into the callback
+    context = DictField()
+
+    # if this is a recurring timer entry, what is the periodicity
+    # in minutes
+    periodicity_min = IntegerField()
+
+    # when the callback was called
+    executed_at = DateTimeField()
+
+    # any unhandled messages associated with the callback
+    err_msg = StringField()
+
+    # any stats the the callback handler returned
+    results = DictField()
+
+    # timestamps
+    created = DateTimeField()
+    modified = DateTimeField()
