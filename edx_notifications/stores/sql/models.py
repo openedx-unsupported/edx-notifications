@@ -12,6 +12,8 @@ from edx_notifications.data import (
     NotificationMessage,
     NotificationType,
     UserNotification,
+    NotificationPreference,
+    UserNotificationPreferences,
     NotificationCallbackTimer,
 )
 from edx_notifications import const
@@ -231,7 +233,56 @@ class SQLNotificationChannel(models.Model):
         db_table = 'edx_notifications_notificationchannel'
 
 
-class SQLUserNotificationPreferences(models.Model):
+class SQLNotificationPreference(models.Model):
+    """
+    Notification preference
+    """
+    class Meta(object):
+        """
+        ORM metadata about this class
+        """
+        app_label = 'edx_notifications'  # since we have this models.py file not in the root app directory
+        db_table = 'edx_notifications_notificationpreference'
+
+    # the internal name is the primary key
+    name = models.CharField(primary_key=True, max_length=255)
+
+    display_name = models.CharField(max_length=255)
+
+    display_description = models.CharField(max_length=1023)
+
+    def to_data_object(self, options=None):  # pylint: disable=unused-argument
+        """
+        Generate a NotificationPreference data object
+        """
+
+        return NotificationPreference(
+            name=self.name,
+            display_name=self.display_name,
+            display_description=self.display_description
+        )
+
+    @classmethod
+    def from_data_object(cls, notification_preference):
+        """
+        create a ORM model object from a NotificationPreference
+        """
+
+        obj = SQLNotificationPreference()
+        obj.load_from_data_object(notification_preference)
+        return obj
+
+    def load_from_data_object(self, notification_preference):
+        """
+        Hydrate ourselves from a passed in notification_preference
+        """
+
+        self.name = notification_preference.name  # pylint: disable=attribute-defined-outside-init
+        self.display_name = notification_preference.display_name
+        self.display_description = notification_preference.display_description
+
+
+class SQLUserNotificationPreferences(TimeStampedModel):
     """
     User specific mappings of Notifications to Channel, to reflect user preferences
     """
@@ -242,6 +293,42 @@ class SQLUserNotificationPreferences(models.Model):
         """
         app_label = 'edx_notifications'  # since we have this models.py file not in the root app directory
         db_table = 'edx_notifications_usernotificationpreferences'
+
+    user_id = models.IntegerField(db_index=True)
+
+    # Notification preference
+    preference = models.ForeignKey(SQLNotificationPreference, db_index=True)
+
+    value = models.CharField(max_length=255)
+
+    def to_data_object(self, options=None):  # pylint: disable=unused-argument
+        """
+        Generate a UserNotificationPreferences data object
+        """
+
+        return UserNotificationPreferences(
+            user_id=self.user_id,
+            preference=self.preference.to_data_object(),  # pylint: disable=no-member,
+            value=self.value
+        )
+
+    @classmethod
+    def from_data_object(cls, user_notification_preferences):
+        """
+        create a ORM model object from a UserNotificationPreferences
+        """
+
+        obj = SQLUserNotificationPreferences()
+        obj.load_from_data_object(user_notification_preferences)
+        return obj
+
+    def load_from_data_object(self, user_notification_preferences):
+        """
+        Hydrate ourselves from a passed in user_notification_preferences
+        """
+        self.user_id = user_notification_preferences.user_id,  # pylint: disable=attribute-defined-outside-init
+        self.preference = SQLNotificationPreference.from_data_object(user_notification_preferences.preference),
+        self.value = user_notification_preferences.value
 
 
 class SQLNotificationCallbackTimer(TimeStampedModel):

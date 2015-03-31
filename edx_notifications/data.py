@@ -315,3 +315,36 @@ class NotificationCallbackTimer(BaseDataObject):
     # timestamps
     created = DateTimeField()
     modified = DateTimeField()
+
+
+class NotificationPreference(BaseDataObject):
+    """
+    Specifies the Notification preference.
+    """
+
+    # the internal name of the channel
+    name = StringField()
+
+    # display_name for notification preference
+    display_name = StringField()
+
+    # display description for notification preference
+    display_description = StringField()
+
+
+class UserNotificationPreferences(BaseDataObject):
+    """
+    specifies the user notifications preference.
+    """
+
+    # unconstrained pointer to edx-platform auth_user table
+    user_id = IntegerField()
+
+    # instance of NotificationPreference, None = unloaded
+    preference = RelatedObjectField(NotificationPreference)
+
+    value = StringField()
+
+    # timestamps
+    created = DateTimeField()
+    modified = DateTimeField()
