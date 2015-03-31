@@ -442,7 +442,7 @@ var NotificationPaneView = Backbone.View.extend({
                     self.render();
 
                     // fetch the latest notification count
-                    self.counter_icon_view.model.fetch();
+                    self.counter_icon_view.refresh();
                 }
             }
         );
