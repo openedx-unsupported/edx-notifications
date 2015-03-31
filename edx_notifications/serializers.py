@@ -66,7 +66,6 @@ class NotificationMessageSerializer(serializers.Serializer):
     expires_at = serializers.DateTimeField(required=False)
     expires_secs_after_read = serializers.IntegerField(required=False)
     created = serializers.DateTimeField()
-    modified = serializers.DateTimeField()
 
     def restore_object(self, attrs, instance=None):
         """

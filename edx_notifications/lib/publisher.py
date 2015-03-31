@@ -1,23 +1,35 @@
 """
 All in-proc API endpoints for acting as a Notification Publisher
+
+IMPORTANT: All methods exposed here will also be exposed in as a
+xBlock runtime service named 'notifications'. Be aware that adding
+any new methods here will also be exposed to xBlocks!!!!
 """
 
+import logging
 import types
+import datetime
+import pytz
 from contracts import contract
 
 from django.db.models.query import ValuesListQuerySet
 
 from edx_notifications.channels.channel import get_notification_channel
 from edx_notifications.stores.store import notification_store
+from edx_notifications.exceptions import ItemNotFoundError
 
 from edx_notifications.data import (
     NotificationType,
     NotificationMessage,
+    NotificationCallbackTimer,
 )
 
 from edx_notifications.renderers.renderer import (
     register_renderer
 )
+from edx_notifications.scopes import resolve_user_scope, has_user_scope_resolver
+
+log = logging.getLogger(__name__)
 
 
 @contract(msg_type=NotificationType)
@@ -25,6 +37,8 @@ def register_notification_type(msg_type):
     """
     Registers a new notification type
     """
+
+    log.info('Registering NotificationType: {msg_type}'.format(msg_type=str(msg_type)))
 
     # do validation
     msg_type.validate()
@@ -73,6 +87,11 @@ def publish_notification_to_user(user_id, msg):
         fields
     """
 
+    log_msg = (
+        'Publishing Notification to user_id {user_id} with message: {msg}'
+    ).format(user_id=user_id, msg=msg)
+    log.info(log_msg)
+
     # validate the msg, this will raise a ValidationError if there
     # is something malformatted or missing in the NotificationMessage
     msg.validate()
@@ -88,15 +107,11 @@ def publish_notification_to_user(user_id, msg):
 
     user_msg = channel.dispatch_notification_to_user(user_id, msg)
 
-    #
-    # Here is where we will tie into the Analytics pipeline
-    #
-
     return user_msg
 
 
 @contract(msg=NotificationMessage)
-def bulk_publish_notification_to_users(user_ids, msg):
+def bulk_publish_notification_to_users(user_ids, msg, exclude_user_ids=None):
     """
     This top level API method will publish a notification
     to a group (potentially large). We have a distinct entry
@@ -121,6 +136,12 @@ def bulk_publish_notification_to_users(user_ids, msg):
 
     """
 
+    log.info('Publishing bulk Notification with message: {msg}'.format(msg=msg))
+
+    # validate the msg, this will raise a ValidationError if there
+    # is something malformatted or missing in the NotificationMessage
+    msg.validate()
+
     if (not isinstance(user_ids, list) and not
             isinstance(user_ids, types.GeneratorType) and not
             isinstance(user_ids, ValuesListQuerySet)):
@@ -141,10 +162,144 @@ def bulk_publish_notification_to_users(user_ids, msg):
     # have to change this
     channel = get_notification_channel(None, msg.msg_type)
 
-    num_sent = channel.bulk_dispatch_notification(user_ids, msg)
-
-    #
-    # Here is where we will tie into the Analytics pipeline
-    #
+    num_sent = channel.bulk_dispatch_notification(user_ids, msg, exclude_user_ids=exclude_user_ids)
 
     return num_sent
+
+
+@contract(msg=NotificationMessage)
+def bulk_publish_notification_to_scope(scope_name, scope_context, msg, exclude_user_ids=None):
+    """
+    This top level API method will publish a notification
+    to a UserScope (potentially large). Basically this is a convenience method
+    which simple resolves the scope and then called into
+    bulk_publish_notifications_to_scope()
+
+    IMPORTANT: In general one will want to call into this method behind a
+    Celery task
+
+    For built in Scope Resolvers ('course_group', 'course_enrollments')
+
+        scope_context:
+            if scope='course_group' then context = {'course_id': xxxx, 'group_id': xxxxx}
+            if scope='course_enrollments' then context = {'course_id'}
+
+    """
+    log_msg = (
+        'Publishing scoped Notification to scope name "{scope_name}" and scope '
+        'context {scope_context} with message: {msg}'
+    ).format(scope_name=scope_name, scope_context=scope_context, msg=msg)
+    log.info(log_msg)
+
+    user_ids = resolve_user_scope(scope_name, scope_context)
+
+    if not user_ids:
+        return 0
+
+    return bulk_publish_notification_to_users(user_ids, msg, exclude_user_ids)
+
+
+@contract(msg=NotificationMessage, send_at=datetime.datetime, scope_name=basestring, scope_context=dict)
+def publish_timed_notification(msg, send_at, scope_name, scope_context, timer_name=None, ignore_if_past_due=False):  # pylint: disable=too-many-arguments
+    """
+    Registers a new notification message to be dispatched
+    at a particular time.
+
+    IMPORTANT: There can only be one timer associated with
+    a notification message. If it is called more than once on the
+    same msg_id, then the existing one is updated.
+
+    ARGS:
+        send_at: datetime when the message should be sent
+        msg: An instance of a NotificationMessage
+        distribution_scope: enum of three values: 'user', 'course_group', 'course_enrollments'
+               which describe the distribution scope of the message
+        scope_context:
+            if scope='user': then {'user_id': xxxx }
+            if scope='course_group' then {'course_id': xxxx, 'group_id': xxxxx}
+            if scope='course_enrollments' then {'course_id'}
+
+        timer_name: if we know the name of the timer we want to use rather than auto-generating it.
+                    use caution not to mess with other code's timers!!!
+        ignore_if_past_due: If the notification should not be put into the timers, if the send date
+                    is in the past
+
+    RETURNS: instance of NotificationCallbackTimer
+    """
+
+    log_msg = (
+        'Publishing timed Notification to scope name "{scope_name}" and scope '
+        'context {scope_context} to be sent at "{send_at} with message: {msg}'
+    ).format(scope_name=scope_name, scope_context=scope_context, send_at=send_at, msg=msg)
+    log.info(log_msg)
+
+    now = datetime.datetime.now(pytz.UTC)
+    if now > send_at and ignore_if_past_due:
+        log.info('Timed Notification is past due and the caller said to ignore_if_past_due. Dropping notification...')
+        if timer_name:
+            # If timer is named and it is past due, it is possibly being updated
+            # so, then we should remove any previously stored
+            # timed notification
+            cancel_timed_notification(timer_name, exception_on_not_found=False)
+        return
+
+    # make sure we can resolve the scope_name
+    if not has_user_scope_resolver(scope_name):
+        err_msg = (
+            'There is no registered scope resolver for scope_name "{name}"'
+        ).format(name=scope_name)
+        raise ValueError(err_msg)
+
+    store = notification_store()
+
+    # make sure we put the delivery timestamp on the message as well
+    msg.deliver_no_earlier_than = send_at
+    saved_msg = store.save_notification_message(msg)
+
+    _timer_name = timer_name if timer_name else 'notification-dispatch-timer-{_id}'.format(_id=saved_msg.id)
+
+    timer = NotificationCallbackTimer(
+        name=_timer_name,
+        callback_at=send_at,
+        class_name='edx_notifications.callbacks.NotificationDispatchMessageCallback',
+        is_active=True,
+        context={
+            'msg_id': saved_msg.id,
+            'distribution_scope': {
+                'scope_name': scope_name,
+                'scope_context': scope_context,
+            }
+        }
+    )
+
+    saved_timer = store.save_notification_timer(timer)
+
+    return saved_timer
+
+
+@contract(timer_name=basestring)
+def cancel_timed_notification(timer_name, exception_on_not_found=True):
+    """
+    Cancels a previously published timed notification
+    """
+
+    log_msg = (
+        'Cancelling timed Notification named "{timer_name}"'
+    ).format(timer_name=timer_name)
+    log.info(log_msg)
+
+    store = notification_store()
+    try:
+        timer = store.get_notification_timer(timer_name)
+        timer.is_active = False  # simply make is_active=False
+        store.save_notification_timer(timer)
+    except ItemNotFoundError:
+        if not exception_on_not_found:
+            return
+
+        err_msg = (
+            'Tried to call cancel_timed_notification for timer_name "{name}" '
+            'but it does not exist. Skipping...'
+        ).format(name=timer_name)
+        log.error(err_msg)
+        raise

@@ -44,7 +44,6 @@ class SerializerTests(TestCase):
             },
             deliver_no_earlier_than=datetime.utcnow(),
             created=datetime.utcnow(),
-            modified=datetime.utcnow(),
         )
 
         serializer = NotificationMessageSerializer(msg)

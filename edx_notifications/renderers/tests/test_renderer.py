@@ -4,9 +4,17 @@ Tests for renderer.py
 
 from django.test import TestCase
 
+from edx_notifications.const import RENDER_FORMAT_UNDERSCORE, RENDER_FORMAT_SMS
 from edx_notifications.renderers.renderer import (
     BaseNotificationRenderer
 )
+
+from edx_notifications.renderers.basic import (
+    UnderscoreStaticFileRenderer
+)
+
+from edx_notifications.data import NotificationMessage, NotificationType
+from edx_notifications.lib.publisher import register_notification_type
 
 
 class TestBadRenderer(BaseNotificationRenderer):
@@ -39,6 +47,13 @@ class TestBadRenderer(BaseNotificationRenderer):
         Return a path to where a client can get the template
         """
         super(TestBadRenderer, self).get_template_path(render_format)
+
+
+class TestUnderscoreStaticFileRenderer(UnderscoreStaticFileRenderer):
+    """
+    Simulates the use of an Underscore renderer
+    """
+    underscore_template_name = 'foo.underscore'
 
 
 class RendererTests(TestCase):
@@ -74,3 +89,50 @@ class RendererTests(TestCase):
 
         with self.assertRaises(NotImplementedError):
             bad.get_template_path(None)
+
+    def test_underscore(self):
+        """
+        Tests on the UnderscoreStaticFileRenderer
+        """
+
+        renderer = TestUnderscoreStaticFileRenderer('foo.underscore')
+
+        self.assertTrue(renderer.can_render_format(RENDER_FORMAT_UNDERSCORE))
+
+        msg_type = NotificationType(
+            name='open-edx.edx_notifications.lib.tests.test_publisher',
+            renderer='edx_notifications.renderers.basic.BasicSubjectBodyRenderer',
+        )
+        register_notification_type(msg_type)
+
+        msg = NotificationMessage(
+            namespace='test-runner',
+            msg_type=msg_type,
+            payload={
+                'subject': 'test subject',
+                'body': 'test body',
+            }
+        )
+
+        self.assertEqual(
+            renderer.render_subject(
+                msg,
+                RENDER_FORMAT_UNDERSCORE,
+                None
+            ),
+            'test subject'
+        )
+
+        self.assertEqual(
+            renderer.render_body(
+                msg,
+                RENDER_FORMAT_UNDERSCORE,
+                None
+            ),
+            'test body'
+        )
+
+        url = renderer.get_template_path(RENDER_FORMAT_UNDERSCORE)
+
+        with self.assertRaises(NotImplementedError):
+            url = renderer.get_template_path(RENDER_FORMAT_SMS)

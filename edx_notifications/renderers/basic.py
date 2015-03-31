@@ -74,4 +74,4 @@ class BasicSubjectBodyRenderer(UnderscoreStaticFileRenderer):
     Return the appropriate Underscore template for this notification type
     """
 
-    underscore_template_name = 'basic_subject_body.html'
+    underscore_template_name = 'basic_subject_body.underscore'
