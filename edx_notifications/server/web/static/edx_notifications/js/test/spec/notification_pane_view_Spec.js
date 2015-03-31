@@ -25,7 +25,7 @@ describe("NotificationPaneView", function(){
                     '</ul>' +
                 '</div>' +
             '</div>' +
-            '<div class="nxs-list-body">' +
+            '<div class="xns-list-body">' +
                 '<ul class="xns-items">' +
                     '<% if (typeof grouped_user_notifications == "undefined" || grouped_user_notifications.length == 0) { %>' +
                        ' <li class="xns-empty-list">' +

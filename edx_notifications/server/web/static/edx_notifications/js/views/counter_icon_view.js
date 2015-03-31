@@ -88,6 +88,23 @@ var CounterIconView = Backbone.View.extend({
   render: function () {
       var html = this.template(this.model.toJSON());
       this.count_el.html(html);
+
+      // if we are display double digits the
+      // styles might need to change, if so add a "multi-digit"
+      // class
+
+      // clear any set previous styles
+      this.count_el.removeClass('multi-digit');
+      this.count_el.removeClass('double-digit');
+
+      if (this.model.has('count')) {
+        var count = this.model.get('count');
+        if(count > 99) {
+          this.count_el.addClass('multi-digit');
+        } else if (count > 9) {
+          this.count_el.addClass('double-digit');
+        }
+      }
  },
 
  showPane: function(e) {
