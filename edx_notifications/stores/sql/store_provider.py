@@ -185,8 +185,11 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         if type_name:
             query = query.filter(msg__msg_type=type_name)
 
-        if start_date and end_date:
-            query = query.filter(created__gte=start_date, created__lte=end_date)
+        if start_date:
+            query = query.filter(created__gte=start_date)
+
+        if end_date:
+            query = query.filter(created__lte=end_date)
 
         return query
 
