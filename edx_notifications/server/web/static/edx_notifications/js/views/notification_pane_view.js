@@ -412,7 +412,9 @@ var NotificationPaneView = Backbone.View.extend({
         this.collection.url = this.unread_msgs_endpoint;
         this.selected_pane = 'unread';
         this.hydrate();
-        e.preventDefault();
+        if (e !== null) {
+            e.preventDefault();
+        }
     },
     markNotificationsRead: function(e) {
         /* set the API endpoint that was passed into our initializer */
@@ -536,6 +538,14 @@ var NotificationPaneView = Backbone.View.extend({
         this.$el.hide();
     },
     showPane: function() {
+        // when showing pane
+        // always have the 'unread' view selected
+        if (this.selected_pane != 'unread') {
+            this.collection.reset();
+            // clear out any previously rendered html
+            this.$el.html('');
+            this.unreadNotificationsClicked(null);
+        }
         this.$el.show();
     },
     preventHidingWhenClickedInside: function(e) {
