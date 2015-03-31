@@ -5,9 +5,10 @@ at least once at the beginning of any process lifecycle
 
 from edx_notifications.signals import perform_type_registrations, perform_timer_registrations
 
-# we need to import the standard notification type registraions so that they can hook in
+# we need to import the standard notification type registrations so that they can hook in
 # in their signal receivers
 from edx_notifications.openedx import notification_type_registration  # pylint: disable=unused-import
+from edx_notifications.digest_timers import register_digest_timers  # pylint: disable=unused-import
 
 from edx_notifications.scopes import register_user_scope_resolver, SingleUserScopeResolver
 
