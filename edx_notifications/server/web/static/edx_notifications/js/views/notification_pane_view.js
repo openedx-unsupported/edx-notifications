@@ -144,7 +144,7 @@ var NotificationPaneView = Backbone.View.extend({
             notification_group_renderings = this.render_notifications_by_day();
         }
 
-        var always_show_dates_on_unread = (typeof this.global_variables.always_show_dates_on_unread != undefined && this.global_variables.always_show_dates_on_unread);
+        var always_show_dates_on_unread = (typeof this.global_variables.always_show_dates_on_unread !== undefined && this.global_variables.always_show_dates_on_unread);
 
         /* now render template with our model */
         var _html = this.template({
@@ -160,6 +160,15 @@ var NotificationPaneView = Backbone.View.extend({
         this.$el.find($('ul.xns-tab-list > li')).removeClass('active');
         var class_to_activate = (this.selected_pane == 'unread') ? 'xns-unread-action' : 'xns-all-action';
         this.$el.find('.'+class_to_activate).addClass('active');
+
+        // apply some logic with regards to enabling/disabling the 'Mark as read'
+        // action link. We should only enable this if we are on the 'unread' pane
+        // and we have at least 1 unread notificatons
+        if (this.selected_pane == 'unread' && this.collection.length > 0) {
+            $('.xns-mark-read-action').removeClass('disabled');
+        } else {
+            $('.xns-mark-read-action').addClass('disabled');
+        }
     },
     /* this describes how we want to group together notification types into visual groups */
     grouping_config: {
@@ -417,37 +426,40 @@ var NotificationPaneView = Backbone.View.extend({
         }
     },
     markNotificationsRead: function(e) {
-        /* set the API endpoint that was passed into our initializer */
-        this.collection.url = this.mark_all_read_endpoint;
+        // this is only supported on the 'unread' view
+        if (this.selected_pane == 'unread' && this.collection.length > 0) {
+            // set the API endpoint that was passed into our initializer
+            this.collection.url = this.mark_all_read_endpoint;
 
-        /* make the async call to the backend REST API */
-        /* after it loads, the listenTo event will file and */
-        /* will call into the rendering */
-        var self = this;
-        self.$el.addClass('ui-loading');
-        var data = {};
-        if (this.namespace) {
-            data = {
-                namespace: this.namespace
-            };
-        }
-        self.collection.fetch(
-            {
-                headers: {
-                    "X-CSRFToken": this.getCSRFToken()
-                },
-                type: 'POST',
-                data: data,
-                success: function () {
-                    self.$el.removeClass('ui-loading');
-                    self.selected_pane = 'unread';
-                    self.render();
-
-                    // fetch the latest notification count
-                    self.counter_icon_view.refresh();
-                }
+            // make the async call to the backend REST API
+            // after it loads, the listenTo event will file and
+            // will call into the rendering
+            var self = this;
+            self.$el.addClass('ui-loading');
+            var data = {};
+            if (this.namespace) {
+                data = {
+                    namespace: this.namespace
+                };
             }
-        );
+            self.collection.fetch(
+                {
+                    headers: {
+                        "X-CSRFToken": this.getCSRFToken()
+                    },
+                    type: 'POST',
+                    data: data,
+                    success: function () {
+                        self.$el.removeClass('ui-loading');
+                        self.selected_pane = 'unread';
+                        self.render();
+
+                        // fetch the latest notification count
+                        self.counter_icon_view.refresh();
+                    }
+                }
+            );
+        }
         e.preventDefault();
     },
     getCSRFToken: function() {
