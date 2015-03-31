@@ -135,6 +135,7 @@ var CounterIconView = Backbone.View.extend({
              if (counterView.notification_pane) {
                  counterView.notification_pane.collection.url = counterView.options.endpoints.user_notifications_unread_only;
                  counterView.notification_pane.hydrate();
+
              }
          }
      });
