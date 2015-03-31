@@ -44,7 +44,7 @@ done
 #If an individual test name is passed from command prompt run only this test
 #otherwise execute all tests
 echo "Running acceptance tests..."
-if [ $1 != "" ]; then
+if [ "$1" != "" ]; then
     nosetests testserver/test/acceptance/test_notifications.py:TestAddNotifications.$1
 else
     nosetests testserver/test/acceptance
