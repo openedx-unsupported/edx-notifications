@@ -129,6 +129,10 @@ ul{
 	color: #999;
 	text-decoration: none;
 }
+.xns-content .xns-actions ul li.disabled a{
+	color: #999;
+	text-decoration: none;
+}
 .xns-title {
 	color: #328fe0;
 	font-weight: bold;
