@@ -10,6 +10,7 @@ from edx_notifications.management.commands import background_notification_check
 
 from edx_notifications.stores.store import notification_store
 from edx_notifications.callbacks import NotificationCallbackTimerHandler
+from edx_notifications import startup
 from edx_notifications.data import (
     NotificationMessage,
     NotificationType,
@@ -448,8 +449,6 @@ class DigestNotificationsTests(TestCase):
         """
         start up stuff
         """
-        from edx_notifications import startup
-
         startup.initialize()
         self.daily_digest_timer_name = 'daily-digest-timer'
         self.weekly_digest_timer_name = 'weekly-digest-timer'
