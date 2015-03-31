@@ -6,7 +6,6 @@ import copy
 import pylru
 import pytz
 from datetime import datetime
-
 from django.core.exceptions import ObjectDoesNotExist
 
 from edx_notifications.stores.store import BaseNotificationStoreProvider
@@ -160,6 +159,8 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         read = _filters.get('read', True)
         unread = _filters.get('unread', True)
         type_name = _filters.get('type_name')
+        start_date = _filters.get('start_date')
+        end_date = _filters.get('end_date')
 
         select_related = _options.get('select_related', False)
 
@@ -183,6 +184,12 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
 
         if type_name:
             query = query.filter(msg__msg_type=type_name)
+
+        if start_date:
+            query = query.filter(created__gte=start_date)
+
+        if end_date:
+            query = query.filter(created__lte=end_date)
 
         return query
 
