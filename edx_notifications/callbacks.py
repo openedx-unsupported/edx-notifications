@@ -205,6 +205,13 @@ def _send_to_scoped_users(msg, scope_name, scope_context, preferred_channel=None
 
 
 class NotificationDigestMessageCallback(NotificationCallbackTimerHandler):
-
+    """
+        This is called by the NotificationTimer when there is a
+        timed notification that needs to be dispatched
+    """
     def notification_timer_callback(self, timer):
-        pass
+        result = {
+            'errors': [],
+            'reschedule_in_mins': timer.periodicity_min,
+        }
+        return result
