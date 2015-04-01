@@ -249,7 +249,7 @@ class BaseNotificationStoreProvider(object):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def set_user_reference(self, user_preference):
+    def set_user_preference(self, user_preference):
         """
         Will save (create or update) a UserNotificationPreference in the
         StorageProvider

@@ -104,7 +104,8 @@ class TestSQLStoreProvider(TestCase):
             display_description=display_description
         )
 
-        test_notification_preference_saved = self.provider.save_notification_preference(test_notification_preference)
+        with self.assertNumQueries(3):
+            test_notification_preference_saved = self.provider.save_notification_preference(test_notification_preference)
 
         self.assertIsNotNone(test_notification_preference_saved)
         self.assertIsNotNone(test_notification_preference_saved.name)
@@ -124,7 +125,7 @@ class TestSQLStoreProvider(TestCase):
             value=value
         )
 
-        user_notification_preference = self.provider.set_user_reference(test_user_notification_preference)
+        user_notification_preference = self.provider.set_user_preference(test_user_notification_preference)
 
         self.assertIsNotNone(user_notification_preference)
         self.assertIsNotNone(user_notification_preference.user_id)
@@ -913,27 +914,31 @@ class TestSQLStoreProvider(TestCase):
             display_description="This is the test preference"
         )
 
-        notification_preference_read = self.provider.get_notification_preference(
-            notification_preference.name
-        )
+        with self.assertNumQueries(1):
+            notification_preference_read = self.provider.get_notification_preference(
+                notification_preference.name
+            )
         self.assertEqual(notification_preference, notification_preference_read)
 
     def test_save_update_notification_preference(self):
         """
         test update the saved notification preference
         """
-        notification_preference = self._save_notification_preference(
-            name='test_notification_preference',
-            display_name="Test Preference",
-            display_description="This is the test preference"
-        )
+        with self.assertNumQueries(3):
+            notification_preference = self._save_notification_preference(
+                name='test_notification_preference',
+                display_name="Test Preference",
+                display_description="This is the test preference"
+            )
 
         notification_preference.display_name = 'Updated Test Preference'
-        notification_preference_saved_twice = self.provider.save_notification_preference(notification_preference)
+        with self.assertNumQueries(3):
+            notification_preference_saved_twice = self.provider.save_notification_preference(notification_preference)
 
-        notification_preference_read = self.provider.get_notification_preference(
-            notification_preference_saved_twice.name
-        )
+        with self.assertNumQueries(1):
+            notification_preference_read = self.provider.get_notification_preference(
+                notification_preference_saved_twice.name
+            )
         self.assertEqual(notification_preference_saved_twice, notification_preference_read)
 
     def test_get_all_notification_preferences(self):
@@ -952,7 +957,9 @@ class TestSQLStoreProvider(TestCase):
             display_description="This is the second test preference"
         )
 
-        all_notification_preferences = self.provider.get_all_notification_preferences()
+        with self.assertNumQueries(1):
+            all_notification_preferences = self.provider.get_all_notification_preferences()
+
         self.assertEqual(len(all_notification_preferences), 2)
         self.assertEqual(all_notification_preferences[0], test_notification_preference)
         self.assertEqual(all_notification_preferences[1], test2_notification_preference)
@@ -975,10 +982,11 @@ class TestSQLStoreProvider(TestCase):
             user_id=1,
             value='User Preference 1'
         )
-        read_user_notification_preference = self.provider.get_user_preference(
-            user_notification_preference.user_id,
-            user_notification_preference.preference.name
-        )
+        with self.assertNumQueries(2):
+            read_user_notification_preference = self.provider.get_user_preference(
+                user_notification_preference.user_id,
+                user_notification_preference.preference.name
+            )
         self.assertEqual(user_notification_preference, read_user_notification_preference)
 
     def test_update_saved_user_preference(self):
@@ -991,11 +999,15 @@ class TestSQLStoreProvider(TestCase):
             value='User Preference 1')
         user_notification_preferences.value = 'Updated user Preference'
         user_notification_preferences.user_id = 2
-        updated_user_preferences = self.provider.set_user_reference(user_notification_preferences)
-        read_updated_user_notification_preferences = self.provider.get_user_preference(
-            updated_user_preferences.user_id,
-            updated_user_preferences.preference.name
-        )
+
+        with self.assertNumQueries(2):
+            updated_user_preferences = self.provider.set_user_preference(user_notification_preferences)
+
+        with self.assertNumQueries(2):
+            read_updated_user_notification_preferences = self.provider.get_user_preference(
+                updated_user_preferences.user_id,
+                updated_user_preferences.preference.name
+            )
         self.assertEqual(user_notification_preferences, read_updated_user_notification_preferences)
 
     def test_get_non_existing_user_notification_preferences(self):
@@ -1018,8 +1030,8 @@ class TestSQLStoreProvider(TestCase):
                 user_id=user_id,
                 value='User Preferences'
             )
-
-        result = self.provider.get_all_user_preferences_for_user(user_id)
+        with self.assertNumQueries(6):
+            result = self.provider.get_all_user_preferences_for_user(user_id)
         self.assertEqual(len(result), 5)
 
     def test_get_all_user_preferences_with_name(self):
@@ -1039,12 +1051,13 @@ class TestSQLStoreProvider(TestCase):
         )
 
         # make sure we can't pass along a huge limit size
-        with self.assertRaises(ValueError):
-            self.provider.get_all_user_preferences_with_name(
-                name='test_preference',
-                value='User-Preferences',
-                size=const.USER_PREFERENCE_MAX_LIST_SIZE + 1
-            )
+        with self.assertNumQueries(0):
+            with self.assertRaises(ValueError):
+                self.provider.get_all_user_preferences_with_name(
+                    name='test_preference',
+                    value='User-Preferences',
+                    size=const.USER_PREFERENCE_MAX_LIST_SIZE + 1
+                )
 
         # test limit, we should only get the first one
         with self.assertNumQueries(2):
