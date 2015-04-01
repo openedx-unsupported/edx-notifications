@@ -15,7 +15,6 @@ WEEKLY_DIGEST_TIMER_NAME = 'weekly-digest-timer'
 MINUTES_IN_A_WEEK = 7 * 24 * 60
 
 
-
 @receiver(perform_timer_registrations)
 def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
     """
