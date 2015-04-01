@@ -10,7 +10,10 @@ from edx_notifications.stores.store import notification_store
 from edx_notifications.exceptions import ItemNotFoundError
 
 DAILY_DIGEST_TIMER_NAME = 'daily-digest-timer'
+MINUTES_IN_A_DAY = 24 * 60
 WEEKLY_DIGEST_TIMER_NAME = 'weekly-digest-timer'
+MINUTES_IN_A_WEEK = 7 * 24 * 60
+
 
 
 @receiver(perform_timer_registrations)
@@ -30,7 +33,7 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
             callback_at=datetime.datetime.now(pytz.UTC),
             class_name='edx_notifications.callbacks.NotificationDigestMessageCallback',
             is_active=True,
-            periodicity_min=24 * 60
+            periodicity_min=MINUTES_IN_A_DAY
         )
         store.save_notification_timer(daily_digest_timer)
 
@@ -42,6 +45,6 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
             callback_at=datetime.datetime.now(pytz.UTC),
             class_name='edx_notifications.callbacks.NotificationDigestMessageCallback',
             is_active=True,
-            periodicity_min=7 * 24 * 60
+            periodicity_min=MINUTES_IN_A_WEEK
         )
         store.save_notification_timer(weekly_digest_timer)

@@ -189,9 +189,18 @@ def _send_to_scoped_users(msg, scope_name, scope_context):
 
 class NotificationDigestMessageCallback(NotificationCallbackTimerHandler):
     """
-        This is called by the NotificationTimer when there is a
-        timed notification that needs to be dispatched
+        This is called by the NotificationTimer for triggering sending out
+        daily and weekly digest of notification emails.
+        The timer.periodicity_min can be used to differentiate between the
+        daily (where the periodicity_min will be equal to MINUTES_IN_A_DAY) and
+        weekly (where the periodicity_min will be equal to MINUTES_IN_A_WEEK)
+        digest timers.
+
+        The return dictionary must contain the key 'reschedule_in_mins' with
+        the value timer.periodicity_min in order to re-arm the callback to
+        trigger again after the specified interval.
     """
+
     def notification_timer_callback(self, timer):
         result = {
             'errors': [],
