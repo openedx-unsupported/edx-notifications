@@ -20,7 +20,7 @@ from edx_notifications.stores.sql.models import (
     SQLNotificationType,
     SQLUserNotification,
     SQLNotificationCallbackTimer,
-)
+    SQLNotificationPreference, SQLUserNotificationPreferences)
 
 
 class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
@@ -411,3 +411,111 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
             objs = objs.filter(executed_at__isnull=True)
 
         return [obj.to_data_object() for obj in objs]
+
+    def get_notification_preference(self, name):
+        """
+        Will return a single NotificationPreference if exists
+        else raises exception ItemNotFoundError
+        """
+        try:
+            obj = SQLNotificationPreference.objects.get(name=name)
+        except ObjectDoesNotExist:
+            raise ItemNotFoundError()
+
+        return obj.to_data_object()
+
+    def save_notification_preference(self, notification_preference):
+        """
+        Will save (create or update) a NotificationPreference in the
+        StorageProvider
+        """
+        obj = None
+        if notification_preference.name:
+            # see if it exists
+            try:
+                obj = SQLNotificationPreference.objects.get(name=notification_preference.name)
+                obj.load_from_data_object(notification_preference)
+            except ObjectDoesNotExist:
+                pass
+        if not obj:
+            obj = SQLNotificationPreference.from_data_object(notification_preference)
+
+        obj.save()
+        return obj.to_data_object()
+
+    def get_all_notification_preferences(self):
+        """
+        This returns list of all registered NotificationPreference.
+        """
+        query = SQLNotificationPreference.objects.all()
+
+        result_set = [item.to_data_object() for item in query]
+
+        return result_set
+
+    def get_user_preference(self, user_id, name):
+        """
+        Will return a single UserNotificationPreference if exists
+        else raises exception ItemNotFoundError
+        """
+        try:
+            obj = SQLUserNotificationPreferences.objects.get(user_id=user_id, preference__name=name)
+        except ObjectDoesNotExist:
+            raise ItemNotFoundError()
+
+        return obj.to_data_object()
+
+    def set_user_reference(self, user_preference):
+        """
+        Will save (create or update) a UserNotificationPreference in the
+        StorageProvider
+        """
+        obj = None
+        if user_preference.user_id:
+            # see if it exists
+            try:
+                obj = SQLUserNotificationPreferences.objects.get(
+                    user_id=user_preference.user_id,
+                    preference__name=user_preference.preference.name
+                )
+                obj.load_from_data_object(user_preference)
+            except ObjectDoesNotExist:
+                pass
+        if not obj:
+            obj = SQLUserNotificationPreferences.from_data_object(user_preference)
+
+        obj.save()
+        return obj.to_data_object()
+
+    def get_all_user_preferences_for_user(self, user_id):
+        """
+        This returns list of all UserNotificationPreference.
+        """
+        query = SQLUserNotificationPreferences.objects.filter(user_id=user_id)
+
+        result_set = [item.to_data_object() for item in query]
+
+        return result_set
+
+    def get_all_user_preferences_with_name(self, name, value, offset=0, size=None):
+        """
+        Returns a list of UserPreferences objects which match name and value,
+        so that we know all users that have the same preference. We need the 'offset'
+        and 'size' parameters since this query could potentially be very large
+        (imagine a course with 100K students in it) and we'll need the ability to page
+        """
+        # make sure passed in size is allowed
+        # as we don't want to blow up the query too large here
+        if size > const.USER_PREFERENCE_MAX_LIST_SIZE:
+            raise ValueError('Max limit is {size}'.format(size=size))
+
+        if size is None:
+            size = const.USER_PREFERENCE_MAX_LIST_SIZE
+
+        query = SQLUserNotificationPreferences.objects.filter(preference__name=name, value=value)
+
+        query = query[offset:offset + size]
+
+        result_set = [item.to_data_object() for item in query]
+
+        return result_set

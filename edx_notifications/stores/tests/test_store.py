@@ -27,6 +27,48 @@ class BadImplementationStoreProvider(BaseNotificationStoreProvider):
     raises the correct methods
     """
 
+    def get_all_user_preferences_for_user(self, user_id):
+        """
+        Fake implementation of method which calls base class, which should throw NotImplementedError
+        """
+        super(BadImplementationStoreProvider, self).get_all_user_preferences_for_user(user_id)
+
+    def save_notification_preference(self, notification_preference):
+        """
+        Fake implementation of method which calls base class, which should throw NotImplementedError
+        """
+        super(BadImplementationStoreProvider, self).save_notification_preference(notification_preference)
+
+    def get_notification_preference(self, name):
+        """
+        Fake implementation of method which calls base class, which should throw NotImplementedError
+        """
+        super(BadImplementationStoreProvider, self).get_notification_preference(name)
+
+    def get_all_user_preferences_with_name(self, name, value, offset=0, size=None):
+        """
+        Fake implementation of method which calls base class, which should throw NotImplementedError
+        """
+        super(BadImplementationStoreProvider, self).get_all_user_preferences_with_name(name, value, offset, size)
+
+    def get_user_preference(self, user_id, name):
+        """
+        Fake implementation of method which calls base class, which should throw NotImplementedError
+        """
+        super(BadImplementationStoreProvider, self).get_user_preference(user_id, name)
+
+    def get_all_notification_preferences(self):
+        """
+        Fake implementation of method which calls base class, which should throw NotImplementedError
+        """
+        super(BadImplementationStoreProvider, self).get_all_notification_preferences()
+
+    def set_user_reference(self, user_preference):
+        """
+        Fake implementation of method which calls base class, which should throw NotImplementedError
+        """
+        super(BadImplementationStoreProvider, self).set_user_reference(user_preference)
+
     def get_notification_message_by_id(self, msg_id, options=None):
         """
         Fake implementation of method which calls base class, which should throw NotImplementedError
@@ -218,3 +260,24 @@ class TestBaseNotificationDataProvider(TestCase):
 
         with self.assertRaises(NotImplementedError):
             bad_provider.get_all_active_timers()
+
+        with self.assertRaises(NotImplementedError):
+            bad_provider.get_notification_preference(None)
+
+        with self.assertRaises(NotImplementedError):
+            bad_provider.save_notification_preference(None)
+
+        with self.assertRaises(NotImplementedError):
+            bad_provider.get_all_notification_preferences()
+
+        with self.assertRaises(NotImplementedError):
+            bad_provider.get_user_preference(None, None)
+
+        with self.assertRaises(NotImplementedError):
+            bad_provider.set_user_reference(None)
+
+        with self.assertRaises(NotImplementedError):
+            bad_provider.get_all_user_preferences_for_user(None)
+
+        with self.assertRaises(NotImplementedError):
+            bad_provider.get_all_user_preferences_with_name(None, None)
