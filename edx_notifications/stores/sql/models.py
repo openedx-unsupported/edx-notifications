@@ -326,8 +326,8 @@ class SQLUserNotificationPreferences(TimeStampedModel):
         """
         Hydrate ourselves from a passed in user_notification_preferences
         """
-        self.user_id = user_notification_preferences.user_id,  # pylint: disable=attribute-defined-outside-init
-        self.preference = SQLNotificationPreference.from_data_object(user_notification_preferences.preference),
+        self.user_id = user_notification_preferences.user_id  # pylint: disable=attribute-defined-outside-init
+        self.preference = SQLNotificationPreference.from_data_object(user_notification_preferences.preference)
         self.value = user_notification_preferences.value
 
 
