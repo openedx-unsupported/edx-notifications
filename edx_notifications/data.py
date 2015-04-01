@@ -331,6 +331,9 @@ class NotificationPreference(BaseDataObject):
     # display description for notification preference
     display_description = StringField()
 
+    # default_value for notification preference
+    default_value = StringField()
+
 
 class UserNotificationPreferences(BaseDataObject):
     """
