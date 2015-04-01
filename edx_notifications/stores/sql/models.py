@@ -251,6 +251,8 @@ class SQLNotificationPreference(models.Model):
 
     display_description = models.CharField(max_length=1023)
 
+    default_value = models.CharField(max_length=255, null=True)
+
     def to_data_object(self, options=None):  # pylint: disable=unused-argument
         """
         Generate a NotificationPreference data object
@@ -259,7 +261,8 @@ class SQLNotificationPreference(models.Model):
         return NotificationPreference(
             name=self.name,
             display_name=self.display_name,
-            display_description=self.display_description
+            display_description=self.display_description,
+            default_value=self.default_value
         )
 
     @classmethod
@@ -280,6 +283,7 @@ class SQLNotificationPreference(models.Model):
         self.name = notification_preference.name  # pylint: disable=attribute-defined-outside-init
         self.display_name = notification_preference.display_name
         self.display_description = notification_preference.display_description
+        self.default_value = notification_preference.default_value
 
 
 class SQLUserNotificationPreferences(TimeStampedModel):
