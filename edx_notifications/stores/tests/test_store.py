@@ -63,11 +63,11 @@ class BadImplementationStoreProvider(BaseNotificationStoreProvider):
         """
         super(BadImplementationStoreProvider, self).get_all_notification_preferences()
 
-    def set_user_reference(self, user_preference):
+    def set_user_preference(self, user_preference):
         """
         Fake implementation of method which calls base class, which should throw NotImplementedError
         """
-        super(BadImplementationStoreProvider, self).set_user_reference(user_preference)
+        super(BadImplementationStoreProvider, self).set_user_preference(user_preference)
 
     def get_notification_message_by_id(self, msg_id, options=None):
         """
@@ -274,7 +274,7 @@ class TestBaseNotificationDataProvider(TestCase):
             bad_provider.get_user_preference(None, None)
 
         with self.assertRaises(NotImplementedError):
-            bad_provider.set_user_reference(None)
+            bad_provider.set_user_preference(None)
 
         with self.assertRaises(NotImplementedError):
             bad_provider.get_all_user_preferences_for_user(None)

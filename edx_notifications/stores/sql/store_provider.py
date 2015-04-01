@@ -465,7 +465,7 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
 
         return obj.to_data_object()
 
-    def set_user_reference(self, user_preference):
+    def set_user_preference(self, user_preference):
         """
         Will save (create or update) a UserNotificationPreference in the
         StorageProvider
