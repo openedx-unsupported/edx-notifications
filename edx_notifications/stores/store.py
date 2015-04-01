@@ -184,3 +184,91 @@ class BaseNotificationStoreProvider(object):
         RETURNS: type list   i.e. []
         """
         raise NotImplementedError()
+
+    @abc.abstractmethod
+    def mark_user_notifications_read(self, user_id, filters=None):
+        """
+        Marks all notifications for user (with any filtering criteria) as read
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def save_notification_timer(self, timer):
+        """
+        Will save (create or update) a NotificationCallbackTimer in the
+        StorageProvider
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_notification_timer(self, name):
+        """
+        Will return a single NotificationCallbackTimer
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_all_active_timers(self, until_time=None, include_executed=False):
+        """
+        Will return all active timers that are expired.
+
+        If until_time is not passed in, then we will use our
+        current system time
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_notification_preference(self, name):
+        """
+        Will return a single NotificationPreference if exists
+        else raises exception ItemNotFoundError
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def save_notification_preference(self, notification_preference):
+        """
+        Will save (create or update) a NotificationPreference in the
+        StorageProvider
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_all_notification_preferences(self):  # pylint: disable=invalid-name
+        """
+        This returns list of all registered NotificationPreference.
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_user_preference(self, user_id, name):
+        """
+        Will return a single UserNotificationPreference if exists
+        else raises exception ItemNotFoundError
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def set_user_preference(self, user_preference):
+        """
+        Will save (create or update) a UserNotificationPreference in the
+        StorageProvider
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_all_user_preferences_for_user(self, user_id):  # pylint: disable=invalid-name
+        """
+        This returns list of all UserNotificationPreference.
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_all_user_preferences_with_name(self, name, value, offset=0, size=None):  # pylint: disable=invalid-name
+        """
+        Returns a list of UserPreferences objects which match name and value,
+        so that we know all users that have the same preference. We need the 'offset'
+        and 'size' parameters since this query could potentially be very large
+        (imagine a course with 100K students in it) and we'll need the ability to page
+        """
+        raise NotImplementedError()

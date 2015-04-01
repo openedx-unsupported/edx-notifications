@@ -200,13 +200,13 @@ class ConsumerAPITests(LoggedInTestCase):
         self.assertIn('count', results)
         self.assertEqual(results['count'], 0)
 
-    def _publish_test_notification(self):
+    def _publish_test_notification(self, namespace='test-runner'):
         """
         Helper method to set up a notification to test against
         """
 
         msg = NotificationMessage(
-            namespace='test-runner',
+            namespace=namespace,
             msg_type=self.msg_type,
             payload={
                 'foo': 'bar'
@@ -246,6 +246,16 @@ class ConsumerAPITests(LoggedInTestCase):
 
         response = self.client.get(reverse(
             'edx_notifications.consumer.notifications.detail',
+            args=[99999999]
+        ))
+        self.assertEqual(response.status_code, 404)
+
+    def test_mark_user_notifications_read_not_found(self):
+        """
+        Test case where a mark_notifications_read cannot be found
+        """
+        response = self.client.post(reverse(
+            'edx_notifications.consumer.notifications.mark_notifications_as_read',
             args=[99999999]
         ))
         self.assertEqual(response.status_code, 404)
@@ -312,6 +322,20 @@ class ConsumerAPITests(LoggedInTestCase):
         self._compare_user_msg_to_result(user_msg2, results[0])
         self._compare_user_msg_to_result(user_msg1, results[1])
 
+    def _mark_user_notifications_as_read(self, namespace=None):
+        """
+        Helper method to call API to mark users notifications as read
+        """
+        url = reverse('edx_notifications.consumer.notifications.mark_notifications_as_read')
+        data = {}
+        if namespace:
+            data.update({
+                'namespace': namespace
+            })
+
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)
+
     def _mark_notification_as_read(self, user_msg, read=True):
         """
         Helper method to call API to mark user msg as read or unread
@@ -328,18 +352,25 @@ class ConsumerAPITests(LoggedInTestCase):
         )
         self.assertEqual(response.status_code, 200)
 
-    def _assert_expected_counts(self, expected_cnt, read_filter=True):
+    def _assert_expected_counts(self, expected_cnt, read_filter=True, namespace=None):
         """
         Helper method to query counts (with appropriate filter) and
         then assert count returned by API
         """
         # now do query with a 'read' filter
+        filters = {
+            'read': read_filter,
+            'unread': not read_filter,
+        }
+
+        if namespace:
+            filters.update({
+                'namespace': namespace
+            })
+
         response = self.client.get(
             reverse('edx_notifications.consumer.notifications'),
-            {
-                'read': read_filter,
-                'unread': not read_filter,
-            }
+            filters
         )
         self.assertEqual(response.status_code, 200)
 
@@ -347,6 +378,39 @@ class ConsumerAPITests(LoggedInTestCase):
 
         # did we get back what we expected?
         self.assertEqual(len(results), expected_cnt)
+
+    def test_mark_user_notifications_as_read(self):
+        """
+        Create a test notifications for user and mark it as read
+        and then verify results
+        """
+        for __ in range(10):
+            self._publish_test_notification()
+
+        self._mark_user_notifications_as_read()
+
+        self._assert_expected_counts(10, read_filter=True)
+
+        self._assert_expected_counts(0, read_filter=False)
+
+    def test_mark_as_read_namespaced(self):
+        """
+        Create a test notifications for user and mark it as read
+        and then verify results
+        """
+        for __ in range(5):
+            self._publish_test_notification(namespace='mark-these')
+
+        for __ in range(5):
+            self._publish_test_notification(namespace='do-not-touch')
+
+        self._mark_user_notifications_as_read(namespace='mark-these')
+
+        self._assert_expected_counts(5, read_filter=True, namespace='mark-these')
+        self._assert_expected_counts(0, read_filter=False, namespace='mark-these')
+
+        self._assert_expected_counts(0, read_filter=True, namespace='do-not-touch')
+        self._assert_expected_counts(5, read_filter=False, namespace='do-not-touch')
 
     def test_mark_notification_as_read(self):
         """
@@ -426,3 +490,13 @@ class ConsumerAPITests(LoggedInTestCase):
             }
         )
         self.assertEqual(response.status_code, 404)
+
+    def test_mock_uls(self):
+        """
+        Call into the mock urls
+        """
+        url = reverse(
+            'edx_notifications.consumer.notifications.count',
+            'edx_notifications.server.api.urls_mock'
+        )
+        self.assertEqual(url, '/edx_notifications/v1/consumer/notifications/count')

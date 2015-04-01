@@ -20,7 +20,7 @@ class NullNotificationChannel(BaseNotificationChannelProvider):
 
         return None
 
-    def bulk_dispatch_notification(self, user_ids, msg):
+    def bulk_dispatch_notification(self, user_ids, msg, exclude_user_ids=None):
         """
         Will not send the msg to the list of users
         """
@@ -28,3 +28,9 @@ class NullNotificationChannel(BaseNotificationChannelProvider):
         # we did not send any, so return zero as a count of number of
         # dispatches
         return 0
+
+    def resolve_msg_link(self, msg, link_name, params):
+        """
+        Generates the appropriate link given a msg, a link_name, and params
+        """
+        return None

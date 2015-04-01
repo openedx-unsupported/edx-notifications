@@ -9,7 +9,7 @@ from django.core.management.base import BaseCommand
 
 from edx_notifications.background import fire_background_notification_check
 
-logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
+log = logging.getLogger(__file__)
 
 
 class Command(BaseCommand):
@@ -22,5 +22,5 @@ class Command(BaseCommand):
         Management command entry point, simply call into the signal firiing
         """
 
-        logger.info("Running management command to fire notifications asynchronously...")
+        log.info("Running management command to fire notifications asynchronously...")
         fire_background_notification_check()

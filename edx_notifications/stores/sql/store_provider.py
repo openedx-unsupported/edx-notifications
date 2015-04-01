@@ -4,7 +4,8 @@ Concrete MySQL implementation of the data provider interface
 
 import copy
 import pylru
-
+import pytz
+from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 
 from edx_notifications.stores.store import BaseNotificationStoreProvider
@@ -16,8 +17,9 @@ from edx_notifications import const
 from edx_notifications.stores.sql.models import (
     SQLNotificationMessage,
     SQLNotificationType,
-    SQLUserNotification
-)
+    SQLUserNotification,
+    SQLNotificationCallbackTimer,
+    SQLNotificationPreference, SQLUserNotificationPreferences)
 
 
 class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
@@ -157,6 +159,8 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         read = _filters.get('read', True)
         unread = _filters.get('unread', True)
         type_name = _filters.get('type_name')
+        start_date = _filters.get('start_date')
+        end_date = _filters.get('end_date')
 
         select_related = _options.get('select_related', False)
 
@@ -181,6 +185,12 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         if type_name:
             query = query.filter(msg__msg_type=type_name)
 
+        if start_date:
+            query = query.filter(created__gte=start_date)
+
+        if end_date:
+            query = query.filter(created__lte=end_date)
+
         return query
 
     def _get_notifications_for_user(self, user_id, filters=None, options=None):
@@ -198,12 +208,12 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
             options=options
         )
 
-        limit = _options.get('limit', const.MAX_NOTIFICATION_LIST_SIZE)
+        limit = _options.get('limit', const.NOTIFICATION_MAX_LIST_SIZE)
         offset = _options.get('offset', 0)
 
         # make sure passed in limit is allowed
         # as we don't want to blow up the query too large here
-        if limit > const.MAX_NOTIFICATION_LIST_SIZE:
+        if limit > const.NOTIFICATION_MAX_LIST_SIZE:
             raise ValueError('Max limit is {limit}'.format(limit=limit))
 
         return query[offset:offset + limit]
@@ -277,6 +287,27 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
 
         return result_set
 
+    def mark_user_notifications_read(self, user_id, filters=None):
+        """
+        This should mark all the user notifications as read
+
+        ARGS:
+            - user_id: The id of the user
+        """
+
+        _filters = copy.copy(filters) if filters else {}
+        _filters.update({
+            'read': False,
+            'unread': True,
+        })
+
+        query = self._get_prepaged_notifications(
+            user_id,
+            filters=_filters
+        )
+
+        query.update(read_at=datetime.now(pytz.UTC))
+
     def save_user_notification(self, user_msg):
         """
         Create or Update the mapping of a user to a notification.
@@ -310,10 +341,10 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         NOTE: It is assumed that user_msgs is already chunked in an appropriate size.
         """
 
-        if len(user_msgs) > const.MAX_BULK_USER_NOTIFICATION_SIZE:
+        if len(user_msgs) > const.NOTIFICATION_BULK_PUBLISH_CHUNK_SIZE:
             msg = (
                 'You have passed in a user_msgs list of size {length} but the size '
-                'limit is {max}.'.format(length=len(user_msgs), max=const.MAX_BULK_USER_NOTIFICATION_SIZE)
+                'limit is {max}.'.format(length=len(user_msgs), max=const.NOTIFICATION_BULK_PUBLISH_CHUNK_SIZE)
             )
             raise BulkOperationTooLarge(msg)
 
@@ -321,4 +352,161 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         for user_msg in user_msgs:
             objs.append(SQLUserNotification.from_data_object(user_msg))
 
-        SQLUserNotification.objects.bulk_create(objs, batch_size=const.MAX_BULK_USER_NOTIFICATION_SIZE)
+        SQLUserNotification.objects.bulk_create(objs, batch_size=const.NOTIFICATION_BULK_PUBLISH_CHUNK_SIZE)
+
+    def save_notification_timer(self, timer):
+        """
+        Will save (create or update) a NotificationCallbackTimer in the
+        StorageProvider
+        """
+
+        obj = None
+        if timer.name:
+            # see if it exists
+            try:
+                obj = SQLNotificationCallbackTimer.objects.get(name=timer.name)
+                obj.load_from_data_object(timer)
+            except ObjectDoesNotExist:
+                pass
+        if not obj:
+            obj = SQLNotificationCallbackTimer.from_data_object(timer)
+
+        obj.save()
+        return obj.to_data_object()
+
+    def get_notification_timer(self, name):
+        """
+        Will return a single NotificationCallbackTimer
+        """
+        try:
+            obj = SQLNotificationCallbackTimer.objects.get(name=name)
+        except ObjectDoesNotExist:
+            raise ItemNotFoundError()
+
+        return obj.to_data_object()
+
+    def get_all_active_timers(self, until_time=None, include_executed=False):
+        """
+        Will return all active timers that are expired as a list
+
+        If until_time is not passed in, then we will use our
+        current system time
+        """
+
+        objs = SQLNotificationCallbackTimer.objects.filter(
+            callback_at__lte=until_time if until_time else datetime.now(pytz.UTC),
+            is_active=True
+        )
+
+        if not include_executed:
+            objs = objs.filter(executed_at__isnull=True)
+
+        return [obj.to_data_object() for obj in objs]
+
+    def get_notification_preference(self, name):
+        """
+        Will return a single NotificationPreference if exists
+        else raises exception ItemNotFoundError
+        """
+        try:
+            obj = SQLNotificationPreference.objects.get(name=name)
+        except ObjectDoesNotExist:
+            raise ItemNotFoundError()
+
+        return obj.to_data_object()
+
+    def save_notification_preference(self, notification_preference):
+        """
+        Will save (create or update) a NotificationPreference in the
+        StorageProvider
+        """
+        obj = None
+        if notification_preference.name:
+            # see if it exists
+            try:
+                obj = SQLNotificationPreference.objects.get(name=notification_preference.name)
+                obj.load_from_data_object(notification_preference)
+            except ObjectDoesNotExist:
+                pass
+        if not obj:
+            obj = SQLNotificationPreference.from_data_object(notification_preference)
+
+        obj.save()
+        return obj.to_data_object()
+
+    def get_all_notification_preferences(self):
+        """
+        This returns list of all registered NotificationPreference.
+        """
+        query = SQLNotificationPreference.objects.all()
+
+        result_set = [item.to_data_object() for item in query]
+
+        return result_set
+
+    def get_user_preference(self, user_id, name):
+        """
+        Will return a single UserNotificationPreference if exists
+        else raises exception ItemNotFoundError
+        """
+        try:
+            obj = SQLUserNotificationPreferences.objects.get(user_id=user_id, preference__name=name)
+        except ObjectDoesNotExist:
+            raise ItemNotFoundError()
+
+        return obj.to_data_object()
+
+    def set_user_preference(self, user_preference):
+        """
+        Will save (create or update) a UserNotificationPreference in the
+        StorageProvider
+        """
+        obj = None
+        if user_preference.user_id:
+            # see if it exists
+            try:
+                obj = SQLUserNotificationPreferences.objects.get(
+                    user_id=user_preference.user_id,
+                    preference__name=user_preference.preference.name
+                )
+                obj.load_from_data_object(user_preference)
+            except ObjectDoesNotExist:
+                pass
+        if not obj:
+            obj = SQLUserNotificationPreferences.from_data_object(user_preference)
+
+        obj.save()
+        return obj.to_data_object()
+
+    def get_all_user_preferences_for_user(self, user_id):
+        """
+        This returns list of all UserNotificationPreference.
+        """
+        query = SQLUserNotificationPreferences.objects.filter(user_id=user_id)
+
+        result_set = [item.to_data_object() for item in query]
+
+        return result_set
+
+    def get_all_user_preferences_with_name(self, name, value, offset=0, size=None):
+        """
+        Returns a list of UserPreferences objects which match name and value,
+        so that we know all users that have the same preference. We need the 'offset'
+        and 'size' parameters since this query could potentially be very large
+        (imagine a course with 100K students in it) and we'll need the ability to page
+        """
+        # make sure passed in size is allowed
+        # as we don't want to blow up the query too large here
+        if size > const.USER_PREFERENCE_MAX_LIST_SIZE:
+            raise ValueError('Max limit is {size}'.format(size=size))
+
+        if size is None:
+            size = const.USER_PREFERENCE_MAX_LIST_SIZE
+
+        query = SQLUserNotificationPreferences.objects.filter(preference__name=name, value=value)
+
+        query = query[offset:offset + size]
+
+        result_set = [item.to_data_object() for item in query]
+
+        return result_set

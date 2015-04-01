@@ -5,8 +5,9 @@ Base objects that data.py uses
 import json
 import inspect
 import dateutil.parser
-
+import copy
 from datetime import datetime, timedelta
+from freezegun.api import FakeDatetime
 
 
 class DateTimeWithDeltaCompare(datetime):
@@ -136,6 +137,14 @@ class IntegerField(TypedField):
     _expected_types = [int, long]
 
 
+class BooleanField(TypedField):
+    """
+    Specialized subclass of TypedField(bool) as a convienence
+    """
+
+    _expected_types = [bool]
+
+
 class DictField(TypedField):
     """
     Specialized subclass of TypedField(dict) as a convienence
@@ -201,7 +210,7 @@ class DateTimeField(TypedField):
     Specialized subclass of TypedField(datetime) as a convienence
     """
 
-    _expected_types = [datetime]
+    _expected_types = [datetime, FakeDatetime]
 
 
 class EnumField(StringField):
@@ -336,6 +345,25 @@ class BaseDataObject(object):
         """
 
         return unicode(self.get_fields())
+
+    @classmethod
+    def clone(cls, src):
+        """
+        Create a cloned object
+        """
+
+        instance = cls()
+        for attr_name, __ in inspect.getmembers(cls, lambda attr: isinstance(attr, TypedField)):
+            if hasattr(src, attr_name):
+                val = getattr(src, attr_name)
+                # when cloning a dict, make a copy
+                # in case caller alters it
+                if isinstance(val, dict):
+                    val = copy.deepcopy(val)
+
+                setattr(instance, attr_name, val)
+
+        return instance
 
     def get_fields(self):
         """

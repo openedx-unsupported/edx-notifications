@@ -12,6 +12,9 @@ from edx_notifications.data import (
     NotificationMessage,
     NotificationType,
     UserNotification,
+    NotificationPreference,
+    UserNotificationPreferences,
+    NotificationCallbackTimer,
 )
 from edx_notifications import const
 
@@ -26,6 +29,9 @@ class SQLNotificationType(models.Model):
 
     # the class of the renderer for this type
     renderer = models.CharField(max_length=255)
+
+    # any context to pass into the above renderer
+    renderer_context = models.TextField(null=True)
 
     class Meta(object):
         """
@@ -42,6 +48,7 @@ class SQLNotificationType(models.Model):
         return NotificationType(
             name=self.name,
             renderer=self.renderer,
+            renderer_context=DictField.from_json(self.renderer_context)
         )
 
     @classmethod
@@ -61,6 +68,7 @@ class SQLNotificationType(models.Model):
 
         self.name = msg_type.name  # pylint: disable=attribute-defined-outside-init
         self.renderer = msg_type.renderer
+        self.renderer_context = DictField.to_json(msg_type.renderer_context)
 
 
 class SQLNotificationMessage(TimeStampedModel):
@@ -88,6 +96,10 @@ class SQLNotificationMessage(TimeStampedModel):
 
     priority = models.IntegerField(default=const.NOTIFICATION_PRIORITY_NONE)
 
+    resolve_links = models.TextField(null=True)
+
+    object_id = models.CharField(max_length=255, db_index=True, null=True)
+
     class Meta(object):
         """
         ORM metadata about this class
@@ -112,6 +124,8 @@ class SQLNotificationMessage(TimeStampedModel):
             payload=DictField.from_json(self.payload),  # special case, dict<-->JSON string
             created=self.created,
             modified=self.modified,
+            resolve_links=DictField.from_json(self.resolve_links),  # special case, dict<-->JSON string
+            object_id=self.object_id
         )
 
         return msg
@@ -144,6 +158,8 @@ class SQLNotificationMessage(TimeStampedModel):
         self.expires_at = msg.expires_at
         self.expires_secs_after_read = msg.expires_secs_after_read
         self.payload = DictField.to_json(msg.payload)
+        self.resolve_links = DictField.to_json(msg.resolve_links)
+        self.object_id = msg.object_id
 
 
 class SQLUserNotification(TimeStampedModel):
@@ -217,7 +233,60 @@ class SQLNotificationChannel(models.Model):
         db_table = 'edx_notifications_notificationchannel'
 
 
-class SQLUserNotificationPreferences(models.Model):
+class SQLNotificationPreference(models.Model):
+    """
+    Notification preference
+    """
+    class Meta(object):
+        """
+        ORM metadata about this class
+        """
+        app_label = 'edx_notifications'  # since we have this models.py file not in the root app directory
+        db_table = 'edx_notifications_notificationpreference'
+
+    # the internal name is the primary key
+    name = models.CharField(primary_key=True, max_length=255)
+
+    display_name = models.CharField(max_length=255)
+
+    display_description = models.CharField(max_length=1023)
+
+    default_value = models.CharField(max_length=255, null=True)
+
+    def to_data_object(self, options=None):  # pylint: disable=unused-argument
+        """
+        Generate a NotificationPreference data object
+        """
+
+        return NotificationPreference(
+            name=self.name,
+            display_name=self.display_name,
+            display_description=self.display_description,
+            default_value=self.default_value
+        )
+
+    @classmethod
+    def from_data_object(cls, notification_preference):
+        """
+        create a ORM model object from a NotificationPreference
+        """
+
+        obj = SQLNotificationPreference()
+        obj.load_from_data_object(notification_preference)
+        return obj
+
+    def load_from_data_object(self, notification_preference):
+        """
+        Hydrate ourselves from a passed in notification_preference
+        """
+
+        self.name = notification_preference.name  # pylint: disable=attribute-defined-outside-init
+        self.display_name = notification_preference.display_name
+        self.display_description = notification_preference.display_description
+        self.default_value = notification_preference.default_value
+
+
+class SQLUserNotificationPreferences(TimeStampedModel):
     """
     User specific mappings of Notifications to Channel, to reflect user preferences
     """
@@ -228,3 +297,108 @@ class SQLUserNotificationPreferences(models.Model):
         """
         app_label = 'edx_notifications'  # since we have this models.py file not in the root app directory
         db_table = 'edx_notifications_usernotificationpreferences'
+
+    user_id = models.IntegerField(db_index=True)
+
+    # Notification preference
+    preference = models.ForeignKey(SQLNotificationPreference, db_index=True)
+
+    value = models.CharField(max_length=255)
+
+    def to_data_object(self, options=None):  # pylint: disable=unused-argument
+        """
+        Generate a UserNotificationPreferences data object
+        """
+
+        return UserNotificationPreferences(
+            user_id=self.user_id,
+            preference=self.preference.to_data_object(),  # pylint: disable=no-member,
+            value=self.value
+        )
+
+    @classmethod
+    def from_data_object(cls, user_notification_preferences):
+        """
+        create a ORM model object from a UserNotificationPreferences
+        """
+
+        obj = SQLUserNotificationPreferences()
+        obj.load_from_data_object(user_notification_preferences)
+        return obj
+
+    def load_from_data_object(self, user_notification_preferences):
+        """
+        Hydrate ourselves from a passed in user_notification_preferences
+        """
+        self.user_id = user_notification_preferences.user_id  # pylint: disable=attribute-defined-outside-init
+        self.preference = SQLNotificationPreference.from_data_object(user_notification_preferences.preference)
+        self.value = user_notification_preferences.value
+
+
+class SQLNotificationCallbackTimer(TimeStampedModel):
+    """
+    SQL implementation for NotificationCallbackTimer
+    """
+
+    class Meta(object):
+        """
+        ORM metadata about this class
+        """
+        app_label = 'edx_notifications'  # since we have this models.py file not in the root app directory
+        db_table = 'edx_notifications_notificationcallbacktimer'
+
+    # the internal name is the primary key
+    name = models.CharField(primary_key=True, max_length=255)
+
+    callback_at = models.DateTimeField(db_index=True)
+    class_name = models.CharField(max_length=255)
+    context = models.TextField(null=True)
+    is_active = models.BooleanField(db_index=True, default=True)
+    periodicity_min = models.IntegerField(null=True)
+    executed_at = models.DateTimeField(null=True)
+    err_msg = models.TextField(null=True)
+    results = models.TextField(null=True)
+
+    def to_data_object(self, options=None):  # pylint: disable=unused-argument
+        """
+        Generate a NotificationType data object
+        """
+
+        return NotificationCallbackTimer(
+            name=self.name,
+            callback_at=self.callback_at,
+            class_name=self.class_name,
+            context=DictField.from_json(self.context),  # special case, dict<-->JSON string
+            is_active=self.is_active,
+            periodicity_min=self.periodicity_min,  # pylint: disable=no-member
+            executed_at=self.executed_at,
+            err_msg=self.err_msg,
+            created=self.created,
+            modified=self.modified,
+            results=DictField.from_json(self.results)
+        )
+
+    @classmethod
+    def from_data_object(cls, notification_timer):
+        """
+        create a ORM model object from a NotificationType
+        """
+
+        obj = SQLNotificationCallbackTimer()
+        obj.load_from_data_object(notification_timer)
+        return obj
+
+    def load_from_data_object(self, notification_timer):
+        """
+        Hydrate ourselves from a passed in notification_timer
+        """
+
+        self.name = notification_timer.name  # pylint: disable=attribute-defined-outside-init
+        self.callback_at = notification_timer.callback_at
+        self.class_name = notification_timer.class_name
+        self.context = DictField.to_json(notification_timer.context)
+        self.is_active = notification_timer.is_active
+        self.periodicity_min = notification_timer.periodicity_min
+        self.executed_at = notification_timer.executed_at
+        self.err_msg = notification_timer.err_msg
+        self.results = DictField.to_json(notification_timer.results)

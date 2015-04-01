@@ -18,7 +18,6 @@ module.exports = function(config) {
     //plugins required for running the karma tests
     plugins:[
         'karma-jasmine',
-        'karma-requirejs',
         'karma-jasmine-jquery',
         'karma-firefox-launcher',
         'karma-phantomjs-launcher',
@@ -31,18 +30,20 @@ module.exports = function(config) {
     browsers: ['Firefox'],
 
     //frameworks to use
-    frameworks: ['jasmine-jquery', 'jasmine', 'requirejs', 'sinon'],
+    frameworks: ['jasmine-jquery', 'jasmine', 'sinon'],
 
     //patterns to load all files in child folders
     files: [
-        {pattern: 'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/*.js', included:false},
-        {pattern: 'edx_notifications/server/web/static/edx_notifications/img/*.jpg', included:false},
-        {pattern: 'edx_notifications/server/web/static/edx_notifications/templates/*.html', included:false},
-        {pattern: 'edx_notifications/server/web/static/edx_notifications/js/collections/*.js', included:false},
-        {pattern: 'edx_notifications/server/web/static/edx_notifications/js/models/*.js', included:false},
-        {pattern: 'edx_notifications/server/web/static/edx_notifications/js/views/*.js', included:false},
-        {pattern: 'edx_notifications/server/web/static/edx_notifications/js/test/**/*Spec.js', included:false},
-        'edx_notifications/server/web/static/edx_notifications/js/test/test-main.js'
+        'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/jquery.js',
+        'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/underscore.js',
+        'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/backbone.js',
+        'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/date.js',
+        'edx_notifications/server/web/static/edx_notifications/js/models/user_notification_model.js',
+        'edx_notifications/server/web/static/edx_notifications/js/models/counter_icon_model.js',
+        'edx_notifications/server/web/static/edx_notifications/js/collections/notification_collection.js',
+        'edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js',
+        'edx_notifications/server/web/static/edx_notifications/js/views/counter_icon_view.js',
+        'edx_notifications/server/web/static/edx_notifications/js/test/spec/*.js'
     ],
 
     // preprocess matching files before serving them to the browser

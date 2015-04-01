@@ -2,6 +2,10 @@
 All in-proc API endpoints for acting as a Notifications Consumer
 NOTE that we can only query for notifications that are "durable", i.e.
 persisted in our database
+
+IMPORTANT: All methods exposed here will also be exposed in as a
+xBlock runtime service named 'notifications'. Be aware that adding
+any new methods here will also be exposed to xBlocks!!!!
 """
 
 import pytz
@@ -99,3 +103,19 @@ def mark_notification_read(user_id, msg_id, read=True):
         user_msg.read_at = None
 
     store.save_user_notification(user_msg)
+
+
+@contract(user_id='int,>0')
+def mark_all_user_notification_as_read(user_id, filters=None):
+    """
+    Will mark a given user notifications as 'read'
+
+    ARGS:
+        - user_id: The user that wishes to mark the msg as read/unread
+
+    NOTE: If the corresponding user_id cannot be found, then this will raise
+    a ItemNotFoundError().
+    """
+
+    store = notification_store()
+    store.mark_user_notifications_read(user_id, filters=filters)
