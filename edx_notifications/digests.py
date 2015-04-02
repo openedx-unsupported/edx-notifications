@@ -27,12 +27,16 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
     """
     store = notification_store()
 
+    # Set first execution time as upcoming midnight after the server is run for the first time.
+    first_execution_at = datetime.datetime.now(pytz.UTC) + datetime.timedelta(days=1)
+    first_execution_at = first_execution_at.replace(hour=0, minute=0, second=0, microsecond=0)
+
     try:
         store.get_notification_timer(DAILY_DIGEST_TIMER_NAME)
     except ItemNotFoundError:
         daily_digest_timer = NotificationCallbackTimer(
             name=DAILY_DIGEST_TIMER_NAME,
-            callback_at=datetime.datetime.now(pytz.UTC),
+            callback_at=first_execution_at,
             class_name='edx_notifications.callbacks.NotificationDigestMessageCallback',
             is_active=True,
             periodicity_min=MINUTES_IN_A_DAY
@@ -44,7 +48,7 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
     except ItemNotFoundError:
         weekly_digest_timer = NotificationCallbackTimer(
             name=WEEKLY_DIGEST_TIMER_NAME,
-            callback_at=datetime.datetime.now(pytz.UTC),
+            callback_at=first_execution_at,
             class_name='edx_notifications.callbacks.NotificationDigestMessageCallback',
             is_active=True,
             periodicity_min=MINUTES_IN_A_WEEK
