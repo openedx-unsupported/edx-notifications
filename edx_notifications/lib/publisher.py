@@ -22,7 +22,8 @@ from edx_notifications.data import (
     NotificationType,
     NotificationMessage,
     NotificationCallbackTimer,
-)
+    NotificationPreference,
+    UserNotificationPreferences)
 
 from edx_notifications.renderers.renderer import (
     register_renderer
@@ -303,3 +304,21 @@ def cancel_timed_notification(timer_name, exception_on_not_found=True):
         ).format(name=timer_name)
         log.error(err_msg)
         raise
+
+
+@contract(notification_preference=NotificationPreference)
+def set_notification_preference(notification_preference):
+    """
+    Create or Update the notification preferences
+    """
+    store = notification_store()
+    return store.save_notification_preference(notification_preference)
+
+
+@contract(user_preference=UserNotificationPreferences)
+def set_user_notification_preference(user_preference):
+    """
+    Create or Update the user preference
+    """
+    store = notification_store()
+    return store.set_user_preference(user_preference)
