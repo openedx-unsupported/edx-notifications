@@ -302,4 +302,3 @@ def cancel_timed_notification(timer_name, exception_on_not_found=True):
             'but it does not exist. Skipping...'
         ).format(name=timer_name)
         log.error(err_msg)
-        raise

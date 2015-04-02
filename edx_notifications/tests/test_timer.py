@@ -427,5 +427,11 @@ class TimedNotificationsTests(TestCase):
         Make sure canceling a time that does not exist raises a ItemNotFoundError
         """
 
-        with self.assertRaises(ItemNotFoundError):
+        raised = False
+
+        try:
             cancel_timed_notification('no-exist')
+        except ItemNotFoundError:
+            raised = True
+
+        self.assertFalse(raised)
