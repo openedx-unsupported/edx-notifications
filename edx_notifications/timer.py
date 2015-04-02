@@ -28,7 +28,6 @@ def poll_and_execute_timers(**kwargs):  # pylint: disable=unused-argument
     this can take an arbitrary amount of time
     """
 
-    print 'here'
     log.info('Starting poll_and_execute_timers()...')
     store = notification_store()
 
