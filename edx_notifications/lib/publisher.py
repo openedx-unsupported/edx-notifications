@@ -227,12 +227,6 @@ def publish_timed_notification(msg, send_at, scope_name, scope_context, timer_na
     RETURNS: instance of NotificationCallbackTimer
     """
 
-    log_msg = (
-        'Publishing timed Notification to scope name "{scope_name}" and scope '
-        'context {scope_context} to be sent at "{send_at} with message: {msg}'
-    ).format(scope_name=scope_name, scope_context=scope_context, send_at=send_at, msg=msg)
-    log.info(log_msg)
-
     now = datetime.datetime.now(pytz.UTC)
     if now > send_at and ignore_if_past_due:
         log.info('Timed Notification is past due and the caller said to ignore_if_past_due. Dropping notification...')
@@ -257,6 +251,12 @@ def publish_timed_notification(msg, send_at, scope_name, scope_context, timer_na
     saved_msg = store.save_notification_message(msg)
 
     _timer_name = timer_name if timer_name else 'notification-dispatch-timer-{_id}'.format(_id=saved_msg.id)
+
+    log_msg = (
+        'Publishing timed Notification named "{timer_name}" to scope name "{scope_name}" and scope '
+        'context {scope_context} to be sent at "{send_at} with message: {msg}'
+    ).format(timer_name=_timer_name, scope_name=scope_name, scope_context=scope_context, send_at=send_at, msg=msg)
+    log.info(log_msg)
 
     timer = NotificationCallbackTimer(
         name=_timer_name,
