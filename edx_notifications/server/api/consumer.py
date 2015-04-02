@@ -8,14 +8,17 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from django.http import Http404
+from edx_notifications.data import UserNotificationPreferences
 
 from edx_notifications.lib.consumer import (
     get_notifications_count_for_user,
     get_notifications_for_user,
+    get_notification_preferences,
     get_notification_for_user,
     mark_notification_read,
-    mark_all_user_notification_as_read
-)
+    mark_all_user_notification_as_read,
+    get_user_preferences, get_user_preferences_with_name, get_notification_preference)
+from edx_notifications.lib.publisher import set_user_notification_preference
 
 from edx_notifications.renderers.renderer import (
     get_all_renderers,
@@ -234,6 +237,77 @@ class MarkNotificationsAsRead(AuthenticatedAPIView):
             int(request.user.id),
             filters=filters
         )
+
+        return Response([], status.HTTP_200_OK)
+
+
+class NotificationPreferenceList(AuthenticatedAPIView):
+    """
+    GET returns a list of all possible notification preferences that the user could set.
+    """
+
+    def get(self, request):  # pylint: disable=unused-argument
+        """
+        HTTP Get Handler
+        """
+        notification_preferences = get_notification_preferences()
+        result_set = [notification_preference.get_fields() for notification_preference in notification_preferences]
+
+        return Response(result_set, status.HTTP_200_OK)
+
+
+class UserPreferenceList(AuthenticatedAPIView):
+    """
+    Returns all preference setting for the request.user
+    """
+    def get(self, request):
+        """
+        HTTP Get Handler
+        """
+        user_preferences = get_user_preferences(int(request.user.id))
+        result_set = [user_preference.get_fields() for user_preference in user_preferences]
+
+        return Response(result_set, status.HTTP_200_OK)
+
+
+class UserPreferenceDetail(AuthenticatedAPIView):
+    """
+    GET returns the specific preference setting for the authenticated request.user
+    POST sets the preference for the authenticated request.user
+    """
+    def get(self, request, name):
+        """
+        HTTP Get Handler
+        """
+        try:
+            # this will raise an ItemNotFoundError if the user_id/name combo
+            # cannot be found
+            user_preference = get_user_preferences_with_name(int(request.user.id), name)
+        except ItemNotFoundError:
+            raise Http404()
+
+        return Response([user_preference.get_fields()], status.HTTP_200_OK)
+
+    def post(self, request, name):
+        """
+        HTTP POST Handler
+        """
+        if 'value' not in request.DATA:
+            raise Http404()
+        try:
+            # this will raise an ItemNotFoundError
+            # if the notification_preference cannot be found
+            notification_preference = get_notification_preference(name)
+        except ItemNotFoundError:
+            raise Http404()
+
+        user_notification_preference = UserNotificationPreferences(
+            user_id=int(request.user.id),
+            preference=notification_preference,
+            value=request.DATA.get('value')
+        )
+
+        set_user_notification_preference(user_notification_preference)
 
         return Response([], status.HTTP_200_OK)
 

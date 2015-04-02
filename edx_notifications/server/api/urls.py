@@ -14,6 +14,9 @@ from .url_regex import (
     CONSUMER_NOTIFICATIONS_REGEX,
     CONSUMER_RENDERERS_TEMPLATES_REGEX,
     CONSUMER_NOTIFICATION_DETAIL_NO_PARAM_REGEX,
+    CONSUMER_USER_PREFERENCES_DETAIL_REGEX,
+    CONSUMER_NOTIFICATIONS_PREFERENCES_REGEX,
+    CONSUMER_USER_PREFERENCES_REGEX
 )
 
 
@@ -49,6 +52,22 @@ urlpatterns = patterns(  # pylint: disable=invalid-name
         consumer_views.RendererTemplatesList.as_view(),
         name='edx_notifications.consumer.renderers.templates'
     ),
+    url(
+        CONSUMER_NOTIFICATIONS_PREFERENCES_REGEX,
+        consumer_views.NotificationPreferenceList.as_view(),
+        name='edx_notifications.consumer.notification_preferences'
+    ),
+    url(
+        CONSUMER_USER_PREFERENCES_REGEX,
+        consumer_views.UserPreferenceList.as_view(),
+        name='edx_notifications.consumer.user_preferences'
+    ),
+    url(
+        CONSUMER_USER_PREFERENCES_DETAIL_REGEX,
+        consumer_views.UserPreferenceDetail.as_view(),
+        name='edx_notifications.consumer.user_preferences.detail'
+    ),
+
 )
 
 urlpatterns = format_suffix_patterns(urlpatterns)  # pylint: disable=invalid-name
