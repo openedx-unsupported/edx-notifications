@@ -190,10 +190,17 @@ class BaseNotificationChannelProvider(object):
         """
         return self._display_description
 
+    @property
+    def link_resolvers(self):
+        """
+        Getter for _link_resolvers
+        """
+        return self._link_resolvers
+
     # don't allow instantiation of this class, it must be subclassed
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, name=None, display_name=None, display_description=None):
+    def __init__(self, name=None, display_name=None, display_description=None, link_resolvers=None):
         """
         Base implementation of __init__
         """
@@ -201,6 +208,7 @@ class BaseNotificationChannelProvider(object):
         self._name = name
         self._display_name = display_name
         self._display_description = display_description
+        self._link_resolvers = link_resolvers
 
     @abc.abstractmethod
     def dispatch_notification_to_user(self, user_id, msg):
@@ -212,9 +220,16 @@ class BaseNotificationChannelProvider(object):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def bulk_dispatch_notification(self, user_ids, msg):
+    def bulk_dispatch_notification(self, user_ids, msg, exclude_user_ids=None):
         """
         Perform a bulk dispatch of the notification message to
         all user_ids that will be enumerated over in user_ids.
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def resolve_msg_link(self, msg, link_name, params):
+        """
+        Generates the appropriate link given a msg, a link_name, and params
         """
         raise NotImplementedError()

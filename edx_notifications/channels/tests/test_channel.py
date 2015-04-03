@@ -101,12 +101,18 @@ class BadChannel(BaseNotificationChannelProvider):
         """
         raise super(BadChannel, self).dispatch_notification_to_user(user_id, msg)
 
-    def bulk_dispatch_notification(self, user_ids, msg):
+    def bulk_dispatch_notification(self, user_ids, msg, exclude_user_ids=None):
         """
         Perform a bulk dispatch of the notification message to
         all user_ids that will be enumerated over in user_ids.
         """
         raise super(BadChannel, self).bulk_dispatch_notification(user_ids, msg)
+
+    def resolve_msg_link(self, msg, link_name, params):
+        """
+        Generates the appropriate link given a msg, a link_name, and params
+        """
+        raise super(BadChannel, self).resolve_msg_link(msg, link_name, params)
 
 
 @override_settings(NOTIFICATION_CHANNEL_PROVIDERS=_NOTIFICATION_CHANNEL_PROVIDERS)
@@ -237,6 +243,9 @@ class ChannelTests(TestCase):
 
         with self.assertRaises(NotImplementedError):
             BadChannel().bulk_dispatch_notification(None, None)
+
+        with self.assertRaises(NotImplementedError):
+            BadChannel().resolve_msg_link(None, None, None)
 
     def test_null_channel(self):
         """

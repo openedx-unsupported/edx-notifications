@@ -1,5 +1,14 @@
 #!/bin/bash bash
 
+#setup the log directory variables
+export LOG_DIR=testserver/test/acceptance/logs
+export SCREENSHOT_DIR=$LOG_DIR
+export SELENIUM_DRIVER_LOG_DIR=$LOG_DIR
+
+# Create logs folder in above directory if not already present
+# and if there are any existing files in this folder delete these
+mkdir -p $LOG_DIR
+rm -rf $LOG_DIR/*
 
 # this stops the django servers
 stopServers() {
@@ -19,7 +28,7 @@ fi
 echo "Creating new test db and sync data..."
 ./manage.py syncdb --noinput --settings=testserver.bokchoy_settings
 
-ech "Migrate data"
+echo "Migrate data"
 ./manage.py migrate --noinput --settings=testserver.bokchoy_settings
 
 echo "Starting notifications server..."
@@ -32,8 +41,14 @@ until $(curl --output /dev/null --silent --head --fail http://127.0.0.1:8000); d
     sleep 2
 done
 
+#If an individual test name is passed from command prompt run only this test
+#otherwise execute all tests
 echo "Running acceptance tests..."
-nosetests testserver/test/acceptance
+if [ "$1" != "" ]; then
+    nosetests testserver/test/acceptance/test_notifications.py:TestAddNotifications.$1
+else
+    nosetests testserver/test/acceptance
+fi
 
 # capture the exit code from the test.  Anything more than 0 indicates failed cases.
 EXIT_CODE=$?

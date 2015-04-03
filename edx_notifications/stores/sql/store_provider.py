@@ -4,6 +4,8 @@ Concrete MySQL implementation of the data provider interface
 
 import copy
 import pylru
+import pytz
+from datetime import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -16,7 +18,8 @@ from edx_notifications import const
 from edx_notifications.stores.sql.models import (
     SQLNotificationMessage,
     SQLNotificationType,
-    SQLUserNotification
+    SQLUserNotification,
+    SQLNotificationCallbackTimer,
 )
 
 
@@ -198,12 +201,12 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
             options=options
         )
 
-        limit = _options.get('limit', const.MAX_NOTIFICATION_LIST_SIZE)
+        limit = _options.get('limit', const.NOTIFICATION_MAX_LIST_SIZE)
         offset = _options.get('offset', 0)
 
         # make sure passed in limit is allowed
         # as we don't want to blow up the query too large here
-        if limit > const.MAX_NOTIFICATION_LIST_SIZE:
+        if limit > const.NOTIFICATION_MAX_LIST_SIZE:
             raise ValueError('Max limit is {limit}'.format(limit=limit))
 
         return query[offset:offset + limit]
@@ -277,6 +280,27 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
 
         return result_set
 
+    def mark_user_notifications_read(self, user_id, filters=None):
+        """
+        This should mark all the user notifications as read
+
+        ARGS:
+            - user_id: The id of the user
+        """
+
+        _filters = copy.copy(filters) if filters else {}
+        _filters.update({
+            'read': False,
+            'unread': True,
+        })
+
+        query = self._get_prepaged_notifications(
+            user_id,
+            filters=_filters
+        )
+
+        query.update(read_at=datetime.now(pytz.UTC))
+
     def save_user_notification(self, user_msg):
         """
         Create or Update the mapping of a user to a notification.
@@ -310,10 +334,10 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         NOTE: It is assumed that user_msgs is already chunked in an appropriate size.
         """
 
-        if len(user_msgs) > const.MAX_BULK_USER_NOTIFICATION_SIZE:
+        if len(user_msgs) > const.NOTIFICATION_BULK_PUBLISH_CHUNK_SIZE:
             msg = (
                 'You have passed in a user_msgs list of size {length} but the size '
-                'limit is {max}.'.format(length=len(user_msgs), max=const.MAX_BULK_USER_NOTIFICATION_SIZE)
+                'limit is {max}.'.format(length=len(user_msgs), max=const.NOTIFICATION_BULK_PUBLISH_CHUNK_SIZE)
             )
             raise BulkOperationTooLarge(msg)
 
@@ -321,4 +345,53 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         for user_msg in user_msgs:
             objs.append(SQLUserNotification.from_data_object(user_msg))
 
-        SQLUserNotification.objects.bulk_create(objs, batch_size=const.MAX_BULK_USER_NOTIFICATION_SIZE)
+        SQLUserNotification.objects.bulk_create(objs, batch_size=const.NOTIFICATION_BULK_PUBLISH_CHUNK_SIZE)
+
+    def save_notification_timer(self, timer):
+        """
+        Will save (create or update) a NotificationCallbackTimer in the
+        StorageProvider
+        """
+
+        obj = None
+        if timer.name:
+            # see if it exists
+            try:
+                obj = SQLNotificationCallbackTimer.objects.get(name=timer.name)
+                obj.load_from_data_object(timer)
+            except ObjectDoesNotExist:
+                pass
+        if not obj:
+            obj = SQLNotificationCallbackTimer.from_data_object(timer)
+
+        obj.save()
+        return obj.to_data_object()
+
+    def get_notification_timer(self, name):
+        """
+        Will return a single NotificationCallbackTimer
+        """
+        try:
+            obj = SQLNotificationCallbackTimer.objects.get(name=name)
+        except ObjectDoesNotExist:
+            raise ItemNotFoundError()
+
+        return obj.to_data_object()
+
+    def get_all_active_timers(self, until_time=None, include_executed=False):
+        """
+        Will return all active timers that are expired as a list
+
+        If until_time is not passed in, then we will use our
+        current system time
+        """
+
+        objs = SQLNotificationCallbackTimer.objects.filter(
+            callback_at__lte=until_time if until_time else datetime.now(pytz.UTC),
+            is_active=True
+        )
+
+        if not include_executed:
+            objs = objs.filter(executed_at__isnull=True)
+
+        return [obj.to_data_object() for obj in objs]
