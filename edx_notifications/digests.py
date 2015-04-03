@@ -62,7 +62,8 @@ def create_default_notification_preferences():
     daily_digest_preference = NotificationPreference(
         name='daily-notification-digest',
         display_name=_('Daily Notification Digest'),
-        display_description=_('This setting will cause a daily digest of all notifications to be sent to your registered email address'),
+        display_description=_('This setting will cause a daily digest of all notifications to be sent to your'
+                              ' registered email address'),
         default_value='false'
     )
 
@@ -71,7 +72,8 @@ def create_default_notification_preferences():
     weekly_digest_preference = NotificationPreference(
         name='weekly-notification-digest',
         display_name=_('Weekly Notification Digest'),
-        display_description=_('This setting will cause a weekly digest of all notifications to be sent to your registered email address'),
+        display_description=_('This setting will cause a weekly digest of all notifications to be sent to your'
+                              ' registered email address'),
         default_value='false'
     )
 
