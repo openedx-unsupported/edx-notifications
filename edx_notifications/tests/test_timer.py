@@ -468,7 +468,7 @@ class DigestNotificationsTests(TestCase):
         current_callback_at = daily_digest_timer.callback_at
 
         self.assertIsNone(daily_digest_timer.executed_at)
-        self.assertEqual(previous_callback_at, current_callback_at - timedelta(days=1))
+        self.assertEqual(previous_callback_at, current_callback_at)
 
         # now reset the time to 1 day from now in future
         #  in order to execute the daily digest timer again
@@ -495,7 +495,7 @@ class DigestNotificationsTests(TestCase):
         current_callback_at = weekly_digest_timer_name.callback_at
 
         self.assertIsNone(weekly_digest_timer_name.executed_at)
-        self.assertEqual(previous_callback_at, current_callback_at - timedelta(days=7))
+        self.assertEqual(previous_callback_at, current_callback_at)
 
         # now reset the time to 7 days(1 Week) from now in future
         #  in order to execute the daily digest timer again
