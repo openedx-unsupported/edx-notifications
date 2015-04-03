@@ -8,7 +8,7 @@ from edx_notifications.signals import perform_type_registrations, perform_timer_
 # we need to import the standard notification type registrations so that they can hook in
 # in their signal receivers
 from edx_notifications.openedx import notification_type_registration  # pylint: disable=unused-import
-from edx_notifications.digest_timers import register_digest_timers  # pylint: disable=unused-import
+from edx_notifications.digests import register_digest_timers, create_default_notification_preferences  # pylint: disable=unused-import
 
 from edx_notifications.scopes import register_user_scope_resolver, SingleUserScopeResolver
 
@@ -30,5 +30,8 @@ def initialize():
     # alert the application tiers that they should register their
     # notification timers/callbacks
     perform_timer_registrations.send(sender=None)
+
+    # install the system-defined Notification Preferences
+    create_default_notification_preferences()
 
     register_user_scope_resolver('user', SingleUserScopeResolver(), {})
