@@ -6,7 +6,6 @@ import copy
 import pylru
 import pytz
 from datetime import datetime
-
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 
@@ -21,7 +20,7 @@ from edx_notifications.stores.sql.models import (
     SQLNotificationType,
     SQLUserNotification,
     SQLNotificationCallbackTimer,
-)
+    SQLNotificationPreference, SQLUserNotificationPreferences)
 
 
 class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
@@ -169,6 +168,8 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         read = _filters.get('read', True)
         unread = _filters.get('unread', True)
         type_name = _filters.get('type_name')
+        start_date = _filters.get('start_date')
+        end_date = _filters.get('end_date')
 
         select_related = _options.get('select_related', False)
 
@@ -192,6 +193,12 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
 
         if type_name:
             query = query.filter(msg__msg_type=type_name)
+
+        if start_date:
+            query = query.filter(created__gte=start_date)
+
+        if end_date:
+            query = query.filter(created__lte=end_date)
 
         return query
 
@@ -404,3 +411,143 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
             objs = objs.filter(executed_at__isnull=True)
 
         return [obj.to_data_object() for obj in objs]
+
+    def get_notification_preference(self, name):
+        """
+        Will return a single NotificationPreference if exists
+        else raises exception ItemNotFoundError
+        """
+        try:
+            obj = SQLNotificationPreference.objects.get(name=name)
+        except ObjectDoesNotExist:
+            raise ItemNotFoundError()
+
+        return obj.to_data_object()
+
+    def save_notification_preference(self, notification_preference):
+        """
+        Will save (create or update) a NotificationPreference in the
+        StorageProvider
+        """
+        obj = None
+        if notification_preference.name:
+            # see if it exists
+            try:
+                obj = SQLNotificationPreference.objects.get(name=notification_preference.name)
+                obj.load_from_data_object(notification_preference)
+            except ObjectDoesNotExist:
+                pass
+        if not obj:
+            obj = SQLNotificationPreference.from_data_object(notification_preference)
+
+        obj.save()
+        return obj.to_data_object()
+
+    def get_all_notification_preferences(self):
+        """
+        This returns list of all registered NotificationPreference.
+        """
+        query = SQLNotificationPreference.objects.all()
+
+        result_set = [item.to_data_object() for item in query]
+
+        return result_set
+
+    def get_user_preference(self, user_id, name):
+        """
+        Will return a single UserNotificationPreference if exists
+        else raises exception ItemNotFoundError
+        """
+        try:
+            obj = SQLUserNotificationPreferences.objects.get(user_id=user_id, preference__name=name)
+        except ObjectDoesNotExist:
+            raise ItemNotFoundError()
+
+        return obj.to_data_object()
+
+    def set_user_preference(self, user_preference):
+        """
+        Will save (create or update) a UserNotificationPreference in the
+        StorageProvider
+        """
+        obj = None
+        if user_preference.user_id:
+            # see if it exists
+            try:
+                obj = SQLUserNotificationPreferences.objects.get(
+                    user_id=user_preference.user_id,
+                    preference__name=user_preference.preference.name
+                )
+                obj.load_from_data_object(user_preference)
+            except ObjectDoesNotExist:
+                pass
+        if not obj:
+            obj = SQLUserNotificationPreferences.from_data_object(user_preference)
+
+        obj.save()
+        return obj.to_data_object()
+
+    def get_all_user_preferences_for_user(self, user_id):
+        """
+        This returns list of all UserNotificationPreference.
+        """
+        query = SQLUserNotificationPreferences.objects.filter(user_id=user_id)
+
+        result_set = [item.to_data_object() for item in query]
+
+        return result_set
+
+    def get_all_user_preferences_with_name(self, name, value, offset=0, size=None):
+        """
+        Returns a list of UserPreferences objects which match name and value,
+        so that we know all users that have the same preference. We need the 'offset'
+        and 'size' parameters since this query could potentially be very large
+        (imagine a course with 100K students in it) and we'll need the ability to page
+        """
+        # make sure passed in size is allowed
+        # as we don't want to blow up the query too large here
+        if size > const.USER_PREFERENCE_MAX_LIST_SIZE:
+            raise ValueError('Max limit is {size}'.format(size=size))
+
+        if size is None:
+            size = const.USER_PREFERENCE_MAX_LIST_SIZE
+
+        query = SQLUserNotificationPreferences.objects.filter(preference__name=name, value=value)
+
+        query = query[offset:offset + size]
+
+        result_set = [item.to_data_object() for item in query]
+
+        return result_set
+
+    def purge_expired_notifications(self, purge_read_messages_older_than=None, purge_unread_messages_older_than=None):
+        """
+        Will purge all the unread and read messages that is in the
+        db for a period of time.
+
+        purge_read_messages_older_than: will control how old a READ message will remain in the backend
+
+        purge_unread_messages_older_than: will control how old an UNREAD message will remain in the backend
+
+        purge_read_messages_older_than will compare against the "read_at" column
+
+        where as purge_unread_messages_older_than will compare against the "created" column.
+        """
+
+        if purge_read_messages_older_than is not None:
+            SQLUserNotification.objects.filter(
+                read_at__lte=purge_read_messages_older_than).delete()
+
+        if purge_unread_messages_older_than is not None:
+            SQLUserNotification.objects.filter(
+                created__lte=purge_unread_messages_older_than,
+                read_at__isnull=True
+            ).delete()
+
+    def get_all_namespaces(self):
+        """
+        This will return all unique namespaces that have been used
+        """
+        resultset = SQLNotificationMessage.objects.values_list('namespace', flat=True).order_by('namespace').distinct()
+
+        return resultset

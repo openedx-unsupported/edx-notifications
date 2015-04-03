@@ -13,6 +13,9 @@ from .url_regex import (
     CONSUMER_NOTIFICATIONS_REGEX,
     CONSUMER_RENDERERS_TEMPLATES_REGEX,
     CONSUMER_NOTIFICATION_DETAIL_NO_PARAM_REGEX,
+    CONSUMER_USER_PREFERENCES_DETAIL_REGEX,
+    CONSUMER_NOTIFICATIONS_PREFERENCES_REGEX,
+    CONSUMER_USER_PREFERENCES_REGEX
 )
 
 
@@ -54,5 +57,20 @@ urlpatterns = patterns(  # pylint: disable=invalid-name
         CONSUMER_RENDERERS_TEMPLATES_REGEX,
         mock_handler,
         name='edx_notifications.consumer.renderers.templates'
+    ),
+    url(
+        CONSUMER_NOTIFICATIONS_PREFERENCES_REGEX,
+        mock_handler,
+        name='edx_notifications.consumer.notification_preferences'
+    ),
+    url(
+        CONSUMER_USER_PREFERENCES_REGEX,
+        mock_handler,
+        name='edx_notifications.consumer.user_preferences'
+    ),
+    url(
+        CONSUMER_USER_PREFERENCES_DETAIL_REGEX,
+        mock_handler,
+        name='edx_notifications.consumer.user_preferences.detail'
     ),
 )
