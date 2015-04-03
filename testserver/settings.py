@@ -70,6 +70,13 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.app_directories.Loader',
 )
 
+# smtp configuration settings.
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'your-user-email'
+EMAIL_HOST_PASSWORD = 'user-email-password'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
 TEMPLATE_DIRS = [
     os.path.join(BASE_DIR, 'testserver/templates'),
 ]
@@ -105,9 +112,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# Disable the  Hide Link from
+# Disable the Hide Link from
 # the notification pane.
-HIDE_LINK_IS_VISIBLE = True
+HIDE_LINK_IS_VISIBLE = False
+
+# Enable the Notification Preferences settings
+NOTIFICATION_PREFERENCES_IS_VISIBLE = True
 
 NOTIFICATION_STORE_PROVIDER = {
     "class": "edx_notifications.stores.sql.store_provider.SQLNotificationStoreProvider",
@@ -161,3 +171,37 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
 NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS = {
     '*': 'durable',  # default global mapping
 }
+
+NOTIFICATION_ARCHIVE_ENABLED = False
+
+# default preferences must be strings
+NOTIFICATIONS_PREFERENCE_DEFAULTS = {
+    'DAILY_DIGEST': 'false',
+    'WEEKLY_DIGEST': 'true',
+}
+
+import sys
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'stream': sys.stdout,
+        }
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG'
+    }
+}
+
+# digest email logos
+NOTIFICATION_BRANDED_DEFAULT_LOGO = 'img/edx-openedx-logo-tag.png'
+
+# digest email css
+NOTIFICATION_DIGEST_EMAIL_CSS = 'css/email_digests.css'
+
+try:
+    from local_settings import *
+except ImportError:
+    pass

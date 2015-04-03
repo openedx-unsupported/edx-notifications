@@ -2,12 +2,15 @@
 Tests for the timer.py
 """
 
+from freezegun import freeze_time
 import pytz
 from datetime import datetime, timedelta
 from django.test import TestCase
+from edx_notifications.management.commands import background_notification_check
 
 from edx_notifications.stores.store import notification_store
 from edx_notifications.callbacks import NotificationCallbackTimerHandler
+from edx_notifications import startup
 from edx_notifications.data import (
     NotificationMessage,
     NotificationType,
@@ -435,3 +438,158 @@ class TimedNotificationsTests(TestCase):
             raised = True
 
         self.assertFalse(raised)
+
+
+class DigestNotificationsTests(TestCase):
+    """
+    Tests the creating of digest notifications
+    """
+
+    def setUp(self):
+        """
+        start up stuff
+        """
+        startup.initialize()
+        self.daily_digest_timer_name = 'daily-digest-timer'
+        self.weekly_digest_timer_name = 'weekly-digest-timer'
+        self.store = notification_store()
+
+    def test_digest_timers_registered(self):
+        """
+        test to check for daily and weekly digest timers are registered
+        """
+        self.assertIsNotNone(self.store.get_notification_timer(self.daily_digest_timer_name))
+        self.assertIsNotNone(self.store.get_notification_timer(self.weekly_digest_timer_name))
+
+    def test_daily_digest_timers(self):
+        """
+        test to check for daily digest timers calling back each day
+        """
+        daily_digest_timer = self.store.get_notification_timer(self.daily_digest_timer_name)
+        previous_callback_at = daily_digest_timer.callback_at
+        background_notification_check.Command().handle()
+
+        # fetch the timer from the DB as it should be updated
+        daily_digest_timer = self.store.get_notification_timer(self.daily_digest_timer_name)
+        current_callback_at = daily_digest_timer.callback_at
+
+        self.assertIsNone(daily_digest_timer.executed_at)
+        self.assertEqual(previous_callback_at, current_callback_at)
+
+        # now reset the time to 1 day from now in future
+        #  in order to execute the daily digest timer again
+        reset_time = datetime.now(pytz.UTC) + timedelta(days=1)
+        with freeze_time(reset_time):
+            # call digest command handle again
+            background_notification_check.Command().handle()
+            # fetch the timer from the DB as it should be updated
+            daily_digest_timer = self.store.get_notification_timer(self.daily_digest_timer_name)
+
+            self.assertIn('last_ran', daily_digest_timer.context)
+            self.assertTrue(isinstance(daily_digest_timer.context['last_ran'], datetime))
+            self.assertTrue(daily_digest_timer.context['last_ran'] - reset_time < timedelta(seconds=1))
+
+            freeze_time_callback_at = daily_digest_timer.callback_at
+            self.assertIsNone(daily_digest_timer.executed_at)
+            self.assertEqual(current_callback_at, freeze_time_callback_at - timedelta(days=1))
+
+        # now reset the time 1 more day in future
+        # in order to execute the daily digest timer again
+        reset_time = reset_time + timedelta(days=1)
+        current_callback_at = daily_digest_timer.callback_at
+        with freeze_time(reset_time):
+            # call digest command handle again
+            background_notification_check.Command().handle()
+            # fetch the timer from the DB as it should be updated
+            daily_digest_timer = self.store.get_notification_timer(self.daily_digest_timer_name)
+
+            self.assertIn('last_ran', daily_digest_timer.context)
+            self.assertTrue(isinstance(daily_digest_timer.context['last_ran'], datetime))
+            self.assertTrue(daily_digest_timer.context['last_ran'] - reset_time < timedelta(seconds=1))
+
+            freeze_time_callback_at = daily_digest_timer.callback_at
+            self.assertIsNone(daily_digest_timer.executed_at)
+            self.assertEqual(current_callback_at, freeze_time_callback_at - timedelta(days=1))
+
+    def test_weekly_digest_timers(self):
+        """
+        test to check for weekly digest timers calling back each week
+        """
+        weekly_digest_timer_name = self.store.get_notification_timer(self.weekly_digest_timer_name)
+        previous_callback_at = weekly_digest_timer_name.callback_at
+        background_notification_check.Command().handle()
+
+        # fetch the timer from the DB as it should be updated
+        weekly_digest_timer_name = self.store.get_notification_timer(self.weekly_digest_timer_name)
+        current_callback_at = weekly_digest_timer_name.callback_at
+
+        self.assertIsNone(weekly_digest_timer_name.executed_at)
+        self.assertEqual(previous_callback_at, current_callback_at)
+
+        # now reset the time to 7 days(1 Week) from now in future
+        #  in order to execute the daily digest timer again
+        reset_time = datetime.now(pytz.UTC) + timedelta(days=7)
+        with freeze_time(reset_time):
+            # call digest command handle again
+            background_notification_check.Command().handle()
+            # fetch the timer from the DB as it should be updated
+            weekly_digest_timer_name = self.store.get_notification_timer(self.weekly_digest_timer_name)
+
+            self.assertIn('last_ran', weekly_digest_timer_name.context)
+            self.assertTrue(isinstance(weekly_digest_timer_name.context['last_ran'], datetime))
+            self.assertTrue(weekly_digest_timer_name.context['last_ran'] - reset_time < timedelta(seconds=1))
+
+            freeze_time_callback_at = weekly_digest_timer_name.callback_at
+            self.assertIsNone(weekly_digest_timer_name.executed_at)
+            self.assertEqual(current_callback_at, freeze_time_callback_at - timedelta(days=7))
+
+
+class PurgeNotificationsTests(TestCase):
+    """
+    Tests the purging of old notifications.
+    """
+
+    def setUp(self):
+        """
+        start up stuff
+        """
+        startup.initialize()
+        self.purge_notifications_timer_name = 'purge-notifications-timer'
+        self.store = notification_store()
+
+    def test_purge_timer_registered(self):
+        """
+        Test if the purge notifications timer has been registered.
+        """
+        self.assertIsNotNone(self.store.get_notification_timer(self.purge_notifications_timer_name))
+
+    def test_purge_timer_rescheduling(self):
+        """
+        Tests if the purge timer is rescheduled every day.
+        """
+        purge_notifications_timer = self.store.get_notification_timer(self.purge_notifications_timer_name)
+        previous_callback_at = purge_notifications_timer.callback_at
+        background_notification_check.Command().handle()
+
+        # Fetch the timer again since it should be updated.
+        purge_notifications_timer = self.store.get_notification_timer(self.purge_notifications_timer_name)
+        current_callback_at = purge_notifications_timer.callback_at
+
+        self.assertIsNone(purge_notifications_timer.executed_at)
+        self.assertEqual(previous_callback_at, current_callback_at)
+
+        # now reset the time to 1 day from now in future
+        #  in order to execute the daily digest timer again
+        reset_time = (datetime.now(pytz.UTC) + timedelta(days=1)).replace(hour=1, minute=0, second=0)
+        with freeze_time(reset_time):
+            # call digest command handle again
+            background_notification_check.Command().handle()
+            # fetch the timer from the DB as it should be updated
+            purge_notifications_timer = self.store.get_notification_timer(self.purge_notifications_timer_name)
+            self.assertIsNone(purge_notifications_timer.executed_at)
+
+            # allow for some slight time arthimetic skew
+            expected_callback_at = purge_notifications_timer.callback_at.replace(second=0, microsecond=0)
+            actual_callback_at = (reset_time + timedelta(days=1)).replace(second=0, microsecond=0)
+
+            self.assertEqual(expected_callback_at, actual_callback_at)

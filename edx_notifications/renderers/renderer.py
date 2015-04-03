@@ -49,6 +49,13 @@ def clear_renderers():
     _RENDERERS.clear()
 
 
+def get_renderer_for_type(msg_type):
+    """
+    Returns the Renderer instance for the msg_type, None is not found
+    """
+    return _RENDERERS.get(msg_type.renderer)
+
+
 class BaseNotificationRenderer(object):
     """
     Abstract Base Class for NotificationRender types.
@@ -75,7 +82,7 @@ class BaseNotificationRenderer(object):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def render_subject(self, msg, render_format, lang):
+    def render(self, msg, render_format, lang):
         """
         Renders a subject line for this particular notification in the requested format and
         language
@@ -84,17 +91,6 @@ class BaseNotificationRenderer(object):
         subsitute a generic subject, e.g. "You have received a notification..."
         if the NotificationChannel *must* have a subject line, for example
         email-based delivery channels.
-
-        If the requested language is not supported then subclasses should
-        throw a NotificationLanguageNotSupported exception. The calling code
-        should trap that and try with a different language
-        """
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def render_body(self, msg, render_format, lang):
-        """
-        Renders a body for this particular notification in the requested format and language
 
         If the requested language is not supported then subclasses should
         throw a NotificationLanguageNotSupported exception. The calling code

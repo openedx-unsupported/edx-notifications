@@ -216,3 +216,87 @@ class BaseNotificationStoreProvider(object):
         current system time
         """
         raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_notification_preference(self, name):
+        """
+        Will return a single NotificationPreference if exists
+        else raises exception ItemNotFoundError
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def save_notification_preference(self, notification_preference):
+        """
+        Will save (create or update) a NotificationPreference in the
+        StorageProvider
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_all_notification_preferences(self):  # pylint: disable=invalid-name
+        """
+        This returns list of all registered NotificationPreference.
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_user_preference(self, user_id, name):
+        """
+        Will return a single UserNotificationPreference if exists
+        else raises exception ItemNotFoundError
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def set_user_preference(self, user_preference):
+        """
+        Will save (create or update) a UserNotificationPreference in the
+        StorageProvider
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_all_user_preferences_for_user(self, user_id):  # pylint: disable=invalid-name
+        """
+        This returns list of all UserNotificationPreference.
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_all_user_preferences_with_name(self, name, value, offset=0, size=None):  # pylint: disable=invalid-name
+        """
+        Returns a list of UserPreferences objects which match name and value,
+        so that we know all users that have the same preference. We need the 'offset'
+        and 'size' parameters since this query could potentially be very large
+        (imagine a course with 100K students in it) and we'll need the ability to page
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def purge_expired_notifications(self, purge_read_messages_older_than, purge_unread_messages_older_than):  # pylint: disable=invalid-name
+        """
+        Will purge all the unread and read messages that is in the
+        db for a period of time.
+
+        how long (in days) old READ and UNREAD notifications can remain in the system before being purged.
+
+        Lack of configuration (or None) means: "don't purge ever"
+
+        purge_read_messages_older_than: will control how old a READ message will remain in the backend
+
+        purge_unread_messages_older_than: will control how old an UNREAD message will remain in the backend
+
+        purge_read_messages_older_than will compare against the "read_at" column
+
+        where as purge_unread_messages_older_than will compare against the "created" column.
+
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_all_namespaces(self):
+        """
+        This will return all unique namespaces that have been used
+        """
+        raise NotImplementedError()

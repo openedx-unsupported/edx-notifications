@@ -15,9 +15,7 @@ from edx_notifications.stores.store import notification_store
 from edx_notifications.background import (
     perform_notification_scan,
 )
-from edx_notifications.data import (
-    NotificationCallbackTimer
-)
+from edx_notifications.data import NotificationCallbackTimer
 
 
 _SIGNAL_RAISED = False

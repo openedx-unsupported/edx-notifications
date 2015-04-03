@@ -12,9 +12,13 @@ from edx_notifications.data import (
     NotificationMessage,
     NotificationType,
     UserNotification,
+    NotificationPreference,
+    UserNotificationPreferences,
     NotificationCallbackTimer,
 )
 from edx_notifications import const
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 
 
 class SQLNotificationType(models.Model):
@@ -159,6 +163,30 @@ class SQLNotificationMessage(TimeStampedModel):
         self.object_id = msg.object_id
 
 
+class SQLUserNotificationArchive(TimeStampedModel):
+
+    """
+    Information about the archiving user notifications.
+    """
+
+    user_id = models.IntegerField(db_index=True)
+
+    msg = models.ForeignKey(SQLNotificationMessage, db_index=True)
+
+    read_at = models.DateTimeField(null=True, db_index=True)
+
+    user_context = models.TextField(null=True)
+
+    class Meta(object):
+        """
+        ORM metadata about this class
+        """
+        app_label = 'edx_notifications'  # since we have this models.py file not in the root app directory
+        db_table = 'edx_notifications_usernotificationarchive'
+        unique_together = (('user_id', 'msg'),)  # same user should not get the same notification twice
+        ordering = ['-created']  # default order is most recent one should be read first
+
+
 class SQLUserNotification(TimeStampedModel):
     """
     Information about how a Notification is tied to a targeted user, and related state (e.g. read/unread)
@@ -231,7 +259,60 @@ class SQLNotificationChannel(models.Model):
         db_table = 'edx_notifications_notificationchannel'
 
 
-class SQLUserNotificationPreferences(models.Model):
+class SQLNotificationPreference(models.Model):
+    """
+    Notification preference
+    """
+    class Meta(object):
+        """
+        ORM metadata about this class
+        """
+        app_label = 'edx_notifications'  # since we have this models.py file not in the root app directory
+        db_table = 'edx_notifications_notificationpreference'
+
+    # the internal name is the primary key
+    name = models.CharField(primary_key=True, max_length=255)
+
+    display_name = models.CharField(max_length=255)
+
+    display_description = models.CharField(max_length=1023)
+
+    default_value = models.CharField(max_length=255, null=True)
+
+    def to_data_object(self, options=None):  # pylint: disable=unused-argument
+        """
+        Generate a NotificationPreference data object
+        """
+
+        return NotificationPreference(
+            name=self.name,
+            display_name=self.display_name,
+            display_description=self.display_description,
+            default_value=self.default_value
+        )
+
+    @classmethod
+    def from_data_object(cls, notification_preference):
+        """
+        create a ORM model object from a NotificationPreference
+        """
+
+        obj = SQLNotificationPreference()
+        obj.load_from_data_object(notification_preference)
+        return obj
+
+    def load_from_data_object(self, notification_preference):
+        """
+        Hydrate ourselves from a passed in notification_preference
+        """
+
+        self.name = notification_preference.name  # pylint: disable=attribute-defined-outside-init
+        self.display_name = notification_preference.display_name
+        self.display_description = notification_preference.display_description
+        self.default_value = notification_preference.default_value
+
+
+class SQLUserNotificationPreferences(TimeStampedModel):
     """
     User specific mappings of Notifications to Channel, to reflect user preferences
     """
@@ -242,6 +323,42 @@ class SQLUserNotificationPreferences(models.Model):
         """
         app_label = 'edx_notifications'  # since we have this models.py file not in the root app directory
         db_table = 'edx_notifications_usernotificationpreferences'
+
+    user_id = models.IntegerField(db_index=True)
+
+    # Notification preference
+    preference = models.ForeignKey(SQLNotificationPreference, db_index=True)
+
+    value = models.CharField(max_length=255)
+
+    def to_data_object(self, options=None):  # pylint: disable=unused-argument
+        """
+        Generate a UserNotificationPreferences data object
+        """
+
+        return UserNotificationPreferences(
+            user_id=self.user_id,
+            preference=self.preference.to_data_object(),  # pylint: disable=no-member,
+            value=self.value
+        )
+
+    @classmethod
+    def from_data_object(cls, user_notification_preferences):
+        """
+        create a ORM model object from a UserNotificationPreferences
+        """
+
+        obj = SQLUserNotificationPreferences()
+        obj.load_from_data_object(user_notification_preferences)
+        return obj
+
+    def load_from_data_object(self, user_notification_preferences):
+        """
+        Hydrate ourselves from a passed in user_notification_preferences
+        """
+        self.user_id = user_notification_preferences.user_id  # pylint: disable=attribute-defined-outside-init
+        self.preference = SQLNotificationPreference.from_data_object(user_notification_preferences.preference)
+        self.value = user_notification_preferences.value
 
 
 class SQLNotificationCallbackTimer(TimeStampedModel):
@@ -311,3 +428,14 @@ class SQLNotificationCallbackTimer(TimeStampedModel):
         self.executed_at = notification_timer.executed_at
         self.err_msg = notification_timer.err_msg
         self.results = DictField.to_json(notification_timer.results)
+
+
+@receiver(pre_delete, sender=SQLUserNotification)
+def archive_deleted_user_notification(sender, instance, *args, **kwargs):  # pylint: disable=unused-argument
+    """
+    Archiving the deleted user notifications.
+    """
+    if const.NOTIFICATION_ARCHIVE_ENABLED:
+        notification_archive_obj = SQLUserNotificationArchive()
+        notification_archive_obj.__dict__.update(instance.__dict__)
+        notification_archive_obj.save()

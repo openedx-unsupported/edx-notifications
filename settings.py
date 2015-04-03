@@ -3,6 +3,11 @@ Django settings file for local development purposes
 """
 import sys
 
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
 DEBUG=True
 TEST_MODE=True
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
@@ -27,6 +32,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'rest_framework',
     'edx_notifications',
+    'edx_notifications.server.web',
     'django_nose',
     'south',
 )
@@ -120,3 +126,13 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
 NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS = {
     '*': 'durable',  # default global mapping
 }
+
+# Constants to set how long (in days) old READ and UNREAD notifications can remain in the system before being purged.
+NOTIFICATION_PURGE_READ_OLDER_THAN_DAYS = 30
+NOTIFICATION_PURGE_UNREAD_OLDER_THAN_DAYS = 60
+
+# digest email logos
+NOTIFICATION_BRANDED_DEFAULT_LOGO = 'edx_notifications/img/edx-openedx-logo-tag.png'
+
+# digest email css
+NOTIFICATION_DIGEST_EMAIL_CSS = 'edx_notifications/css/email_digests.css'

@@ -3,14 +3,18 @@ Simple Subject/Body Underscore renderers
 """
 
 import json
+import copy
 from django.templatetags.static import static
+from django.contrib.staticfiles import finders
 
 from edx_notifications.renderers.renderer import BaseNotificationRenderer
 
 from edx_notifications.const import (
-    RENDER_FORMAT_UNDERSCORE,
-    RENDER_FORMAT_JSON
+    RENDER_FORMAT_HTML,
+    RENDER_FORMAT_JSON,
 )
+
+from underscore import _ as us
 
 
 def path_to_underscore_template(name):
@@ -38,13 +42,7 @@ class JsonRenderer(BaseNotificationRenderer):
         """
         return render_format == RENDER_FORMAT_JSON
 
-    def render_subject(self, msg, render_format, lang):
-        """
-        Placeholder implementation of the interface method
-        """
-        return json.dumps(msg.payload)
-
-    def render_body(self, msg, render_format, lang):
+    def render(self, msg, render_format, lang):
         """
         Placeholder implementation of the interface method
         """
@@ -66,6 +64,7 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
     """
 
     underscore_template_name = None
+    underscore_template = None
 
     def __init__(self, template_name=None):
         """
@@ -79,26 +78,47 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
         Returns (True/False) whether this renderer provides renderings
         into the requested format.
         """
-        return render_format == RENDER_FORMAT_UNDERSCORE
+        return render_format == RENDER_FORMAT_HTML
 
-    def render_subject(self, msg, render_format, lang):
+    def render(self, msg, render_format, lang):
         """
         This basic renderer just returns the subject in the Msg payload
         """
-        return msg.payload['subject']
+        if not self.can_render_format(render_format):
+            NotImplementedError()
 
-    def render_body(self, msg, render_format, lang):
-        """
-        This basic renderer just returns the  body that is in the Msg payload
-        """
-        return msg.payload['body']
+        if not self.underscore_template:
+            template_url_path = self.get_template_path(render_format)
+            template_url_path = template_url_path.replace(static(''), '')
+            underscore_filepath = finders.find(template_url_path)
+
+            if not underscore_filepath:
+                err_msg = (
+                    'Could not resolve Underscore static url path {url_path} '
+                    'to a filesystem path.'
+                ).format(url_path=template_url_path)
+                raise Exception(err_msg)
+
+            with open(underscore_filepath, "r") as _file:
+                template_string = _file.read()
+                self.underscore_template = us.template(template_string)
+
+        _payload = copy.deepcopy(msg.payload)
+
+        created_str = msg.created.strftime("%B %d, %Y") + ' at ' + msg.created.strftime("%H:%M%p")
+
+        _payload.update({
+            '__display_created': created_str
+        })
+
+        return self.underscore_template(_payload)
 
     def get_template_path(self, render_format):
         """
         Return a path to where a client can get the template
         """
 
-        if render_format == RENDER_FORMAT_UNDERSCORE and self.underscore_template_name:
+        if render_format == RENDER_FORMAT_HTML and self.underscore_template_name:
             return path_to_underscore_template(self.underscore_template_name)
 
         raise NotImplementedError()

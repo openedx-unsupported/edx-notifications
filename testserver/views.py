@@ -2,6 +2,8 @@
 View handlers for HTML serving
 """
 
+from datetime import datetime, timedelta
+import pytz
 from django.template import RequestContext, loader
 from django.http import (
     HttpResponse,
@@ -25,14 +27,28 @@ from edx_notifications.data import (
     NotificationMessage,
 )
 
+
+from edx_notifications.namespaces import (
+    NotificationNamespaceResolver,
+    register_namespace_resolver
+)
+
+
+from edx_notifications.scopes import (
+    NotificationUserScopeResolver
+)
+
+from edx_notifications.digests import send_notifications_digest
+
 from edx_notifications.server.web.utils import get_notifications_widget_context
+from edx_notifications import const
 
 from .forms import *
 
 # set up three optional namespaces that we can switch through to test proper
 # isolation of Notifications
-NAMESPACES = [None, 'foo/bar/baz', 'test/test/test']
-NAMESPACE = None
+NAMESPACES = ['foo/bar/baz', 'test/test/test']
+NAMESPACE = 'foo/bar/baz'
 
 CANNED_TEST_PAYLOAD = {
     'testserver.type1': {
@@ -157,6 +173,8 @@ def index(request):
         if request.POST.get('change_namespace'):
             namespace_str = request.POST['namespace']
             NAMESPACE = namespace_str if namespace_str != "None" else None
+        elif request.POST.get('send_digest'):
+            send_digest(request)
         else:
             type_name = request.POST['notification_type']
             msg_type = get_notification_type(type_name)
@@ -188,6 +206,7 @@ def index(request):
             'app_name': 'Notification Test Server',
             'hide_link_is_visible': settings.HIDE_LINK_IS_VISIBLE,
             'always_show_dates_on_unread': True,
+            'notification_preference_tab_is_visible': settings.NOTIFICATION_PREFERENCES_IS_VISIBLE,
         },
         # for test purposes, set up a short-poll which contacts the server
         # every 10 seconds to see if there is a new notification
@@ -243,3 +262,43 @@ def register_success(request):
 def logout_page(request):
     logout(request)
     return HttpResponseRedirect('/')
+
+
+class TestUserResolver(NotificationUserScopeResolver):
+    def __init__(self, send_to):
+        self.send_to = send_to
+
+    def resolve(self, scope_name, scope_context, instance_context):
+        return [
+            {
+                'id': self.send_to.id,
+                'email': self.send_to.email,
+                'first_name': 'Joe',
+                'last_name': 'Smith'
+            }
+        ]
+
+class TestNotificationNamespaceResolver(NotificationNamespaceResolver):
+    def __init__(self, send_to):
+        self.send_to = send_to
+
+    def resolve(self, namespace, instance_context):
+        return {
+            'namespace': namespace,
+            'display_name': 'A Test Namespace',
+            'features': {
+                'digests': True,
+            },
+            'default_user_resolver': TestUserResolver(self.send_to)
+        }
+
+def send_digest(request):
+    # just send to logged in user
+    register_namespace_resolver(TestNotificationNamespaceResolver(request.user))
+    send_notifications_digest(
+        datetime.now(pytz.UTC) - timedelta(days=1),
+        datetime.now(pytz.UTC),
+        const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+        const.NOTIFICATION_DAILY_DIGEST_SUBJECT,
+        const.NOTIFICATION_DIGEST_FROM_ADDRESS
+    )
