@@ -8,6 +8,7 @@ import pytz
 from datetime import datetime
 
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
 
 from edx_notifications.stores.store import BaseNotificationStoreProvider
 from edx_notifications.exceptions import (
@@ -138,7 +139,15 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         except ObjectDoesNotExist:
             obj = SQLNotificationType.from_data_object(msg_type)
 
-        obj.save()
+        try:
+            obj.save()
+        except IntegrityError:
+            # there could be some concurrency between multiple processes
+            # on startup, so try again
+            try:
+                obj.save()
+            except IntegrityError:
+                pass
 
         # remove cached entry
         if msg_type.name in self._msg_type_cache:
