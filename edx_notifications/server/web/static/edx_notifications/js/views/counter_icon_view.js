@@ -149,16 +149,30 @@ var CounterIconView = Backbone.View.extend({
                  notification_alert.play();
              }
              counterView.render();
-              if (counterView.notification_pane && counterView.notification_pane.selected_pane == "unread") {
-                 var url = counterView.options.endpoints.user_notifications_unread_only;
-                 counterView.notification_pane.collection.url = url;
+             if (counterView.notification_pane) {
 
-                 if (counterView.namespace) {
-                      counterView.notification_pane.collection.url = counterView.notification_pane.append_url_param(
-                          url, 'namespace', counterView.namespace)
+                 var url = null;
+
+                 // if user is under the unread notification pane then fetch unread notifications.
+                 if (counterView.notification_pane.selected_pane == "unread") {
+                     url = counterView.options.endpoints.user_notifications_unread_only;
+                 }
+                 // if user is under the view-all notification pane then fetch all notifications.
+                 else if (counterView.notification_pane.selected_pane == 'all') {
+                     url = counterView.options.endpoints.user_notifications_all;
                  }
 
-                 counterView.notification_pane.hydrate();
+                 if(url !== null) {
+                     counterView.notification_pane.collection.url = url;
+
+                     // apply namespacing - if set
+                     if (counterView.namespace) {
+                         counterView.notification_pane.collection.url = counterView.notification_pane.append_url_param(
+                             url, 'namespace', counterView.namespace);
+                     }
+
+                     counterView.notification_pane.hydrate();
+                 }
              }
          }
      });
