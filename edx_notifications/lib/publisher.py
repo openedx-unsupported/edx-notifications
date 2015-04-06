@@ -303,3 +303,12 @@ def cancel_timed_notification(timer_name, exception_on_not_found=True):
         ).format(name=timer_name)
         log.error(err_msg)
         raise
+
+
+def purge_expired_notifications():
+    """
+    This method reads from the configuration how long (in days) old notifications (read and unread separately)
+    can remain in the system before being purged. Lack of configuration (or None) means "don't purge ever"
+    and calls into the store provider's purge_expired_notifications() method.
+    """
+    pass

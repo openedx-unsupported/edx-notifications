@@ -7,8 +7,8 @@ import logging
 
 from edx_notifications.lib.publisher import (
     publish_notification_to_user,
-    bulk_publish_notification_to_users
-)
+    bulk_publish_notification_to_users,
+    purge_expired_notifications)
 from edx_notifications.scopes import resolve_user_scope
 from edx_notifications.stores.store import notification_store
 from edx_notifications.exceptions import ItemNotFoundError
@@ -202,6 +202,26 @@ class NotificationDigestMessageCallback(NotificationCallbackTimerHandler):
     """
 
     def notification_timer_callback(self, timer):
+        result = {
+            'errors': [],
+            'reschedule_in_mins': timer.periodicity_min,
+        }
+        return result
+
+
+class PurgeOldNotificationsCallback(NotificationCallbackTimerHandler):
+    """
+        This is the callback class called by the NotificationTimer for purging old notifications.
+        It will be rescheduled daily and will purge the old notifications by calling the StoreProvider
+        method
+
+        The return dictionary must contain the key 'reschedule_in_mins' with
+        the value timer.periodicity_min in order to re-arm the callback to
+        trigger again after the specified interval.
+    """
+
+    def notification_timer_callback(self, timer):
+        purge_expired_notifications()
         result = {
             'errors': [],
             'reschedule_in_mins': timer.periodicity_min,
