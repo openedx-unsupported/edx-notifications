@@ -2,6 +2,7 @@
 Tests which exercise the MySQL test_data_provider
 """
 
+from freezegun import freeze_time
 import mock
 import pytz
 from datetime import datetime, timedelta
@@ -1181,3 +1182,146 @@ class TestSQLStoreProvider(TestCase):
             self.assertEqual(len(user_preferences), 1)
             # most recent one should be first, so user_preferences should be 2nd
             self.assertEqual(user_preferences[0], user_preference2)
+
+    def test_purge_expired_unread_notifications(self):
+        """
+        Test to check for the older unread messages.
+        If exists delete those messages from the database.
+        """
+        msg_type = self._save_notification_type()
+        msg1 = self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace1',
+            msg_type=msg_type,
+            payload={
+                'foo': 'bar'
+            }
+        ))
+
+        msg2 = self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace1',
+            msg_type=msg_type,
+            payload={
+                'test': 'test'
+            }
+        ))
+
+        # now reset the time to 10 days ago
+        # in order to save the user notification message in the past.
+        reset_time = datetime.now(pytz.UTC) - timedelta(days=10)
+        with freeze_time(reset_time):
+            self.provider.save_user_notification(UserNotification(
+                user_id=self.test_user_id,
+                msg=msg1
+            ))
+
+        # now reset the time to 2 days ago
+        # in order to save the user notification message in the past.
+        reset_time = datetime.now(pytz.UTC) - timedelta(days=2)
+        with freeze_time(reset_time):
+            self.provider.save_user_notification(UserNotification(
+                user_id=self.test_user_id,
+                msg=msg2
+            ))
+
+        # user notifications count
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'namespace': 'namespace1'
+                }
+            ),
+            2
+        )
+
+        # purge older unread messages.
+        purge_unread_messages_older_than = datetime.now(pytz.UTC) - timedelta(days=6)
+        self.provider.purge_expired_notifications(purge_unread_messages_older_than=purge_unread_messages_older_than)
+
+        # now get the user notification count.
+        # count should be 1 at that moment. because
+        # only 1 notification has been deleted.
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'namespace': 'namespace1'
+                }
+            ),
+            1
+        )
+
+    def test_purge_expired_read_notifications(self):
+        """
+        Test to check for the older read messages.
+        If exists delete those messages from the database.
+        """
+
+        msg_type = self._save_notification_type()
+        msg1 = self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace1',
+            msg_type=msg_type,
+            payload={
+                'foo': 'bar'
+            }
+        ))
+
+        msg2 = self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace1',
+            msg_type=msg_type,
+            payload={
+                'test': 'test'
+            }
+        ))
+
+        # now reset the time to 10 days ago
+        # in order to save the user notification messages in the past.
+        reset_time = datetime.now(pytz.UTC) - timedelta(days=10)
+        with freeze_time(reset_time):
+            self.provider.save_user_notification(UserNotification(
+                user_id=self.test_user_id,
+                msg=msg1
+            ))
+
+            # mark the user notification as read.
+            self.provider.mark_user_notifications_read(self.test_user_id)
+
+        # now reset the time to 2 days ago
+        # in order to save the user notification messages in the past.
+        reset_time = datetime.now(pytz.UTC) - timedelta(days=2)
+        with freeze_time(reset_time):
+            self.provider.save_user_notification(UserNotification(
+                user_id=self.test_user_id,
+                msg=msg2
+            ))
+
+            # mark the user notification as read.
+            self.provider.mark_user_notifications_read(self.test_user_id)
+
+        # user notifications count
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'namespace': 'namespace1'
+                }
+            ),
+            2
+        )
+
+        # purge older read messages.
+        purge_older_read_messages = datetime.now(pytz.UTC) - timedelta(days=6)
+        self.provider.purge_expired_notifications(purge_read_messages_older_than=purge_older_read_messages)
+
+        # now get the user notification count.
+        # count should be 1 at that moment. because
+        # only 1 notification has been deleted.
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'namespace': 'namespace1'
+                }
+            ),
+            1
+        )

@@ -27,6 +27,13 @@ class BadImplementationStoreProvider(BaseNotificationStoreProvider):
     raises the correct methods
     """
 
+    def purge_expired_notifications(self, purge_read_messages_older_than, purge_unread_messages_older_than):
+        """
+        Fake implementation of method which calls base class, which should throw NotImplementedError
+        """
+        super(BadImplementationStoreProvider, self).purge_expired_notifications(purge_read_messages_older_than,
+                                                                                purge_unread_messages_older_than)
+
     def get_all_user_preferences_for_user(self, user_id):
         """
         Fake implementation of method which calls base class, which should throw NotImplementedError
@@ -281,3 +288,6 @@ class TestBaseNotificationDataProvider(TestCase):
 
         with self.assertRaises(NotImplementedError):
             bad_provider.get_all_user_preferences_with_name(None, None)
+
+        with self.assertRaises(NotImplementedError):
+            bad_provider.purge_expired_notifications(None, None)
