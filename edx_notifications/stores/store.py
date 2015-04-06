@@ -216,7 +216,7 @@ class BaseNotificationStoreProvider(object):
         current system time
         """
         raise NotImplementedError()
-
+    
     @abc.abstractmethod
     def get_notification_preference(self, name):
         """
@@ -270,5 +270,26 @@ class BaseNotificationStoreProvider(object):
         so that we know all users that have the same preference. We need the 'offset'
         and 'size' parameters since this query could potentially be very large
         (imagine a course with 100K students in it) and we'll need the ability to page
+        """
+        raise NotImplementedError()
+    
+    @abc.abstractmethod
+    def purge_expired_notifications(self, purge_read_messages_older_than, purge_unread_messages_older_than):  # pylint: disable=invalid-name
+        """
+        Will purge all the unread and read messages that is in the
+        db for a period of time.
+
+        how long (in days) old READ and UNREAD notifications can remain in the system before being purged.
+
+        Lack of configuration (or None) means: "don't purge ever"
+
+        purge_read_messages_older_than: will control how old a READ message will remain in the backend
+
+        purge_unread_messages_older_than: will control how old an UNREAD message will remain in the backend
+
+        purge_read_messages_older_than will compare against the "read_at" column
+
+        where as purge_unread_messages_older_than will compare against the "created" column.
+
         """
         raise NotImplementedError()
