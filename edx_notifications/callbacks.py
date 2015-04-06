@@ -226,7 +226,7 @@ class NotificationDigestMessageCallback(NotificationCallbackTimerHandler):
         return result
 
 
-class PurgeOldNotificationsCallback(NotificationCallbackTimerHandler):
+class PurgeNotificationsCallbackHandler(NotificationCallbackTimerHandler):
     """
         This is the callback class called by the NotificationTimer for purging old notifications.
         It will be rescheduled daily and will purge the old notifications by calling the StoreProvider

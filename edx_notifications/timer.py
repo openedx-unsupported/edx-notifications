@@ -11,11 +11,14 @@ from datetime import datetime, timedelta
 from importlib import import_module
 
 from django.dispatch import receiver
+from edx_notifications.data import NotificationCallbackTimer
+from edx_notifications.digests import MINUTES_IN_A_DAY
+from edx_notifications.exceptions import ItemNotFoundError
 
 from edx_notifications.stores.store import notification_store
 from edx_notifications import const
 
-from edx_notifications.signals import perform_notification_scan
+from edx_notifications.signals import perform_notification_scan, perform_timer_registrations
 
 log = logging.getLogger(__name__)
 
@@ -76,3 +79,29 @@ def poll_and_execute_timers(**kwargs):  # pylint: disable=unused-argument
             log.exception(ex)
 
     log.info('Ending poll_and_execute_timers()...')
+
+
+@receiver(perform_timer_registrations)
+def register_purge_notifications_timer(sender, **kwargs):  # pylint: disable=unused-argument
+    """
+    Register PurgeNotificationsCallbackHandler.
+    This will be called automatically on the Notification subsystem startup (because we are
+    receiving the 'perform_timer_registrations' signal)
+    """
+    store = notification_store()
+
+    # Set first execution time as upcoming 1:00 AM (1 hour after midnight) after the server is run for the first time.
+    first_execution_at = datetime.now(pytz.UTC) + timedelta(days=1)
+    first_execution_at = first_execution_at.replace(hour=1, minute=0, second=0, microsecond=0)
+
+    try:
+        store.get_notification_timer('purge-notifications-timer')
+    except ItemNotFoundError:
+        purge_notifications_timer = NotificationCallbackTimer(
+            name='purge-notifications-timer',
+            callback_at=first_execution_at,
+            class_name='edx_notifications.callbacks.PurgeNotificationsCallbackHandler',
+            is_active=True,
+            periodicity_min=MINUTES_IN_A_DAY
+        )
+        store.save_notification_timer(purge_notifications_timer)

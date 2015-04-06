@@ -9,6 +9,7 @@ from edx_notifications.signals import perform_type_registrations, perform_timer_
 # in their signal receivers
 from edx_notifications.openedx import notification_type_registration  # pylint: disable=unused-import
 from edx_notifications.digests import register_digest_timers, create_default_notification_preferences  # pylint: disable=unused-import
+from edx_notifications.timer import register_purge_notifications_timer  # pylint: disable=unused-import
 
 from edx_notifications.scopes import register_user_scope_resolver, SingleUserScopeResolver
 
