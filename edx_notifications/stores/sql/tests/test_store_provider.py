@@ -990,7 +990,7 @@ class TestSQLStoreProvider(TestCase):
 
         with self.assertRaises(ItemNotFoundError):
             self.provider.get_notification_timer('foo')
-    
+
     def test_save_notification_preference(self):
         """
         test save notification preference in the store provide.
@@ -1182,7 +1182,7 @@ class TestSQLStoreProvider(TestCase):
             self.assertEqual(len(user_preferences), 1)
             # most recent one should be first, so user_preferences should be 2nd
             self.assertEqual(user_preferences[0], user_preference2)
-    
+
     def test_purge_expired_unread_notifications(self):
         """
         Test to check for the older unread messages.
