@@ -8,6 +8,7 @@ import dateutil.parser
 import copy
 
 from datetime import datetime, timedelta
+from freezegun.api import FakeDatetime
 
 
 class DateTimeWithDeltaCompare(datetime):
@@ -210,7 +211,7 @@ class DateTimeField(TypedField):
     Specialized subclass of TypedField(datetime) as a convienence
     """
 
-    _expected_types = [datetime]
+    _expected_types = [datetime, FakeDatetime]
 
 
 class EnumField(StringField):
