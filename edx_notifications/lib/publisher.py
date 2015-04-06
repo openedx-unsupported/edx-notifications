@@ -341,3 +341,12 @@ def set_user_notification_preference(user_preference):
     """
     store = notification_store()
     return store.set_user_preference(user_preference)
+
+
+def purge_expired_notifications():
+    """
+    This method reads from the configuration how long (in days) old notifications (read and unread separately)
+    can remain in the system before being purged. Lack of configuration (or None) means "don't purge ever"
+    and calls into the store provider's purge_expired_notifications() method.
+    """
+    pass
