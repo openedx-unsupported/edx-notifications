@@ -216,7 +216,7 @@ class BaseNotificationStoreProvider(object):
         current system time
         """
         raise NotImplementedError()
-    
+
     @abc.abstractmethod
     def get_notification_preference(self, name):
         """
@@ -272,7 +272,7 @@ class BaseNotificationStoreProvider(object):
         (imagine a course with 100K students in it) and we'll need the ability to page
         """
         raise NotImplementedError()
-    
+
     @abc.abstractmethod
     def purge_expired_notifications(self, purge_read_messages_older_than, purge_unread_messages_older_than):  # pylint: disable=invalid-name
         """

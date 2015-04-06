@@ -411,7 +411,7 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
             objs = objs.filter(executed_at__isnull=True)
 
         return [obj.to_data_object() for obj in objs]
-    
+
     def get_notification_preference(self, name):
         """
         Will return a single NotificationPreference if exists
@@ -519,7 +519,7 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         result_set = [item.to_data_object() for item in query]
 
         return result_set
-    
+
     def purge_expired_notifications(self, purge_read_messages_older_than=None, purge_unread_messages_older_than=None):
         """
         Will purge all the unread and read messages that is in the
