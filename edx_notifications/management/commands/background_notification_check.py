@@ -23,4 +23,9 @@ class Command(BaseCommand):
         """
 
         log.info("Running management command to fire notifications asynchronously...")
+        print "Running background_notification_check..."
+
         fire_background_notification_check()
+
+        log.info("Completed background_notification_check.")
+        print "Completed background_notification_check."
