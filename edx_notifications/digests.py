@@ -2,6 +2,7 @@
 Create and register a new NotificationCallbackTimerHandler
 """
 import datetime
+from edx_notifications import const
 from django.dispatch import receiver
 import pytz
 from edx_notifications.data import NotificationCallbackTimer, NotificationPreference
@@ -13,9 +14,7 @@ from django.utils.translation import ugettext as _
 
 
 DAILY_DIGEST_TIMER_NAME = 'daily-digest-timer'
-MINUTES_IN_A_DAY = 24 * 60
 WEEKLY_DIGEST_TIMER_NAME = 'weekly-digest-timer'
-MINUTES_IN_A_WEEK = 7 * 24 * 60
 
 
 @receiver(perform_timer_registrations)
@@ -39,7 +38,7 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
             callback_at=first_execution_at,
             class_name='edx_notifications.callbacks.NotificationDigestMessageCallback',
             is_active=True,
-            periodicity_min=MINUTES_IN_A_DAY
+            periodicity_min=const.MINUTES_IN_A_DAY
         )
         store.save_notification_timer(daily_digest_timer)
 
@@ -51,7 +50,7 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
             callback_at=first_execution_at,
             class_name='edx_notifications.callbacks.NotificationDigestMessageCallback',
             is_active=True,
-            periodicity_min=MINUTES_IN_A_WEEK
+            periodicity_min=const.MINUTES_IN_A_WEEK
         )
         store.save_notification_timer(weekly_digest_timer)
 
