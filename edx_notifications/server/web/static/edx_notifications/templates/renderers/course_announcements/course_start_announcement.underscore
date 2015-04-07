@@ -1,0 +1,9 @@
+<div class='xns-title'>
+    Course starting soon!
+</div>
+<% if (__view == 'unread') { %>
+    <div class='xns-date'>
+        <%= __display_created %>
+    </div>
+<% } %>
+'<%= course_name %>' will be starting on <%= start_date %>

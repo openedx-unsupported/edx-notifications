@@ -143,6 +143,11 @@ CANNED_TEST_PAYLOAD = {
         '_click_link': 'http://localhost',
         'activity_name': 'First Activity',
     },
+    'open-edx.studio.announcements.course-start-announcement': {
+        '_schema_version': 1,
+        'course_name': 'Demo Robot Super Course',
+        'start_date': '4/16/2015'
+    }
 }
 
 

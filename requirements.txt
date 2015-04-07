@@ -7,3 +7,6 @@ pylru==1.0.6
 djangorestframework>=2.3.5,<=2.3.14
 pytz==2012h
 PyContracts==1.6.5
+twilio
+django-push-notifications
+django-uuidfield

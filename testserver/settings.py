@@ -38,6 +38,12 @@ INSTALLED_APPS = (
     'south',
 )
 
+PUSH_NOTIFICATIONS_SETTINGS = {
+        "APNS_CERTIFICATE": "/Users/cdodge/.ssh/apns.pem",
+        "APNS_HOST": "gateway.sandbox.push.apple.com",
+        "APNS_ERROR_TIMEOUT": 1,
+}
+
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -117,6 +123,7 @@ NOTIFICATION_STORE_PROVIDER = {
 
 SOUTH_MIGRATION_MODULES = {
     'edx_notifications': 'edx_notifications.stores.sql.migrations',
+    'push_notifications': 'push_notifications.south_migrations',
 }
 
 # to prevent run-away queries from happening
@@ -151,6 +158,19 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
             }
         }
     },
+    'sms': {
+        'class': 'edx_notifications.channels.sms.TwilioNotificationChannelProvider',
+        'options': {
+            'account_SID': '*****',
+            'account_authtoken': '*****',
+            'from_tel': '****',
+            'to_tel': '****',
+        },
+    },
+    'mobile-push': {
+        'class': 'edx_notifications.channels.mobile.MobilePushNotificationChannelProvider',
+        'options': {},
+    },
     'null': {
         'class': 'edx_notifications.channels.null.NullNotificationChannel',
         'options': {}
@@ -159,5 +179,6 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
 
 # list all of the mappings of notification types to channel
 NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS = {
+    'open-edx.studio.announcements.new-announcement': 'mobile-push',
     '*': 'durable',  # default global mapping
 }
