@@ -335,12 +335,12 @@ def purge_expired_notifications():
     now = datetime.datetime.now(pytz.UTC)
 
     purge_read_older_than = None
-    if const.PURGE_READ_NOTIFICATIONS_OLDER_THAN_DAYS:
-        purge_read_older_than = now - datetime.timedelta(days=const.PURGE_READ_NOTIFICATIONS_OLDER_THAN_DAYS)
+    if const.NOTIFICATION_PURGE_READ_OLDER_THAN_DAYS:
+        purge_read_older_than = now - datetime.timedelta(days=const.NOTIFICATION_PURGE_READ_OLDER_THAN_DAYS)
 
     purge_unread_older_than = None
-    if const.PURGE_UNREAD_NOTIFICATIONS_OLDER_THAN_DAYS:
-        purge_unread_older_than = now - datetime.timedelta(days=const.PURGE_UNREAD_NOTIFICATIONS_OLDER_THAN_DAYS)
+    if const.NOTIFICATION_PURGE_UNREAD_OLDER_THAN_DAYS:
+        purge_unread_older_than = now - datetime.timedelta(days=const.NOTIFICATION_PURGE_UNREAD_OLDER_THAN_DAYS)
 
     store.purge_expired_notifications(
         purge_read_messages_older_than=purge_read_older_than,
