@@ -1326,6 +1326,7 @@ class TestSQLStoreProvider(TestCase):
             1
         )
 
+    @mock.patch('edx_notifications.const.NOTIFICATION_ARCHIVE_ENABLED', True)
     def test_archive_the_purged_notifications(self):
         """
         Test to check that deleting user notification should be archive.
