@@ -435,6 +435,7 @@ def archive_deleted_user_notification(sender, instance, *args, **kwargs):  # pyl
     """
     Archiving the deleted user notifications.
     """
-    notification_archive_obj = SQLUserNotificationArchive()
-    notification_archive_obj.__dict__.update(instance.__dict__)
-    notification_archive_obj.save()
+    if const.NOTIFICATION_ARCHIVE_ENABLED:
+        notification_archive_obj = SQLUserNotificationArchive()
+        notification_archive_obj.__dict__.update(instance.__dict__)
+        notification_archive_obj.save()
