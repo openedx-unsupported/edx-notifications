@@ -17,6 +17,8 @@ from edx_notifications.data import (
     NotificationCallbackTimer,
 )
 from edx_notifications import const
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 
 
 class SQLNotificationType(models.Model):
@@ -159,6 +161,30 @@ class SQLNotificationMessage(TimeStampedModel):
         self.payload = DictField.to_json(msg.payload)
         self.resolve_links = DictField.to_json(msg.resolve_links)
         self.object_id = msg.object_id
+
+
+class SQLUserNotificationArchive(TimeStampedModel):
+
+    """
+    Information about the archiving user notifications.
+    """
+
+    user_id = models.IntegerField(db_index=True)
+
+    msg = models.ForeignKey(SQLNotificationMessage, db_index=True)
+
+    read_at = models.DateTimeField(null=True, db_index=True)
+
+    user_context = models.TextField(null=True)
+
+    class Meta(object):
+        """
+        ORM metadata about this class
+        """
+        app_label = 'edx_notifications'  # since we have this models.py file not in the root app directory
+        db_table = 'edx_notifications_usernotificationarchive'
+        unique_together = (('user_id', 'msg'),)  # same user should not get the same notification twice
+        ordering = ['-created']  # default order is most recent one should be read first
 
 
 class SQLUserNotification(TimeStampedModel):
@@ -402,3 +428,13 @@ class SQLNotificationCallbackTimer(TimeStampedModel):
         self.executed_at = notification_timer.executed_at
         self.err_msg = notification_timer.err_msg
         self.results = DictField.to_json(notification_timer.results)
+
+
+@receiver(pre_delete, sender=SQLUserNotification)
+def archive_deleted_user_notification(sender, instance, *args, **kwargs):  # pylint: disable=unused-argument
+    """
+    Archiving the deleted user notifications.
+    """
+    notification_archive_obj = SQLUserNotificationArchive()
+    notification_archive_obj.__dict__.update(instance.__dict__)
+    notification_archive_obj.save()
