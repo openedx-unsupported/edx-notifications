@@ -514,3 +514,50 @@ class DigestNotificationsTests(TestCase):
             freeze_time_callback_at = weekly_digest_timer_name.callback_at
             self.assertIsNone(weekly_digest_timer_name.executed_at)
             self.assertEqual(current_callback_at, freeze_time_callback_at - timedelta(days=7))
+
+
+class PurgeNotificationsTests(TestCase):
+    """
+    Tests the purging of old notifications.
+    """
+
+    def setUp(self):
+        """
+        start up stuff
+        """
+        startup.initialize()
+        self.purge_notifications_timer_name = 'purge-notifications-timer'
+        self.store = notification_store()
+
+    def test_purge_timer_registered(self):
+        """
+        Test if the purge notifications timer has been registered.
+        """
+        self.assertIsNotNone(self.store.get_notification_timer(self.purge_notifications_timer_name))
+
+    def test_purge_timer_rescheduling(self):
+        """
+        Tests if the purge timer is rescheduled every day.
+        """
+        purge_notifications_timer = self.store.get_notification_timer(self.purge_notifications_timer_name)
+        previous_callback_at = purge_notifications_timer.callback_at
+        background_notification_check.Command().handle()
+
+        # Fetch the timer again since it should be updated.
+        purge_notifications_timer = self.store.get_notification_timer(self.purge_notifications_timer_name)
+        current_callback_at = purge_notifications_timer.callback_at
+
+        self.assertIsNone(purge_notifications_timer.executed_at)
+        self.assertEqual(previous_callback_at, current_callback_at)
+
+        # now reset the time to 1 day from now in future
+        #  in order to execute the daily digest timer again
+        reset_time = datetime.now(pytz.UTC) + timedelta(days=1)
+        with freeze_time(reset_time):
+            # call digest command handle again
+            background_notification_check.Command().handle()
+            # fetch the timer from the DB as it should be updated
+            purge_notifications_timer = self.store.get_notification_timer(self.purge_notifications_timer_name)
+            freeze_time_callback_at = purge_notifications_timer.callback_at
+            self.assertIsNone(purge_notifications_timer.executed_at)
+            self.assertEqual(current_callback_at, freeze_time_callback_at - timedelta(days=1))

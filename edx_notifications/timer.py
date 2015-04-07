@@ -95,7 +95,7 @@ def register_purge_notifications_timer(sender, **kwargs):  # pylint: disable=unu
         store.get_notification_timer(PURGE_NOTIFICATIONS_TIMER_NAME)
     except ItemNotFoundError:
         # Set first execution time at upcoming 1:00 AM (1 hour after midnight).
-        first_execution_at = datetime.now(pytz.UTC) + timedelta(days=1).replace(hour=1, minute=0, second=0)
+        first_execution_at = (datetime.now(pytz.UTC) + timedelta(days=1)).replace(hour=1, minute=0, second=0)
 
         purge_notifications_timer = NotificationCallbackTimer(
             name=PURGE_NOTIFICATIONS_TIMER_NAME,
