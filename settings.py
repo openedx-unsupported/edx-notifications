@@ -113,3 +113,7 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
 NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS = {
     '*': 'durable',  # default global mapping
 }
+
+# Constants to set how long (in days) old READ and UNREAD notifications can remain in the system before being purged.
+NOTIFICATION_PURGE_READ_OLDER_THAN_DAYS = 30
+NOTIFICATION_PURGE_UNREAD_OLDER_THAN_DAYS = 60

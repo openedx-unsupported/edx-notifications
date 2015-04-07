@@ -15,6 +15,7 @@ from contracts import contract
 from django.db.models.query import ValuesListQuerySet
 
 from edx_notifications.channels.channel import get_notification_channel
+from edx_notifications import const
 from edx_notifications.stores.store import notification_store
 from edx_notifications.exceptions import ItemNotFoundError
 
@@ -321,3 +322,27 @@ def set_user_notification_preference(user_preference):
     """
     store = notification_store()
     return store.set_user_preference(user_preference)
+
+
+def purge_expired_notifications():
+    """
+    This method reads from the configuration how long (in days) old notifications (read and unread separately)
+    can remain in the system before being purged. Lack of configuration (or None) means "don't purge ever"
+    and calls into the store provider's purge_expired_notifications() method.
+    """
+
+    store = notification_store()
+    now = datetime.datetime.now(pytz.UTC)
+
+    purge_read_older_than = None
+    if const.NOTIFICATION_PURGE_READ_OLDER_THAN_DAYS:
+        purge_read_older_than = now - datetime.timedelta(days=const.NOTIFICATION_PURGE_READ_OLDER_THAN_DAYS)
+
+    purge_unread_older_than = None
+    if const.NOTIFICATION_PURGE_UNREAD_OLDER_THAN_DAYS:
+        purge_unread_older_than = now - datetime.timedelta(days=const.NOTIFICATION_PURGE_UNREAD_OLDER_THAN_DAYS)
+
+    store.purge_expired_notifications(
+        purge_read_messages_older_than=purge_read_older_than,
+        purge_unread_messages_older_than=purge_unread_older_than
+    )
