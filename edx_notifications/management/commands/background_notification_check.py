@@ -3,7 +3,8 @@ Django management command to raise a 'fire_background_notification_check' signal
 application-level listeners
 """
 
-import logging, logging.config
+import logging
+import logging.config
 import sys
 
 # Have all logging go to stdout with management commands
