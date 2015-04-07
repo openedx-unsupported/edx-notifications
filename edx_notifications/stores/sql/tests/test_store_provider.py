@@ -8,7 +8,7 @@ import pytz
 from datetime import datetime, timedelta
 
 from django.test import TestCase
-from edx_notifications.stores.sql.models import SQLUserNotification
+from edx_notifications.stores.sql.models import SQLUserNotification, SQLUserNotificationArchive
 
 from edx_notifications.stores.sql.store_provider import SQLNotificationStoreProvider
 from edx_notifications.data import (
@@ -1325,3 +1325,55 @@ class TestSQLStoreProvider(TestCase):
             ),
             1
         )
+
+    @mock.patch('edx_notifications.const.NOTIFICATION_ARCHIVE_ENABLED', True)
+    def test_archive_the_purged_notifications(self):
+        """
+        Test to check that deleting user notification should be archive.
+        """
+        msg_type = self._save_notification_type()
+        msg = self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace1',
+            msg_type=msg_type,
+            payload={
+                'test': 'test'
+            }
+        ))
+
+        # now reset the time to 7 days ago
+        # in order to save the user notification message in the past.
+        reset_time = datetime.now(pytz.UTC) - timedelta(days=7)
+        with freeze_time(reset_time):
+            user_notification = self.provider.save_user_notification(UserNotification(
+                user_id=self.test_user_id,
+                msg=msg
+            ))
+
+            # mark the user notification as read.
+            self.provider.mark_user_notifications_read(self.test_user_id)
+
+        self.assertEqual(SQLUserNotificationArchive.objects.all().count(), 0)
+
+        # purge older read messages.
+        purge_older_read_messages = datetime.now(pytz.UTC) - timedelta(days=6)
+        self.provider.purge_expired_notifications(purge_read_messages_older_than=purge_older_read_messages)
+
+        # now get the user notification count.
+        # count should be 0 at that moment. because
+        # 1 notification has been deleted.
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'namespace': 'namespace1'
+                }
+            ),
+            0
+        )
+        # Notification should be archived
+        # count should be increased by 1.
+        self.assertEqual(SQLUserNotificationArchive.objects.all().count(), 1)
+
+        archived_notification = SQLUserNotificationArchive.objects.all()[0]
+        self.assertEqual(archived_notification.msg_id, user_notification.msg.id)
+        self.assertEqual(archived_notification.user_id, user_notification.user_id)
