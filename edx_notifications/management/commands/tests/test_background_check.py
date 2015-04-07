@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from django.test import TestCase
 from django.dispatch import receiver
 
-from edx_notifications.management.commands import background_notification_check
+from edx_notifications.management.commands import background_notification_check, force_purge
 
 from edx_notifications.stores.store import notification_store
 from edx_notifications.background import (
@@ -67,3 +67,16 @@ class BackgroundCheckTest(TestCase):
 
         self.assertIsNotNone(readback_timer.executed_at)
         self.assertIsNone(readback_timer.err_msg)
+
+
+class PurgeNotificationsCommandTest(TestCase):
+    """
+    Test suite for the management command
+    """
+
+    def test_purge_command_check(self):
+        """
+        Invoke the Management Command
+        """
+
+        force_purge.Command().handle()
