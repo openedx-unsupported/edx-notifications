@@ -2,7 +2,6 @@
 Run these tests @ Devstack:
     rake fasttest_lms[common/djangoapps/api_manager/management/commands/tests/test_migrate_orgdata.py]
 """
-from django.test.utils import override_settings
 from freezegun import freeze_time
 
 import pytz
