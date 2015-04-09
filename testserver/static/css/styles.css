@@ -69,11 +69,11 @@ ul{
 }
 .xns-content{
 	border: 1px solid #e8e8e8;
-	padding: 0 15px 20px 15px;
+  	padding: 0 15px 20px 15px;
 	margin-top: 15px;
 	border-radius: 3px;
 	box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.09);
-	width: 330px;
+	width: 340px;
 	height: 400px;
 	position: relative;
 	max-height: 550px;
@@ -180,4 +180,34 @@ ul{
 }
 .xns-close-item:hover{
     opacity: 1;
+}
+.xns-tooltip{
+    display: inline;
+    position: relative;
+	top: 5px;
+}
+.xns-tooltip:hover:after{
+    background: #333;
+    background: rgba(0,0,0,.8);
+    border-radius: 5px;
+    bottom: 26px;
+    color: #fff;
+    content: attr(data-tooltip);
+    left: -70px;
+	right: 100px;
+    padding: 5px 15px;
+    position: absolute;
+    z-index: 98;
+    width: 220px;
+}
+.xns-tooltip-icon {
+	width: 20px;
+}
+.xns-default-preference {
+	opacity : .35;
+	filter  : alpha(opacity=35); /* IE<9 */
+}
+.xns-notification-preferences-list {
+	margin-bottom: 5px;
+	padding: 5px 0;
 }

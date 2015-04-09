@@ -38,9 +38,9 @@ class TestAddNotifications(WebAppTest):
     }
 
     if HIDE_LINK_IS_VISIBLE:
-        notifications_container_tabs = ['View unread', 'View all', 'Mark as read', 'Hide']
+        notifications_container_tabs = ['View unread', 'View all', 'Mark as read', 'Hide', 'Settings']
     else:
-        notifications_container_tabs = ['View unread', 'View all', 'Mark as read']
+        notifications_container_tabs = ['View unread', 'View all', 'Mark as read', 'Settings']
 
     namespaces = ['foo/bar/baz', 'test/test/test']
 

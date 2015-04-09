@@ -16,8 +16,8 @@ from .url_regex import (
     CONSUMER_NOTIFICATION_DETAIL_NO_PARAM_REGEX,
     CONSUMER_USER_PREFERENCES_DETAIL_REGEX,
     CONSUMER_NOTIFICATIONS_PREFERENCES_REGEX,
-    CONSUMER_USER_PREFERENCES_REGEX
-)
+    CONSUMER_USER_PREFERENCES_REGEX,
+    CONSUMER_USER_PREFERENCES_DETAIL_NO_PARAM_REGEX)
 
 
 urlpatterns = patterns(  # pylint: disable=invalid-name
@@ -66,6 +66,11 @@ urlpatterns = patterns(  # pylint: disable=invalid-name
         CONSUMER_USER_PREFERENCES_DETAIL_REGEX,
         consumer_views.UserPreferenceDetail.as_view(),
         name='edx_notifications.consumer.user_preferences.detail'
+    ),
+    url(
+        CONSUMER_USER_PREFERENCES_DETAIL_NO_PARAM_REGEX,
+        consumer_views.UserPreferenceDetail.as_view(),
+        name='edx_notifications.consumer.user_preferences.detail.no_param'
     ),
 
 )
