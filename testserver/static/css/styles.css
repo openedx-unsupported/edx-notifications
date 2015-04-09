@@ -211,3 +211,8 @@ ul{
 	margin-bottom: 5px;
 	padding: 5px 0;
 }
+.xns-preference-pane-header {
+    font-weight: bolder;
+    font-size: 13px;
+    padding-bottom: 10px;
+}
