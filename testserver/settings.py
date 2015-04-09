@@ -166,3 +166,9 @@ NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS = {
 }
 
 NOTIFICATION_ARCHIVE_ENABLED = False
+
+# default preferences must be strings
+NOTIFICATIONS_PREFERENCE_DEFAULTS = {
+    'DAILY_DIGEST': 'false',
+    'WEEKLY_DIGEST': 'true',
+}
