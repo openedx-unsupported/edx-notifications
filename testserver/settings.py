@@ -105,9 +105,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# Disable the  Hide Link from
+# Disable the Hide Link from
 # the notification pane.
-HIDE_LINK_IS_VISIBLE = True
+HIDE_LINK_IS_VISIBLE = False
+
+# Enable the Notification Preferences settings
+NOTIFICATION_PREFERENCES_IS_VISIBLE = True
 
 NOTIFICATION_STORE_PROVIDER = {
     "class": "edx_notifications.stores.sql.store_provider.SQLNotificationStoreProvider",
@@ -163,3 +166,9 @@ NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS = {
 }
 
 NOTIFICATION_ARCHIVE_ENABLED = False
+
+# default preferences must be strings
+NOTIFICATIONS_PREFERENCE_DEFAULTS = {
+    'DAILY_DIGEST': 'false',
+    'WEEKLY_DIGEST': 'true',
+}

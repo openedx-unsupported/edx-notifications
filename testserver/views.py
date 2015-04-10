@@ -188,6 +188,7 @@ def index(request):
             'app_name': 'Notification Test Server',
             'hide_link_is_visible': settings.HIDE_LINK_IS_VISIBLE,
             'always_show_dates_on_unread': True,
+            'notification_preference_tab_is_visible': settings.NOTIFICATION_PREFERENCES_IS_VISIBLE,
         },
         # for test purposes, set up a short-poll which contacts the server
         # every 10 seconds to see if there is a new notification

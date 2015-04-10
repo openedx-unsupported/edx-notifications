@@ -67,7 +67,7 @@ def create_default_notification_preferences():
         display_name=_('Daily Notification Digest'),
         display_description=_('This setting will cause a daily digest of all notifications to be sent to your'
                               ' registered email address'),
-        default_value='false'
+        default_value=const.NOTIFICATIONS_PREFERENCE_DAILYDIGEST_DEFAULT
     )
 
     store_provider.save_notification_preference(daily_digest_preference)
@@ -77,7 +77,7 @@ def create_default_notification_preferences():
         display_name=_('Weekly Notification Digest'),
         display_description=_('This setting will cause a weekly digest of all notifications to be sent to your'
                               ' registered email address'),
-        default_value='false'
+        default_value=const.NOTIFICATIONS_PREFERENCE_WEEKLYDIGEST_DEFAULT
     )
 
     store_provider.save_notification_preference(weekly_digest_preference)
