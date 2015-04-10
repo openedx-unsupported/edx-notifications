@@ -626,8 +626,8 @@ class TestSQLStoreProvider(TestCase):
             self.provider.get_num_notifications_for_user(
                 self.test_user_id,
                 filters={
-                    'start_date': msg1.created.date(),
-                    'end_date': msg2.created.date() + timedelta(days=1)
+                    'start_date': msg1.created,
+                    'end_date': msg2.created + timedelta(days=1)
                 }
             ),
             2
@@ -638,7 +638,7 @@ class TestSQLStoreProvider(TestCase):
             self.provider.get_num_notifications_for_user(
                 self.test_user_id,
                 filters={
-                    'start_date': msg1.created.date() + timedelta(days=1)
+                    'start_date': msg1.created + timedelta(days=1)
                 }
             ),
             0
@@ -649,7 +649,7 @@ class TestSQLStoreProvider(TestCase):
             self.provider.get_num_notifications_for_user(
                 self.test_user_id,
                 filters={
-                    'end_date': msg2.created.date() + timedelta(days=1)
+                    'end_date': msg2.created + timedelta(days=1)
                 }
             ),
             2
@@ -658,8 +658,8 @@ class TestSQLStoreProvider(TestCase):
         notifications = self.provider.get_notifications_for_user(
             self.test_user_id,
             filters={
-                'start_date': msg1.created.date(),
-                'end_date': msg2.created.date() + timedelta(days=1)
+                'start_date': msg1.created,
+                'end_date': msg2.created + timedelta(days=1)
             }
         )
         self.assertEqual(len(notifications), 2)
@@ -668,7 +668,7 @@ class TestSQLStoreProvider(TestCase):
 
         # update the created time for msg2 data object.
         user_msg = SQLUserNotification.objects.get(msg_id=msg2.id)
-        user_msg.created = msg2.created.date() - timedelta(days=1)
+        user_msg.created = msg2.created - timedelta(days=1)
         user_msg.save()
 
         # now the msg 2 should not be in the filtered_list
@@ -676,7 +676,7 @@ class TestSQLStoreProvider(TestCase):
             self.provider.get_num_notifications_for_user(
                 self.test_user_id,
                 filters={
-                    'start_date': msg1.created.date(),
+                    'start_date': msg1.created,
                     'end_date': datetime.now(pytz.UTC) + timedelta(days=1)
                 }
             ),
@@ -687,7 +687,7 @@ class TestSQLStoreProvider(TestCase):
             self.provider.get_num_notifications_for_user(
                 self.test_user_id,
                 filters={
-                    'start_date': msg1.created.date()
+                    'start_date': msg1.created
                 }
             ),
             1
