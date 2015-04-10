@@ -30,17 +30,11 @@ class TestBadRenderer(BaseNotificationRenderer):
         """
         super(TestBadRenderer, self).can_render_format(render_format)
 
-    def render_subject(self, msg, render_format, lang):
+    def render(self, msg, render_format, lang):
         """
         This basic renderer just returns the subject in the Msg payload
         """
-        super(TestBadRenderer, self).render_subject(msg, render_format, lang)
-
-    def render_body(self, msg, render_format, lang):
-        """
-        This basic renderer just returns the  body that is in the Msg payload
-        """
-        super(TestBadRenderer, self).render_body(msg, render_format, lang)
+        super(TestBadRenderer, self).render(msg, render_format, lang)
 
     def get_template_path(self, render_format):
         """
@@ -53,7 +47,7 @@ class TestUnderscoreStaticFileRenderer(UnderscoreStaticFileRenderer):
     """
     Simulates the use of an Underscore renderer
     """
-    underscore_template_name = 'foo.underscore'
+    underscore_template_name = 'edx_notifications.renderers.basic.BasicSubjectBodyRenderer'
 
 
 class RendererTests(TestCase):
@@ -82,10 +76,7 @@ class RendererTests(TestCase):
             bad.can_render_format(None)
 
         with self.assertRaises(NotImplementedError):
-            bad.render_subject(None, None, None)
-
-        with self.assertRaises(NotImplementedError):
-            bad.render_body(None, None, None)
+            bad.render(None, None, None)
 
         with self.assertRaises(NotImplementedError):
             bad.get_template_path(None)
@@ -95,7 +86,7 @@ class RendererTests(TestCase):
         Tests on the UnderscoreStaticFileRenderer
         """
 
-        renderer = TestUnderscoreStaticFileRenderer('foo.underscore')
+        renderer = TestUnderscoreStaticFileRenderer('basic_subject_body.underscore')
 
         self.assertTrue(renderer.can_render_format(RENDER_FORMAT_UNDERSCORE))
 
@@ -114,25 +105,14 @@ class RendererTests(TestCase):
             }
         )
 
-        self.assertEqual(
-            renderer.render_subject(
-                msg,
-                RENDER_FORMAT_UNDERSCORE,
-                None
-            ),
-            'test subject'
-        )
-
-        self.assertEqual(
-            renderer.render_body(
-                msg,
-                RENDER_FORMAT_UNDERSCORE,
-                None
-            ),
-            'test body'
-        )
-
-        url = renderer.get_template_path(RENDER_FORMAT_UNDERSCORE)
+        renderer.get_template_path(RENDER_FORMAT_UNDERSCORE)
 
         with self.assertRaises(NotImplementedError):
-            url = renderer.get_template_path(RENDER_FORMAT_SMS)
+            renderer.get_template_path(RENDER_FORMAT_SMS)
+
+        html = renderer.render(msg, RENDER_FORMAT_UNDERSCORE, None)
+
+        self.assertIn('test subject', html)
+        self.assertIn('test body', html)
+        self.assertIn("<div class='xns-title'>", html)
+        self.assertIn("<div class='xns-body'>", html)
