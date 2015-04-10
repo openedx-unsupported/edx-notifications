@@ -27,6 +27,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'rest_framework',
     'edx_notifications',
+    'edx_notifications.server.web',
     'django_nose',
     'south',
 )
