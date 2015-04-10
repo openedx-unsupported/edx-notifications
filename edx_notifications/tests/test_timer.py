@@ -552,12 +552,16 @@ class PurgeNotificationsTests(TestCase):
 
         # now reset the time to 1 day from now in future
         #  in order to execute the daily digest timer again
-        reset_time = datetime.now(pytz.UTC) + timedelta(days=1)
+        reset_time = (datetime.now(pytz.UTC) + timedelta(days=1)).replace(hour=1, minute=0, second=0)
         with freeze_time(reset_time):
             # call digest command handle again
             background_notification_check.Command().handle()
             # fetch the timer from the DB as it should be updated
             purge_notifications_timer = self.store.get_notification_timer(self.purge_notifications_timer_name)
-            freeze_time_callback_at = purge_notifications_timer.callback_at
             self.assertIsNone(purge_notifications_timer.executed_at)
-            self.assertEqual(current_callback_at, freeze_time_callback_at - timedelta(days=1))
+
+            # allow for some slight time arthimetic skew
+            expected_callback_at = purge_notifications_timer.callback_at.replace(second=0, microsecond=0)
+            actual_callback_at = (reset_time + timedelta(days=1)).replace(second=0, microsecond=0)
+
+            self.assertEqual(expected_callback_at, actual_callback_at)
