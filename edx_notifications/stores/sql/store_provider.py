@@ -543,3 +543,11 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
                 created__lte=purge_unread_messages_older_than,
                 read_at__isnull=True
             ).delete()
+
+    def get_all_namespaces(self):
+        """
+        This will return all unique namespaces that have been used
+        """
+        resultset = SQLNotificationMessage.objects.values_list('namespace', flat=True).order_by('namespace').distinct()
+
+        return resultset
