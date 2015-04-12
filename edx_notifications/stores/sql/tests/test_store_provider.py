@@ -1377,3 +1377,46 @@ class TestSQLStoreProvider(TestCase):
         archived_notification = SQLUserNotificationArchive.objects.all()[0]
         self.assertEqual(archived_notification.msg_id, user_notification.msg.id)
         self.assertEqual(archived_notification.user_id, user_notification.user_id)
+
+    def test_get_all_namespaces(self):
+        """
+        Verify that we can get a list of all namespaces
+        """
+
+        msg_type = self._save_notification_type()
+        self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace1',
+            msg_type=msg_type,
+            payload={'foo': 'bar'}
+        ))
+
+        self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace2',
+            msg_type=msg_type,
+            payload={'foo': 'bar'}
+        ))
+
+        self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace1',
+            msg_type=msg_type,
+            payload={'foo': 'bar'}
+        ))
+
+        self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace3',
+            msg_type=msg_type,
+            payload={'foo': 'bar'}
+        ))
+
+        self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace1',
+            msg_type=msg_type,
+            payload={'foo': 'bar'}
+        ))
+
+        namespaces = self.provider.get_all_namespaces()
+
+        self.assertEqual(len(namespaces), 3)
+        self.assertIn('namespace1', namespaces)
+        self.assertIn('namespace2', namespaces)
+        self.assertIn('namespace3', namespaces)
