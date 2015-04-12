@@ -171,6 +171,12 @@ class BadImplementationStoreProvider(BaseNotificationStoreProvider):
         """
         super(BadImplementationStoreProvider, self).get_all_active_timers(until_time=until_time)
 
+    def get_all_namespaces(self):
+        """
+        This will return all unique namespaces that have been used
+        """
+        super(BadImplementationStoreProvider, self).get_all_namespaces()
+
 
 class TestBaseNotificationDataProvider(TestCase):
     """
@@ -291,3 +297,6 @@ class TestBaseNotificationDataProvider(TestCase):
 
         with self.assertRaises(NotImplementedError):
             bad_provider.purge_expired_notifications(None, None)
+
+        with self.assertRaises(NotImplementedError):
+            bad_provider.get_all_namespaces()
