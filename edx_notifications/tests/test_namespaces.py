@@ -53,8 +53,7 @@ class TestNamespaces(TestCase):
                 'namespace': namespace,
                 'display_name': namespace,
                 'features': {
-                    'daily_digests': False,
-                    'weekly_digets': False,
+                    'digests': False,
                 },
                 'default_user_resolver': None
             }
