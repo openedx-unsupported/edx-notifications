@@ -81,3 +81,12 @@ def create_default_notification_preferences():
     )
 
     store_provider.save_notification_preference(weekly_digest_preference)
+
+def send_unread_notifications_digest(since_timestamp=None):
+    """
+    This will generate and send a digest of all notifications over all namespaces to all
+    resolvable users subscribing to digests for that namespace
+    """
+
+    # TO BE IMPLEMENTED
+    return
