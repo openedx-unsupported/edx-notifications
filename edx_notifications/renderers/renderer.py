@@ -75,7 +75,7 @@ class BaseNotificationRenderer(object):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def render_subject(self, msg, render_format, lang):
+    def render(self, msg, render_format, lang):
         """
         Renders a subject line for this particular notification in the requested format and
         language
@@ -84,17 +84,6 @@ class BaseNotificationRenderer(object):
         subsitute a generic subject, e.g. "You have received a notification..."
         if the NotificationChannel *must* have a subject line, for example
         email-based delivery channels.
-
-        If the requested language is not supported then subclasses should
-        throw a NotificationLanguageNotSupported exception. The calling code
-        should trap that and try with a different language
-        """
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def render_body(self, msg, render_format, lang):
-        """
-        Renders a body for this particular notification in the requested format and language
 
         If the requested language is not supported then subclasses should
         throw a NotificationLanguageNotSupported exception. The calling code

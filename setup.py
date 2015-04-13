@@ -30,7 +30,9 @@ setup(
         "pylru==1.0.6",
         "djangorestframework>=2.3.5,<=2.3.14",
         "pytz==2012h",
-        "PyContracts==1.6.5"
+        "PyContracts==1.6.5",
+        "underscore.py==0.1.6",
+        "pynliner==0.5.2",
     ],
     tests_require=[
         "coverage==3.7.1",

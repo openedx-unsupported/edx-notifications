@@ -2,13 +2,17 @@
 Simple Subject/Body Underscore renderers
 """
 
+import copy
 from django.templatetags.static import static
+from django.contrib.staticfiles import finders
 
 from edx_notifications.renderers.renderer import BaseNotificationRenderer
 
 from edx_notifications.const import (
     RENDER_FORMAT_UNDERSCORE,
 )
+
+from underscore import _ as us
 
 
 def path_to_underscore_template(name):
@@ -31,6 +35,7 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
     """
 
     underscore_template_name = None
+    underscore_template = None
 
     def __init__(self, template_name=None):
         """
@@ -46,17 +51,34 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
         """
         return render_format == RENDER_FORMAT_UNDERSCORE
 
-    def render_subject(self, msg, render_format, lang):
+    def render(self, msg, render_format, lang):
         """
         This basic renderer just returns the subject in the Msg payload
         """
-        return msg.payload['subject']
+        if not self.can_render_format(render_format):
+            NotImplementedError()
 
-    def render_body(self, msg, render_format, lang):
-        """
-        This basic renderer just returns the  body that is in the Msg payload
-        """
-        return msg.payload['body']
+        if not self.underscore_template:
+            template_url_path = self.get_template_path(render_format)
+            underscore_filepath = finders.find(template_url_path)
+
+            if not underscore_filepath:
+                err_msg = (
+                    'Could not resolve Underscore static url path {url_path} '
+                    'to a filesystem path.'
+                ).format(url_path=template_url_path)
+                raise Exception(err_msg)
+
+            with open(underscore_filepath, "r") as _file:
+                template_string = _file.read()
+                self.underscore_template = us.template(template_string)
+
+        _payload = copy.deepcopy(msg.payload)
+        _payload.update({
+            '__view': 'default'
+        })
+
+        return self.underscore_template(msg.payload)
 
     def get_template_path(self, render_format):
         """
