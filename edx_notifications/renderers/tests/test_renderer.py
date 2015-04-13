@@ -116,3 +116,7 @@ class RendererTests(TestCase):
         self.assertIn('test body', html)
         self.assertIn("<div class='xns-title'>", html)
         self.assertIn("<div class='xns-body'>", html)
+
+        with self.assertRaises(Exception):
+            bad_renderer = TestUnderscoreStaticFileRenderer('foo.underscore')
+            bad_renderer.render(msg, RENDER_FORMAT_UNDERSCORE, None)
