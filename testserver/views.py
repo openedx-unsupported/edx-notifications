@@ -279,7 +279,7 @@ class TestNotificationNamespaceResolver(NotificationNamespaceResolver):
     def __init__(self, send_to):
         self.send_to = send_to
 
-    def resolve(self, namesapce, instance_context):
+    def resolve(self, namespace, instance_context):
         return {
             'namespace': namespace,
             'display_name': 'A Test Namespace',

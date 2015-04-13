@@ -13,12 +13,47 @@ from edx_notifications.stores.store import notification_store
 from edx_notifications.exceptions import ItemNotFoundError
 from edx_notifications.namespaces import resolve_namespace
 from django.utils.translation import ugettext as _
-from edx_notifications.lib.consumer import get_user_preference_by_name, get_notification_preference
+from edx_notifications.lib.consumer import (
+    get_user_preference_by_name,
+    get_notification_preference,
+    get_notifications_for_user
+)
+from edx_notifications.callbacks import NotificationCallbackTimerHandler
 
 log = logging.getLogger(__name__)
 
 DAILY_DIGEST_TIMER_NAME = 'daily-digest-timer'
 WEEKLY_DIGEST_TIMER_NAME = 'weekly-digest-timer'
+
+
+class NotificationDigestMessageCallback(NotificationCallbackTimerHandler):
+    """
+        This is called by the NotificationTimer for triggering sending out
+        daily and weekly digest of notification emails.
+        The timer.periodicity_min can be used to differentiate between the
+        daily (where the periodicity_min will be equal to MINUTES_IN_A_DAY) and
+        weekly (where the periodicity_min will be equal to MINUTES_IN_A_WEEK)
+        digest timers.
+
+        The return dictionary must contain the key 'reschedule_in_mins' with
+        the value timer.periodicity_min in order to re-arm the callback to
+        trigger again after the specified interval.
+    """
+
+    def notification_timer_callback(self, timer):
+        is_daily_digest = True
+        if timer.context:
+            is_daily_digest = timer.context.get('is_daily_digest')
+
+        send_unread_notifications_digest(
+            is_daily_digest=is_daily_digest
+        )
+
+        result = {
+            'errors': [],
+            'reschedule_in_mins': timer.periodicity_min,
+        }
+        return result
 
 
 @receiver(perform_timer_registrations)
@@ -40,9 +75,12 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
         daily_digest_timer = NotificationCallbackTimer(
             name=DAILY_DIGEST_TIMER_NAME,
             callback_at=first_execution_at,
-            class_name='edx_notifications.callbacks.NotificationDigestMessageCallback',
+            class_name='edx_notifications.digests.NotificationDigestMessageCallback',
             is_active=True,
-            periodicity_min=const.MINUTES_IN_A_DAY
+            periodicity_min=const.MINUTES_IN_A_DAY,
+            context={
+                'is_daily_digest': True,
+            }
         )
         store.save_notification_timer(daily_digest_timer)
 
@@ -52,9 +90,12 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
         weekly_digest_timer = NotificationCallbackTimer(
             name=WEEKLY_DIGEST_TIMER_NAME,
             callback_at=first_execution_at,
-            class_name='edx_notifications.callbacks.NotificationDigestMessageCallback',
+            class_name='edx_notifications.digests.NotificationDigestMessageCallback',
             is_active=True,
-            periodicity_min=const.MINUTES_IN_A_WEEK
+            periodicity_min=const.MINUTES_IN_A_WEEK,
+            context={
+                'is_daily_digest': False,
+            }
         )
         store.save_notification_timer(weekly_digest_timer)
 
@@ -93,96 +134,142 @@ def send_unread_notifications_digest(is_daily_digest=True):
     resolvable users subscribing to digests for that namespace
     """
 
-    preference_name = const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME \
-        if is_daily_digest else const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME
+    digests_sent = 0
+
+    if is_daily_digest:
+        # this is a placeholder for now, we should take this
+        # from_timestamp from when the timer last run, in order to
+        # be more accurate
+        from_timestamp = datetime.datetime.now(pytz.UTC) - datetime.timedelta(days=1)
+    else:
+        # this is a placeholder for now, we should take this
+        # from_timestamp from when the timer last run, in order to
+        # be more accurate
+        from_timestamp = datetime.datetime.now(pytz.UTC) - datetime.timedelta(days=7)
 
     # Get a collection of all namespaces
     namespaces = notification_store().get_all_namespaces()
 
     # Loop over all namespaces
     for namespace in namespaces:
+        digests_sent = digests_sent + send_unread_notifications_namespace_digest(
+            namespace,
+            from_timestamp,
+            is_daily_digest=is_daily_digest
+        )
+
+    return digests_sent
+
+
+def send_unread_notifications_namespace_digest(namespace, from_timestamp, is_daily_digest=True):
+    """
+    For a particular namespace, send a notification digest, if so configured
+    """
+
+    digests_sent = 0
+    if is_daily_digest:
+        preference_name = const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+    else:
+        preference_name = const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME
+
+    log.info(
+        'Inspecting digest for namespace "{namespace}". is_daily_digest = '
+        '{is_daily_digest} '.format(namespace=namespace, is_daily_digest=is_daily_digest)
+    )
+
+    # Resolve the namespace to get information about it
+    namespace_info = resolve_namespace(namespace)
+    if not namespace_info:
         log.info(
-            'Inspecting digest for namespace "{namespace}". is_daily_digest = {is_daily_digest} '
-            '{timestamp}'.format(namespace=namespace, is_daily_digest=is_daily_digest)
+            'Could not resolve namespace "{namespace}". Skipping...'.format(namespace=namespace)
         )
+        return 0
 
-        # Resolve the namespace to get information about it
-        namespace_info = resolve_namespace(namespace)
-        if not namespace_info:
-            log.info(
-                'Could not resolve namespace "{namespace}". Skipping...'.format(namespace=namespace)
-            )
-            continue
+    # see if digests are enabled for this namespace
+    if not namespace_info['features'].get('digests'):
+        log.info(
+            'Namespace "{namespace}" does not have the digests feature enabled. '
+            'Skipping...'.format(namespace=namespace)
+        )
+        return 0
 
-        # see if digests are enabled for this namespace
-        if not namespace_info['features'].get('digests'):
-            log.info(
-                'Namespace "{namespace}" does not have the digests feature enabled. '
-                'Skipping...'.format(namespace=namespace)
-            )
-            continue
+    # make sure we can resolve the users in the namespace
+    resolver = namespace_info['default_user_resolver']
+    if not resolver:
+        log.info(
+            'Namespace "{namespace}" does not have a default_user_resolver defined. '
+            'Skipping...'.format(namespace=namespace)
+        )
+        return 0
 
-        # make sure we can resolve the users in the namespace
-        resolver = namespace_info['default_user_resolver']
-        if not resolver:
-            log.info(
-                'Namespace "{namespace}" does not have a default_user_resolver defined. '
-                'Skipping...'.format(namespace=namespace)
-            )
-            continue
+    # see what the default preference is
+    notification_preference = get_notification_preference(preference_name)
+    default_wants_digest = notification_preference.default_value.lower() == 'true'
 
-        # see what the default preference is
-        notification_preference = get_notification_preference(preference_name)
-        default_wants_digest = notification_preference.default_value.lower() == 'true'
-
-        # Get a collection (cursor) of users within this namespace scope
-        users = resolver.resolve(
-            const.NOTIFICATION_NAMESPACE_USER_SCOPE_NAME,
-            {
-                'namespace': namespace,
-                'fields': {
-                    'id': True,
-                    'email': True,
-                    'first_name': True,
-                    'last_name': True
-                }
+    # Get a collection (cursor) of users within this namespace scope
+    users = resolver.resolve(
+        const.NOTIFICATION_NAMESPACE_USER_SCOPE_NAME,
+        {
+            'namespace': namespace,
+            'fields': {
+                'id': True,
+                'email': True,
+                'first_name': True,
+                'last_name': True
             }
-        )
+        },
+        None
+    )
 
-        # Loop over all users that are within the scope of the namespace
-        # and specify that we want id, email, first_name, and last_name fields
-        for user in users:
-            user_id = user['id']
-            email = user['email']
-            first_name = user['first_name']
-            last_name = user['last_name']
+    # Loop over all users that are within the scope of the namespace
+    # and specify that we want id, email, first_name, and last_name fields
+    for user in users:
+        user_id = user['id']
+        email = user['email']
+        first_name = user['first_name']
+        last_name = user['last_name']
 
-            # check preferences for user to get a digest
-            user_wants_digest = default_wants_digest
-            try:
-                user_preference = get_user_preference_by_name(user_id, preference_name)
-                user_wants_digest = user_preference.value.lower() == 'true'
-            except ItemNotFoundError:
-                # use the default
-                pass
+        # check preferences for user to get a digest
+        user_wants_digest = default_wants_digest
+        try:
+            user_preference = get_user_preference_by_name(user_id, preference_name)
+            user_wants_digest = user_preference.value.lower() == 'true'
+        except ItemNotFoundError:
+            # use the default
+            pass
 
-            if user_wants_digest:
-                log.debug(
-                    'Sending digest email from namespace "{namespace}" '
-                    'to user_id = {user_id} at email '
-                    '{email}...'.format(namespace=namespace, user_id=user_id, email=email)
-                )
-                _send_user_unread_digest(namespace_info, is_daily_digest, user_id, email, first_name, last_name)
+        if user_wants_digest:
+            log.debug(
+                'Sending digest email from namespace "{namespace}" '
+                'to user_id = {user_id} at email '
+                '{email}...'.format(namespace=namespace, user_id=user_id, email=email)
+            )
+            _send_user_unread_digest(namespace_info, from_timestamp, user_id, email, first_name, last_name)
+            digests_sent = digests_sent + 1
 
-    return
+    return digests_sent
 
 
-def _send_user_unread_digest(namespace_info, is_daily_digest, user_id, email, first_name, last_name):
+def _send_user_unread_digest(namespace_info, from_timestamp, user_id, email, first_name, last_name):  # pylint: disable=unused-argument
     """
     This will send a digest of unread notifications to a given user. Note, it is assumed here
     that the user's preference has already been checked. namespace_info will contain
     a 'display_name' entry which will be a human readable string that can be put
     in the digest email
     """
+
+    # query all unread notifications for this user since the timestamp
+    get_notifications_for_user(
+        user_id,
+        filters={
+            'read': False,
+            'unread': True,
+            'start_date': from_timestamp,
+        }
+    )
+
+    #
+    # Actually generate and send the digest. Enumerate over the resultset returned from get_notifications_for_user
+    #
 
     return

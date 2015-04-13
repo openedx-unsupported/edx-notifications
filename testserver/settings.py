@@ -172,3 +172,18 @@ NOTIFICATIONS_PREFERENCE_DEFAULTS = {
     'DAILY_DIGEST': 'false',
     'WEEKLY_DIGEST': 'true',
 }
+
+import sys
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'stream': sys.stdout,
+        }
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG'
+    }
+}
