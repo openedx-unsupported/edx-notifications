@@ -17,17 +17,19 @@ from .utils import (
 
 from edx_notifications.lib.publisher import (
     register_notification_type,
-    publish_notification_to_user,
-    set_notification_preference, set_user_notification_preference)
+    publish_notification_to_user
+)
 
 from edx_notifications.lib.consumer import (
     mark_notification_read,
+    set_notification_preference, set_user_notification_preference
 )
 
 from edx_notifications.data import (
     NotificationType,
     NotificationMessage,
-    NotificationPreference, UserNotificationPreferences)
+    NotificationPreference
+)
 
 from edx_notifications.server.api.urls import urlpatterns
 
@@ -541,12 +543,11 @@ class ConsumerAPITests(LoggedInTestCase):
         )
         notification_preference = set_notification_preference(notification_preference_daily)
 
-        test_user_notification_preference = UserNotificationPreferences(
-            user_id=1,
-            preference=notification_preference,
-            value='Test User 1'
+        user_preference = set_user_notification_preference(
+            1,
+            notification_preference.name,
+            'Test User 1'
         )
-        user_preference = set_user_notification_preference(test_user_notification_preference)
 
         response = self.client.get(reverse('edx_notifications.consumer.user_preferences'))
         self.assertEqual(response.status_code, 200)
@@ -575,12 +576,11 @@ class ConsumerAPITests(LoggedInTestCase):
         )
         notification_preference = set_notification_preference(notification_preference_daily)
 
-        test_user_notification_preference = UserNotificationPreferences(
-            user_id=1,
-            preference=notification_preference,
-            value='Test User 1'
+        user_preference = set_user_notification_preference(
+            1,
+            notification_preference.name,
+            'Test User 1'
         )
-        user_preference = set_user_notification_preference(test_user_notification_preference)
 
         # hit the api with the valid preference name
         response = self.client.get(

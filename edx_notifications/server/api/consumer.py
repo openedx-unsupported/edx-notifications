@@ -8,7 +8,6 @@ from rest_framework import status
 from rest_framework.response import Response
 
 from django.http import Http404
-from edx_notifications.data import UserNotificationPreferences
 
 from edx_notifications.lib.consumer import (
     get_notifications_count_for_user,
@@ -17,8 +16,10 @@ from edx_notifications.lib.consumer import (
     get_notification_for_user,
     mark_notification_read,
     mark_all_user_notification_as_read,
-    get_user_preferences, get_user_preference_by_name, get_notification_preference)
-from edx_notifications.lib.publisher import set_user_notification_preference
+    get_user_preferences,
+    get_user_preference_by_name,
+    set_user_notification_preference
+)
 
 from edx_notifications.renderers.renderer import (
     get_all_renderers,
@@ -294,20 +295,13 @@ class UserPreferenceDetail(AuthenticatedAPIView):
         """
         if 'value' not in request.DATA:
             raise Http404()
+
         try:
             # this will raise an ItemNotFoundError
             # if the notification_preference cannot be found
-            notification_preference = get_notification_preference(name)
+            set_user_notification_preference(int(request.user.id), name, request.DATA.get('value'))
         except ItemNotFoundError:
             raise Http404()
-
-        user_notification_preference = UserNotificationPreferences(
-            user_id=int(request.user.id),
-            preference=notification_preference,
-            value=request.DATA.get('value')
-        )
-
-        set_user_notification_preference(user_notification_preference)
 
         return Response([], status.HTTP_200_OK)
 
