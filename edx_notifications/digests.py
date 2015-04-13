@@ -45,8 +45,16 @@ class NotificationDigestMessageCallback(NotificationCallbackTimerHandler):
         if timer.context:
             is_daily_digest = timer.context.get('is_daily_digest')
 
+        preference_name = const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+        if timer.context:
+            preference_name = timer.context.get(
+                'preference_name',
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+            )
+
         send_unread_notifications_digest(
-            is_daily_digest=is_daily_digest
+            is_daily_digest=is_daily_digest,
+            preference_name=preference_name
         )
 
         result = {
@@ -69,35 +77,31 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
     first_execution_at = datetime.datetime.now(pytz.UTC) + datetime.timedelta(days=1)
     first_execution_at = first_execution_at.replace(hour=0, minute=0, second=0, microsecond=0)
 
-    try:
-        store.get_notification_timer(DAILY_DIGEST_TIMER_NAME)
-    except ItemNotFoundError:
-        daily_digest_timer = NotificationCallbackTimer(
-            name=DAILY_DIGEST_TIMER_NAME,
-            callback_at=first_execution_at,
-            class_name='edx_notifications.digests.NotificationDigestMessageCallback',
-            is_active=True,
-            periodicity_min=const.MINUTES_IN_A_DAY,
-            context={
-                'is_daily_digest': True,
-            }
-        )
-        store.save_notification_timer(daily_digest_timer)
+    daily_digest_timer = NotificationCallbackTimer(
+        name=DAILY_DIGEST_TIMER_NAME,
+        callback_at=first_execution_at,
+        class_name='edx_notifications.digests.NotificationDigestMessageCallback',
+        is_active=True,
+        periodicity_min=const.MINUTES_IN_A_DAY,
+        context={
+            'is_daily_digest': True,
+            'preference_name': const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+        }
+    )
+    store.save_notification_timer(daily_digest_timer)
 
-    try:
-        store.get_notification_timer(WEEKLY_DIGEST_TIMER_NAME)
-    except ItemNotFoundError:
-        weekly_digest_timer = NotificationCallbackTimer(
-            name=WEEKLY_DIGEST_TIMER_NAME,
-            callback_at=first_execution_at,
-            class_name='edx_notifications.digests.NotificationDigestMessageCallback',
-            is_active=True,
-            periodicity_min=const.MINUTES_IN_A_WEEK,
-            context={
-                'is_daily_digest': False,
-            }
-        )
-        store.save_notification_timer(weekly_digest_timer)
+    weekly_digest_timer = NotificationCallbackTimer(
+        name=WEEKLY_DIGEST_TIMER_NAME,
+        callback_at=first_execution_at,
+        class_name='edx_notifications.digests.NotificationDigestMessageCallback',
+        is_active=True,
+        periodicity_min=const.MINUTES_IN_A_WEEK,
+        context={
+            'is_daily_digest': False,
+            'preference_name': const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME,
+        }
+    )
+    store.save_notification_timer(weekly_digest_timer)
 
 
 def create_default_notification_preferences():
@@ -128,7 +132,7 @@ def create_default_notification_preferences():
     store_provider.save_notification_preference(weekly_digest_preference)
 
 
-def send_unread_notifications_digest(is_daily_digest=True):
+def send_unread_notifications_digest(is_daily_digest=True, preference_name=None):  # pylint: disable=unused-argument
     """
     This will generate and send a digest of all notifications over all namespaces to all
     resolvable users subscribing to digests for that namespace
