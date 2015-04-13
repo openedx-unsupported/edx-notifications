@@ -6,7 +6,8 @@ from django.test import TestCase
 
 from edx_notifications.const import RENDER_FORMAT_UNDERSCORE, RENDER_FORMAT_SMS
 from edx_notifications.renderers.renderer import (
-    BaseNotificationRenderer
+    BaseNotificationRenderer,
+    get_renderer_for_type,
 )
 
 from edx_notifications.renderers.basic import (
@@ -95,6 +96,8 @@ class RendererTests(TestCase):
             renderer='edx_notifications.renderers.basic.BasicSubjectBodyRenderer',
         )
         register_notification_type(msg_type)
+
+        self.assertIsNotNone(get_renderer_for_type(msg_type))
 
         msg = NotificationMessage(
             namespace='test-runner',

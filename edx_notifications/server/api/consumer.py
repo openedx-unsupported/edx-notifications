@@ -17,7 +17,7 @@ from edx_notifications.lib.consumer import (
     get_notification_for_user,
     mark_notification_read,
     mark_all_user_notification_as_read,
-    get_user_preferences, get_user_preferences_with_name, get_notification_preference)
+    get_user_preferences, get_user_preference_by_name, get_notification_preference)
 from edx_notifications.lib.publisher import set_user_notification_preference
 
 from edx_notifications.renderers.renderer import (
@@ -282,7 +282,7 @@ class UserPreferenceDetail(AuthenticatedAPIView):
         try:
             # this will raise an ItemNotFoundError if the user_id/name combo
             # cannot be found
-            user_preference = get_user_preferences_with_name(int(request.user.id), name)
+            user_preference = get_user_preference_by_name(int(request.user.id), name)
         except ItemNotFoundError:
             raise Http404()
 

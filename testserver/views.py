@@ -284,8 +284,7 @@ class TestNotificationNamespaceResolver(NotificationNamespaceResolver):
             'namespace': namespace,
             'display_name': 'A Test Namespace',
             'features': {
-                'daily_digest': True,
-                'weekly_digest': True,
+                'digests': True,
             },
             'default_user_resolver': TestUserResolver(self.send_to)
         }

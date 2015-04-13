@@ -129,6 +129,14 @@ def get_notification_preferences():
     return store.get_all_notification_preferences()
 
 
+def get_notification_preference(name):
+    """
+    Returns the notification preference
+    """
+    store = notification_store()
+    return store.get_notification_preference(name=name)
+
+
 def get_user_preferences(user_id):
     """
     Returns a list of Notification Preferences
@@ -137,17 +145,9 @@ def get_user_preferences(user_id):
     return store.get_all_user_preferences_for_user(user_id=user_id)
 
 
-def get_user_preferences_with_name(user_id, name):
+def get_user_preference_by_name(user_id, name):
     """
     Returns a single UserNotificationPreference
     """
     store = notification_store()
     return store.get_user_preference(user_id=user_id, name=name)
-
-
-def get_notification_preference(name):
-    """
-    Returns the notification preference
-    """
-    store = notification_store()
-    return store.get_notification_preference(name=name)
