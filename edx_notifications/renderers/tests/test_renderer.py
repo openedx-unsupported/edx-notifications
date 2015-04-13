@@ -110,6 +110,9 @@ class RendererTests(TestCase):
         with self.assertRaises(NotImplementedError):
             renderer.get_template_path(RENDER_FORMAT_SMS)
 
+        with self.assertRaises(NotImplementedError):
+            renderer.render(msg, RENDER_FORMAT_SMS, None)
+
         html = renderer.render(msg, RENDER_FORMAT_UNDERSCORE, None)
 
         self.assertIn('test subject', html)
