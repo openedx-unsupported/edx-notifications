@@ -13,13 +13,15 @@ from edx_notifications.timer import register_purge_notifications_timer  # pylint
 
 from edx_notifications.scopes import register_user_scope_resolver, SingleUserScopeResolver
 
+from edx_notifications.namespaces import DefaultNotificationNamespaceResolver, register_namespace_resolver
+
 # This is unfortunate, but to have the standard Open edX
 # NotificationTypes get registered on startup we have
 # to import the modules, otherwise, they will
 # not register their Django signal receivers
 
 
-def initialize(register_system_types=True):
+def initialize(namespace_resolver=None, register_system_types=True):
     """
     Startup entry point for the Notification subsystem
     """
@@ -37,3 +39,8 @@ def initialize(register_system_types=True):
     create_default_notification_preferences()
 
     register_user_scope_resolver('user', SingleUserScopeResolver(), {})
+
+    if not namespace_resolver:
+        namespace_resolver = DefaultNotificationNamespaceResolver()
+
+    register_namespace_resolver(namespace_resolver, None)

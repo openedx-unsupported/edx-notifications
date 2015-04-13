@@ -122,6 +122,10 @@ class RendererTests(TestCase):
         self.assertIn("<div class='xns-title'>", html)
         self.assertIn("<div class='xns-body'>", html)
 
+        with self.assertRaises(Exception):
+            bad_renderer = TestUnderscoreStaticFileRenderer('foo.underscore')
+            bad_renderer.render(msg, RENDER_FORMAT_UNDERSCORE, None)
+
     def test_json_renderer(self):
         """
         Make sure JSON renderer returns correct renderings
