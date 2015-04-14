@@ -45,6 +45,8 @@ class NotificationDigestMessageCallback(NotificationCallbackTimerHandler):
         if timer.context:
             is_daily_digest = timer.context.get('is_daily_digest')
 
+        # figure out what the preference name should be that controlls
+        # the distribution of the digest
         preference_name = const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
         if timer.context:
             preference_name = timer.context.get(
@@ -52,14 +54,32 @@ class NotificationDigestMessageCallback(NotificationCallbackTimerHandler):
                 const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
             )
 
+        # record a 'to_timestamp'
+        to_timestamp = datetime.datetime.now(pytz.UTC)
+
+        # get the last time we ran this timer, this should be the "from_timestamp"
+        if timer.context and 'last_ran' in timer.context:
+            from_timestamp = timer.context['last_ran']
+        else:
+            tdelta = datetime.timedelta(days=1) if is_daily_digest else datetime.timedelta(days=7)
+            from_timestamp = to_timestamp - tdelta
+
+        # call into the main entry point
+        # for generating digests
         send_unread_notifications_digest(
-            is_daily_digest=is_daily_digest,
-            preference_name=preference_name
+            from_timestamp,
+            to_timestamp,
+            preference_name
         )
 
         result = {
             'errors': [],
             'reschedule_in_mins': timer.periodicity_min,
+            # be sure to update the timer context, to record when we
+            # last ran this digest
+            'context_update': {
+                'last_ran': to_timestamp,
+            }
         }
         return result
 
@@ -132,24 +152,13 @@ def create_default_notification_preferences():
     store_provider.save_notification_preference(weekly_digest_preference)
 
 
-def send_unread_notifications_digest(is_daily_digest=True, preference_name=None):  # pylint: disable=unused-argument
+def send_unread_notifications_digest(from_timestamp, to_timestamp, preference_name):
     """
     This will generate and send a digest of all notifications over all namespaces to all
     resolvable users subscribing to digests for that namespace
     """
 
     digests_sent = 0
-
-    if is_daily_digest:
-        # this is a placeholder for now, we should take this
-        # from_timestamp from when the timer last run, in order to
-        # be more accurate
-        from_timestamp = datetime.datetime.now(pytz.UTC) - datetime.timedelta(days=1)
-    else:
-        # this is a placeholder for now, we should take this
-        # from_timestamp from when the timer last run, in order to
-        # be more accurate
-        from_timestamp = datetime.datetime.now(pytz.UTC) - datetime.timedelta(days=7)
 
     # Get a collection of all namespaces
     namespaces = notification_store().get_all_namespaces()
@@ -159,26 +168,27 @@ def send_unread_notifications_digest(is_daily_digest=True, preference_name=None)
         digests_sent = digests_sent + send_unread_notifications_namespace_digest(
             namespace,
             from_timestamp,
-            is_daily_digest=is_daily_digest
+            to_timestamp,
+            preference_name
         )
 
     return digests_sent
 
 
-def send_unread_notifications_namespace_digest(namespace, from_timestamp, is_daily_digest=True):
+def send_unread_notifications_namespace_digest(namespace, from_timestamp, to_timestamp, preference_name):
     """
     For a particular namespace, send a notification digest, if so configured
     """
 
-    digests_sent = 0
-    if is_daily_digest:
-        preference_name = const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
-    else:
-        preference_name = const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME
-
     log.info(
-        'Inspecting digest for namespace "{namespace}". is_daily_digest = '
-        '{is_daily_digest} '.format(namespace=namespace, is_daily_digest=is_daily_digest)
+        'Inspecting digest for namespace "{namespace}". time ranges '
+        '{from_timestamp} to {to_timestamp} preference_name='
+        '{preference_name}'.format(
+            namespace=namespace,
+            from_timestamp=from_timestamp,
+            to_timestamp=to_timestamp,
+            preference_name=preference_name
+        )
     )
 
     # Resolve the namespace to get information about it
@@ -225,6 +235,8 @@ def send_unread_notifications_namespace_digest(namespace, from_timestamp, is_dai
         None
     )
 
+    digests_sent = 0
+
     # Loop over all users that are within the scope of the namespace
     # and specify that we want id, email, first_name, and last_name fields
     for user in users:
@@ -248,13 +260,21 @@ def send_unread_notifications_namespace_digest(namespace, from_timestamp, is_dai
                 'to user_id = {user_id} at email '
                 '{email}...'.format(namespace=namespace, user_id=user_id, email=email)
             )
-            _send_user_unread_digest(namespace_info, from_timestamp, user_id, email, first_name, last_name)
+            _send_user_unread_digest(
+                namespace_info,
+                from_timestamp,
+                to_timestamp,
+                user_id,
+                email,
+                first_name,
+                last_name
+            )
             digests_sent = digests_sent + 1
 
     return digests_sent
 
 
-def _send_user_unread_digest(namespace_info, from_timestamp, user_id, email, first_name, last_name):  # pylint: disable=unused-argument
+def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_id, email, first_name, last_name):  # pylint: disable=unused-argument
     """
     This will send a digest of unread notifications to a given user. Note, it is assumed here
     that the user's preference has already been checked. namespace_info will contain
@@ -269,6 +289,7 @@ def _send_user_unread_digest(namespace_info, from_timestamp, user_id, email, fir
             'read': False,
             'unread': True,
             'start_date': from_timestamp,
+            'end_timestamp': to_timestamp,
         }
     )
 

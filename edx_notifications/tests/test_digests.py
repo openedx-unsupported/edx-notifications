@@ -2,6 +2,8 @@
 Unit tests for the digests.py file
 """
 
+import datetime
+import pytz
 from django.test import TestCase
 
 from edx_notifications.namespaces import (
@@ -98,6 +100,9 @@ class DigestTestCases(TestCase):
         create_default_notification_preferences()
         self.store = notification_store()
         self.test_user_id = 1001
+        self.from_timestamp = datetime.datetime.now(pytz.UTC) - datetime.timedelta(days=1)
+        self.weekly_from_timestamp = datetime.datetime.now(pytz.UTC) - datetime.timedelta(days=7)
+        self.to_timestamp = datetime.datetime.now(pytz.UTC)
 
         self.msg_type = self.store.save_notification_type(
             NotificationType(
@@ -133,7 +138,14 @@ class DigestTestCases(TestCase):
 
         register_namespace_resolver(None)
 
-        self.assertEqual(send_unread_notifications_digest(), 0)
+        self.assertEqual(
+            send_unread_notifications_digest(
+                self.from_timestamp,
+                self.to_timestamp,
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+            ),
+            0
+        )
 
     def test_default_namespace_resolver(self):
         """
@@ -142,7 +154,14 @@ class DigestTestCases(TestCase):
 
         register_namespace_resolver(DefaultNotificationNamespaceResolver())
 
-        self.assertEqual(send_unread_notifications_digest(), 0)
+        self.assertEqual(
+            send_unread_notifications_digest(
+                self.from_timestamp,
+                self.to_timestamp,
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+            ),
+            0
+        )
 
     def test_no_user_resolver(self):
         """
@@ -151,7 +170,14 @@ class DigestTestCases(TestCase):
 
         register_namespace_resolver(TestNamespaceResolverNoUsers())
 
-        self.assertEqual(send_unread_notifications_digest(), 0)
+        self.assertEqual(
+            send_unread_notifications_digest(
+                self.from_timestamp,
+                self.to_timestamp,
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+            ),
+            0
+        )
 
     def test_user_preference_undefined(self):
         """
@@ -159,7 +185,14 @@ class DigestTestCases(TestCase):
         """
         register_namespace_resolver(TestNamespaceResolver())
 
-        self.assertEqual(send_unread_notifications_digest(), 0)
+        self.assertEqual(
+            send_unread_notifications_digest(
+                self.from_timestamp,
+                self.to_timestamp,
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+            ),
+            0
+        )
 
     def test_user_preference_false(self):
         """
@@ -169,7 +202,14 @@ class DigestTestCases(TestCase):
 
         set_user_notification_preference(self.test_user_id, const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME, 'false')
 
-        self.assertEqual(send_unread_notifications_digest(), 0)
+        self.assertEqual(
+            send_unread_notifications_digest(
+                self.from_timestamp,
+                self.to_timestamp,
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+            ),
+            0
+        )
 
     def test_happy_path(self):
         """
@@ -180,7 +220,14 @@ class DigestTestCases(TestCase):
 
         set_user_notification_preference(self.test_user_id, const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME, 'true')
 
-        self.assertEqual(send_unread_notifications_digest(), 2)
+        self.assertEqual(
+            send_unread_notifications_digest(
+                self.from_timestamp,
+                self.to_timestamp,
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+            ),
+            2
+        )
 
     def test_weekly_preference_false(self):
         """
@@ -191,7 +238,14 @@ class DigestTestCases(TestCase):
 
         set_user_notification_preference(self.test_user_id, const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME, 'false')
 
-        self.assertEqual(send_unread_notifications_digest(is_daily_digest=False), 0)
+        self.assertEqual(
+            send_unread_notifications_digest(
+                self.weekly_from_timestamp,
+                self.to_timestamp,
+                const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME
+            ),
+            0
+        )
 
     def test_happy_path_weekly(self):
         """
@@ -202,4 +256,11 @@ class DigestTestCases(TestCase):
 
         set_user_notification_preference(self.test_user_id, const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME, 'true')
 
-        self.assertEqual(send_unread_notifications_digest(is_daily_digest=False), 2)
+        self.assertEqual(
+            send_unread_notifications_digest(
+                self.weekly_from_timestamp,
+                self.to_timestamp,
+                const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME
+            ),
+            2
+        )
