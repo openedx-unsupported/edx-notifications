@@ -70,6 +70,8 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.app_directories.Loader',
 )
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 TEMPLATE_DIRS = [
     os.path.join(BASE_DIR, 'testserver/templates'),
 ]

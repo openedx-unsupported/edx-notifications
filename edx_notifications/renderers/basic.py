@@ -3,8 +3,10 @@ Simple Subject/Body Underscore renderers
 """
 
 import copy
+import datetime
 from django.templatetags.static import static
 from django.contrib.staticfiles import finders
+import pytz
 
 from edx_notifications.renderers.renderer import BaseNotificationRenderer
 
@@ -60,6 +62,7 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
 
         if not self.underscore_template:
             template_url_path = self.get_template_path(render_format)
+            template_url_path = template_url_path.replace('/static/', '')
             underscore_filepath = finders.find(template_url_path)
 
             if not underscore_filepath:
@@ -74,11 +77,17 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
                 self.underscore_template = us.template(template_string)
 
         _payload = copy.deepcopy(msg.payload)
+
+        if datetime.datetime.date(msg.created) == datetime.datetime.now(pytz.UTC).date():
+            created_str = 'Today at ' + msg.created.strftime("%H:%M%p")
+        else:
+            created_str = msg.created.strftime("%B %d, %Y") + ' at ' + msg.created.strftime("%H:%M%p")
+
         _payload.update({
-            '__view': 'default'
+            '__display_created': created_str
         })
 
-        return self.underscore_template(msg.payload)
+        return self.underscore_template(_payload)
 
     def get_template_path(self, render_format):
         """

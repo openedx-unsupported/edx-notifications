@@ -2,7 +2,12 @@
 Create and register a new NotificationCallbackTimerHandler
 """
 import datetime
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from itertools import groupby
 import logging
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
 from edx_notifications import const
 from django.dispatch import receiver
 import pytz
@@ -25,6 +30,46 @@ log = logging.getLogger(__name__)
 
 DAILY_DIGEST_TIMER_NAME = 'daily-digest-timer'
 WEEKLY_DIGEST_TIMER_NAME = 'weekly-digest-timer'
+
+# this describes how we want to group together notification types into visual groups
+GROUP_CONFIG = {
+    'groups': {
+        'announcements': {
+            'name': 'announcements',
+            'display_name': 'Announcements',
+            'group_order': 1
+        },
+        'group_work': {
+            'name': 'group_work',
+            'display_name': 'Group Work',
+            'group_order': 2
+        },
+        'leaderboards': {
+            'name': 'leaderboards',
+            'display_name': 'Leaderboards',
+            'group_order': 3
+        },
+        'discussions': {
+            'name': 'discussions',
+            'display_name': 'Discussion',
+            'group_order': 4
+        },
+        '_default': {
+            'name': '_default',
+            'display_name': 'Other',
+            'group_order': 5
+        },
+    },
+    'type_mapping': {
+        'open-edx.lms.discussions.cohorted-thread-added': 'group_work',
+        'open-edx.lms.discussions.cohorted-comment-added': 'group_work',
+        'open-edx.lms.discussions.*': 'discussions',
+        'open-edx.lms.leaderboard.*': 'leaderboards',
+        'open-edx.studio.announcements.*': 'announcements',
+        'open-edx.xblock.group-project.*': 'group_work',
+        '*': '_default'
+    },
+}
 
 
 class NotificationDigestMessageCallback(NotificationCallbackTimerHandler):
@@ -166,7 +211,7 @@ def send_unread_notifications_digest(from_timestamp, to_timestamp, preference_na
 
     # Loop over all namespaces
     for namespace in namespaces:
-        digests_sent = digests_sent + send_unread_notifications_namespace_digest(
+        digests_sent += send_unread_notifications_namespace_digest(
             namespace,
             from_timestamp,
             to_timestamp,
@@ -270,7 +315,7 @@ def send_unread_notifications_namespace_digest(namespace, from_timestamp, to_tim
                 first_name,
                 last_name
             )
-            digests_sent = digests_sent + 1
+            digests_sent += 1
 
     return digests_sent
 
@@ -303,18 +348,125 @@ def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_
     #    - grouping together similar types (much like unread pane in Backbone app)
     #    - within the groups, sort by date descending (most recent first)
     #
-    for notification in notifications:
-        renderer = get_renderer_for_type(notification.msg.msg_type)
+
+    notification_groups = render_notifications_by_type(notifications)
+    context = {
+        'grouped_user_notifications': notification_groups
+    }
+    # render the notifications html template
+    notifications_html = render_to_string("user_notifications.html", context)
+
+    html_part = MIMEMultipart(_subtype='related')
+
+    body = MIMEText(notifications_html, _subtype='html')
+    html_part.attach(body)
+
+    msg = EmailMessage('Subject Line', None, 'foo@bar.com', [email])
+    msg.attach(html_part)
+    msg.send()
+
+
+def get_group_name_for_msg_type(msg_type):
+    """
+    Returns the particular group_name for the msg_type
+    else return None if no group_name is found.
+    """
+    if msg_type in GROUP_CONFIG['type_mapping']:
+        group_name = GROUP_CONFIG['type_mapping'][msg_type]
+        if group_name in GROUP_CONFIG['groups']:
+            return group_name
+
+    # no exact match so lets look upwards for wildcards
+    search_type = msg_type
+    # returns -1 if '.' is not in search_type
+    dot_index = search_type.rfind('.')
+    while dot_index != -1 and search_type != '*':
+        search_type = search_type[0: dot_index]
+        key = search_type + '.*'
+
+        if key in GROUP_CONFIG['type_mapping']:
+            group_name = GROUP_CONFIG['type_mapping'][key]
+            if group_name in GROUP_CONFIG['groups']:
+                return group_name
+
+        # returns -1 if '.' is not in search_type
+        dot_index = search_type.rfind('.')
+
+    # look for global wildcard
+    if '*' in GROUP_CONFIG['type_mapping']:
+        key = '*'
+        group_name = GROUP_CONFIG['type_mapping'][key]
+        if group_name in GROUP_CONFIG['groups']:
+            return group_name
+
+    # this really shouldn't happen. This means misconfiguration
+    return None
+
+
+def get_group_rendering(group_data):
+    """
+    returns the list of the sorted user notifications renderings.
+    """
+    notification_renderings = []
+
+    group_data = sorted(group_data, key=lambda k: k.msg.created)
+
+    for user_msg in group_data:
+        notification_html = ''
+        renderer = get_renderer_for_type(user_msg.msg.msg_type)
         if renderer and renderer.can_render_format(const.RENDER_FORMAT_HTML):
             notification_html = renderer.render(  # pylint: disable=unused-variable
-                notification.msg,
+                user_msg.msg,
                 const.RENDER_FORMAT_HTML,
                 None
             )
         else:
             log.info(
                 'Missing renderer for HTML format on '
-                'msg_type "{}". Skipping....'.format(notification.msg.msg_type.name)
+                'msg_type "{}". Skipping....'.format(user_msg.msg.msg_type.name)
+            )
+        notification_renderings.append(
+            {
+                'user_msg': user_msg,
+                'msg': user_msg.msg,
+                # render the particular NotificationMessage
+                'html': notification_html,
+                'group_name': get_group_name_for_msg_type(user_msg.msg.msg_type.name)
+            }
+        )
+
+    return notification_renderings
+
+
+def render_notifications_by_type(user_notifications):
+    """
+    apply groupings as needed (by type)
+    and sort all the notifications by date most recent first
+
+    :return the sorted and grouped notifications.
+    """
+    grouped_user_notifications = {}
+    notification_groups = []
+
+    # group the user notifications by message type name.
+    for key, group in groupby(user_notifications, lambda x: get_group_name_for_msg_type(x.msg.msg_type.name)):
+        for thing in group:
+            if key in grouped_user_notifications:
+                grouped_user_notifications[key].append(thing)
+            else:
+                grouped_user_notifications[key] = [thing]
+
+    # then we want to order the groups according to the grouping_config
+    # so we can specify which groups go up at the top
+    group_orderings = sorted(GROUP_CONFIG['groups'].items(), key=lambda t: t[1]['group_order'])
+
+    for group_key, _ in group_orderings:
+        if group_key in grouped_user_notifications:
+            notification_groups.append(
+                {
+                    'group_title': GROUP_CONFIG['groups'][group_key]['display_name'],
+                    'messages': get_group_rendering(grouped_user_notifications[group_key])
+                }
             )
 
-    return
+    return notification_groups

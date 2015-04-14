@@ -3,6 +3,8 @@ Tests for renderer.py
 """
 
 from django.test import TestCase
+import pytz
+import datetime
 
 from edx_notifications.const import RENDER_FORMAT_HTML, RENDER_FORMAT_SMS
 from edx_notifications.renderers.renderer import (
@@ -98,14 +100,14 @@ class RendererTests(TestCase):
         register_notification_type(msg_type)
 
         self.assertIsNotNone(get_renderer_for_type(msg_type))
-
         msg = NotificationMessage(
             namespace='test-runner',
             msg_type=msg_type,
             payload={
                 'subject': 'test subject',
                 'body': 'test body',
-            }
+            },
+            created=datetime.datetime.now(pytz.UTC)
         )
 
         renderer.get_template_path(RENDER_FORMAT_HTML)
