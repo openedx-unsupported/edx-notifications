@@ -2,6 +2,8 @@
 View handlers for HTML serving
 """
 
+from datetime import datetime, timedelta
+import pytz
 from django.template import RequestContext, loader
 from django.http import (
     HttpResponse,
@@ -39,13 +41,14 @@ from edx_notifications.scopes import (
 from edx_notifications.digests import send_unread_notifications_digest
 
 from edx_notifications.server.web.utils import get_notifications_widget_context
+from edx_notifications import const
 
 from .forms import *
 
 # set up three optional namespaces that we can switch through to test proper
 # isolation of Notifications
-NAMESPACES = [None, 'foo/bar/baz', 'test/test/test']
-NAMESPACE = None
+NAMESPACES = ['foo/bar/baz', 'test/test/test']
+NAMESPACE = 'foo/bar/baz'
 
 CANNED_TEST_PAYLOAD = {
     'testserver.type1': {
@@ -292,4 +295,8 @@ class TestNotificationNamespaceResolver(NotificationNamespaceResolver):
 def send_digest(request):
     # just send to logged in user
     register_namespace_resolver(TestNotificationNamespaceResolver(request.user))
-    send_unread_notifications_digest()
+    send_unread_notifications_digest(
+        datetime.now(pytz.UTC) - timedelta(days=1),
+        datetime.now(pytz.UTC),
+        const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+    )
