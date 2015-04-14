@@ -19,8 +19,7 @@ class NotificationNamespaceResolver(object):
         'namespace': <String> ,
         'display_name': <String representing a human readible name for the namespace>,
         'features': {
-            'daily_digests': <boolean, saying if namespace supports a dialy_digest>
-            'weekly_digest': <boolean, saying if namespace supports a dialy_digest>
+            'digests': <boolean, saying if namespace supports a digest>
         },
         'default_user_resolver': <pointer to a UserScopeResolver instance>
     }
@@ -39,8 +38,7 @@ class NotificationNamespaceResolver(object):
             'namespace': <String> ,
             'display_name': <String representing a human readible name for the namespace>,
             'features': {
-                'daily_digests': <boolean, saying if namespace supports a dialy_digest>
-                'weekly_digest': <boolean, saying if namespace supports a dialy_digest>
+                'digests': <boolean, saying if namespace supports a digest>
             },
             'default_user_resolver': <pointer to a UserScopeResolver instance>
         }
@@ -62,8 +60,7 @@ class DefaultNotificationNamespaceResolver(NotificationNamespaceResolver):
             'namespace': namespace,
             'display_name': namespace,
             'features': {
-                'daily_digests': False,
-                'weekly_digets': False,
+                'digests': False
             },
             'default_user_resolver': None
         }

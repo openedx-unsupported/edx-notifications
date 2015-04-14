@@ -13,6 +13,7 @@ from datetime import datetime
 from contracts import contract
 
 from edx_notifications.stores.store import notification_store
+from edx_notifications.data import UserNotificationPreferences
 
 
 @contract(user_id='int,>0')
@@ -129,6 +130,14 @@ def get_notification_preferences():
     return store.get_all_notification_preferences()
 
 
+def get_notification_preference(name):
+    """
+    Returns the notification preference
+    """
+    store = notification_store()
+    return store.get_notification_preference(name=name)
+
+
 def get_user_preferences(user_id):
     """
     Returns a list of Notification Preferences
@@ -137,7 +146,7 @@ def get_user_preferences(user_id):
     return store.get_all_user_preferences_for_user(user_id=user_id)
 
 
-def get_user_preferences_with_name(user_id, name):
+def get_user_preference_by_name(user_id, name):
     """
     Returns a single UserNotificationPreference
     """
@@ -145,9 +154,24 @@ def get_user_preferences_with_name(user_id, name):
     return store.get_user_preference(user_id=user_id, name=name)
 
 
-def get_notification_preference(name):
+def set_notification_preference(notification_preference):
     """
-    Returns the notification preference
+    Create or Update the notification preferences
     """
     store = notification_store()
-    return store.get_notification_preference(name=name)
+    return store.save_notification_preference(notification_preference)
+
+
+def set_user_notification_preference(user_id, name, value):
+    """
+    Create or Update the user preference
+    """
+    store = notification_store()
+    notification_preference = get_notification_preference(name)
+    user_notification_preference = UserNotificationPreferences(
+        user_id=user_id,
+        preference=notification_preference,
+        value=value
+    )
+
+    return store.set_user_preference(user_notification_preference)

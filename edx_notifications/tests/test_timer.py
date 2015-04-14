@@ -484,6 +484,29 @@ class DigestNotificationsTests(TestCase):
             background_notification_check.Command().handle()
             # fetch the timer from the DB as it should be updated
             daily_digest_timer = self.store.get_notification_timer(self.daily_digest_timer_name)
+
+            self.assertIn('last_ran', daily_digest_timer.context)
+            self.assertTrue(isinstance(daily_digest_timer.context['last_ran'], datetime))
+            self.assertTrue(daily_digest_timer.context['last_ran'] - reset_time < timedelta(seconds=1))
+
+            freeze_time_callback_at = daily_digest_timer.callback_at
+            self.assertIsNone(daily_digest_timer.executed_at)
+            self.assertEqual(current_callback_at, freeze_time_callback_at - timedelta(days=1))
+
+        # now reset the time 1 more day in future
+        # in order to execute the daily digest timer again
+        reset_time = reset_time + timedelta(days=1)
+        current_callback_at = daily_digest_timer.callback_at
+        with freeze_time(reset_time):
+            # call digest command handle again
+            background_notification_check.Command().handle()
+            # fetch the timer from the DB as it should be updated
+            daily_digest_timer = self.store.get_notification_timer(self.daily_digest_timer_name)
+
+            self.assertIn('last_ran', daily_digest_timer.context)
+            self.assertTrue(isinstance(daily_digest_timer.context['last_ran'], datetime))
+            self.assertTrue(daily_digest_timer.context['last_ran'] - reset_time < timedelta(seconds=1))
+
             freeze_time_callback_at = daily_digest_timer.callback_at
             self.assertIsNone(daily_digest_timer.executed_at)
             self.assertEqual(current_callback_at, freeze_time_callback_at - timedelta(days=1))
@@ -511,6 +534,11 @@ class DigestNotificationsTests(TestCase):
             background_notification_check.Command().handle()
             # fetch the timer from the DB as it should be updated
             weekly_digest_timer_name = self.store.get_notification_timer(self.weekly_digest_timer_name)
+
+            self.assertIn('last_ran', weekly_digest_timer_name.context)
+            self.assertTrue(isinstance(weekly_digest_timer_name.context['last_ran'], datetime))
+            self.assertTrue(weekly_digest_timer_name.context['last_ran'] - reset_time < timedelta(seconds=1))
+
             freeze_time_callback_at = weekly_digest_timer_name.callback_at
             self.assertIsNone(weekly_digest_timer_name.executed_at)
             self.assertEqual(current_callback_at, freeze_time_callback_at - timedelta(days=7))

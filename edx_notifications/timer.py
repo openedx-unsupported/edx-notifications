@@ -70,6 +70,12 @@ def poll_and_execute_timers(**kwargs):  # pylint: disable=unused-argument
             else:
                 timer.err_msg = str(results['errors'])
 
+            # see if the callback returned a 'context_update'
+            # which means that we should persist this in
+            # the timer context
+            if 'context_update' in results:
+                timer.context.update(results['context_update'])
+
             store.save_notification_timer(timer)
         except Exception, ex:  # pylint: disable=broad-except
             # generic error (possibly couldn't create class_name instance?)
