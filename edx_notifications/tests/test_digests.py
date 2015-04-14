@@ -107,6 +107,13 @@ class DigestTestCases(TestCase):
         self.msg_type = self.store.save_notification_type(
             NotificationType(
                 name='foo.bar',
+                renderer='edx_notifications.renderers.basic.BasicSubjectBodyRenderer',
+            )
+        )
+
+        self.msg_type_no_renderer = self.store.save_notification_type(
+            NotificationType(
+                name='foo.baz',
                 renderer='foo',
             )
         )
@@ -116,16 +123,16 @@ class DigestTestCases(TestCase):
             NotificationMessage(
                 msg_type=self.msg_type,
                 namespace='foo',
-                payload={'foo': 'bar'},
+                payload={'subject': 'foo', 'body': 'bar'},
             )
         )
         publish_notification_to_user(self.test_user_id, msg)
 
         msg = self.store.save_notification_message(
             NotificationMessage(
-                msg_type=self.msg_type,
+                msg_type=self.msg_type_no_renderer,
                 namespace='bar',
-                payload={'foo': 'bar'},
+                payload={'subject': 'foo', 'body': 'bar'},
             )
         )
         publish_notification_to_user(self.test_user_id, msg)
