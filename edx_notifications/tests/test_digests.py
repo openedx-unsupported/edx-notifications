@@ -236,6 +236,24 @@ class DigestTestCases(TestCase):
             2
         )
 
+    def test_empty_digest(self):
+        """
+        Check behavior when the digest body has no notifications
+        """
+
+        register_namespace_resolver(TestNamespaceResolver())
+
+        set_user_notification_preference(self.test_user_id, const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME, 'true')
+
+        self.assertEqual(
+            send_unread_notifications_digest(
+                self.from_timestamp + datetime.timedelta(days=10),
+                self.to_timestamp + datetime.timedelta(days=11),
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+            ),
+            0
+        )
+
     def test_weekly_preference_false(self):
         """
         If all is good and enabled, in this test case, we should get two digests sent, one for each namespace
