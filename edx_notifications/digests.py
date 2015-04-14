@@ -261,7 +261,7 @@ def send_unread_notifications_namespace_digest(namespace, from_timestamp, to_tim
                 'to user_id = {user_id} at email '
                 '{email}...'.format(namespace=namespace, user_id=user_id, email=email)
             )
-            _send_user_unread_digest(
+            digests_sent = digests_sent + _send_user_unread_digest(
                 namespace_info,
                 from_timestamp,
                 to_timestamp,
@@ -270,7 +270,6 @@ def send_unread_notifications_namespace_digest(namespace, from_timestamp, to_tim
                 first_name,
                 last_name
             )
-            digests_sent = digests_sent + 1
 
     return digests_sent
 
@@ -297,6 +296,10 @@ def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_
         }
     )
 
+    # keep a counter of the number of unread notifications
+    # note: we can't call len() on the cursor
+    notifications_count = 0
+
     #
     # This is just sample code on how to render the notification items
     # on the server side. This needs to be augmented by:
@@ -304,6 +307,7 @@ def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_
     #    - within the groups, sort by date descending (most recent first)
     #
     for notification in notifications:
+        notifications_count = notifications_count + 1
         renderer = get_renderer_for_type(notification.msg.msg_type)
         if renderer and renderer.can_render_format(const.RENDER_FORMAT_HTML):
             notification_html = renderer.render(  # pylint: disable=unused-variable
@@ -317,4 +321,7 @@ def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_
                 'msg_type "{}". Skipping....'.format(notification.msg.msg_type.name)
             )
 
-    return
+    if not notifications_count:
+        return 0
+
+    return 1
