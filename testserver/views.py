@@ -298,5 +298,7 @@ def send_digest(request):
     send_unread_notifications_digest(
         datetime.now(pytz.UTC) - timedelta(days=1),
         datetime.now(pytz.UTC),
-        const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+        const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+        const.NOTIFICATION_DAILY_DIGEST_SUBJECT,
+        const.NOTIFICATION_DIGEST_FROM_ADDRESS
     )
