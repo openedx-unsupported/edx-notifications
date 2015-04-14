@@ -12,6 +12,7 @@ from edx_notifications.stores.sql.store_provider import SQLNotificationStoreProv
 from edx_notifications.stores.store import notification_store
 from edx_notifications.exceptions import ItemNotFoundError
 from edx_notifications.namespaces import resolve_namespace
+from edx_notifications.renderers.renderer import get_renderer_for_type
 from django.utils.translation import ugettext as _
 from edx_notifications.lib.consumer import (
     get_user_preference_by_name,
@@ -283,18 +284,37 @@ def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_
     """
 
     # query all unread notifications for this user since the timestamp
-    get_notifications_for_user(
+    notifications = get_notifications_for_user(
         user_id,
         filters={
             'read': False,
             'unread': True,
             'start_date': from_timestamp,
             'end_timestamp': to_timestamp,
+        },
+        options={
+            'select_related': True,  # make sure we do JOINs on the initial query
         }
     )
 
     #
-    # Actually generate and send the digest. Enumerate over the resultset returned from get_notifications_for_user
+    # This is just sample code on how to render the notification items
+    # on the server side. This needs to be augmented by:
+    #    - grouping together similar types (much like unread pane in Backbone app)
+    #    - within the groups, sort by date descending (most recent first)
     #
+    for notification in notifications:
+        renderer = get_renderer_for_type(notification.msg.msg_type)
+        if renderer and renderer.can_render_format(const.RENDER_FORMAT_HTML):
+            notification_html = renderer.render(  # pylint: disable=unused-variable
+                notification.msg,
+                const.RENDER_FORMAT_HTML,
+                None
+            )
+        else:
+            log.info(
+                'Missing renderer for HTML format on '
+                'msg_type "{}". Skipping....'.format(notification.msg.msg_type.name)
+            )
 
     return

@@ -5,7 +5,11 @@ Tests for renderer.py
 import json
 from django.test import TestCase
 
+<<<<<<< HEAD
 from edx_notifications.const import RENDER_FORMAT_UNDERSCORE, RENDER_FORMAT_SMS, RENDER_FORMAT_JSON
+=======
+from edx_notifications.const import RENDER_FORMAT_HTML, RENDER_FORMAT_SMS
+>>>>>>> add some comments and change FORMAT_UNDERSCORE -> FORMAT_HTML
 from edx_notifications.renderers.renderer import (
     BaseNotificationRenderer,
     get_renderer_for_type,
@@ -91,7 +95,7 @@ class RendererTests(TestCase):
 
         renderer = TestUnderscoreStaticFileRenderer('basic_subject_body.underscore')
 
-        self.assertTrue(renderer.can_render_format(RENDER_FORMAT_UNDERSCORE))
+        self.assertTrue(renderer.can_render_format(RENDER_FORMAT_HTML))
 
         msg_type = NotificationType(
             name='open-edx.edx_notifications.lib.tests.test_publisher',
@@ -110,7 +114,7 @@ class RendererTests(TestCase):
             }
         )
 
-        renderer.get_template_path(RENDER_FORMAT_UNDERSCORE)
+        renderer.get_template_path(RENDER_FORMAT_HTML)
 
         with self.assertRaises(NotImplementedError):
             renderer.get_template_path(RENDER_FORMAT_SMS)
@@ -118,7 +122,7 @@ class RendererTests(TestCase):
         with self.assertRaises(NotImplementedError):
             renderer.render(msg, RENDER_FORMAT_SMS, None)
 
-        html = renderer.render(msg, RENDER_FORMAT_UNDERSCORE, None)
+        html = renderer.render(msg, RENDER_FORMAT_HTML, None)
 
         with self.assertRaises(NotImplementedError):
             renderer.get_template_path(RENDER_FORMAT_SMS)
@@ -130,7 +134,7 @@ class RendererTests(TestCase):
 
         with self.assertRaises(Exception):
             bad_renderer = TestUnderscoreStaticFileRenderer('foo.underscore')
-            bad_renderer.render(msg, RENDER_FORMAT_UNDERSCORE, None)
+            bad_renderer.render(msg, RENDER_FORMAT_HTML, None)
 
     def test_json_renderer(self):
         """
