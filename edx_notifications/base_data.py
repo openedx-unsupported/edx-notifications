@@ -193,7 +193,12 @@ class DictField(TypedField):
                 # This could be a datetime posing as a ISO8601 formatted string
                 # we so have to apply some heuristics here
                 # to see if we want to even attempt
-                if value.count('-') == 2 and value.count(':') == 2 and value.count('T') == 1:
+                might_be_datetime = (
+                    value.count('-') == 2 and
+                    (value.count(':') == 2 or value.count(':') == 3) and
+                    value.count('T') == 1
+                )
+                if might_be_datetime:
                     # this is likely a ISO8601 serialized string, so let's try to parse
                     try:
                         _dict[key] = dateutil.parser.parse(value)
