@@ -149,7 +149,9 @@ class DigestTestCases(TestCase):
             send_unread_notifications_digest(
                 self.from_timestamp,
                 self.to_timestamp,
-                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
             ),
             0
         )
@@ -165,7 +167,9 @@ class DigestTestCases(TestCase):
             send_unread_notifications_digest(
                 self.from_timestamp,
                 self.to_timestamp,
-                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
             ),
             0
         )
@@ -181,7 +185,9 @@ class DigestTestCases(TestCase):
             send_unread_notifications_digest(
                 self.from_timestamp,
                 self.to_timestamp,
-                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
             ),
             0
         )
@@ -196,7 +202,9 @@ class DigestTestCases(TestCase):
             send_unread_notifications_digest(
                 self.from_timestamp,
                 self.to_timestamp,
-                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
             ),
             0
         )
@@ -213,7 +221,9 @@ class DigestTestCases(TestCase):
             send_unread_notifications_digest(
                 self.from_timestamp,
                 self.to_timestamp,
-                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
             ),
             0
         )
@@ -231,7 +241,9 @@ class DigestTestCases(TestCase):
             send_unread_notifications_digest(
                 self.from_timestamp,
                 self.to_timestamp,
-                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
             ),
             2
         )
@@ -249,7 +261,9 @@ class DigestTestCases(TestCase):
             send_unread_notifications_digest(
                 self.weekly_from_timestamp,
                 self.to_timestamp,
-                const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME
+                const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
             ),
             0
         )
@@ -267,7 +281,9 @@ class DigestTestCases(TestCase):
             send_unread_notifications_digest(
                 self.weekly_from_timestamp,
                 self.to_timestamp,
-                const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME
+                const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
             ),
             2
         )

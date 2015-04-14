@@ -8,9 +8,9 @@
             {% for grouped_user_notification in grouped_user_notifications %}
                 <h3 class="xns-group">{{ grouped_user_notification.group_title }}</h3>
                 {% for message in grouped_user_notification.messages %}
-                    <li class="xns-item" id="{{ message.msg.id }}">
+                    <li class="xns-item">
                         <div class="xns-item-body">
-                            <span data-msg-id="{{ message.msg.id }}" data-click-link="" class='xns-{{ message.group_name }}'>{{ message.html }}</span>
+                            <span class='xns-{{ message.group_name }}'>{% autoescape off %}{{ message.html }}{% endautoescape %}</span>
                         </div>
                     </li>
                 {% endfor %}

@@ -31,46 +31,6 @@ log = logging.getLogger(__name__)
 DAILY_DIGEST_TIMER_NAME = 'daily-digest-timer'
 WEEKLY_DIGEST_TIMER_NAME = 'weekly-digest-timer'
 
-# this describes how we want to group together notification types into visual groups
-GROUP_CONFIG = {
-    'groups': {
-        'announcements': {
-            'name': 'announcements',
-            'display_name': 'Announcements',
-            'group_order': 1
-        },
-        'group_work': {
-            'name': 'group_work',
-            'display_name': 'Group Work',
-            'group_order': 2
-        },
-        'leaderboards': {
-            'name': 'leaderboards',
-            'display_name': 'Leaderboards',
-            'group_order': 3
-        },
-        'discussions': {
-            'name': 'discussions',
-            'display_name': 'Discussion',
-            'group_order': 4
-        },
-        '_default': {
-            'name': '_default',
-            'display_name': 'Other',
-            'group_order': 5
-        },
-    },
-    'type_mapping': {
-        'open-edx.lms.discussions.cohorted-thread-added': 'group_work',
-        'open-edx.lms.discussions.cohorted-comment-added': 'group_work',
-        'open-edx.lms.discussions.*': 'discussions',
-        'open-edx.lms.leaderboard.*': 'leaderboards',
-        'open-edx.studio.announcements.*': 'announcements',
-        'open-edx.xblock.group-project.*': 'group_work',
-        '*': '_default'
-    },
-}
-
 
 class NotificationDigestMessageCallback(NotificationCallbackTimerHandler):
     """
@@ -110,12 +70,17 @@ class NotificationDigestMessageCallback(NotificationCallbackTimerHandler):
             tdelta = datetime.timedelta(days=1) if is_daily_digest else datetime.timedelta(days=7)
             from_timestamp = to_timestamp - tdelta
 
+        subject = timer.context['subject']
+        from_email = timer.context['from_email']
+
         # call into the main entry point
         # for generating digests
         send_unread_notifications_digest(
             from_timestamp,
             to_timestamp,
-            preference_name
+            preference_name,
+            subject,
+            from_email
         )
 
         result = {
@@ -152,6 +117,8 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
         context={
             'is_daily_digest': True,
             'preference_name': const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+            'subject': const.NOTIFICATION_DAILY_DIGEST_SUBJECT,
+            'from_email': const.NOTIFICATION_DIGEST_FROM_ADDRESS,
         }
     )
     store.save_notification_timer(daily_digest_timer)
@@ -165,6 +132,8 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
         context={
             'is_daily_digest': False,
             'preference_name': const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME,
+            'subject': const.NOTIFICATION_DAILY_DIGEST_SUBJECT,
+            'from_email': const.NOTIFICATION_DIGEST_FROM_ADDRESS,
         }
     )
     store.save_notification_timer(weekly_digest_timer)
@@ -198,7 +167,7 @@ def create_default_notification_preferences():
     store_provider.save_notification_preference(weekly_digest_preference)
 
 
-def send_unread_notifications_digest(from_timestamp, to_timestamp, preference_name):
+def send_unread_notifications_digest(from_timestamp, to_timestamp, preference_name, subject, from_email):
     """
     This will generate and send a digest of all notifications over all namespaces to all
     resolvable users subscribing to digests for that namespace
@@ -215,13 +184,16 @@ def send_unread_notifications_digest(from_timestamp, to_timestamp, preference_na
             namespace,
             from_timestamp,
             to_timestamp,
-            preference_name
+            preference_name,
+            subject,
+            from_email
         )
 
     return digests_sent
 
 
-def send_unread_notifications_namespace_digest(namespace, from_timestamp, to_timestamp, preference_name):
+def send_unread_notifications_namespace_digest(namespace, from_timestamp, to_timestamp,
+                                               preference_name, subject, from_email):
     """
     For a particular namespace, send a notification digest, if so configured
     """
@@ -306,21 +278,23 @@ def send_unread_notifications_namespace_digest(namespace, from_timestamp, to_tim
                 'to user_id = {user_id} at email '
                 '{email}...'.format(namespace=namespace, user_id=user_id, email=email)
             )
-            _send_user_unread_digest(
+            digests_sent += _send_user_unread_digest(
                 namespace_info,
                 from_timestamp,
                 to_timestamp,
                 user_id,
                 email,
                 first_name,
-                last_name
+                last_name,
+                subject,
+                from_email
             )
-            digests_sent += 1
 
     return digests_sent
 
 
-def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_id, email, first_name, last_name):  # pylint: disable=unused-argument
+def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_id,
+                             email, first_name, last_name, subject, from_email):  # pylint: disable=unused-argument
     """
     This will send a digest of unread notifications to a given user. Note, it is assumed here
     that the user's preference has already been checked. namespace_info will contain
@@ -342,28 +316,31 @@ def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_
         }
     )
 
-    #
-    # This is just sample code on how to render the notification items
-    # on the server side. This needs to be augmented by:
-    #    - grouping together similar types (much like unread pane in Backbone app)
-    #    - within the groups, sort by date descending (most recent first)
-    #
-
     notification_groups = render_notifications_by_type(notifications)
+
+    # As an option, don't send an email at all if there are no
+    # unread notifications
+    if not notification_groups and const.NOTIFICATION_DONT_SEND_EMPTY_DIGEST:
+        return 0
+
     context = {
+        'namespace_display_name': namespace_info['display_name'],
         'grouped_user_notifications': notification_groups
     }
+
     # render the notifications html template
-    notifications_html = render_to_string("user_notifications.html", context)
+    notifications_html = render_to_string("django/digests/unread_notifications_inner.html", context)
 
     html_part = MIMEMultipart(_subtype='related')
 
     body = MIMEText(notifications_html, _subtype='html')
     html_part.attach(body)
 
-    msg = EmailMessage('Subject Line', None, 'foo@bar.com', [email])
+    msg = EmailMessage(subject, None, from_email, [email])
     msg.attach(html_part)
     msg.send()
+
+    return 1
 
 
 def get_group_name_for_msg_type(msg_type):
@@ -371,9 +348,11 @@ def get_group_name_for_msg_type(msg_type):
     Returns the particular group_name for the msg_type
     else return None if no group_name is found.
     """
-    if msg_type in GROUP_CONFIG['type_mapping']:
-        group_name = GROUP_CONFIG['type_mapping'][msg_type]
-        if group_name in GROUP_CONFIG['groups']:
+    config = const.NOTIFICATION_DIGEST_GROUP_CONFIG
+
+    if msg_type in config['type_mapping']:
+        group_name = config['type_mapping'][msg_type]
+        if group_name in config['groups']:
             return group_name
 
     # no exact match so lets look upwards for wildcards
@@ -384,19 +363,19 @@ def get_group_name_for_msg_type(msg_type):
         search_type = search_type[0: dot_index]
         key = search_type + '.*'
 
-        if key in GROUP_CONFIG['type_mapping']:
-            group_name = GROUP_CONFIG['type_mapping'][key]
-            if group_name in GROUP_CONFIG['groups']:
+        if key in config['type_mapping']:
+            group_name = config['type_mapping'][key]
+            if group_name in config['groups']:
                 return group_name
 
         # returns -1 if '.' is not in search_type
         dot_index = search_type.rfind('.')
 
     # look for global wildcard
-    if '*' in GROUP_CONFIG['type_mapping']:
+    if '*' in config['type_mapping']:
         key = '*'
-        group_name = GROUP_CONFIG['type_mapping'][key]
-        if group_name in GROUP_CONFIG['groups']:
+        group_name = config['type_mapping'][key]
+        if group_name in config['groups']:
             return group_name
 
     # this really shouldn't happen. This means misconfiguration
@@ -458,13 +437,14 @@ def render_notifications_by_type(user_notifications):
 
     # then we want to order the groups according to the grouping_config
     # so we can specify which groups go up at the top
-    group_orderings = sorted(GROUP_CONFIG['groups'].items(), key=lambda t: t[1]['group_order'])
+    config = const.NOTIFICATION_DIGEST_GROUP_CONFIG
+    group_orderings = sorted(config['groups'].items(), key=lambda t: t[1]['group_order'])
 
     for group_key, _ in group_orderings:
         if group_key in grouped_user_notifications:
             notification_groups.append(
                 {
-                    'group_title': GROUP_CONFIG['groups'][group_key]['display_name'],
+                    'group_title': config['groups'][group_key]['display_name'],
                     'messages': get_group_rendering(grouped_user_notifications[group_key])
                 }
             )

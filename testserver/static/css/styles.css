@@ -159,6 +159,10 @@ ul{
     position: relative;
     width: 96%;
 }
+.xns-pane-all .xns-item-body .xns-date {
+    /* hide dates when viewing all notifications */
+    display: none;
+}
 .xns-item:hover .xns-close-item{
     display: block;
 }
@@ -216,3 +220,4 @@ ul{
     font-size: 13px;
     padding-bottom: 10px;
 }
+
