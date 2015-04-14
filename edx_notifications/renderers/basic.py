@@ -9,7 +9,7 @@ from django.contrib.staticfiles import finders
 from edx_notifications.renderers.renderer import BaseNotificationRenderer
 
 from edx_notifications.const import (
-    RENDER_FORMAT_UNDERSCORE,
+    RENDER_FORMAT_HTML,
 )
 
 from underscore import _ as us
@@ -49,7 +49,7 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
         Returns (True/False) whether this renderer provides renderings
         into the requested format.
         """
-        return render_format == RENDER_FORMAT_UNDERSCORE
+        return render_format == RENDER_FORMAT_HTML
 
     def render(self, msg, render_format, lang):
         """
@@ -85,7 +85,7 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
         Return a path to where a client can get the template
         """
 
-        if render_format == RENDER_FORMAT_UNDERSCORE and self.underscore_template_name:
+        if render_format == RENDER_FORMAT_HTML and self.underscore_template_name:
             return path_to_underscore_template(self.underscore_template_name)
 
         raise NotImplementedError()

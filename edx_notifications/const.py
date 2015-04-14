@@ -15,7 +15,7 @@ NOTIFICATION_MAX_LIST_SIZE = getattr(settings, 'NOTIFICATION_MAX_LIST_SIZE', 100
 USER_PREFERENCE_MAX_LIST_SIZE = getattr(settings, 'USER_PREFERENCE_MAX_LIST_SIZE', 100)
 
 # client side rendering via Backbone/Underscore
-RENDER_FORMAT_UNDERSCORE = 'underscore'
+RENDER_FORMAT_HTML = 'html'
 
 # for future use
 RENDER_FORMAT_EMAIL = 'email'
