@@ -248,7 +248,7 @@ class DigestTestCases(TestCase):
             2
         )
 
-    def test_do_not_send_digest_notifications(self):
+    def test_to_not_send_digest(self):
         """
         If there are no unread notifications for the user for given timestamps
         Then don't send digest emails to the user.
