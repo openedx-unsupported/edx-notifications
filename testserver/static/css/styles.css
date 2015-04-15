@@ -220,4 +220,14 @@ ul{
     font-size: 13px;
     padding-bottom: 10px;
 }
-
+.xns-open-edx-logo {
+	display:inline-block;
+}
+.xns-branded-logo {
+	display:inline-block;
+	float: right;
+}
+.xns-list-footer {
+	background: #e0e0e0;
+	padding: 10px;
+}

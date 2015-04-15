@@ -60,7 +60,7 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
 
         if not self.underscore_template:
             template_url_path = self.get_template_path(render_format)
-            template_url_path = template_url_path.replace('/static/', '')
+            template_url_path = template_url_path.replace(static(''), '')
             underscore_filepath = finders.find(template_url_path)
 
             if not underscore_filepath:

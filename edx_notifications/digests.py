@@ -2,12 +2,17 @@
 Create and register a new NotificationCallbackTimerHandler
 """
 import datetime
+import os
+from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from itertools import groupby
 import logging
+from django.contrib.staticfiles import finders
+import uuid
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
+import pynliner
 from edx_notifications import const
 from django.dispatch import receiver
 import pytz
@@ -293,6 +298,24 @@ def send_unread_notifications_namespace_digest(namespace, from_timestamp, to_tim
     return digests_sent
 
 
+def with_inline_css(html_without_css):
+    """
+    returns html with inline css if css file path exists
+    else returns html with out the inline css.
+    """
+    css_filepath = finders.find(const.NOTIFICATION_DIGEST_EMAIL_CSS)
+
+    if css_filepath:
+        with open(css_filepath, "r") as _file:
+            css_content = _file.read()
+
+        # insert style tag in the html and run pyliner.
+        html_with_inline_css = pynliner.fromString('<style>' + css_content + '</style>' + html_without_css)
+        return html_with_inline_css
+
+    return html_without_css
+
+
 def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_id,
                              email, first_name, last_name, subject, from_email):  # pylint: disable=unused-argument
     """
@@ -321,6 +344,7 @@ def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_
     # As an option, don't send an email at all if there are no
     # unread notifications
     if not notification_groups and const.NOTIFICATION_DONT_SEND_EMPTY_DIGEST:
+        log.debug('Digest email for {email} is empty. Not sending...'.format(email=email))
         return 0
 
     context = {
@@ -331,16 +355,49 @@ def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_
     # render the notifications html template
     notifications_html = render_to_string("django/digests/unread_notifications_inner.html", context)
 
-    html_part = MIMEMultipart(_subtype='related')
+    # create the image dictionary to store the
+    # img_path, unique id and title for the image.
+    branded_logo = dict(title='Logo', path=const.NOTIFICATION_BRANDED_DEFAULT_LOGO, cid=str(uuid.uuid4()))
 
-    body = MIMEText(notifications_html, _subtype='html')
-    html_part.attach(body)
+    context = {
+        'branded_logo': branded_logo['cid'],
+        'user_first_name': first_name,
+        'user_last_name': last_name,
+        'namespace': namespace_info['display_name'],
+        'count': len(notifications),
+        'rendered_notifications': notifications_html
+    }
+    # render the mail digest template.
+    email_body = with_inline_css(
+        render_to_string("django/digests/branded_notifications_outer.html", context)
+    )
+
+    html_part = MIMEMultipart(_subtype='related')
+    html_part.attach(MIMEText(email_body, _subtype='html'))
+    logo_image = attach_image(branded_logo, 'Header Logo')
+    if logo_image:
+        html_part.attach(logo_image)
+
+    log.info('Sending Notification Digest email to {email}'.format(email=email))
 
     msg = EmailMessage(subject, None, from_email, [email])
     msg.attach(html_part)
     msg.send()
 
     return 1
+
+
+def attach_image(img_dict, filename):
+    """
+    attach images in the email headers
+    """
+    img_path = finders.find(img_dict['path'])
+    if img_path:
+        with open(img_path, 'rb') as img:
+            msg_image = MIMEImage(img.read(), name=os.path.basename(img_path))
+            msg_image.add_header('Content-ID', '<{}>'.format(img_dict['cid']))
+            msg_image.add_header("Content-Disposition", "inline", filename=filename)
+        return msg_image
 
 
 def get_group_name_for_msg_type(msg_type):
