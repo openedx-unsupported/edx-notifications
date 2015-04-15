@@ -59,6 +59,19 @@ NOTIFICATION_DAILY_DIGEST_SUBJECT = getattr(
     "NOTIFICATION_WEEKLY_DIGEST_SUBJECT",
     "Please set NOTIFICATION_WEEKLY_DIGEST_SUBJECT in Django settings"
 )
+
+NOTIFICATION_OPEN_EDX_DEFAULT_LOGO = getattr(
+    settings,
+    "NOTIFICATION_OPEN_EDX_DEFAULT_LOGO",
+    "place open edx default logo"
+)
+
+NOTIFICATION_BRANDED_DEFAULT_LOGO = getattr(
+    settings,
+    "NOTIFICATION_BRANDED_DEFAULT_LOGO",
+    "place brand default logo"
+)
+
 NOTIFICATION_DIGEST_FROM_ADDRESS = getattr(
     settings,
     "NOTIFICATION_DAILY_FROM_ADDRESS",

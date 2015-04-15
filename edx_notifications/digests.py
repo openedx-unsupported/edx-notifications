@@ -2,10 +2,13 @@
 Create and register a new NotificationCallbackTimerHandler
 """
 import datetime
+import os
+from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from itertools import groupby
 import logging
+import uuid
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from edx_notifications import const
@@ -328,19 +331,51 @@ def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_
         'grouped_user_notifications': notification_groups
     }
 
+    # create the image dictionary to store the
+    # img_path, unique id and title for the image.
+    open_edx_default_logo = dict(title='Open Edx', path=const.NOTIFICATION_OPEN_EDX_DEFAULT_LOGO, cid=str(uuid.uuid4()))
+    branded_default_logo = dict(title='Branded Default Logo', path=const.NOTIFICATION_BRANDED_DEFAULT_LOGO,
+                                cid=str(uuid.uuid4()))
+
     # render the notifications html template
     notifications_html = render_to_string("django/digests/unread_notifications_inner.html", context)
 
+    context = {
+        'open_edx_default_logo': open_edx_default_logo['cid'],
+        'branded_default_logo': branded_default_logo['cid'],
+        'user_first_name': first_name,
+        'user_last_name': last_name,
+        'namespace': namespace_info['display_name'],
+        'count': len(notifications),
+        'rendered_notifications': notifications_html
+    }
+    # render the mail digest template.
+    email_body = render_to_string("django/digests/branded_notifications_outer.html", context)
+
     html_part = MIMEMultipart(_subtype='related')
 
-    body = MIMEText(notifications_html, _subtype='html')
+    body = MIMEText(email_body, _subtype='html')
     html_part.attach(body)
+
+    html_part.attach(attach_image(open_edx_default_logo, 'Open Edx Logo'))
+    html_part.attach(attach_image(branded_default_logo, 'Branded Logo'))
 
     msg = EmailMessage(subject, None, from_email, [email])
     msg.attach(html_part)
     msg.send()
 
     return 1
+
+
+def attach_image(img_dict, filename):
+    """
+    attach images in the email headers
+    """
+    with open(img_dict['path'], 'rb') as img:
+        msg_image = MIMEImage(img.read(), name=os.path.basename(img_dict['path']))
+        msg_image.add_header('Content-ID', '<{}>'.format(img_dict['cid']))
+        msg_image.add_header("Content-Disposition", "inline", filename=filename)
+    return msg_image
 
 
 def get_group_name_for_msg_type(msg_type):

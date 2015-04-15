@@ -72,8 +72,8 @@ TEMPLATE_LOADERS = (
 
 # smtp configuration settings.
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'your-username@gmail.com'
-EMAIL_HOST_PASSWORD = 'your-password'
+EMAIL_HOST_USER = 'muhammad.shoaib@arbisoft.com'
+EMAIL_HOST_PASSWORD = 'alliswell@123'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
@@ -194,3 +194,10 @@ LOGGING = {
         'level': 'DEBUG'
     }
 }
+
+# digest email logos
+NOTIFICATION_OPEN_EDX_DEFAULT_LOGO = BASE_DIR + '/edx_notifications/server/web/static/edx_notifications/img/edx-openedx-logo-tag.png'
+
+NOTIFICATION_BRANDED_DEFAULT_LOGO = BASE_DIR + '/edx_notifications/server/web/static/edx_notifications/img/logo-placeholder.png'
+
+

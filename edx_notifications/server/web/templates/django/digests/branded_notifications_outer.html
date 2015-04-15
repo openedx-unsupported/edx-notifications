@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="xns-container">
+    <div class="xns-content xns-pane-digest">
+        <div class="xns-list-header">
+            <div class="xns-logos" style="margin-bottom:20px;">
+                <div class="xns-open-edx-logo"><img src="cid:{{open_edx_default_logo}}" width="100" height="50"></div>
+                <div class="xns-branded-logo"> <img src="cid:{{branded_default_logo}}" width="100" height="50"></div>
+            </div>
+            <h2>Notifications</h2>
+            <div class="xns-user-name"><span>Hi {{ user_first_name }} {{ user_last_name }},</span></div>
+            <div class="xns-use-notifications-count"><span>you have {{ count }} unread notifications in {{ namespace }}</span></div>
+
+        </div>
+        {% autoescape off %} {{ rendered_notifications }} {% endautoescape %}
+        <div class="xns-list-footer">
+            <span class="xns-digest-footer-text">If you would like to stop receiving these updates, you
+            can turn off all Notification Digests from your profile </span>
+        </div>
+    </div>
+</div>
+</body>
+</html>
