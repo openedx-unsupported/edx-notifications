@@ -20,7 +20,21 @@ class Migration(SchemaMigration):
         # foreign key columns added, so drop the origin usernotificationspreferences table -
         # as it should be empty and re-create it
 
-        db.delete_table('edx_notifications_usernotificationpreferences')
+        # First we should query the table and assert that it is indeed empty
+        from django.db import connection as db_connection
+
+        cursor = db_connection.cursor()
+        resultset = cursor.execute('SELECT * FROM edx_notifications_usernotificationpreferences')
+        first_row = resultset.fetchone()
+        is_empty = not first_row
+        cursor.close()
+
+        if is_empty:
+            db.delete_table('edx_notifications_usernotificationpreferences')
+        else:
+            raise Exception('The table edx_notifications_usernotificationpreferences is expected to be empty. Please investigate before proceeding!')
+
+        # re-create table with the right constraints and defaults
         db.create_table('edx_notifications_usernotificationpreferences', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('created', self.gf('model_utils.fields.AutoCreatedField')(default=datetime.datetime.now)),
