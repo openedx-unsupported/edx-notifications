@@ -3,10 +3,8 @@ Simple Subject/Body Underscore renderers
 """
 
 import copy
-import datetime
 from django.templatetags.static import static
 from django.contrib.staticfiles import finders
-import pytz
 
 from edx_notifications.renderers.renderer import BaseNotificationRenderer
 
@@ -78,10 +76,7 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
 
         _payload = copy.deepcopy(msg.payload)
 
-        if datetime.datetime.date(msg.created) == datetime.datetime.now(pytz.UTC).date():
-            created_str = 'Today at ' + msg.created.strftime("%H:%M%p")
-        else:
-            created_str = msg.created.strftime("%B %d, %Y") + ' at ' + msg.created.strftime("%H:%M%p")
+        created_str = msg.created.strftime("%B %d, %Y") + ' at ' + msg.created.strftime("%H:%M%p")
 
         _payload.update({
             '__display_created': created_str

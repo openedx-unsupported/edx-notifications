@@ -232,7 +232,7 @@ class LoggedInHomePage(PageObject):
     def close_notification(self):
         action = ActionChains(self.browser)
         self.wait_for_element_presence(
-            '.xns-content.unread .xns-close-item',
+            '.xns-content.xns-pane-unread .xns-close-item',
             'close icon not found',
             timeout=default_timeout
         )
@@ -240,7 +240,7 @@ class LoggedInHomePage(PageObject):
         icon = self.browser.find_element_by_css_selector(".xns-items .xns-close-item-x")
         action.move_to_element(notification).move_to_element(icon).click().perform()
         self.wait_for_element_presence(
-            '.xns-content.unread .xns-empty-list',
+            '.xns-content.xns-pane-unread .xns-empty-list',
             'List is not empty yet',
             timeout=default_timeout
         )

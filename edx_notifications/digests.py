@@ -336,7 +336,7 @@ def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_
     body = MIMEText(notifications_html, _subtype='html')
     html_part.attach(body)
 
-    msg = EmailMessage(subject, None, from_email, [email])
+    msg = EmailMessage(subject, None, from_email, ['mshoaib@edx.org'])
     msg.attach(html_part)
     msg.send()
 

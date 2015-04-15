@@ -70,7 +70,12 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.app_directories.Loader',
 )
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# smtp configuration settings.
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'your-username@gmail.com'
+EMAIL_HOST_PASSWORD = 'your-password'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
 
 TEMPLATE_DIRS = [
     os.path.join(BASE_DIR, 'testserver/templates'),
