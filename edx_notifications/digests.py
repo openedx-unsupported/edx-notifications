@@ -344,6 +344,7 @@ def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_
     # As an option, don't send an email at all if there are no
     # unread notifications
     if not notification_groups and const.NOTIFICATION_DONT_SEND_EMPTY_DIGEST:
+        log.debug('Digest email for {email} is empty. Not sending...'.format(email=email))
         return 0
 
     context = {
@@ -351,12 +352,12 @@ def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_
         'grouped_user_notifications': notification_groups
     }
 
-    # create the image dictionary to store the
-    # img_path, unique id and title for the image.
-    branded_logo = dict(title='Open Edx', path=const.NOTIFICATION_BRANDED_DEFAULT_LOGO, cid=str(uuid.uuid4()))
-
     # render the notifications html template
     notifications_html = render_to_string("django/digests/unread_notifications_inner.html", context)
+
+    # create the image dictionary to store the
+    # img_path, unique id and title for the image.
+    branded_logo = dict(title='Logo', path=const.NOTIFICATION_BRANDED_DEFAULT_LOGO, cid=str(uuid.uuid4()))
 
     context = {
         'branded_logo': branded_logo['cid'],
@@ -367,15 +368,17 @@ def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_
         'rendered_notifications': notifications_html
     }
     # render the mail digest template.
-    email_body = render_to_string("django/digests/branded_notifications_outer.html", context)
-
-    email_body = with_inline_css(email_body)
+    email_body = with_inline_css(
+        render_to_string("django/digests/branded_notifications_outer.html", context)
+    )
 
     html_part = MIMEMultipart(_subtype='related')
+    html_part.attach(MIMEText(email_body, _subtype='html'))
+    logo_image = attach_image(branded_logo, 'Header Logo')
+    if logo_image:
+        html_part.attach(logo_image)
 
-    body = MIMEText(email_body, _subtype='html')
-    html_part.attach(body)
-    html_part.attach(attach_image(branded_logo, 'Open Edx Logo'))
+    log.info('Sending Notification Digest email to {email}'.format(email=email))
 
     msg = EmailMessage(subject, None, from_email, [email])
     msg.attach(html_part)
