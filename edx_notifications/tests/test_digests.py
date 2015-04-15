@@ -248,6 +248,28 @@ class DigestTestCases(TestCase):
             2
         )
 
+    def test_do_not_send_digest_notifications(self):
+        """
+        If there are no unread notifications for the user for given timestamps
+        Then don't send digest emails to the user.
+        """
+
+        register_namespace_resolver(TestNamespaceResolver())
+
+        set_user_notification_preference(self.test_user_id, const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME, 'true')
+
+        # there will be no unread notifications to send for the digest.
+        self.assertEqual(
+            send_unread_notifications_digest(
+                self.from_timestamp + datetime.timedelta(days=2),
+                self.to_timestamp + datetime.timedelta(days=1),
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
+            ),
+            0
+        )
+
     def test_weekly_preference_false(self):
         """
         If all is good and enabled, in this test case, we should get two digests sent, one for each namespace
@@ -286,4 +308,74 @@ class DigestTestCases(TestCase):
                 'foo@bar.com'
             ),
             2
+        )
+
+    def test_default_group_mapping(self):
+        """
+        Test that adds the default notification type mapping
+        """
+        msg_type = self.store.save_notification_type(
+            NotificationType(
+                name='open-edx.lms.discussions.cohorted-thread-added',
+                renderer='edx_notifications.openedx.forums.CohortedThreadAddedRenderer',
+            )
+        )
+        # create cohort notification
+        msg = self.store.save_notification_message(
+            NotificationMessage(
+                msg_type=msg_type,
+                namespace='cohort-thread-added',
+                payload={'subject': 'foo', 'body': 'bar'},
+            )
+        )
+        publish_notification_to_user(self.test_user_id, msg)
+
+        register_namespace_resolver(TestNamespaceResolver())
+
+        set_user_notification_preference(self.test_user_id, const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME, 'true')
+
+        self.assertEqual(
+            send_unread_notifications_digest(
+                self.from_timestamp,
+                self.to_timestamp,
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
+            ),
+            3
+        )
+
+    def test_wildcard_group_mapping(self):
+        """
+        Test that adds the default notification type mapping
+        """
+        msg_type = self.store.save_notification_type(
+            NotificationType(
+                name='open-edx.lms.discussions.new-discussion-added',
+                renderer='open-edx.lms.discussions.new-discussion-added',
+            )
+        )
+        # create cohort notification
+        msg = self.store.save_notification_message(
+            NotificationMessage(
+                msg_type=msg_type,
+                namespace='cohort-thread-added',
+                payload={'subject': 'foo', 'body': 'bar'},
+            )
+        )
+        publish_notification_to_user(self.test_user_id, msg)
+
+        register_namespace_resolver(TestNamespaceResolver())
+
+        set_user_notification_preference(self.test_user_id, const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME, 'true')
+
+        self.assertEqual(
+            send_unread_notifications_digest(
+                self.from_timestamp,
+                self.to_timestamp,
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
+            ),
+            3
         )
