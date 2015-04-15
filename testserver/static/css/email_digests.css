@@ -58,7 +58,7 @@ span.xns-counter.multi-digit {
     padding-bottom: 0px;
     font-size: .85714rem;
     font-weight: 700;
-    font-family: open sans;
+    /* font-family: open sans; */
     color: #333333;
     margin-bottom: 5px;
     border-bottom: 1px solid #E0E0E0;
@@ -148,7 +148,7 @@ span.xns-counter.multi-digit {
 
 .xns-container .xns-actions ul li a {
     color: #3384CA;
-    font-family: open sans;
+    /*font-family: open sans; */
     font-size: .85714rem;
     font-weight: 700;
 }
@@ -163,7 +163,7 @@ span.xns-counter.multi-digit {
 
 .xns-container .xns-date {
     color: #868685;
-    font-family: open sans;
+    /*font-family: open sans;*/
     font-weight: 600;
     font-size: .85714rem;
     font-style: italic;
@@ -209,7 +209,7 @@ span.xns-counter.multi-digit {
 }
 
 .xns-container .xns-alert {
-    font-family: open sans;
+    /*font-family: open sans;*/
     color: #E37222;
     font-height: 10pt;
     font-weight: 700;
