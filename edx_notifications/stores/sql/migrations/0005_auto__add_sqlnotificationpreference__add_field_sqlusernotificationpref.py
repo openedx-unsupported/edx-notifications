@@ -16,31 +16,19 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('edx_notifications', ['SQLNotificationPreference'])
 
-        # Adding field 'SQLUserNotificationPreferences.created'
-        db.add_column('edx_notifications_usernotificationpreferences', 'created',
-                      self.gf('model_utils.fields.AutoCreatedField')(default=datetime.datetime.now),
-                      keep_default=False)
+        # due to some MySQL differences between MySQL and sqplite, we can't have non-null
+        # foreign key columns added, so drop the origin usernotificationspreferences table -
+        # as it should be empty and re-create it
 
-        # Adding field 'SQLUserNotificationPreferences.modified'
-        db.add_column('edx_notifications_usernotificationpreferences', 'modified',
-                      self.gf('model_utils.fields.AutoLastModifiedField')(default=datetime.datetime.now),
-                      keep_default=False)
-
-        # Adding field 'SQLUserNotificationPreferences.user_id'
-        db.add_column('edx_notifications_usernotificationpreferences', 'user_id',
-                      self.gf('django.db.models.fields.IntegerField')(default=-1, db_index=True),
-                      keep_default=False)
-
-        # Adding field 'SQLUserNotificationPreferences.preference'
-        db.add_column('edx_notifications_usernotificationpreferences', 'preference',
-                      self.gf('django.db.models.fields.related.ForeignKey')(default='', to=orm['edx_notifications.SQLNotificationPreference']),
-                      keep_default=False)
-
-        # Adding field 'SQLUserNotificationPreferences.value'
-        db.add_column('edx_notifications_usernotificationpreferences', 'value',
-                      self.gf('django.db.models.fields.CharField')(default='', max_length=255),
-                      keep_default=False)
-
+        db.delete_table('edx_notifications_usernotificationpreferences')
+        db.create_table('edx_notifications_usernotificationpreferences', (
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('created', self.gf('model_utils.fields.AutoCreatedField')(default=datetime.datetime.now)),
+            ('modified', self.gf('model_utils.fields.AutoLastModifiedField')(default=datetime.datetime.now)),
+            ('user_id', self.gf('django.db.models.fields.IntegerField')(db_index=True)),
+            ('preference', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['edx_notifications.SQLNotificationPreference'])),
+            ('value', self.gf('django.db.models.fields.CharField')(max_length=255)),
+        ))
 
         # Changing field 'SQLNotificationMessage.object_id'
         db.alter_column('edx_notifications_notificationmessage', 'object_id', self.gf('django.db.models.fields.CharField')(max_length=255, null=True))
