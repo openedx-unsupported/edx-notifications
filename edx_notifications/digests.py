@@ -2,12 +2,17 @@
 Create and register a new NotificationCallbackTimerHandler
 """
 import datetime
+import os
+from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from itertools import groupby
 import logging
+from django.contrib.staticfiles import finders
+import uuid
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
+import pynliner
 from edx_notifications import const
 from django.dispatch import receiver
 import pytz
@@ -293,6 +298,24 @@ def send_unread_notifications_namespace_digest(namespace, from_timestamp, to_tim
     return digests_sent
 
 
+def with_inline_css(html_without_css):
+    """
+    returns html with inline css if css file path exists
+    else returns html with out the inline css.
+    """
+    css_filepath = finders.find(const.NOTIFICATION_DIGEST_EMAIL_CSS)
+
+    if css_filepath:
+        with open(css_filepath, "r") as _file:
+            css_content = _file.read()
+
+        # insert style tag in the html and run pyliner.
+        html_with_inline_css = pynliner.fromString('<style>' + css_content + '</style>' + html_without_css)
+        return html_with_inline_css
+
+    return html_without_css
+
+
 def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_id,
                              email, first_name, last_name, subject, from_email):  # pylint: disable=unused-argument
     """
@@ -328,19 +351,50 @@ def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_
         'grouped_user_notifications': notification_groups
     }
 
+    # create the image dictionary to store the
+    # img_path, unique id and title for the image.
+    branded_logo = dict(title='Open Edx', path=const.NOTIFICATION_BRANDED_DEFAULT_LOGO, cid=str(uuid.uuid4()))
+
     # render the notifications html template
     notifications_html = render_to_string("django/digests/unread_notifications_inner.html", context)
 
+    context = {
+        'branded_logo': branded_logo['cid'],
+        'user_first_name': first_name,
+        'user_last_name': last_name,
+        'namespace': namespace_info['display_name'],
+        'count': len(notifications),
+        'rendered_notifications': notifications_html
+    }
+    # render the mail digest template.
+    email_body = render_to_string("django/digests/branded_notifications_outer.html", context)
+
+    email_body = with_inline_css(email_body)
+
     html_part = MIMEMultipart(_subtype='related')
 
-    body = MIMEText(notifications_html, _subtype='html')
+    body = MIMEText(email_body, _subtype='html')
     html_part.attach(body)
+    html_part.attach(attach_image(branded_logo, 'Open Edx Logo'))
 
     msg = EmailMessage(subject, None, from_email, [email])
     msg.attach(html_part)
     msg.send()
 
     return 1
+
+
+def attach_image(img_dict, filename):
+    """
+    attach images in the email headers
+    """
+    img_path = finders.find(img_dict['path'])
+    if img_path:
+        with open(img_path, 'rb') as img:
+            msg_image = MIMEImage(img.read(), name=os.path.basename(img_path))
+            msg_image.add_header('Content-ID', '<{}>'.format(img_dict['cid']))
+            msg_image.add_header("Content-Disposition", "inline", filename=filename)
+        return msg_image
 
 
 def get_group_name_for_msg_type(msg_type):

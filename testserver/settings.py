@@ -72,8 +72,8 @@ TEMPLATE_LOADERS = (
 
 # smtp configuration settings.
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'your-username@gmail.com'
-EMAIL_HOST_PASSWORD = 'your-password'
+EMAIL_HOST_USER = 'your-user-email'
+EMAIL_HOST_PASSWORD = 'user-email-password'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
@@ -194,3 +194,14 @@ LOGGING = {
         'level': 'DEBUG'
     }
 }
+
+# digest email logos
+NOTIFICATION_BRANDED_DEFAULT_LOGO = 'img/edx-openedx-logo-tag.png'
+
+# digest email css
+NOTIFICATION_DIGEST_EMAIL_CSS = 'css/email_digests.css'
+
+try:
+    from local_settings import *
+except ImportError:
+    pass
