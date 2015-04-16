@@ -85,7 +85,9 @@ class Command(BaseCommand):
         if namespace == "All":
             send_unread_notifications_digest(from_timestamp, to_timestamp, preference_name, subject, from_email)
         else:
-            send_unread_notifications_namespace_digest(namespace, from_timestamp, to_timestamp, preference_name, subject, from_email)
+            send_unread_notifications_namespace_digest(
+                namespace, from_timestamp, to_timestamp, preference_name, subject, from_email
+            )
 
     def send_weekly_digest(self, namespace='All'):
         """
@@ -100,7 +102,9 @@ class Command(BaseCommand):
         if namespace == "All":
             send_unread_notifications_digest(from_timestamp, to_timestamp, preference_name, subject, from_email)
         else:
-            send_unread_notifications_namespace_digest(namespace, from_timestamp, to_timestamp, preference_name, subject, from_email)
+            send_unread_notifications_namespace_digest(
+                namespace, from_timestamp, to_timestamp, preference_name, subject, from_email
+            )
 
     def handle(self, *args, **options):
         """
@@ -114,11 +118,11 @@ class Command(BaseCommand):
 
         if options['send_daily_digest']:
             self.send_daily_digest(options['namespace'])
-            log.info("Sending the daily digest with namespace=%s..." % options['namespace'])
+            log.info("Sending the daily digest with namespace=%s...", options['namespace'])
 
         if options['send_weekly_digest']:
             self.send_weekly_digest(options['namespace'])
-            log.info("Sending the weekly digest with namespace=%s..." % options['namespace'])
+            log.info("Sending the weekly digest with namespace=%s...", options['namespace'])
 
         if not options['send_weekly_digest'] and not options['send_daily_digest']:
             parser.print_help()
