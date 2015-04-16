@@ -3,6 +3,7 @@ Unit tests for the digests.py file
 """
 
 import datetime
+from django.test.utils import override_settings
 import pytz
 from django.test import TestCase
 
@@ -234,6 +235,31 @@ class DigestTestCases(TestCase):
         """
 
         register_namespace_resolver(TestNamespaceResolver())
+
+        set_user_notification_preference(self.test_user_id, const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME, 'true')
+
+        self.assertEqual(
+            send_unread_notifications_digest(
+                self.from_timestamp,
+                self.to_timestamp,
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
+            ),
+            2
+        )
+
+    def test_happy_path_without_css_and_image(self):
+        """
+        If all is good and enabled, but the css and image are not supplied,
+        in this test case, we should still get two digests sent, one for each namespace,
+        but the resulting emails would not have any css or images.
+        """
+
+        register_namespace_resolver(TestNamespaceResolver())
+
+        const.NOTIFICATION_DIGEST_EMAIL_CSS = 'bad.css.file'
+        const.NOTIFICATION_BRANDED_DEFAULT_LOGO = 'bad.image.file'
 
         set_user_notification_preference(self.test_user_id, const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME, 'true')
 
