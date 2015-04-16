@@ -2,7 +2,17 @@
 Create and register a new NotificationCallbackTimerHandler
 """
 import datetime
+import os
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from itertools import groupby
 import logging
+from django.contrib.staticfiles import finders
+import uuid
+from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+import pynliner
 from edx_notifications import const
 from django.dispatch import receiver
 import pytz
@@ -65,12 +75,17 @@ class NotificationDigestMessageCallback(NotificationCallbackTimerHandler):
             tdelta = datetime.timedelta(days=1) if is_daily_digest else datetime.timedelta(days=7)
             from_timestamp = to_timestamp - tdelta
 
+        subject = timer.context['subject']
+        from_email = timer.context['from_email']
+
         # call into the main entry point
         # for generating digests
         send_unread_notifications_digest(
             from_timestamp,
             to_timestamp,
-            preference_name
+            preference_name,
+            subject,
+            from_email
         )
 
         result = {
@@ -107,6 +122,8 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
         context={
             'is_daily_digest': True,
             'preference_name': const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+            'subject': const.NOTIFICATION_DAILY_DIGEST_SUBJECT,
+            'from_email': const.NOTIFICATION_DIGEST_FROM_ADDRESS,
         }
     )
     store.save_notification_timer(daily_digest_timer)
@@ -120,6 +137,8 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
         context={
             'is_daily_digest': False,
             'preference_name': const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME,
+            'subject': const.NOTIFICATION_DAILY_DIGEST_SUBJECT,
+            'from_email': const.NOTIFICATION_DIGEST_FROM_ADDRESS,
         }
     )
     store.save_notification_timer(weekly_digest_timer)
@@ -153,7 +172,7 @@ def create_default_notification_preferences():
     store_provider.save_notification_preference(weekly_digest_preference)
 
 
-def send_unread_notifications_digest(from_timestamp, to_timestamp, preference_name):
+def send_unread_notifications_digest(from_timestamp, to_timestamp, preference_name, subject, from_email):
     """
     This will generate and send a digest of all notifications over all namespaces to all
     resolvable users subscribing to digests for that namespace
@@ -166,17 +185,20 @@ def send_unread_notifications_digest(from_timestamp, to_timestamp, preference_na
 
     # Loop over all namespaces
     for namespace in namespaces:
-        digests_sent = digests_sent + send_unread_notifications_namespace_digest(
+        digests_sent += send_unread_notifications_namespace_digest(
             namespace,
             from_timestamp,
             to_timestamp,
-            preference_name
+            preference_name,
+            subject,
+            from_email
         )
 
     return digests_sent
 
 
-def send_unread_notifications_namespace_digest(namespace, from_timestamp, to_timestamp, preference_name):
+def send_unread_notifications_namespace_digest(namespace, from_timestamp, to_timestamp,
+                                               preference_name, subject, from_email):
     """
     For a particular namespace, send a notification digest, if so configured
     """
@@ -261,21 +283,41 @@ def send_unread_notifications_namespace_digest(namespace, from_timestamp, to_tim
                 'to user_id = {user_id} at email '
                 '{email}...'.format(namespace=namespace, user_id=user_id, email=email)
             )
-            _send_user_unread_digest(
+            digests_sent += _send_user_unread_digest(
                 namespace_info,
                 from_timestamp,
                 to_timestamp,
                 user_id,
                 email,
                 first_name,
-                last_name
+                last_name,
+                subject,
+                from_email
             )
-            digests_sent = digests_sent + 1
 
     return digests_sent
 
 
-def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_id, email, first_name, last_name):  # pylint: disable=unused-argument
+def with_inline_css(html_without_css):
+    """
+    returns html with inline css if css file path exists
+    else returns html with out the inline css.
+    """
+    css_filepath = finders.find(const.NOTIFICATION_DIGEST_EMAIL_CSS)
+
+    if css_filepath:
+        with open(css_filepath, "r") as _file:
+            css_content = _file.read()
+
+        # insert style tag in the html and run pyliner.
+        html_with_inline_css = pynliner.fromString('<style>' + css_content + '</style>' + html_without_css)
+        return html_with_inline_css
+
+    return html_without_css
+
+
+def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_id,
+                             email, first_name, last_name, subject, from_email):  # pylint: disable=unused-argument
     """
     This will send a digest of unread notifications to a given user. Note, it is assumed here
     that the user's preference has already been checked. namespace_info will contain
@@ -297,24 +339,171 @@ def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_
         }
     )
 
-    #
-    # This is just sample code on how to render the notification items
-    # on the server side. This needs to be augmented by:
-    #    - grouping together similar types (much like unread pane in Backbone app)
-    #    - within the groups, sort by date descending (most recent first)
-    #
-    for notification in notifications:
-        renderer = get_renderer_for_type(notification.msg.msg_type)
+    notification_groups = render_notifications_by_type(notifications)
+
+    # As an option, don't send an email at all if there are no
+    # unread notifications
+    if not notification_groups and const.NOTIFICATION_DONT_SEND_EMPTY_DIGEST:
+        log.debug('Digest email for {email} is empty. Not sending...'.format(email=email))
+        return 0
+
+    context = {
+        'namespace_display_name': namespace_info['display_name'],
+        'grouped_user_notifications': notification_groups
+    }
+
+    # render the notifications html template
+    notifications_html = render_to_string("django/digests/unread_notifications_inner.html", context)
+
+    # create the image dictionary to store the
+    # img_path, unique id and title for the image.
+    branded_logo = dict(title='Logo', path=const.NOTIFICATION_BRANDED_DEFAULT_LOGO, cid=str(uuid.uuid4()))
+
+    context = {
+        'branded_logo': branded_logo['cid'],
+        'user_first_name': first_name,
+        'user_last_name': last_name,
+        'namespace': namespace_info['display_name'],
+        'count': len(notifications),
+        'rendered_notifications': notifications_html
+    }
+    # render the mail digest template.
+    email_body = with_inline_css(
+        render_to_string("django/digests/branded_notifications_outer.html", context)
+    )
+
+    html_part = MIMEMultipart(_subtype='related')
+    html_part.attach(MIMEText(email_body, _subtype='html'))
+    logo_image = attach_image(branded_logo, 'Header Logo')
+    if logo_image:
+        html_part.attach(logo_image)
+
+    log.info('Sending Notification Digest email to {email}'.format(email=email))
+
+    msg = EmailMessage(subject, None, from_email, [email])
+    msg.attach(html_part)
+    msg.send()
+
+    return 1
+
+
+def attach_image(img_dict, filename):
+    """
+    attach images in the email headers
+    """
+    img_path = finders.find(img_dict['path'])
+    if img_path:
+        with open(img_path, 'rb') as img:
+            msg_image = MIMEImage(img.read(), name=os.path.basename(img_path))
+            msg_image.add_header('Content-ID', '<{}>'.format(img_dict['cid']))
+            msg_image.add_header("Content-Disposition", "inline", filename=filename)
+        return msg_image
+
+
+def get_group_name_for_msg_type(msg_type):
+    """
+    Returns the particular group_name for the msg_type
+    else return None if no group_name is found.
+    """
+    config = const.NOTIFICATION_DIGEST_GROUP_CONFIG
+
+    if msg_type in config['type_mapping']:
+        group_name = config['type_mapping'][msg_type]
+        if group_name in config['groups']:
+            return group_name
+
+    # no exact match so lets look upwards for wildcards
+    search_type = msg_type
+    # returns -1 if '.' is not in search_type
+    dot_index = search_type.rfind('.')
+    while dot_index != -1 and search_type != '*':
+        search_type = search_type[0: dot_index]
+        key = search_type + '.*'
+
+        if key in config['type_mapping']:
+            group_name = config['type_mapping'][key]
+            if group_name in config['groups']:
+                return group_name
+
+        # returns -1 if '.' is not in search_type
+        dot_index = search_type.rfind('.')
+
+    # look for global wildcard
+    if '*' in config['type_mapping']:
+        key = '*'
+        group_name = config['type_mapping'][key]
+        if group_name in config['groups']:
+            return group_name
+
+    # this really shouldn't happen. This means misconfiguration
+    return None
+
+
+def get_group_rendering(group_data):
+    """
+    returns the list of the sorted user notifications renderings.
+    """
+    notification_renderings = []
+
+    group_data = sorted(group_data, key=lambda k: k.msg.created)
+
+    for user_msg in group_data:
+        notification_html = ''
+        renderer = get_renderer_for_type(user_msg.msg.msg_type)
         if renderer and renderer.can_render_format(const.RENDER_FORMAT_HTML):
             notification_html = renderer.render(  # pylint: disable=unused-variable
-                notification.msg,
+                user_msg.msg,
                 const.RENDER_FORMAT_HTML,
                 None
             )
         else:
             log.info(
                 'Missing renderer for HTML format on '
-                'msg_type "{}". Skipping....'.format(notification.msg.msg_type.name)
+                'msg_type "{}". Skipping....'.format(user_msg.msg.msg_type.name)
+            )
+        notification_renderings.append(
+            {
+                'user_msg': user_msg,
+                'msg': user_msg.msg,
+                # render the particular NotificationMessage
+                'html': notification_html,
+                'group_name': get_group_name_for_msg_type(user_msg.msg.msg_type.name)
+            }
+        )
+
+    return notification_renderings
+
+
+def render_notifications_by_type(user_notifications):
+    """
+    apply groupings as needed (by type)
+    and sort all the notifications by date most recent first
+
+    :return the sorted and grouped notifications.
+    """
+    grouped_user_notifications = {}
+    notification_groups = []
+
+    # group the user notifications by message type name.
+    for key, group in groupby(user_notifications, lambda x: get_group_name_for_msg_type(x.msg.msg_type.name)):
+        for thing in group:
+            if key in grouped_user_notifications:
+                grouped_user_notifications[key].append(thing)
+            else:
+                grouped_user_notifications[key] = [thing]
+
+    # then we want to order the groups according to the grouping_config
+    # so we can specify which groups go up at the top
+    config = const.NOTIFICATION_DIGEST_GROUP_CONFIG
+    group_orderings = sorted(config['groups'].items(), key=lambda t: t[1]['group_order'])
+
+    for group_key, _ in group_orderings:
+        if group_key in grouped_user_notifications:
+            notification_groups.append(
+                {
+                    'group_title': config['groups'][group_key]['display_name'],
+                    'messages': get_group_rendering(grouped_user_notifications[group_key])
+                }
             )
 
-    return
+    return notification_groups

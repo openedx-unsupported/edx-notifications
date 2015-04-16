@@ -149,7 +149,9 @@ class DigestTestCases(TestCase):
             send_unread_notifications_digest(
                 self.from_timestamp,
                 self.to_timestamp,
-                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
             ),
             0
         )
@@ -165,7 +167,9 @@ class DigestTestCases(TestCase):
             send_unread_notifications_digest(
                 self.from_timestamp,
                 self.to_timestamp,
-                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
             ),
             0
         )
@@ -181,7 +185,9 @@ class DigestTestCases(TestCase):
             send_unread_notifications_digest(
                 self.from_timestamp,
                 self.to_timestamp,
-                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
             ),
             0
         )
@@ -196,7 +202,9 @@ class DigestTestCases(TestCase):
             send_unread_notifications_digest(
                 self.from_timestamp,
                 self.to_timestamp,
-                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
             ),
             0
         )
@@ -213,7 +221,9 @@ class DigestTestCases(TestCase):
             send_unread_notifications_digest(
                 self.from_timestamp,
                 self.to_timestamp,
-                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
             ),
             0
         )
@@ -231,9 +241,58 @@ class DigestTestCases(TestCase):
             send_unread_notifications_digest(
                 self.from_timestamp,
                 self.to_timestamp,
-                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
             ),
             2
+        )
+
+    def test_happy_path_without_styling(self):
+        """
+        If all is good and enabled, but the css and image are not supplied,
+        in this test case, we should still get two digests sent, one for each namespace,
+        but the resulting emails would not have any css or images.
+        """
+
+        register_namespace_resolver(TestNamespaceResolver())
+
+        const.NOTIFICATION_DIGEST_EMAIL_CSS = 'bad.css.file'
+        const.NOTIFICATION_BRANDED_DEFAULT_LOGO = 'bad.image.file'
+
+        set_user_notification_preference(self.test_user_id, const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME, 'true')
+
+        self.assertEqual(
+            send_unread_notifications_digest(
+                self.from_timestamp,
+                self.to_timestamp,
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
+            ),
+            2
+        )
+
+    def test_to_not_send_digest(self):
+        """
+        If there are no unread notifications for the user for given timestamps
+        Then don't send digest emails to the user.
+        """
+
+        register_namespace_resolver(TestNamespaceResolver())
+
+        set_user_notification_preference(self.test_user_id, const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME, 'true')
+
+        # there will be no unread notifications to send for the digest.
+        self.assertEqual(
+            send_unread_notifications_digest(
+                self.from_timestamp + datetime.timedelta(days=2),
+                self.to_timestamp + datetime.timedelta(days=1),
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
+            ),
+            0
         )
 
     def test_weekly_preference_false(self):
@@ -249,7 +308,9 @@ class DigestTestCases(TestCase):
             send_unread_notifications_digest(
                 self.weekly_from_timestamp,
                 self.to_timestamp,
-                const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME
+                const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
             ),
             0
         )
@@ -267,7 +328,79 @@ class DigestTestCases(TestCase):
             send_unread_notifications_digest(
                 self.weekly_from_timestamp,
                 self.to_timestamp,
-                const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME
+                const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
             ),
             2
+        )
+
+    def test_default_group_mapping(self):
+        """
+        Test that adds the default notification type mapping
+        """
+        msg_type = self.store.save_notification_type(
+            NotificationType(
+                name='open-edx.lms.discussions.cohorted-thread-added',
+                renderer='edx_notifications.openedx.forums.CohortedThreadAddedRenderer',
+            )
+        )
+        # create cohort notification
+        msg = self.store.save_notification_message(
+            NotificationMessage(
+                msg_type=msg_type,
+                namespace='cohort-thread-added',
+                payload={'subject': 'foo', 'body': 'bar'},
+            )
+        )
+        publish_notification_to_user(self.test_user_id, msg)
+
+        register_namespace_resolver(TestNamespaceResolver())
+
+        set_user_notification_preference(self.test_user_id, const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME, 'true')
+
+        self.assertEqual(
+            send_unread_notifications_digest(
+                self.from_timestamp,
+                self.to_timestamp,
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
+            ),
+            3
+        )
+
+    def test_wildcard_group_mapping(self):
+        """
+        Test that adds the default notification type mapping
+        """
+        msg_type = self.store.save_notification_type(
+            NotificationType(
+                name='open-edx.lms.discussions.new-discussion-added',
+                renderer='open-edx.lms.discussions.new-discussion-added',
+            )
+        )
+        # create cohort notification
+        msg = self.store.save_notification_message(
+            NotificationMessage(
+                msg_type=msg_type,
+                namespace='cohort-thread-added',
+                payload={'subject': 'foo', 'body': 'bar'},
+            )
+        )
+        publish_notification_to_user(self.test_user_id, msg)
+
+        register_namespace_resolver(TestNamespaceResolver())
+
+        set_user_notification_preference(self.test_user_id, const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME, 'true')
+
+        self.assertEqual(
+            send_unread_notifications_digest(
+                self.from_timestamp,
+                self.to_timestamp,
+                const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+                'subject',
+                'foo@bar.com'
+            ),
+            3
         )

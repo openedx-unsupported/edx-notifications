@@ -60,6 +60,7 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
 
         if not self.underscore_template:
             template_url_path = self.get_template_path(render_format)
+            template_url_path = template_url_path.replace(static(''), '')
             underscore_filepath = finders.find(template_url_path)
 
             if not underscore_filepath:
@@ -74,11 +75,14 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
                 self.underscore_template = us.template(template_string)
 
         _payload = copy.deepcopy(msg.payload)
+
+        created_str = msg.created.strftime("%B %d, %Y") + ' at ' + msg.created.strftime("%H:%M%p")
+
         _payload.update({
-            '__view': 'default'
+            '__display_created': created_str
         })
 
-        return self.underscore_template(msg.payload)
+        return self.underscore_template(_payload)
 
     def get_template_path(self, render_format):
         """
