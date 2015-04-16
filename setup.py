@@ -2,6 +2,36 @@
 
 from setuptools import setup
 
+def is_requirement(line):
+    """
+    Return True if the requirement line is a package requirement;
+    that is, it is not blank, a comment, or editable.
+    """
+    # Remove whitespace at the start/end of the line
+    line = line.strip()
+
+    # Skip blank lines, comments, and editable installs
+    return not (
+        line == '' or
+        line.startswith('-r') or
+        line.startswith('#') or
+        line.startswith('-e') or
+        line.startswith('git+')
+    )
+
+def load_requirements(*requirements_paths):
+    """
+    Load all requirements from the specified requirements files.
+    Returns a list of requirement strings.
+    """
+    requirements = set()
+    for path in requirements_paths:
+        requirements.update(
+            line.strip() for line in open(path).readlines()
+            if is_requirement(line)
+        )
+    return list(requirements)
+
 setup(
     name='edx-notifications',
     version='0.1.1',
@@ -22,22 +52,6 @@ setup(
     packages=['edx_notifications'],
     dependency_links=[
     ],
-    install_requires=[
-        "django>=1.4.12",
-        "django-model-utils==1.4.0",
-        "South>=0.7.6",
-        "python-dateutil==2.1",
-        "pylru==1.0.6",
-        "djangorestframework>=2.3.5,<=2.3.14",
-        "pytz==2012h",
-        "PyContracts==1.6.5"
-    ],
-    tests_require=[
-        "coverage==3.7.1",
-        "nose==1.3.3",
-        "httpretty==0.8.0",
-        "pep8==1.5.7",
-        "pylint==1.2.1",
-        "pep257==0.3.2"
-    ]
+    install_requires=load_requirements('requirements.txt'),
+    tests_require=load_requirements('test_requirements.txt')
 )

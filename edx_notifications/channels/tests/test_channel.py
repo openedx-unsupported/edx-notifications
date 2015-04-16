@@ -95,24 +95,37 @@ class BadChannel(BaseNotificationChannelProvider):
     A poorly formed Channel for testing purposes
     """
 
-    def dispatch_notification_to_user(self, user_id, msg):
+    def dispatch_notification_to_user(self, user_id, msg, channel_context=None):
         """
         This will raise an error
         """
-        raise super(BadChannel, self).dispatch_notification_to_user(user_id, msg)
+        raise super(BadChannel, self).dispatch_notification_to_user(
+            user_id,
+            msg,
+            channel_context=channel_context
+        )
 
-    def bulk_dispatch_notification(self, user_ids, msg, exclude_user_ids=None):
+    def bulk_dispatch_notification(self, user_ids, msg, exclude_user_ids=None, channel_context=None):
         """
         Perform a bulk dispatch of the notification message to
         all user_ids that will be enumerated over in user_ids.
         """
-        raise super(BadChannel, self).bulk_dispatch_notification(user_ids, msg)
+        raise super(BadChannel, self).bulk_dispatch_notification(
+            user_ids,
+            msg,
+            channel_context=channel_context
+        )
 
-    def resolve_msg_link(self, msg, link_name, params):
+    def resolve_msg_link(self, msg, link_name, params, channel_context=None):
         """
         Generates the appropriate link given a msg, a link_name, and params
         """
-        raise super(BadChannel, self).resolve_msg_link(msg, link_name, params)
+        raise super(BadChannel, self).resolve_msg_link(
+            msg,
+            link_name,
+            params,
+            channel_context=channel_context
+        )
 
 
 @override_settings(NOTIFICATION_CHANNEL_PROVIDERS=_NOTIFICATION_CHANNEL_PROVIDERS)
@@ -264,3 +277,5 @@ class ChannelTests(TestCase):
 
         self.assertIsNone(provider.dispatch_notification_to_user(None, None))
         self.assertEqual(provider.bulk_dispatch_notification(None, None), 0)
+
+        self.assertIsNone(provider.resolve_msg_link(None, None, None))

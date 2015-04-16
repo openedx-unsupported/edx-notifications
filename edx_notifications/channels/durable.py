@@ -70,7 +70,7 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
         # return the msg which could be a clone of the original one
         return msg
 
-    def dispatch_notification_to_user(self, user_id, msg):
+    def dispatch_notification_to_user(self, user_id, msg, channel_context=None):
         """
         Send a notification to a user, which - in a durable Notification -
         is simply store it in the database, and - soon in the future -
@@ -109,7 +109,7 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
 
         return _user_msg
 
-    def bulk_dispatch_notification(self, user_ids, msg, exclude_user_ids=None):
+    def bulk_dispatch_notification(self, user_ids, msg, exclude_user_ids=None, channel_context=None):
         """
         Perform a bulk dispatch of the notification message to
         all user_ids that will be enumerated over in user_ids.
@@ -186,7 +186,7 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
 
         return resolver
 
-    def resolve_msg_link(self, msg, link_name, params):
+    def resolve_msg_link(self, msg, link_name, params, channel_context=None):
         """
         Generates the appropriate link given a msg, a link_name, and params
         """

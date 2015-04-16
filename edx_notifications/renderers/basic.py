@@ -2,12 +2,14 @@
 Simple Subject/Body Underscore renderers
 """
 
+import json
 from django.templatetags.static import static
 
 from edx_notifications.renderers.renderer import BaseNotificationRenderer
 
 from edx_notifications.const import (
     RENDER_FORMAT_UNDERSCORE,
+    RENDER_FORMAT_JSON
 )
 
 
@@ -20,6 +22,39 @@ def path_to_underscore_template(name):
     return static(
         'edx_notifications/templates/renderers/{name}'.format(name=name)
     )
+
+
+class JsonRenderer(BaseNotificationRenderer):
+    """
+    This renderer simply renders the Notification Message as a payload.
+    This class is WIP as we've change the calling interface in another branch.
+    It's not used now, but we just want to get the class definition in place
+    """
+
+    def can_render_format(self, render_format):
+        """
+        Returns (True/False) whether this renderer provides renderings
+        into the requested format.
+        """
+        return render_format == RENDER_FORMAT_JSON
+
+    def render_subject(self, msg, render_format, lang):
+        """
+        Placeholder implementation of the interface method
+        """
+        return json.dumps(msg.payload)
+
+    def render_body(self, msg, render_format, lang):
+        """
+        Placeholder implementation of the interface method
+        """
+        return json.dumps(msg.payload)
+
+    def get_template_path(self, render_format):
+        """
+        Placeholder implementation of the interface method
+        """
+        return None
 
 
 class UnderscoreStaticFileRenderer(BaseNotificationRenderer):

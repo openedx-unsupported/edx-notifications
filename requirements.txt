@@ -7,3 +7,4 @@ pylru==1.0.6
 djangorestframework>=2.3.5,<=2.3.14
 pytz==2012h
 PyContracts==1.6.5
+-e git+https://github.com/dgrtwo/ParsePy.git@7949b9f754d1445eff8e8f20d0e967b9a6420639#egg=parse_rest
