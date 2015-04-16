@@ -12,7 +12,7 @@ import sys
 import datetime
 import pytz
 from edx_notifications import const
-from edx_notifications.digests import send_unread_notifications_digest, send_unread_notifications_namespace_digest
+from edx_notifications.digests import send_notifications_digest, send_notifications_namespace_digest
 
 LOGGING = {
     'version': 1,
@@ -83,9 +83,9 @@ class Command(BaseCommand):
         from_email = const.NOTIFICATION_DIGEST_FROM_ADDRESS
 
         if namespace == "All":
-            send_unread_notifications_digest(from_timestamp, to_timestamp, preference_name, subject, from_email)
+            send_notifications_digest(from_timestamp, to_timestamp, preference_name, subject, from_email)
         else:
-            send_unread_notifications_namespace_digest(
+            send_notifications_namespace_digest(
                 namespace, from_timestamp, to_timestamp, preference_name, subject, from_email
             )
 
@@ -100,9 +100,9 @@ class Command(BaseCommand):
         from_email = const.NOTIFICATION_DIGEST_FROM_ADDRESS
 
         if namespace == "All":
-            send_unread_notifications_digest(from_timestamp, to_timestamp, preference_name, subject, from_email)
+            send_notifications_digest(from_timestamp, to_timestamp, preference_name, subject, from_email)
         else:
-            send_unread_notifications_namespace_digest(
+            send_notifications_namespace_digest(
                 namespace, from_timestamp, to_timestamp, preference_name, subject, from_email
             )
 
