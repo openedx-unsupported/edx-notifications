@@ -3,7 +3,6 @@ Unit tests for the digests.py file
 """
 
 import datetime
-from django.test.utils import override_settings
 import pytz
 from django.test import TestCase
 
@@ -249,7 +248,7 @@ class DigestTestCases(TestCase):
             2
         )
 
-    def test_happy_path_without_css_and_image(self):
+    def test_happy_path_without_styling(self):
         """
         If all is good and enabled, but the css and image are not supplied,
         in this test case, we should still get two digests sent, one for each namespace,
