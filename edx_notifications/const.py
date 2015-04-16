@@ -69,6 +69,7 @@ NOTIFICATION_DIGEST_FROM_ADDRESS = getattr(
     "please_set_NOTIFICATION_DIGEST_FROM_ADDRESS@settings.com"
 )
 NOTIFICATION_DONT_SEND_EMPTY_DIGEST = getattr(settings, 'NOTIFICATION_DONT_SEND_EMPTY_DIGEST', True)
+NOTIFICATION_DIGEST_UNREAD_ONLY = getattr(settings, 'NOTIFICATION_DIGEST_UNREAD_ONLY', True)
 
 # this describes how we want to group together notification types into visual groups
 NOTIFICATION_DIGEST_GROUP_CONFIG = getattr(

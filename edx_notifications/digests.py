@@ -77,15 +77,17 @@ class NotificationDigestMessageCallback(NotificationCallbackTimerHandler):
 
         subject = timer.context['subject']
         from_email = timer.context['from_email']
+        unread_only = timer.context['unread_only']
 
         # call into the main entry point
         # for generating digests
-        send_unread_notifications_digest(
+        send_notifications_digest(
             from_timestamp,
             to_timestamp,
             preference_name,
             subject,
-            from_email
+            from_email,
+            unread_only=unread_only
         )
 
         result = {
@@ -124,6 +126,7 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
             'preference_name': const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
             'subject': const.NOTIFICATION_DAILY_DIGEST_SUBJECT,
             'from_email': const.NOTIFICATION_DIGEST_FROM_ADDRESS,
+            'unread_only': const.NOTIFICATION_DIGEST_UNREAD_ONLY,
         }
     )
     store.save_notification_timer(daily_digest_timer)
@@ -139,6 +142,7 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
             'preference_name': const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME,
             'subject': const.NOTIFICATION_DAILY_DIGEST_SUBJECT,
             'from_email': const.NOTIFICATION_DIGEST_FROM_ADDRESS,
+            'unread_only': const.NOTIFICATION_DIGEST_UNREAD_ONLY,
         }
     )
     store.save_notification_timer(weekly_digest_timer)
@@ -172,7 +176,8 @@ def create_default_notification_preferences():
     store_provider.save_notification_preference(weekly_digest_preference)
 
 
-def send_unread_notifications_digest(from_timestamp, to_timestamp, preference_name, subject, from_email):
+def send_notifications_digest(from_timestamp, to_timestamp, preference_name, subject,
+                              from_email, unread_only=True):
     """
     This will generate and send a digest of all notifications over all namespaces to all
     resolvable users subscribing to digests for that namespace
@@ -185,20 +190,21 @@ def send_unread_notifications_digest(from_timestamp, to_timestamp, preference_na
 
     # Loop over all namespaces
     for namespace in namespaces:
-        digests_sent += send_unread_notifications_namespace_digest(
+        digests_sent += send_notifications_namespace_digest(
             namespace,
             from_timestamp,
             to_timestamp,
             preference_name,
             subject,
-            from_email
+            from_email,
+            unread_only=unread_only
         )
 
     return digests_sent
 
 
-def send_unread_notifications_namespace_digest(namespace, from_timestamp, to_timestamp,
-                                               preference_name, subject, from_email):
+def send_notifications_namespace_digest(namespace, from_timestamp, to_timestamp,
+                                        preference_name, subject, from_email, unread_only=True):
     """
     For a particular namespace, send a notification digest, if so configured
     """
@@ -283,7 +289,7 @@ def send_unread_notifications_namespace_digest(namespace, from_timestamp, to_tim
                 'to user_id = {user_id} at email '
                 '{email}...'.format(namespace=namespace, user_id=user_id, email=email)
             )
-            digests_sent += _send_user_unread_digest(
+            digests_sent += _send_user_digest(
                 namespace_info,
                 from_timestamp,
                 to_timestamp,
@@ -292,7 +298,8 @@ def send_unread_notifications_namespace_digest(namespace, from_timestamp, to_tim
                 first_name,
                 last_name,
                 subject,
-                from_email
+                from_email,
+                unread_only=unread_only
             )
 
     return digests_sent
@@ -316,8 +323,8 @@ def with_inline_css(html_without_css):
     return html_without_css
 
 
-def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_id,
-                             email, first_name, last_name, subject, from_email):  # pylint: disable=unused-argument
+def _send_user_digest(namespace_info, from_timestamp, to_timestamp, user_id,
+                      email, first_name, last_name, subject, from_email, unread_only=True):
     """
     This will send a digest of unread notifications to a given user. Note, it is assumed here
     that the user's preference has already been checked. namespace_info will contain
@@ -329,7 +336,7 @@ def _send_user_unread_digest(namespace_info, from_timestamp, to_timestamp, user_
     notifications = get_notifications_for_user(
         user_id,
         filters={
-            'read': False,
+            'read': not unread_only,
             'unread': True,
             'start_date': from_timestamp,
             'end_timestamp': to_timestamp,
