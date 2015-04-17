@@ -7,11 +7,12 @@ from django.test import TestCase
 import pytz
 import datetime
 
-<<<<<<< HEAD
-from edx_notifications.const import RENDER_FORMAT_UNDERSCORE, RENDER_FORMAT_SMS, RENDER_FORMAT_JSON
-=======
-from edx_notifications.const import RENDER_FORMAT_HTML, RENDER_FORMAT_SMS
->>>>>>> add some comments and change FORMAT_UNDERSCORE -> FORMAT_HTML
+
+from edx_notifications.const import (
+    RENDER_FORMAT_HTML,
+    RENDER_FORMAT_SMS,
+    RENDER_FORMAT_JSON
+)
 from edx_notifications.renderers.renderer import (
     BaseNotificationRenderer,
     get_renderer_for_type,
