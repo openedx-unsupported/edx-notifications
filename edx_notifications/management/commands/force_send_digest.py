@@ -123,18 +123,22 @@ class Command(BaseCommand):
 
         log.info("Running management command ...")
 
+        daily_digests_sent = 0
+        weekly_digests_sent = 0
+
         if options['send_daily_digest']:
             log.info("Sending the daily digest with namespace=%s...", options['namespace'])
-            weekly_digests_sent = self.send_daily_digest(options['namespace'])
-            log.info("Successfully sent %s digests...", weekly_digests_sent)
+            daily_digests_sent = self.send_daily_digest(options['namespace'])
+            log.info("Successfully sent %s digests...", daily_digests_sent)
 
         if options['send_weekly_digest']:
             log.info("Sending the weekly digest with namespace=%s...", options['namespace'])
-            daily_digests_sent = self.send_weekly_digest(options['namespace'])
-            log.info("Successfully sent %s digests...", daily_digests_sent)
+            weekly_digests_sent = self.send_weekly_digest(options['namespace'])
+            log.info("Successfully sent %s digests...", weekly_digests_sent)
 
         if not options['send_weekly_digest'] and not options['send_daily_digest']:
             parser.print_help()
             raise CommandError("Neither Daily, nor Weekly digest specified.")
 
         log.info("Completed .")
+        return daily_digests_sent + weekly_digests_sent
