@@ -10,6 +10,7 @@ import logging
 import types
 import datetime
 import pytz
+import copy
 from contracts import contract
 
 from django.db.models.query import ValuesListQuerySet
@@ -69,8 +70,8 @@ def get_all_notification_types():
     return notification_store().get_all_notification_types()
 
 
-@contract(user_id='int,>0', msg=NotificationMessage)
-def publish_notification_to_user(user_id, msg):
+@contract(user_id='int', msg=NotificationMessage)
+def publish_notification_to_user(user_id, msg, preferred_channel=None, channel_context=None):
     """
     This top level API method will publish a notification
     to a user.
@@ -103,15 +104,16 @@ def publish_notification_to_user(user_id, msg):
     #
     # This call will never return None, if there is
     # a problem, it will throw an exception
-    channel = get_notification_channel(user_id, msg.msg_type)
+    channel = get_notification_channel(user_id, msg.msg_type, preferred_channel=preferred_channel)
 
-    user_msg = channel.dispatch_notification_to_user(user_id, msg)
+    user_msg = channel.dispatch_notification_to_user(user_id, msg, channel_context=channel_context)
 
     return user_msg
 
 
 @contract(msg=NotificationMessage)
-def bulk_publish_notification_to_users(user_ids, msg, exclude_user_ids=None):
+def bulk_publish_notification_to_users(user_ids, msg, exclude_user_ids=None,
+                                       preferred_channel=None, channel_context=None):
     """
     This top level API method will publish a notification
     to a group (potentially large). We have a distinct entry
@@ -160,15 +162,21 @@ def bulk_publish_notification_to_users(user_ids, msg, exclude_user_ids=None):
     # get the system defined msg_type -> channel mapping
     # note, when we enable user preferences, we will
     # have to change this
-    channel = get_notification_channel(None, msg.msg_type)
+    channel = get_notification_channel(None, msg.msg_type, preferred_channel=preferred_channel)
 
-    num_sent = channel.bulk_dispatch_notification(user_ids, msg, exclude_user_ids=exclude_user_ids)
+    num_sent = channel.bulk_dispatch_notification(
+        user_ids,
+        msg,
+        exclude_user_ids=exclude_user_ids,
+        channel_context=channel_context
+    )
 
     return num_sent
 
 
 @contract(msg=NotificationMessage)
-def bulk_publish_notification_to_scope(scope_name, scope_context, msg, exclude_user_ids=None):
+def bulk_publish_notification_to_scope(scope_name, scope_context, msg, exclude_user_ids=None,
+                                       preferred_channel=None, channel_context=None):
     """
     This top level API method will publish a notification
     to a UserScope (potentially large). Basically this is a convenience method
@@ -196,11 +204,18 @@ def bulk_publish_notification_to_scope(scope_name, scope_context, msg, exclude_u
     if not user_ids:
         return 0
 
-    return bulk_publish_notification_to_users(user_ids, msg, exclude_user_ids)
+    return bulk_publish_notification_to_users(
+        user_ids,
+        msg,
+        exclude_user_ids,
+        preferred_channel=preferred_channel,
+        channel_context=channel_context
+    )
 
 
 @contract(msg=NotificationMessage, send_at=datetime.datetime, scope_name=basestring, scope_context=dict)
-def publish_timed_notification(msg, send_at, scope_name, scope_context, timer_name=None, ignore_if_past_due=False):  # pylint: disable=too-many-arguments
+def publish_timed_notification(msg, send_at, scope_name, scope_context, timer_name=None,
+                               ignore_if_past_due=False, timer_context=None):  # pylint: disable=too-many-arguments
     """
     Registers a new notification message to be dispatched
     at a particular time.
@@ -258,18 +273,23 @@ def publish_timed_notification(msg, send_at, scope_name, scope_context, timer_na
     ).format(timer_name=_timer_name, scope_name=scope_name, scope_context=scope_context, send_at=send_at, msg=msg)
     log.info(log_msg)
 
+    _timer_context = copy.deepcopy(timer_context) if timer_context else {}
+
+    # add in the context that is predefined
+    _timer_context.update({
+        'msg_id': saved_msg.id,
+        'distribution_scope': {
+            'scope_name': scope_name,
+            'scope_context': scope_context,
+        }
+    })
+
     timer = NotificationCallbackTimer(
         name=_timer_name,
         callback_at=send_at,
         class_name='edx_notifications.callbacks.NotificationDispatchMessageCallback',
         is_active=True,
-        context={
-            'msg_id': saved_msg.id,
-            'distribution_scope': {
-                'scope_name': scope_name,
-                'scope_context': scope_context,
-            }
-        }
+        context=_timer_context
     )
 
     saved_timer = store.save_notification_timer(timer)

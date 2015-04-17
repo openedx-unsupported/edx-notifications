@@ -13,14 +13,14 @@ class NullNotificationChannel(BaseNotificationChannelProvider):
     NotificationMessages
     """
 
-    def dispatch_notification_to_user(self, user_id, msg):
+    def dispatch_notification_to_user(self, user_id, msg, channel_context=None):
         """
         Will not send the msg to the user_id
         """
 
         return None
 
-    def bulk_dispatch_notification(self, user_ids, msg, exclude_user_ids=None):
+    def bulk_dispatch_notification(self, user_ids, msg, exclude_user_ids=None, channel_context=None):
         """
         Will not send the msg to the list of users
         """
@@ -29,7 +29,7 @@ class NullNotificationChannel(BaseNotificationChannelProvider):
         # dispatches
         return 0
 
-    def resolve_msg_link(self, msg, link_name, params):
+    def resolve_msg_link(self, msg, link_name, params, channel_context=None):
         """
         Generates the appropriate link given a msg, a link_name, and params
         """

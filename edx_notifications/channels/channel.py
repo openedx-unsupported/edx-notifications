@@ -112,7 +112,7 @@ def _get_channel_preference(user_id, msg_type):  # pylint: disable=unused-argume
     return None
 
 
-def get_notification_channel(user_id, msg_type):
+def get_notification_channel(user_id, msg_type, preferred_channel=None):
     """
     Returns the appropriate NotificationChannel
     for this user and msg_type.
@@ -134,7 +134,14 @@ def get_notification_channel(user_id, msg_type):
         _init_channel_providers()
 
     # first see what the user preference is
+    # this is TBD
     channel = None
+
+    # if there is no user preference, and the caller passed in
+    # a preferred_channel, then return that channel provider
+    # instance
+    if not channel and preferred_channel:
+        return _CHANNEL_PROVIDERS[preferred_channel]
 
     if user_id:
         channel = _get_channel_preference(user_id, msg_type)  # pylint: disable=assignment-from-none
@@ -211,7 +218,7 @@ class BaseNotificationChannelProvider(object):
         self._link_resolvers = link_resolvers
 
     @abc.abstractmethod
-    def dispatch_notification_to_user(self, user_id, msg):
+    def dispatch_notification_to_user(self, user_id, msg, channel_context=None):
         """
         Send a notification to a user. It is assumed that
         'user_id' and 'msg' are valid and have already passed
@@ -220,7 +227,7 @@ class BaseNotificationChannelProvider(object):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def bulk_dispatch_notification(self, user_ids, msg, exclude_user_ids=None):
+    def bulk_dispatch_notification(self, user_ids, msg, exclude_user_ids=None, channel_context=None):
         """
         Perform a bulk dispatch of the notification message to
         all user_ids that will be enumerated over in user_ids.
@@ -228,7 +235,7 @@ class BaseNotificationChannelProvider(object):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def resolve_msg_link(self, msg, link_name, params):
+    def resolve_msg_link(self, msg, link_name, params, channel_context=None):
         """
         Generates the appropriate link given a msg, a link_name, and params
         """

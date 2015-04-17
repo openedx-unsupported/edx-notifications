@@ -32,3 +32,9 @@ class BulkOperationTooLarge(Exception):
     """
     Thrown when a bulk operation is determined to be too large
     """
+
+
+class ChannelError(Exception):
+    """
+    Thrown when there has been a problem in the NotificationChannel
+    """

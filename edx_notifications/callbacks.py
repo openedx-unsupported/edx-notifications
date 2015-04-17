@@ -104,6 +104,9 @@ class NotificationDispatchMessageCallback(NotificationCallbackTimerHandler):
             ).format(scope_name=scope_name, scope_context=scope_context, msg_id=msg_id)
             log.info(log_msg)
 
+            channel_context = context.get('channel_context')
+            preferred_channel = context.get('preferred_channel')
+
             try:
                 notification_msg = notification_store().get_notification_message_by_id(msg_id)
             except ItemNotFoundError:
@@ -113,13 +116,20 @@ class NotificationDispatchMessageCallback(NotificationCallbackTimerHandler):
                 ).format(msg_id=msg_id, name=timer.name)
 
             if scope_name == 'user':
-                num_dispatched = _send_to_single_user(notification_msg, scope_context)
+                num_dispatched = _send_to_single_user(
+                    notification_msg,
+                    scope_context,
+                    preferred_channel=preferred_channel,
+                    channel_context=channel_context
+                )
                 num_dispatched = 1
             else:
                 num_dispatched = _send_to_scoped_users(
                     notification_msg,
                     scope_name,
-                    scope_context
+                    scope_context,
+                    preferred_channel=preferred_channel,
+                    channel_context=channel_context
                 )
 
         except Exception, ex:  # pylint: disable=broad-except
@@ -135,7 +145,7 @@ class NotificationDispatchMessageCallback(NotificationCallbackTimerHandler):
         return result
 
 
-def _send_to_single_user(msg, scope_context):
+def _send_to_single_user(msg, scope_context, preferred_channel=None, channel_context=None):
     """
     Helper method to send to just a single user
     """
@@ -151,12 +161,17 @@ def _send_to_single_user(msg, scope_context):
     user_id = int(scope_context['user_id'])
 
     # finally publish the notification
-    publish_notification_to_user(user_id, msg)
+    publish_notification_to_user(
+        user_id,
+        msg,
+        preferred_channel=preferred_channel,
+        channel_context=channel_context
+    )
 
     return 1
 
 
-def _send_to_scoped_users(msg, scope_name, scope_context):
+def _send_to_scoped_users(msg, scope_name, scope_context, preferred_channel=None, channel_context=None):
     """
     Helper method to send to a scoped set of users.
     scope_context contains all of the information
@@ -181,7 +196,9 @@ def _send_to_scoped_users(msg, scope_name, scope_context):
     num_dispatched = bulk_publish_notification_to_users(
         user_ids,
         msg,
-        exclude_user_ids=exclude_list
+        exclude_user_ids=exclude_list,
+        preferred_channel=preferred_channel,
+        channel_context=channel_context
     )
 
     return num_dispatched

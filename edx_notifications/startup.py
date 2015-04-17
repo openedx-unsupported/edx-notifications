@@ -17,13 +17,14 @@ from edx_notifications.scopes import register_user_scope_resolver, SingleUserSco
 # not register their Django signal receivers
 
 
-def initialize():
+def initialize(register_system_types=True):
     """
     Startup entry point for the Notification subsystem
     """
 
     # alert the application tiers that they should register their
-    # notification types
-    perform_type_registrations.send(sender=None)
+    # notification types, but this optional (default=True)
+    if register_system_types:
+        perform_type_registrations.send(sender=None)
 
     register_user_scope_resolver('user', SingleUserScopeResolver(), {})

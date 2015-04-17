@@ -103,6 +103,13 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
             }
         }
     },
+    'parse-push': {
+        'class': 'edx_notifications.channels.parse_push.ParsePushNotificationChannelProvider',
+        'options': {
+            'application_id': 'test_id',
+            'rest_api_key': 'test_rest_api_key',
+        }
+    },
     'null': {
         'class': 'edx_notifications.channels.null.NullNotificationChannel',
         'options': {}

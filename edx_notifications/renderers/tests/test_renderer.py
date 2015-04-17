@@ -2,15 +2,17 @@
 Tests for renderer.py
 """
 
+import json
 from django.test import TestCase
 
-from edx_notifications.const import RENDER_FORMAT_UNDERSCORE, RENDER_FORMAT_SMS
+from edx_notifications.const import RENDER_FORMAT_UNDERSCORE, RENDER_FORMAT_SMS, RENDER_FORMAT_JSON
 from edx_notifications.renderers.renderer import (
     BaseNotificationRenderer
 )
 
 from edx_notifications.renderers.basic import (
-    UnderscoreStaticFileRenderer
+    UnderscoreStaticFileRenderer,
+    JsonRenderer
 )
 
 from edx_notifications.data import NotificationMessage, NotificationType
@@ -136,3 +138,30 @@ class RendererTests(TestCase):
 
         with self.assertRaises(NotImplementedError):
             url = renderer.get_template_path(RENDER_FORMAT_SMS)
+
+    def test_json_renderer(self):
+        """
+        Make sure JSON renderer returns correct renderings
+        """
+
+        msg_type = NotificationType(
+            name='open-edx.edx_notifications.lib.tests.test_publisher',
+            renderer='edx_notifications.renderers.basic.JsonRenderer',
+        )
+        register_notification_type(msg_type)
+
+        msg = NotificationMessage(
+            namespace='test-runner',
+            msg_type=msg_type,
+            payload={
+                'subject': 'test subject',
+                'body': 'test body',
+            }
+        )
+
+        renderer = JsonRenderer()
+
+        self.assertTrue(renderer.can_render_format(RENDER_FORMAT_JSON))
+        self.assertIsNone(renderer.get_template_path(RENDER_FORMAT_JSON))
+        self.assertEqual(json.loads(renderer.render_subject(msg, RENDER_FORMAT_JSON, None)), msg.payload)
+        self.assertEqual(json.loads(renderer.render_body(msg, RENDER_FORMAT_JSON, None)), msg.payload)
