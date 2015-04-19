@@ -116,6 +116,97 @@ class TestPublisherLibrary(TestCase):
         self.assertEqual(read_user_msg, sent_user_msg)
         self.assertEqual(read_user_msg.msg, sent_user_msg.msg)
 
+    def test_publish_multipayloads(self):
+        """
+        Go through and set up a multi-payload notification and publish it
+        make sure we we the default payloads
+        """
+
+        msg = NotificationMessage(
+            namespace='test-runner',
+            msg_type=self.msg_type,
+            payload={
+                'foo': 'bar'
+            }
+        )
+
+        msg.add_payload(
+            {
+                'one': 'two'
+            },
+            channel_name='anotherchannel'
+        )
+
+        # now do happy path
+        sent_user_msg = publish_notification_to_user(self.test_user_id, msg)
+
+        # now query back the notification to make sure it got stored
+        # and we can retrieve it
+        self.assertEquals(
+            get_notifications_count_for_user(self.test_user_id),
+            1
+        )
+
+        notifications = get_notifications_for_user(self.test_user_id)
+
+        self.assertTrue(isinstance(notifications, list))
+        self.assertEqual(len(notifications), 1)
+        self.assertTrue(isinstance(notifications[0], UserNotification))
+
+        read_user_msg = notifications[0]
+        self.assertEqual(read_user_msg.user_id, self.test_user_id)
+        self.assertIsNone(read_user_msg.read_at)  # should be unread
+
+        self.assertEqual(read_user_msg, sent_user_msg)
+        # make sure the message that got persisted contains only
+        # the default payload
+        self.assertEqual(read_user_msg.msg.payload, msg.get_payload())
+
+    def test_multipayload(self):
+        """
+        Test that a channel will use the right payload
+        """
+
+        msg = NotificationMessage(
+            namespace='test-runner',
+            msg_type=self.msg_type,
+            payload={
+                'foo': 'bar'
+            }
+        )
+
+        msg.add_payload(
+            {
+                'one': 'two'
+            },
+            channel_name='durable'
+        )
+
+        # now do happy path
+        sent_user_msg = publish_notification_to_user(self.test_user_id, msg)
+
+        # now query back the notification to make sure it got stored
+        # and we can retrieve it
+        self.assertEquals(
+            get_notifications_count_for_user(self.test_user_id),
+            1
+        )
+
+        notifications = get_notifications_for_user(self.test_user_id)
+
+        self.assertTrue(isinstance(notifications, list))
+        self.assertEqual(len(notifications), 1)
+        self.assertTrue(isinstance(notifications[0], UserNotification))
+
+        read_user_msg = notifications[0]
+        self.assertEqual(read_user_msg.user_id, self.test_user_id)
+        self.assertIsNone(read_user_msg.read_at)  # should be unread
+
+        self.assertEqual(read_user_msg, sent_user_msg)
+        # make sure the message that got persisted contains only
+        # the default payload
+        self.assertEqual(read_user_msg.msg.payload, msg.get_payload(channel_name='durable'))
+
     def test_link_resolution(self):
         """
         Go through and set up a notification and publish it but with

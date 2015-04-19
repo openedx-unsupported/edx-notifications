@@ -106,7 +106,10 @@ def publish_notification_to_user(user_id, msg, preferred_channel=None, channel_c
     # a problem, it will throw an exception
     channel = get_notification_channel(user_id, msg.msg_type, preferred_channel=preferred_channel)
 
-    user_msg = channel.dispatch_notification_to_user(user_id, msg, channel_context=channel_context)
+    # Get the proper message - aka payload - for the given channel
+    _msg = msg.get_message_for_channel(channel.name)
+
+    user_msg = channel.dispatch_notification_to_user(user_id, _msg, channel_context=channel_context)
 
     return user_msg
 
@@ -164,9 +167,12 @@ def bulk_publish_notification_to_users(user_ids, msg, exclude_user_ids=None,
     # have to change this
     channel = get_notification_channel(None, msg.msg_type, preferred_channel=preferred_channel)
 
+    # Get the proper message - aka payload - for the given channel
+    _msg = msg.get_message_for_channel(channel.name)
+
     num_sent = channel.bulk_dispatch_notification(
         user_ids,
-        msg,
+        _msg,
         exclude_user_ids=exclude_user_ids,
         channel_context=channel_context
     )
