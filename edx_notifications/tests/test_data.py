@@ -90,3 +90,51 @@ class DataTests(TestCase):
 
         msg.set_click_link('/updated')
         self.assertEqual(msg.get_click_link(), '/updated')
+
+    def test_multi_payloads(self):
+        """
+        Tests the ability to support multiple payloads in a NotificationMessage
+        """
+
+        msg = NotificationMessage()
+        self.assertIsNone(msg.get_payload())
+
+        msg.add_payload(
+            {
+                'foo': 'bar',
+            }
+        )
+
+        self.assertEqual(msg.get_payload(), {'foo': 'bar'})
+        self.assertEqual(msg.get_message_for_channel(), msg)
+
+        msg.add_payload(
+            {
+                'bar': 'baz'
+            },
+            channel_name='channel1'
+        )
+
+        self.assertNotEqual(msg.get_message_for_channel(), msg)
+        self.assertEqual(msg.get_message_for_channel().payload, {'foo': 'bar'})
+        self.assertEqual(msg.get_message_for_channel('channel1').payload, {'bar': 'baz'})
+
+        msg.add_payload(
+            {
+                'one': 'two'
+            },
+            channel_name='channel2'
+        )
+
+        self.assertNotEqual(msg.get_message_for_channel(), msg)
+        self.assertEqual(msg.get_message_for_channel().payload, {'foo': 'bar'})
+        self.assertEqual(msg.get_message_for_channel('channel1').payload, {'bar': 'baz'})
+        self.assertEqual(msg.get_message_for_channel('channel2').payload, {'one': 'two'})
+        self.assertEqual(msg.get_message_for_channel('doesnt-exist').payload, {'foo': 'bar'})
+
+        msg.add_payload(
+            {
+                'updated': 'yes'
+            }
+        )
+        self.assertEqual(msg.get_message_for_channel().payload, {'updated': 'yes'})

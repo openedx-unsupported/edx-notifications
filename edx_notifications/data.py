@@ -4,6 +4,7 @@ generic dictionaries from being passed around, plus this will help avoid any
 implicit database-specific bindings that come with any uses of ORMs.
 """
 
+import copy
 from django.core.exceptions import ValidationError
 
 from edx_notifications import const
@@ -122,6 +123,20 @@ class NotificationMessage(BaseDataObject):
         """
         return '_click_link'
 
+    @property
+    def _channel_payloads_keyname(self):
+        """
+        The name of the dictionary key in the Payload field
+        """
+        return '__channel_payloads'
+
+    @property
+    def _default_payload_keyname(self):
+        """
+        The name of the dictionary key in the Payload field
+        """
+        return '__channel_payloads'
+
     def validate(self):
         """
         Validator for this DataObject
@@ -208,6 +223,73 @@ class NotificationMessage(BaseDataObject):
         """
 
         return self.resolve_links.get(self._click_link_keyname)
+
+    @property
+    def has_multi_payloads(self):
+        """
+        Returns true/false if the Message is setup for multi payloads
+        """
+        return self.payload and self._channel_payloads_keyname in self.payload
+
+    def add_payload(self, payload_dict, channel_name=None):
+        """
+        Adds a payload that is targeted to the specific channel
+        """
+
+        sub_key = self._channel_payloads_keyname
+        default_key = self._default_payload_keyname
+
+        # use, old style schema?
+        if not channel_name and not self.has_multi_payloads:
+            self.payload = payload_dict
+        elif channel_name and not self.has_multi_payloads:
+            # convert to support multi-payloads
+            existing_payload = copy.deepcopy(self.payload)
+            self.payload[sub_key] = {}
+            payloads = self.payload[sub_key]
+            payloads[channel_name] = payload_dict
+            payloads[default_key] = existing_payload if existing_payload else {}
+        elif channel_name:
+            self.payload[sub_key][channel_name] = payload_dict
+        else:
+            self.payload[sub_key][default_key] = payload_dict
+
+    def get_payload(self, channel_name=None):
+        """
+        Returns a payload for the specific channel
+        """
+        if not self.has_multi_payloads:
+            return self.payload
+
+        sub_key = self._channel_payloads_keyname
+        payloads = self.payload[sub_key]
+
+        if channel_name in payloads:
+            return self.payload[sub_key][channel_name]
+
+        default_key = self._default_payload_keyname
+
+        if default_key in payloads:
+            return payloads[default_key]
+
+        return {}
+
+    def get_message_for_channel(self, channel_name=None):
+        """
+        Returns a copy of self with the correct payload channel
+        """
+
+        # simple case
+        if not self.has_multi_payloads:
+            return self
+
+        clone_msg = copy.deepcopy(self)
+
+        # return a NotificationMessage with all other
+        # channel payloads removed
+        clone_msg.payload = self.get_payload(channel_name)
+
+        return clone_msg
 
 
 class UserNotification(BaseDataObject):

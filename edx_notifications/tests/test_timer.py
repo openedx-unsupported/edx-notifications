@@ -186,12 +186,17 @@ class TimedNotificationsTests(TestCase):
             )
         )
 
-        self.msg = self.store.save_notification_message(
-            NotificationMessage(
-                msg_type=self.msg_type,
-                payload={'foo': 'bar'},
-            )
+        msg = NotificationMessage(
+            msg_type=self.msg_type,
+            payload={'foo': 'bar'},
         )
+        msg.add_payload(
+            {
+                'extra': 'stuff'
+            },
+            channel_name='other_channel'
+        )
+        self.msg = self.store.save_notification_message(msg)
 
     def test_timed_notifications(self):
         """
@@ -221,6 +226,13 @@ class TimedNotificationsTests(TestCase):
 
         # assert we now have a notification due to the timer executing
         self.assertEquals(self.store.get_num_notifications_for_user(1), 1)
+
+        notifications = self.store.get_notifications_for_user(1)
+        self.assertEqual(len(notifications), 1)
+
+        read_user_msg = notifications[0]
+        self.assertEqual(read_user_msg.msg.payload, self.msg.get_payload())
+        self.assertNotIn('extra', read_user_msg.msg.payload)
 
     def test_bad_scope(self):
         """
