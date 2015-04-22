@@ -90,6 +90,15 @@ def get_notifications_widget_context(override_context=None):
             'user_notification_mark_read': (
                 '{base_url}'
             ). format(base_url=reverse('edx_notifications.consumer.notifications.detail.no_param')),
+            'user_notification_preferences': (
+                '{base_url}'
+            ). format(base_url=reverse('edx_notifications.consumer.user_preferences')),
+            'user_notification_preferences_detail': (
+                '{base_url}'
+            ). format(base_url=reverse('edx_notifications.consumer.user_preferences.detail.no_param')),
+            'notification_preferences_all': (
+                '{base_url}'
+            ).format(base_url=reverse('edx_notifications.consumer.notification_preferences')),
             'renderer_templates_urls': reverse('edx_notifications.consumer.renderers.templates'),
         },
         'global_variables': {

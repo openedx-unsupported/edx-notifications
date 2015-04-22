@@ -1,11 +1,10 @@
 <div class='xns-title'>
     <%= title %>
 </div>
-<% if (__view == 'unread') { %>
-    <div class='xns-date'>
-        <%= __display_created %>
-    </div>
-<% } %>
+
+<div class='xns-date'>
+    <%= __display_created %>
+</div>
 <div class='xns-excerpt'>
     <%= excerpt %>
 </div>

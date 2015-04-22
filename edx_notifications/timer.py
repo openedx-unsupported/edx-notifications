@@ -11,11 +11,15 @@ from datetime import datetime, timedelta
 from importlib import import_module
 
 from django.dispatch import receiver
+from edx_notifications.data import NotificationCallbackTimer
+from edx_notifications.exceptions import ItemNotFoundError
 
 from edx_notifications.stores.store import notification_store
 from edx_notifications import const
 
-from edx_notifications.signals import perform_notification_scan
+from edx_notifications.signals import perform_notification_scan, perform_timer_registrations
+
+PURGE_NOTIFICATIONS_TIMER_NAME = 'purge-notifications-timer'
 
 log = logging.getLogger(__name__)
 
@@ -66,6 +70,12 @@ def poll_and_execute_timers(**kwargs):  # pylint: disable=unused-argument
             else:
                 timer.err_msg = str(results['errors'])
 
+            # see if the callback returned a 'context_update'
+            # which means that we should persist this in
+            # the timer context
+            if 'context_update' in results:
+                timer.context.update(results['context_update'])
+
             store.save_notification_timer(timer)
         except Exception, ex:  # pylint: disable=broad-except
             # generic error (possibly couldn't create class_name instance?)
@@ -76,3 +86,28 @@ def poll_and_execute_timers(**kwargs):  # pylint: disable=unused-argument
             log.exception(ex)
 
     log.info('Ending poll_and_execute_timers()...')
+
+
+@receiver(perform_timer_registrations)
+def register_purge_notifications_timer(sender, **kwargs):  # pylint: disable=unused-argument
+    """
+    Register PurgeNotificationsCallbackHandler.
+    This will be called automatically on the Notification subsystem startup (because we are
+    receiving the 'perform_timer_registrations' signal)
+    """
+    store = notification_store()
+
+    try:
+        store.get_notification_timer(PURGE_NOTIFICATIONS_TIMER_NAME)
+    except ItemNotFoundError:
+        # Set first execution time at upcoming 1:00 AM (1 hour after midnight).
+        first_execution_at = (datetime.now(pytz.UTC) + timedelta(days=1)).replace(hour=1, minute=0, second=0)
+
+        purge_notifications_timer = NotificationCallbackTimer(
+            name=PURGE_NOTIFICATIONS_TIMER_NAME,
+            callback_at=first_execution_at,
+            class_name='edx_notifications.callbacks.PurgeNotificationsCallbackHandler',
+            is_active=True,
+            periodicity_min=const.MINUTES_IN_A_DAY
+        )
+        store.save_notification_timer(purge_notifications_timer)

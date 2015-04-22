@@ -1,0 +1,242 @@
+span.xns-counter {
+    background: #e37527;
+    padding: 0px 5px;
+    border-radius: 50%;
+    position: absolute;
+    z-index: 1;
+    top: 15px;
+    left: 12px;
+    font-size: 10px;
+    line-height: 16px;
+    width: 16px;
+}
+
+span.xns-counter.double-digit {
+    padding: 0px 2px;
+}
+
+span.xns-counter.multi-digit {
+    padding: 0px 2px;
+    width: auto;
+}
+
+.xns-pane {
+    background-color: #ffffff;
+    box-shadow: -3px 3px 4px 0 rgba(51, 51, 51, 0.2);
+    border-radius: 0 0 4px 4px;
+    border-style: solid;
+    border-width: 1px;
+    right: 0px;
+    position: absolute;
+    top: 48px;
+    width: 340px;
+    display: none;
+}
+
+.xns-container {
+    border-top: 0px;
+    border-radius: 0 0 3px 3px;
+    padding: 0px 0px 20px 10px;
+    position: relative;
+}
+
+.xns-container .xns-list-body {
+    overflow: auto;
+    height: 442px;
+}
+
+.xns-container .xns-item {
+    position: relative;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #F5F5F5;
+    cursor: pointer;
+}
+
+.xns-container h3.xns-group {
+    text-transform: uppercase;
+    padding-bottom: 0px;
+    font-size: .85714rem;
+    font-weight: 700;
+    /* font-family: open sans; */
+    color: #333333;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.xns-container ul.xns-tab-list {
+    padding-bottom: 10px;
+}
+
+.xns-container ul {
+    font-size: .85714rem;
+}
+
+.xns-container ul.xns-items {
+    list-style-type: none;
+    margin-left: 0px;
+    padding-right: 15px;
+    line-height: 1.2em;
+}
+
+.xns-container ul.xns-items a {
+    color: #3384CA;
+}
+
+.xns-container ul.xns-items a:hover {
+    color: #7d888e;
+}
+
+.xns-container .xns-close {
+    float: right;
+    font-weight: bold;
+    color: #999;
+    opacity: 0.7;
+    cursor: pointer;
+    padding-right: 10px;
+    display: inline-block;
+    line-height: 15px;
+}
+
+.xns-container .xns-close:hover {
+    opacity: 0.9;
+}
+
+.xns-container h2 {
+    color: #3384CA;
+}
+
+.xns-container .xns-list-header {
+    padding-top: 20px;
+}
+
+.xns-container .xns-list-header h2 {
+    display: none;
+}
+
+.xns-container .xns-actions ul {
+    margin-left: 0px;
+    margin-bottom: 0px;
+}
+
+.xns-container .xns-actions ul li {
+    display: inline-block;
+    padding: 0 15px;
+    border-right: 1px solid #ddd;
+}
+
+.xns-container .xns-actions ul li:first-child {
+    padding-left: 0;
+}
+
+.xns-container .xns-actions ul li:last-child {
+    padding-right: 0;
+    border: none;
+}
+
+.xns-container .xns-actions ul li.active a {
+    color: #999;
+    text-decoration: none;
+    cursor: default;
+}
+
+.xns-container .xns-actions ul li.disabled a {
+    color: #999;
+    text-decoration: none;
+    cursor: default;
+}
+
+.xns-container .xns-actions ul li a {
+    color: #3384CA;
+    /*font-family: open sans; */
+    font-size: .85714rem;
+    font-weight: 700;
+}
+
+.xns-container .xns-actions ul li a:hover {
+    color: #7d888e;
+}
+
+.xns-container .xns-no-notifications-msg {
+    color: #333;
+}
+
+.xns-container .xns-date {
+    color: #868685;
+    /*font-family: open sans;*/
+    font-weight: 600;
+    font-size: .85714rem;
+    font-style: italic;
+}
+
+.xns-container .xns-item-body {
+    color: #333333;
+    font-size: .85714rem;
+    font-weight: 600;
+    line-height: 17px;
+    position: relative;
+    width: 96%;
+}
+
+.xns-container .xns-item:hover .xns-close-item {
+    display: block;
+}
+
+.xns-container .xns-close-item {
+    display: none;
+    height: 20px;
+    position: absolute;
+    right: -7px;
+    text-align: center;
+    top: 0px;
+    width: 16px;
+    opacity: 0.8;
+    color: #666;
+    padding-left: 2px;
+}
+
+.xns-container .xns-close-item-x {
+    display: none;
+}
+
+.xns-container .xns-close-item:hover {
+    opacity: 1;
+}
+
+.xns-container .xns-title {
+    color: #3384CA;
+    font-weight: 700;
+}
+
+.xns-container .xns-alert {
+    /*font-family: open sans;*/
+    color: #E37222;
+    font-height: 10pt;
+    font-weight: 700;
+}
+
+.xns-container .xns-username {
+    font-weight: 700;
+}
+
+.xns-container .xns-rank {
+    font-weight: 700;
+}
+
+.xns-branded-logo {
+	display:inline-block;
+}
+.xns-list-footer {
+	background: #e0e0e0;
+	padding: 10px;
+}
+
+.xns-content{
+	border: 1px solid #e8e8e8;
+  	padding: 0 15px 20px 15px;
+	margin-top: 15px;
+	border-radius: 3px;
+	box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.09);
+	position: relative;
+	overflow: auto;
+}

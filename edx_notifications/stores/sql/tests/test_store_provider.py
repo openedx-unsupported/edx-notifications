@@ -2,11 +2,13 @@
 Tests which exercise the MySQL test_data_provider
 """
 
+from freezegun import freeze_time
 import mock
 import pytz
 from datetime import datetime, timedelta
 
 from django.test import TestCase
+from edx_notifications.stores.sql.models import SQLUserNotification, SQLUserNotificationArchive
 
 from edx_notifications.stores.sql.store_provider import SQLNotificationStoreProvider
 from edx_notifications.data import (
@@ -14,7 +16,7 @@ from edx_notifications.data import (
     NotificationType,
     UserNotification,
     NotificationCallbackTimer,
-)
+    NotificationPreference, UserNotificationPreferences)
 from edx_notifications.exceptions import (
     ItemNotFoundError,
     BulkOperationTooLarge
@@ -93,6 +95,44 @@ class TestSQLStoreProvider(TestCase):
 
         self.assertIsNotNone(result)
         self.assertEqual(result, notification_type)
+
+    def _save_notification_preference(self, name, display_name, display_description=''):
+        """
+        Helper method to create a new notification_preference
+        """
+        test_notification_preference = NotificationPreference(
+            name=name,
+            display_name=display_name,
+            display_description=display_description
+        )
+
+        with self.assertNumQueries(3):
+            test_notification_preference_saved = self.provider.save_notification_preference(test_notification_preference)
+
+        self.assertIsNotNone(test_notification_preference_saved)
+        self.assertIsNotNone(test_notification_preference_saved.name)
+        return test_notification_preference_saved
+
+    def _save_user_notification_preference(self, preference_name, user_id, value):
+        """
+        Helper method to create a new user_notification_preference
+        """
+        notification_preference = self._save_notification_preference(
+            name=preference_name,
+            display_name='Test Preference'
+        )
+        test_user_notification_preference = UserNotificationPreferences(
+            user_id=user_id,
+            preference=notification_preference,
+            value=value
+        )
+
+        user_notification_preference = self.provider.set_user_preference(test_user_notification_preference)
+
+        self.assertIsNotNone(user_notification_preference)
+        self.assertIsNotNone(user_notification_preference.user_id)
+        self.assertEqual(user_notification_preference.preference, notification_preference)
+        return user_notification_preference
 
     def _save_new_notification(self, payload='This is a test payload'):
         """
@@ -578,6 +618,91 @@ class TestSQLStoreProvider(TestCase):
             )
             self.assertEqual(len(notifications), 0)
 
+        #
+        # test start_date and end_date filtering.
+        #
+
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'start_date': msg1.created,
+                    'end_date': msg2.created + timedelta(days=1)
+                }
+            ),
+            2
+        )
+
+        # filters by end_date
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'start_date': msg1.created + timedelta(days=1)
+                }
+            ),
+            0
+        )
+
+        # filters by end_date
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'end_date': msg2.created + timedelta(days=1)
+                }
+            ),
+            2
+        )
+
+        notifications = self.provider.get_notifications_for_user(
+            self.test_user_id,
+            filters={
+                'start_date': msg1.created,
+                'end_date': msg2.created + timedelta(days=1)
+            }
+        )
+        self.assertEqual(len(notifications), 2)
+        self.assertEqual(notifications[0].msg, msg2)
+        self.assertEqual(notifications[1].msg, msg1)
+
+        # update the created time for msg2 data object.
+        user_msg = SQLUserNotification.objects.get(msg_id=msg2.id)
+        user_msg.created = msg2.created - timedelta(days=1)
+        user_msg.save()
+
+        # now the msg 2 should not be in the filtered_list
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'start_date': msg1.created,
+                    'end_date': datetime.now(pytz.UTC) + timedelta(days=1)
+                }
+            ),
+            1
+        )
+
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'start_date': msg1.created
+                }
+            ),
+            1
+        )
+
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'end_date': user_msg.created - timedelta(days=1)
+                }
+            ),
+            0
+        )
+
     def test_bad_user_msg_update(self):
         """
         Test exception when trying to update a non-existing
@@ -865,3 +990,433 @@ class TestSQLStoreProvider(TestCase):
 
         with self.assertRaises(ItemNotFoundError):
             self.provider.get_notification_timer('foo')
+
+    def test_save_notification_preference(self):
+        """
+        test save notification preference in the store provide.
+        """
+        notification_preference = self._save_notification_preference(
+            name='test_notification_preference',
+            display_name="Test Preference",
+            display_description="This is the test preference"
+        )
+
+        with self.assertNumQueries(1):
+            notification_preference_read = self.provider.get_notification_preference(
+                notification_preference.name
+            )
+        self.assertEqual(notification_preference, notification_preference_read)
+
+    def test_save_update_notification_preference(self):
+        """
+        test update the saved notification preference
+        """
+        with self.assertNumQueries(3):
+            notification_preference = self._save_notification_preference(
+                name='test_notification_preference',
+                display_name="Test Preference",
+                display_description="This is the test preference"
+            )
+
+        notification_preference.display_name = 'Updated Test Preference'
+        with self.assertNumQueries(3):
+            notification_preference_saved_twice = self.provider.save_notification_preference(notification_preference)
+
+        with self.assertNumQueries(1):
+            notification_preference_read = self.provider.get_notification_preference(
+                notification_preference_saved_twice.name
+            )
+        self.assertEqual(notification_preference_saved_twice, notification_preference_read)
+
+    def test_get_all_notification_preferences(self):
+        """
+        test to get all the user notification preferences.
+        """
+        test_notification_preference = self._save_notification_preference(
+            name='test_notification_preference,',
+            display_name="Test Preference",
+            display_description="This is the test preference"
+        )
+
+        test2_notification_preference = self._save_notification_preference(
+            name='notification_preference2',
+            display_name="Test Preference 2",
+            display_description="This is the second test preference"
+        )
+
+        with self.assertNumQueries(1):
+            all_notification_preferences = self.provider.get_all_notification_preferences()
+
+        self.assertEqual(len(all_notification_preferences), 2)
+        self.assertEqual(all_notification_preferences[0], test_notification_preference)
+        self.assertEqual(all_notification_preferences[1], test2_notification_preference)
+
+    def test_get_non_existing_notification_preference(self):
+        """
+        Verifies that an exception is thrown when trying to load a non-existing
+        notification_preference
+        """
+
+        with self.assertRaises(ItemNotFoundError):
+            self.provider.get_notification_preference('foo')
+
+    def test_get_saved_user_preference(self):
+        """
+        test to get the saved the user preference.
+        """
+        user_notification_preference = self._save_user_notification_preference(
+            preference_name='Test Preference 1',
+            user_id=1,
+            value='User Preference 1'
+        )
+        with self.assertNumQueries(2):
+            read_user_notification_preference = self.provider.get_user_preference(
+                user_notification_preference.user_id,
+                user_notification_preference.preference.name
+            )
+        self.assertEqual(user_notification_preference, read_user_notification_preference)
+
+    def test_update_saved_user_preference(self):
+        """
+        test to get the updated user preference
+        """
+        user_notification_preferences = self._save_user_notification_preference(
+            preference_name='Test Preference 1',
+            user_id=1,
+            value='User Preference 1')
+        user_notification_preferences.value = 'Updated user Preference'
+        user_notification_preferences.user_id = 2
+
+        with self.assertNumQueries(2):
+            updated_user_preferences = self.provider.set_user_preference(user_notification_preferences)
+
+        with self.assertNumQueries(2):
+            read_updated_user_notification_preferences = self.provider.get_user_preference(
+                updated_user_preferences.user_id,
+                updated_user_preferences.preference.name
+            )
+        self.assertEqual(user_notification_preferences, read_updated_user_notification_preferences)
+
+    def test_get_non_existing_user_notification_preferences(self):
+        """
+        Verifies that an exception is thrown when trying to load a non-existing
+        user_notification_preference
+        """
+
+        with self.assertRaises(ItemNotFoundError):
+            self.provider.get_user_preference(4, 'foo')
+
+    def test_get_all_user_preferences(self):
+        """
+        test to get all the preferences for the users.
+        """
+        user_id = 1
+        for i in range(5):
+            self._save_user_notification_preference(
+                preference_name='test_preference{i}'.format(i=i + 1),
+                user_id=user_id,
+                value='User Preferences'
+            )
+        with self.assertNumQueries(6):
+            result = self.provider.get_all_user_preferences_for_user(user_id)
+        self.assertEqual(len(result), 5)
+
+    def test_get_all_user_preferences_with_name(self):
+        """
+        Test all user preferences with name
+        """
+        user_preference1 = self._save_user_notification_preference(
+            preference_name='test_preference',
+            user_id=1,
+            value='User-Preferences'
+        )
+
+        user_preference2 = self._save_user_notification_preference(
+            preference_name='test_preference',
+            user_id=2,
+            value='User-Preferences'
+        )
+
+        # make sure we can't pass along a huge limit size
+        with self.assertNumQueries(0):
+            with self.assertRaises(ValueError):
+                self.provider.get_all_user_preferences_with_name(
+                    name='test_preference',
+                    value='User-Preferences',
+                    size=const.USER_PREFERENCE_MAX_LIST_SIZE + 1
+                )
+
+        # test limit, we should only get the first one
+        with self.assertNumQueries(2):
+            user_preferences = self.provider.get_all_user_preferences_with_name(
+                name='test_preference',
+                value='User-Preferences',
+                size=1
+            )
+            self.assertEqual(len(user_preferences), 1)
+            # most recent one should be first
+            self.assertEqual(user_preferences[0], user_preference1)
+
+        # test limit with offset, we should only get the 2nd one
+        with self.assertNumQueries(2):
+            user_preferences = self.provider.get_all_user_preferences_with_name(
+                name='test_preference',
+                value='User-Preferences',
+                size=1,
+                offset=1,
+            )
+
+            self.assertEqual(len(user_preferences), 1)
+            # most recent one should be first, so user_preferences should be 2nd
+            self.assertEqual(user_preferences[0], user_preference2)
+
+        # test that limit should be able to exceed bounds
+        with self.assertNumQueries(2):
+            user_preferences = self.provider.get_all_user_preferences_with_name(
+                name='test_preference',
+                value='User-Preferences',
+                size=2,
+                offset=1,
+            )
+
+            self.assertEqual(len(user_preferences), 1)
+            # most recent one should be first, so user_preferences should be 2nd
+            self.assertEqual(user_preferences[0], user_preference2)
+
+    def test_purge_expired_unread_notifications(self):
+        """
+        Test to check for the older unread messages.
+        If exists delete those messages from the database.
+        """
+        msg_type = self._save_notification_type()
+        msg1 = self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace1',
+            msg_type=msg_type,
+            payload={
+                'foo': 'bar'
+            }
+        ))
+
+        msg2 = self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace1',
+            msg_type=msg_type,
+            payload={
+                'test': 'test'
+            }
+        ))
+
+        # now reset the time to 10 days ago
+        # in order to save the user notification message in the past.
+        reset_time = datetime.now(pytz.UTC) - timedelta(days=10)
+        with freeze_time(reset_time):
+            self.provider.save_user_notification(UserNotification(
+                user_id=self.test_user_id,
+                msg=msg1
+            ))
+
+        # now reset the time to 2 days ago
+        # in order to save the user notification message in the past.
+        reset_time = datetime.now(pytz.UTC) - timedelta(days=2)
+        with freeze_time(reset_time):
+            self.provider.save_user_notification(UserNotification(
+                user_id=self.test_user_id,
+                msg=msg2
+            ))
+
+        # user notifications count
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'namespace': 'namespace1'
+                }
+            ),
+            2
+        )
+
+        # purge older unread messages.
+        purge_unread_messages_older_than = datetime.now(pytz.UTC) - timedelta(days=6)
+        self.provider.purge_expired_notifications(purge_unread_messages_older_than=purge_unread_messages_older_than)
+
+        # now get the user notification count.
+        # count should be 1 at that moment. because
+        # only 1 notification has been deleted.
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'namespace': 'namespace1'
+                }
+            ),
+            1
+        )
+
+    def test_purge_expired_read_notifications(self):
+        """
+        Test to check for the older read messages.
+        If exists delete those messages from the database.
+        """
+
+        msg_type = self._save_notification_type()
+        msg1 = self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace1',
+            msg_type=msg_type,
+            payload={
+                'foo': 'bar'
+            }
+        ))
+
+        msg2 = self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace1',
+            msg_type=msg_type,
+            payload={
+                'test': 'test'
+            }
+        ))
+
+        # now reset the time to 10 days ago
+        # in order to save the user notification messages in the past.
+        reset_time = datetime.now(pytz.UTC) - timedelta(days=10)
+        with freeze_time(reset_time):
+            self.provider.save_user_notification(UserNotification(
+                user_id=self.test_user_id,
+                msg=msg1
+            ))
+
+            # mark the user notification as read.
+            self.provider.mark_user_notifications_read(self.test_user_id)
+
+        # now reset the time to 2 days ago
+        # in order to save the user notification messages in the past.
+        reset_time = datetime.now(pytz.UTC) - timedelta(days=2)
+        with freeze_time(reset_time):
+            self.provider.save_user_notification(UserNotification(
+                user_id=self.test_user_id,
+                msg=msg2
+            ))
+
+            # mark the user notification as read.
+            self.provider.mark_user_notifications_read(self.test_user_id)
+
+        # user notifications count
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'namespace': 'namespace1'
+                }
+            ),
+            2
+        )
+
+        # purge older read messages.
+        purge_older_read_messages = datetime.now(pytz.UTC) - timedelta(days=6)
+        self.provider.purge_expired_notifications(purge_read_messages_older_than=purge_older_read_messages)
+
+        # now get the user notification count.
+        # count should be 1 at that moment. because
+        # only 1 notification has been deleted.
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'namespace': 'namespace1'
+                }
+            ),
+            1
+        )
+
+    @mock.patch('edx_notifications.const.NOTIFICATION_ARCHIVE_ENABLED', True)
+    def test_archive_the_purged_notifications(self):
+        """
+        Test to check that deleting user notification should be archive.
+        """
+        msg_type = self._save_notification_type()
+        msg = self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace1',
+            msg_type=msg_type,
+            payload={
+                'test': 'test'
+            }
+        ))
+
+        # now reset the time to 7 days ago
+        # in order to save the user notification message in the past.
+        reset_time = datetime.now(pytz.UTC) - timedelta(days=7)
+        with freeze_time(reset_time):
+            user_notification = self.provider.save_user_notification(UserNotification(
+                user_id=self.test_user_id,
+                msg=msg
+            ))
+
+            # mark the user notification as read.
+            self.provider.mark_user_notifications_read(self.test_user_id)
+
+        self.assertEqual(SQLUserNotificationArchive.objects.all().count(), 0)
+
+        # purge older read messages.
+        purge_older_read_messages = datetime.now(pytz.UTC) - timedelta(days=6)
+        self.provider.purge_expired_notifications(purge_read_messages_older_than=purge_older_read_messages)
+
+        # now get the user notification count.
+        # count should be 0 at that moment. because
+        # 1 notification has been deleted.
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'namespace': 'namespace1'
+                }
+            ),
+            0
+        )
+        # Notification should be archived
+        # count should be increased by 1.
+        self.assertEqual(SQLUserNotificationArchive.objects.all().count(), 1)
+
+        archived_notification = SQLUserNotificationArchive.objects.all()[0]
+        self.assertEqual(archived_notification.msg_id, user_notification.msg.id)
+        self.assertEqual(archived_notification.user_id, user_notification.user_id)
+
+    def test_get_all_namespaces(self):
+        """
+        Verify that we can get a list of all namespaces
+        """
+
+        msg_type = self._save_notification_type()
+        self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace1',
+            msg_type=msg_type,
+            payload={'foo': 'bar'}
+        ))
+
+        self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace2',
+            msg_type=msg_type,
+            payload={'foo': 'bar'}
+        ))
+
+        self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace1',
+            msg_type=msg_type,
+            payload={'foo': 'bar'}
+        ))
+
+        self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace3',
+            msg_type=msg_type,
+            payload={'foo': 'bar'}
+        ))
+
+        self.provider.save_notification_message(NotificationMessage(
+            namespace='namespace1',
+            msg_type=msg_type,
+            payload={'foo': 'bar'}
+        ))
+
+        namespaces = self.provider.get_all_namespaces()
+
+        self.assertEqual(len(namespaces), 3)
+        self.assertIn('namespace1', namespaces)
+        self.assertIn('namespace2', namespaces)
+        self.assertIn('namespace3', namespaces)

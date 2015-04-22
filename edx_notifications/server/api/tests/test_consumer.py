@@ -17,16 +17,18 @@ from .utils import (
 
 from edx_notifications.lib.publisher import (
     register_notification_type,
-    publish_notification_to_user,
+    publish_notification_to_user
 )
 
 from edx_notifications.lib.consumer import (
     mark_notification_read,
+    set_notification_preference, set_user_notification_preference
 )
 
 from edx_notifications.data import (
     NotificationType,
     NotificationMessage,
+    NotificationPreference
 )
 
 from edx_notifications.server.api.urls import urlpatterns
@@ -271,6 +273,16 @@ class ConsumerAPITests(LoggedInTestCase):
         self.assertEqual(api_result['msg']['msg_type']['name'], original.msg.msg_type.name)
         self.assertEqual(api_result['msg']['payload'], original.msg.payload)
 
+    def _compare_notification_preference_to_result(self, original, api_result):
+        """
+        Helper to compare a notification preference with the data that was returned
+        """
+
+        self.assertEqual(api_result['name'], original.name)
+        self.assertEqual(api_result['display_name'], original.display_name)
+        self.assertEqual(api_result['display_description'], original.display_description)
+        self.assertEqual(api_result['default_value'], original.default_value)
+
     def test_multiple_notifications(self):
         """
         Test Case for retrieving multiple notifications
@@ -490,6 +502,152 @@ class ConsumerAPITests(LoggedInTestCase):
             }
         )
         self.assertEqual(response.status_code, 404)
+
+    def test_multiple_notification_preference(self):
+        """
+        Test to check for the notification preferences list values
+        """
+        notification_preference_daily = NotificationPreference(
+            name='daily-digest-emails',
+            display_name='Daily Emails',
+            display_description='Daily Digestion Email ',
+            default_value='false'
+        )
+        notification_preference_weekly = NotificationPreference(
+            name='weekly-digest-emails',
+            display_name='Weekly Emails',
+            display_description='Weekly Digestion Email ',
+            default_value='false'
+        )
+        notification_preference1 = set_notification_preference(notification_preference_daily)
+        notification_preference2 = set_notification_preference(notification_preference_weekly)
+
+        response = self.client.get(reverse('edx_notifications.consumer.notification_preferences'))
+        self.assertEqual(response.status_code, 200)
+
+        results = json.loads(response.content)
+        self.assertEqual(len(results), 2)
+
+        self._compare_notification_preference_to_result(notification_preference1, results[0])
+        self._compare_notification_preference_to_result(notification_preference2, results[1])
+
+    def test_user_preferences_list(self):
+        """
+        Test User Preferences List
+        """
+        notification_preference_daily = NotificationPreference(
+            name='daily-digest-emails',
+            display_name='Daily Emails',
+            display_description='Daily Digestion Email ',
+            default_value='false'
+        )
+        notification_preference = set_notification_preference(notification_preference_daily)
+
+        user_preference = set_user_notification_preference(
+            1,
+            notification_preference.name,
+            'Test User 1'
+        )
+
+        response = self.client.get(reverse('edx_notifications.consumer.user_preferences'))
+        self.assertEqual(response.status_code, 200)
+
+        results = json.loads(response.content)
+        self.assertEqual(len(results), 1)
+
+        self.assertEqual(user_preference.user_id, results[0]['user_id'])
+        self.assertEqual(user_preference.value, results[0]['value'])
+        self._compare_notification_preference_to_result(user_preference.preference, results[0]['preference'])
+
+    def test_get_specific_user_preferences(self):
+        """
+        Test specific preference setting for the user
+        """
+        # test bad preference name send 400 error response
+        response = self.client.get(
+            reverse('edx_notifications.consumer.user_preferences.detail', args=['bad-name']))
+        self.assertEqual(response.status_code, 404)
+
+        notification_preference_daily = NotificationPreference(
+            name='daily-digest-emails',
+            display_name='Daily Emails',
+            display_description='Daily Digestion Email ',
+            default_value='false'
+        )
+        notification_preference = set_notification_preference(notification_preference_daily)
+
+        user_preference = set_user_notification_preference(
+            1,
+            notification_preference.name,
+            'Test User 1'
+        )
+
+        # hit the api with the valid preference name
+        response = self.client.get(
+            reverse('edx_notifications.consumer.user_preferences.detail', args=['daily-digest-emails']))
+        self.assertEqual(response.status_code, 200)
+
+        results = json.loads(response.content)
+        self.assertEqual(len(results), 1)
+
+        self.assertEqual(user_preference.user_id, results[0]['user_id'])
+        self.assertEqual(user_preference.value, results[0]['value'])
+        self._compare_notification_preference_to_result(user_preference.preference, results[0]['preference'])
+
+    def test_set_specific_user_preferences(self):
+        """
+        Test to set the specific user preferences.
+        """
+        notification_preference_daily = NotificationPreference(
+            name='daily-digest-emails',
+            display_name='Daily Emails',
+            display_description='Daily Digestion Email ',
+            default_value='false'
+        )
+        set_notification_preference(notification_preference_daily)
+
+        data = {'value': "Test User 1"}
+        # post the api with the valid data
+        # this will create a new user preference
+        response = self.client.post(
+            reverse('edx_notifications.consumer.user_preferences.detail', args=['daily-digest-emails']),
+            data=data
+        )
+        self.assertEqual(response.status_code, 200)
+
+        data = {}
+        # missing value in json gives 404 error
+        response = self.client.post(
+            reverse('edx_notifications.consumer.user_preferences.detail', args=['daily-digest-emails']),
+            data=data
+        )
+        self.assertEqual(response.status_code, 404)
+
+        # valid data and invalid arg in the url gives 404 error
+        data.clear()
+        data = {'value': 'User Preference updated Value'}
+        response = self.client.post(
+            reverse('edx_notifications.consumer.user_preferences.detail', args=['invalid-value']),
+            data=data
+        )
+        self.assertEqual(response.status_code, 404)
+
+        # post the api with the valid data
+        response = self.client.post(
+            reverse('edx_notifications.consumer.user_preferences.detail', args=['daily-digest-emails']),
+            data=data
+        )
+        self.assertEqual(response.status_code, 200)
+
+        # now check if the data is updated
+        response = self.client.get(
+            reverse('edx_notifications.consumer.user_preferences.detail', args=['daily-digest-emails']))
+        self.assertEqual(response.status_code, 200)
+
+        results = json.loads(response.content)
+        self.assertEqual(len(results), 1)
+
+        self.assertEqual(data['value'], results[0]['value'])
 
     def test_mock_uls(self):
         """
