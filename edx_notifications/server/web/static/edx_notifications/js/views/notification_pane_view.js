@@ -68,7 +68,7 @@ var NotificationPaneView = Backbone.View.extend({
         'click .xns-hide-pane': 'hidePane',
         'click .xns-item': 'visitNotification',
         'click .xns-close-item': 'closeNotification',
-        'click': 'preventHidingWhenClickedInside'
+        'click .xns-content': 'preventHidingWhenClickedInside'
     },
 
     template: null,
