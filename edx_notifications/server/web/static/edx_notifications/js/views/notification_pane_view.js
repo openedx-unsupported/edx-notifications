@@ -427,7 +427,8 @@ var NotificationPaneView = Backbone.View.extend({
     },
     markNotificationsRead: function(e) {
         // this is only supported on the 'unread' view
-        if (this.selected_pane == 'unread' && this.collection.length > 0) {
+        if (this.selected_pane == 'unread' &&
+            (this.collection.url !== this.mark_all_read_endpoint || this.collection.length > 0)) {
             // set the API endpoint that was passed into our initializer
             this.collection.url = this.mark_all_read_endpoint;
 
