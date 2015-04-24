@@ -93,7 +93,7 @@ NOTIFICATION_CLICK_LINK_URL_MAPS = {
 # list all known channel providers
 NOTIFICATION_CHANNEL_PROVIDERS = {
     'durable': {
-        'class': 'edx_notifications.channels.durable.BaseDurableNotificationChannel',
+        'class': 'edx_notifications.channels.triggered_email.TriggeredEmailChannelProvider',
         'options': {
             # list out all link resolvers
             'link_resolvers': {
