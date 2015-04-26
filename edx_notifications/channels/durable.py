@@ -5,70 +5,27 @@ retrieval
 """
 
 import logging
-from importlib import import_module
 
 from edx_notifications import const
 from edx_notifications.channels.channel import BaseNotificationChannelProvider
+from edx_notifications.channels.link_resolvers import MsgTypeToUrlResolverMixin
 
 from edx_notifications.stores.store import notification_store
 
 from edx_notifications.data import (
     UserNotification,
-    NotificationMessage,
 )
 
 log = logging.getLogger(__name__)
 
 
-class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
+class BaseDurableNotificationChannel(MsgTypeToUrlResolverMixin, BaseNotificationChannelProvider):
     """
     A durable notification channel will save messages to
     the database. This can be subclassed by any specialized
     Channel provider if it was to provide custom behavior (but still
     has the characteristic of using a durable stoage backend)
     """
-
-    _cached_resolvers = {}
-
-    def _get_linked_resolved_msg(self, msg):
-        """
-        This helper will attempt to resolve all
-        links that are present in the message
-
-        resolve any links that may need conversion into URL paths
-        This uses a subdict named "_resolve_links" in the msg.resolve_links
-        field:
-
-            resolve_links = {
-                "_resolve_links": {
-                    "_click_link": {
-                       "param1": "val1",
-                       "param2": "param2"
-                    },
-                    :
-                },
-             :
-            }
-
-        This above will try to resolve the URL for the link named "_click_link" (for
-        example, when a user clicks on a notification, the should go to that URL), with the
-        URL parameters "param1"="val1" and "param2"="val2", and put that link name back in
-        the main payload dictionary as "_click_link"
-        """
-
-        if msg.resolve_links:
-            for link_name, link_params in msg.resolve_links.iteritems():
-                resolved_link = self.resolve_msg_link(msg, link_name, link_params)
-                if resolved_link:
-                    # copy the msg because we are going to alter it and we don't want to affect
-                    # the passed in version
-                    msg = NotificationMessage.clone(msg)
-
-                    # if we could resolve, then store the resolved link in the payload itself
-                    msg.payload[link_name] = resolved_link
-
-        # return the msg which could be a clone of the original one
-        return msg
 
     def dispatch_notification_to_user(self, user_id, msg, channel_context=None):
         """
@@ -156,49 +113,3 @@ class BaseDurableNotificationChannel(BaseNotificationChannelProvider):
             store.bulk_create_user_notification(user_msgs)
 
         return total
-
-    def _get_link_resolver(self, resolver_name):
-        """
-        Returns a link resolver class from the name
-        """
-
-        # see if we have a cached resolver as it should be a singleton
-
-        if resolver_name in self._cached_resolvers:
-            return self._cached_resolvers[resolver_name]
-
-        resolver = None
-        if self.link_resolvers and resolver_name in self.link_resolvers:
-            # need to have link_resolvers defined in our channel options config
-            if 'class' in self.link_resolvers[resolver_name]:
-                _class_name = self.link_resolvers[resolver_name]['class']
-                config = {}
-                if 'config' in self.link_resolvers[resolver_name]:
-                    config = self.link_resolvers[resolver_name]['config']
-
-                # now create an instance of the resolver
-                module_path, _, name = _class_name.rpartition('.')
-                class_ = getattr(import_module(module_path), name)
-                resolver = class_(config)  # pylint: disable=star-args
-
-                # put in our cache
-                self._cached_resolvers[resolver_name] = resolver
-
-        return resolver
-
-    def resolve_msg_link(self, msg, link_name, params, channel_context=None):
-        """
-        Generates the appropriate link given a msg, a link_name, and params
-        """
-
-        # right now we just support resolution through
-        # type_name -> key lookups, aka 'type_to_url' in our
-        # link_resolvers config dict. This is reserved for
-        # future extension
-        resolver = self._get_link_resolver('msg_type_to_url')
-
-        resolved_link = None
-        if resolver:
-            resolved_link = resolver.resolve(msg.msg_type.name, link_name, params)
-
-        return resolved_link

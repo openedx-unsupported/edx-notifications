@@ -42,6 +42,7 @@ from edx_notifications.digests import send_notifications_digest
 
 from edx_notifications.server.web.utils import get_notifications_widget_context
 from edx_notifications import const
+from edx_notifications.scopes import register_user_scope_resolver
 
 from .forms import *
 
@@ -170,6 +171,9 @@ def index(request):
     global NAMESPACE
 
     if request.method == 'POST':
+
+        register_user_scope_resolver('student_email_resolver', TestUserResolver(request.user))
+
         if request.POST.get('change_namespace'):
             namespace_str = request.POST['namespace']
             NAMESPACE = namespace_str if namespace_str != "None" else None
@@ -177,6 +181,9 @@ def index(request):
             send_digest(request)
         else:
             type_name = request.POST['notification_type']
+            channel_name = request.POST['notification_channel']
+            if not channel_name:
+                channel_name = None
             msg_type = get_notification_type(type_name)
 
             msg = NotificationMessage(
@@ -191,7 +198,7 @@ def index(request):
                     'param2': 'param_val2',
                 })
 
-            publish_notification_to_user(request.user.id, msg)
+            publish_notification_to_user(request.user.id, msg, preferred_channel=channel_name)
 
     template = loader.get_template('index.html')
 
@@ -302,3 +309,7 @@ def send_digest(request):
         const.NOTIFICATION_DAILY_DIGEST_SUBJECT,
         const.NOTIFICATION_DIGEST_FROM_ADDRESS
     )
+
+
+
+
