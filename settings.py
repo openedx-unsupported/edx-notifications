@@ -93,7 +93,7 @@ NOTIFICATION_CLICK_LINK_URL_MAPS = {
 # list all known channel providers
 NOTIFICATION_CHANNEL_PROVIDERS = {
     'durable': {
-        'class': 'edx_notifications.channels.triggered_email.TriggeredEmailChannelProvider',
+        'class': 'edx_notifications.channels.durable.BaseDurableNotificationChannel',
         'options': {
             # list out all link resolvers
             'link_resolvers': {
@@ -114,6 +114,23 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
         'options': {
             'application_id': 'test_id',
             'rest_api_key': 'test_rest_api_key',
+        }
+    },
+    'triggered-email': {
+        'class': 'edx_notifications.channels.triggered_email.TriggeredEmailChannelProvider',
+        'options': {
+            # list out all link resolvers
+            'link_resolvers': {
+                # right now the only defined resolver is 'type_to_url', which
+                # attempts to look up the msg type (key) via
+                # matching on the value
+                'msg_type_to_url': {
+                    'class': 'edx_notifications.channels.link_resolvers.MsgTypeToUrlLinkResolver',
+                    'config': {
+                        '_click_link': NOTIFICATION_CLICK_LINK_URL_MAPS,
+                    }
+                }
+            }
         }
     },
     'null': {
