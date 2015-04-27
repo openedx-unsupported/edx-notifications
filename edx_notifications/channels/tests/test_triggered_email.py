@@ -1,7 +1,7 @@
 """
 Test Triggered Emails
 """
-from unittest import TestCase
+from django.test import TestCase
 from edx_notifications import startup
 from edx_notifications.data import NotificationMessage
 from edx_notifications.lib.publisher import bulk_publish_notification_to_users
