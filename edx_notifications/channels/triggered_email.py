@@ -54,7 +54,6 @@ class TriggeredEmailChannelProvider(MsgTypeToUrlResolverMixin, BaseNotificationC
                 email = result['email']
             else:
                 email = result
-            print '***** email = {}'.format(email)
 
             renderer = get_renderer_for_type(user_msg.msg.msg_type)
             notification_html = ''
