@@ -113,10 +113,10 @@ var NotificationPaneView = Backbone.View.extend({
         /* we might - at some point - add a visual element to the */
         /* loading, like a spinner */
         var self = this;
-        self.$el.addClass('ui-loading');
+        self.$el.addClass('xns-ui-loading');
         this.collection.fetch({
             success: function(){
-                self.$el.removeClass('ui-loading');
+                self.$el.removeClass('xns-ui-loading');
                 self.render();
             }
         });
@@ -436,7 +436,7 @@ var NotificationPaneView = Backbone.View.extend({
             // after it loads, the listenTo event will file and
             // will call into the rendering
             var self = this;
-            self.$el.addClass('ui-loading');
+            self.$el.addClass('xns-ui-loading');
             var data = {};
             if (this.namespace) {
                 data = {
@@ -451,7 +451,7 @@ var NotificationPaneView = Backbone.View.extend({
                     type: 'POST',
                     data: data,
                     success: function () {
-                        self.$el.removeClass('ui-loading');
+                        self.$el.removeClass('xns-ui-loading');
                         self.selected_pane = 'unread';
                         self.render();
 
