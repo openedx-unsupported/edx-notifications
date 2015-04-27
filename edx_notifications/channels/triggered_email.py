@@ -6,6 +6,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 import logging
+import datetime
 import uuid
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
@@ -37,7 +38,6 @@ class TriggeredEmailChannelProvider(MsgTypeToUrlResolverMixin, BaseNotificationC
         # call into one of the registered resolvers to get the email for this
         # user
         scope_results = resolve_user_scope('student_email_resolver', {'user_id': user_id})
-        import datetime
         msg = self._get_linked_resolved_msg(msg)
         msg.created = datetime.datetime.now(pytz.UTC)
 
