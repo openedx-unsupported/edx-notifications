@@ -161,6 +161,23 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
             }
         }
     },
+    'triggered-email': {
+        'class': 'edx_notifications.channels.triggered_email.TriggeredEmailChannelProvider',
+        'options': {
+            # list out all link resolvers
+            'link_resolvers': {
+                # right now the only defined resolver is 'type_to_url', which
+                # attempts to look up the msg type (key) via
+                # matching on the value
+                'msg_type_to_url': {
+                    'class': 'edx_notifications.channels.link_resolvers.MsgTypeToUrlLinkResolver',
+                    'config': {
+                        '_click_link': NOTIFICATION_CLICK_LINK_URL_MAPS,
+                    }
+                }
+            }
+        }
+    },
     'null': {
         'class': 'edx_notifications.channels.null.NullNotificationChannel',
         'options': {}
@@ -203,5 +220,5 @@ NOTIFICATION_DIGEST_EMAIL_CSS = 'css/email_digests.css'
 
 try:
     from local_settings import *
-except ImportError:
+except Exception:
     pass
