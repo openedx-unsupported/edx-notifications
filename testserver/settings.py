@@ -110,8 +110,11 @@ STATIC_URL = '/static/'
 HIDE_LINK_IS_VISIBLE = True
 
 NOTIFICATION_STORE_PROVIDER = {
-    "class": "edx_notifications.stores.sql.store_provider.SQLNotificationStoreProvider",
+    "class": "edx_notifications.stores.mongo.store_provider.MongoNotificationStoreProvider",
     "options": {
+        'host': 'localhost',
+        'port': 27017,
+        'database_name': 'notifications'
     }
 }
 
