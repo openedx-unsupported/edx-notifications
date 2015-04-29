@@ -27,40 +27,36 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
         _filters = filters if filters else {}
         _options = options if options else {}
 
-        query_object = {'user_id': user_id}
         namespace = _filters.get('namespace')
         read = _filters.get('read', True)
         unread = _filters.get('unread', True)
         type_name = _filters.get('type_name')
         start_date = _filters.get('start_date')
         end_date = _filters.get('end_date')
-        query_object = [{'user_id': user_id}]
+        query_object = {'user_id': user_id}
         if not read and not unread:
             raise ValueError('Bad arg combination either read or unread must be set to True')
 
         if namespace:
-            pass
-            # query_object.append({'namespace': namespace})
+            query_object.update({'user_notification.namespace': namespace})
 
         if not (read and unread):
             if read:
-                query_object.append({'read_at': {"$ne": None}})
+                query_object.update({'read_at': {"$ne": None}})
 
             if unread:
-                query_object.append({'user_notification.read_at': None})
+                query_object.update({'user_notification.read_at': None})
 
         if type_name:
-            pass
-            # query_object.append({'msg.msg_type': 'null'})
-            # collection = collection.filter(msg__msg_type=type_name)
+            query_object.update({'user_notification.msg_type_name': type_name})
 
         if start_date:
-            query_object.append({'created': {"gte": start_date}})
+            query_object.update({'created': {"gte": start_date}})
 
         if end_date:
-            query_object.append({'created': {"lte": end_date}})
+            query_object.update({'created': {"lte": end_date}})
 
-        collection = self.collection.find(*query_object)
+        collection = self.collection.find(query_object)
         return list(collection)
 
     def get_notifications_for_user(self, user_id, filters=None, options=None):
@@ -71,7 +67,7 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
         :param options:
         :return:
         """
-        self._get_prepaged_notifications(user_id, filters, options)
+        return self._get_prepaged_notifications(user_id, filters, options)
 
     def mark_user_notifications_read(self, user_id, filters=None):
         pass
@@ -95,34 +91,46 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
 
         super(MongoNotificationStoreProvider, self).save_notification_message(user_msg.msg)
 
-        user_notification = self.collection.find({'user_id': user_msg.user_id})
-        if user_notification.count() == 0:
-            user_notification = self.collection.insert(
-                {
-                    'user_id': user_msg.user_id,
-                    'user_notification': [{
-                        'msg_id': user_msg.msg.id,
-                        'created': user_msg.created if user_msg.created else datetime.datetime.now(pytz.UTC),
-                        'modified': datetime.datetime.now(pytz.UTC),
-                        'user_context': user_msg.user_context if user_msg.user_context else None,
-                        'read_at': user_msg.read_at if user_msg.read_at else None
-                    }]
-                }
-            )
-        else:
-            user_notification = self.collection.update(
-                {'user_id': user_msg.user_id},
-                {'$push': {
-                    'user_notification':
-                        {
+        # user_notification = self.collection.find({'user_id': user_msg.user_id})
+
+        user_notification = self.collection.update(
+            {
+                'user_id': user_msg.user_id,
+            },
+            {
+                '$set': {'user_id': user_msg.user_id},
+                '$push': {
+                    'user_notification': {
+                        '$each':
+                        [{
                             'msg_id': user_msg.msg.id,
+                            'msg_type_name': user_msg.msg.msg_type.name,
+                            'namespace': user_msg.msg.namespace,
                             'created': datetime.datetime.now(pytz.UTC),
                             'modified': datetime.datetime.now(pytz.UTC),
                             'user_context': user_msg.user_context if user_msg.user_context else None,
                             'read_at': user_msg.read_at if user_msg.read_at else None
-                        }
-                }}
-            )
+                        }]
+                    }
+                }
+            },
+            upsert=True
+        )
+        return list(user_notification)
+        # else:
+        #     user_notification = self.collection.update(
+        #         {'user_id': user_msg.user_id},
+        #         {'$push': {
+        #             'user_notification':
+        #                 {
+        #                     'msg_id': user_msg.msg.id,
+        #                     'created': datetime.datetime.now(pytz.UTC),
+        #                     'modified': datetime.datetime.now(pytz.UTC),
+        #                     'user_context': user_msg.user_context if user_msg.user_context else None,
+        #                     'read_at': user_msg.read_at if user_msg.read_at else None
+        #                 }
+        #         }}
+        #     )
         # user_notification.to_data_object()
         # if user_msg.id:
         #     try:
