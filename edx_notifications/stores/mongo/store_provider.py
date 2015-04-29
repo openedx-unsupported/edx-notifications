@@ -4,6 +4,7 @@ from pymongo import MongoClient
 import pytz
 from edx_notifications import const
 from edx_notifications.exceptions import BulkOperationTooLarge
+from edx_notifications.stores.mongo.mongo_models import MongoUserNotification
 from edx_notifications.stores.sql.store_provider import SQLNotificationStoreProvider
 
 
@@ -17,7 +18,7 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
         self.client = MongoClient(kwargs.get('host'), kwargs.get('port'))
         self.db = self.client[kwargs.get('database_name')]
         self.collection = self.db.user_notification
-        self.bulk = self.collection.initializeUnorderedBulkOp()
+        # self.bulk = self.collection.initializeUnorderedBulkOp()
 
     def _get_prepaged_notifications(self, user_id, filters=None, options=None):
         """
@@ -70,7 +71,11 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
         :param options:
         :return:
         """
-        return self._get_prepaged_notifications(user_id, filters, options)
+        user_notifications = self._get_prepaged_notifications(user_id, filters, options)[0]
+
+        result_set = [MongoUserNotification.to_data_object(item, user_id) for item in user_notifications['user_notification']]
+
+        return result_set
 
     def mark_user_notifications_read(self, user_id, filters=None):
         pass
@@ -110,10 +115,6 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
         Create or Update the mapping of a user to a notification.
         """
 
-        super(MongoNotificationStoreProvider, self).save_notification_message(user_msg.msg)
-
-        # user_notification = self.collection.find({'user_id': user_msg.user_id})
-
         user_notification = self.collection.update(
             {
                 'user_id': user_msg.user_id,
@@ -138,32 +139,3 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
             upsert=True
         )
         return list(user_notification)
-        # else:
-        #     user_notification = self.collection.update(
-        #         {'user_id': user_msg.user_id},
-        #         {'$push': {
-        #             'user_notification':
-        #                 {
-        #                     'msg_id': user_msg.msg.id,
-        #                     'created': datetime.datetime.now(pytz.UTC),
-        #                     'modified': datetime.datetime.now(pytz.UTC),
-        #                     'user_context': user_msg.user_context if user_msg.user_context else None,
-        #                     'read_at': user_msg.read_at if user_msg.read_at else None
-        #                 }
-        #         }}
-        #     )
-        # user_notification.to_data_object()
-        # if user_msg.id:
-        #     try:
-        #         obj = SQLUserNotification.objects.get(id=user_msg.id)
-        #         obj.load_from_data_object(user_msg)
-        #     except ObjectDoesNotExist:
-        #         msg = "Could not find SQLUserNotification with ID {_id}".format(_id=user_msg.id)
-        #         raise ItemNotFoundError(msg)
-        # else:
-        #     obj = SQLUserNotification.from_data_object(user_msg)
-        #
-        # obj.save()
-        #
-        # return obj.to_data_object()
-
