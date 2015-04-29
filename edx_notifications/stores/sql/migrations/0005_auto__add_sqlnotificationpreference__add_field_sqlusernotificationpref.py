@@ -25,9 +25,12 @@ class Migration(SchemaMigration):
 
         cursor = db_connection.cursor()
         resultset = cursor.execute('SELECT * FROM edx_notifications_usernotificationpreferences')
-        first_row = resultset.fetchone()
-        is_empty = not first_row
-        cursor.close()
+        try:
+            first_row = resultset.fetchone()
+            is_empty = not first_row
+            cursor.close()
+        except:
+            is_empty = True
 
         if is_empty:
             db.delete_table('edx_notifications_usernotificationpreferences')
