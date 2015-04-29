@@ -2,6 +2,8 @@ import datetime
 import pymongo
 from pymongo import MongoClient
 import pytz
+from edx_notifications import const
+from edx_notifications.exceptions import BulkOperationTooLarge
 from edx_notifications.stores.sql.store_provider import SQLNotificationStoreProvider
 
 
@@ -15,6 +17,7 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
         self.client = MongoClient(kwargs.get('host'), kwargs.get('port'))
         self.db = self.client[kwargs.get('database_name')]
         self.collection = self.db.user_notification
+        self.bulk = self.collection.initializeUnorderedBulkOp()
 
     def _get_prepaged_notifications(self, user_id, filters=None, options=None):
         """
@@ -42,7 +45,7 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
 
         if not (read and unread):
             if read:
-                query_object.update({'read_at': {"$ne": None}})
+                query_object.update({'user_notification.read_at': {"$ne": None}})
 
             if unread:
                 query_object.update({'user_notification.read_at': None})
@@ -73,16 +76,34 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
         pass
 
     def get_num_notifications_for_user(self, user_id, filters=None):
-        pass
+        return len(self._get_prepaged_notifications(user_id, filters)[0]['user_notification'])
 
     def purge_expired_notifications(self, purge_read_messages_older_than, purge_unread_messages_older_than):
         pass
 
     def bulk_create_user_notification(self, user_msgs):
-        pass
+        """
+        This is an optimization for bulk creating *new* UserNotification
+        objects in the mongodb . Since we want to support fan-outs of messages,
+        we may need to insert 10,000's (or 100,000's) of objects as optimized
+        as possible.
+
+        NOTE: This method cannot update existing UserNotifications, only create them.
+        NOTE: It is assumed that user_msgs is already chunked in an appropriate size.
+        """
+        if len(user_msgs) > const.NOTIFICATION_BULK_PUBLISH_CHUNK_SIZE:
+            msg = (
+                'You have passed in a user_msgs list of size {length} but the size '
+                'limit is {max}.'.format(length=len(user_msgs), max=const.NOTIFICATION_BULK_PUBLISH_CHUNK_SIZE)
+            )
+            raise BulkOperationTooLarge(msg)
 
     def get_notification_for_user(self, user_id, msg_id):
-        pass
+        collection = self.collection.find({
+            'user_id': user_id,
+            'user_notification.msg_id': msg_id
+        })
+        return list(collection)
 
     def save_user_notification(self, user_msg):
         """
