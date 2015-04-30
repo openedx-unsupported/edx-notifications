@@ -9,15 +9,15 @@ from datetime import datetime, timedelta
 
 from django.test import TestCase
 from edx_notifications.stores.mongo.store_provider import MongoNotificationStoreProvider
-from edx_notifications.stores.sql.models import SQLUserNotification, SQLUserNotificationArchive
+from edx_notifications.stores.sql.models import SQLUserNotification
 
 from edx_notifications.stores.sql.store_provider import SQLNotificationStoreProvider
 from edx_notifications.data import (
     NotificationMessage,
     NotificationType,
     UserNotification,
-    NotificationCallbackTimer,
-    NotificationPreference, UserNotificationPreferences)
+    NotificationCallbackTimer
+)
 from edx_notifications.exceptions import (
     ItemNotFoundError,
     BulkOperationTooLarge
