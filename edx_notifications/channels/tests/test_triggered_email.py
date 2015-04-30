@@ -39,7 +39,7 @@ class TriggeredEmailTestCases(TestCase):
         Test setup
         """
         startup.initialize()
-        register_user_scope_resolver('student_email_resolver', TestUserResolver())
+        register_user_scope_resolver('user_email_resolver', TestUserResolver())
         self.store = notification_store()
 
         self.msg_type = self.store.get_notification_type(name='open-edx.lms.discussions.reply-to-thread')

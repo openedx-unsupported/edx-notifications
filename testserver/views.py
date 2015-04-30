@@ -172,7 +172,7 @@ def index(request):
 
     if request.method == 'POST':
 
-        register_user_scope_resolver('student_email_resolver', TestUserResolver(request.user))
+        register_user_scope_resolver('user_email_resolver', TestUserResolver(request.user))
 
         if request.POST.get('change_namespace'):
             namespace_str = request.POST['namespace']

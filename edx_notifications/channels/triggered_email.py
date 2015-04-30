@@ -37,7 +37,7 @@ class TriggeredEmailChannelProvider(MsgTypeToUrlResolverMixin, BaseNotificationC
 
         # call into one of the registered resolvers to get the email for this
         # user
-        scope_results = resolve_user_scope('student_email_resolver', {'user_id': user_id})
+        scope_results = resolve_user_scope('user_email_resolver', {'user_id': user_id})
         msg = self._get_linked_resolved_msg(msg)
         msg.created = datetime.datetime.now(pytz.UTC)
 
