@@ -107,6 +107,9 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
         return result_set
 
     def mark_user_notifications_read(self, user_id, filters=None):
+        """
+
+        """
         _filters = copy.copy(filters) if filters else {}
         _filters.update({
             'read': False,
@@ -121,6 +124,8 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
             self.collection.update({'user_id': user_id}, {'$pushAll': {'user_notification': notifications}})
 
     def get_num_notifications_for_user(self, user_id, filters=None):
+        """
+        """
         user_notifications_result = self._get_prepaged_notifications(user_id, filters)
         if len(user_notifications_result) > 0:
             return len(user_notifications_result[0]['user_notification'])
@@ -149,8 +154,9 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
 
         bulk = self.collection.initialize_unordered_bulk_op()
         for user_msg in user_msgs:
-            pass
+            self._create_new_user_notification(user_msg)
             # bulk.find({'user_msg': user_msg.user_id}).upsert().update({'$push':{'vals':1})
+
 
     def get_notification_for_user(self, user_id, msg_id):
         collection = self.collection.find({'user_id': user_id},
@@ -162,18 +168,74 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
     def save_user_notification(self, user_msg):
         """
         Create or Update the mapping of a user to a notification.
-        """
-        user_notification_dict = {
-            'msg_id': user_msg.msg.id,
-            'msg_type_name': user_msg.msg.msg_type.name,
-            'namespace': user_msg.msg.namespace,
-            'created': user_msg.created,
-            'modified': datetime.datetime.now(pytz.UTC),
-            'user_context': user_msg.user_context if user_msg.user_context else None,
-            'read_at': user_msg.read_at
+        saves the user notifications in the following format in mongodb collection.
+        {
+            'user_id': user_id,
+            'user_notification': [
+                {
+                    'msg_id': msg_id,
+                    'msg_type_name': msg_type_name,
+                    'namespace': namespace,
+                    'created': created,
+                    'modified': modified,
+                    'user_context': user_context,
+                    'read_at': read_at,
+                },
+                {
+                    'msg_id': msg_id,
+                    'msg_type_name': msg_type_name,
+                    'namespace': namespace,
+                    'created': created,
+                    'modified': modified,
+                    'user_context': user_context,
+                    'read_at': read_at,
+                },
+                {......},
+                {......},
+            ]
         }
+        """
+        updated_user_notification = self._update_existing_user_notification(user_msg)
+        user_notification = []
+        if updated_user_notification is None:
+            user_notification = self._create_new_user_notification(user_msg)
+        return list(user_notification)
 
-        user_notification = self.collection.find_and_modify(
+    def _create_new_user_notification(self, user_msg):
+        user_notification = self.collection.update(
+            {
+                'user_id': user_msg.user_id,
+            },
+            {
+                '$set': {
+                    'user_id': user_msg.user_id
+                },
+                '$push': {
+                    'user_notification': {
+                        '$each':
+                        [{
+                            'msg_id': user_msg.msg.id,
+                            'msg_type_name': user_msg.msg.msg_type.name,
+                            'namespace': user_msg.msg.namespace,
+                            'created': datetime.datetime.now(pytz.UTC),
+                            'modified': datetime.datetime.now(pytz.UTC),
+                            'user_context': user_msg.user_context if user_msg.user_context else None,
+                            'read_at': user_msg.read_at if user_msg.read_at else None
+                        }],
+                        '$position': 0
+                    }
+                }
+            },
+            upsert=True
+        )
+
+        return user_notification
+
+    def _update_existing_user_notification(self, user_msg):
+        # find and modify the updated user_notification.
+        # if the notifications is mark as read it will be
+        # updated in the mongodb backend
+        updated_user_notification = self.collection.find_and_modify(
             query={
                 'user_id': user_msg.user_id,
                 'user_notification': {'$elemMatch': {'msg_id': user_msg.msg.id}}
@@ -181,35 +243,16 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
             update={
                 '$set': {
                     'user_id': user_msg.user_id,
-                    'user_notification.$': user_notification_dict
+                    'user_notification.$': {
+                        'msg_id': user_msg.msg.id,
+                        'msg_type_name': user_msg.msg.msg_type.name,
+                        'namespace': user_msg.msg.namespace,
+                        'created': user_msg.created,
+                        'modified': datetime.datetime.now(pytz.UTC),
+                        'user_context': user_msg.user_context if user_msg.user_context else None,
+                        'read_at': user_msg.read_at
+                    }
                 }
             }
         )
-        if user_notification is None:
-            user_notification = self.collection.update(
-                {
-                    'user_id': user_msg.user_id,
-                },
-                {
-                    '$set': {
-                        'user_id': user_msg.user_id
-                    },
-                    '$push': {
-                        'user_notification': {
-                            '$each':
-                            [{
-                                'msg_id': user_msg.msg.id,
-                                'msg_type_name': user_msg.msg.msg_type.name,
-                                'namespace': user_msg.msg.namespace,
-                                'created': datetime.datetime.now(pytz.UTC),
-                                'modified': datetime.datetime.now(pytz.UTC),
-                                'user_context': user_msg.user_context if user_msg.user_context else None,
-                                'read_at': user_msg.read_at if user_msg.read_at else None
-                            }],
-                            '$position': 0
-                        }
-                    }
-                },
-                upsert=True
-            )
-        return list(user_notification)
+        return updated_user_notification
