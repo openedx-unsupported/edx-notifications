@@ -1,3 +1,4 @@
+import copy
 import datetime
 import pymongo
 from pymongo import MongoClient
@@ -29,7 +30,6 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
         """
 
         _filters = filters if filters else {}
-        _options = options if options else {}
 
         namespace = _filters.get('namespace')
         read = _filters.get('read', True)
@@ -40,7 +40,6 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
         query_object = {'user_id': user_id}
         if not read and not unread:
             raise ValueError('Bad arg combination either read or unread must be set to True')
-
         if namespace:
             query_object.update({'user_notification.namespace': namespace})
 
@@ -60,28 +59,73 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
         if end_date:
             query_object.update({'created': {"lte": end_date}})
 
-        collection = self.collection.find(query_object)
-        return list(collection)
+        collection = self.collection.aggregate([
+            {
+                '$match': {'user_id': user_id}
+            },
+            {
+                '$unwind': "$user_notification"
+            },
+            {
+                '$match':
+                    query_object
+            },
+            {
+                '$group':
+                    {'_id': "$user_id", 'user_notification': {'$addToSet': "$user_notification"}}
+            }
+        ])
+
+        return list(collection['result'])
 
     def get_notifications_for_user(self, user_id, filters=None, options=None):
         """
 
-        :param user_id:
+        :param user_id
         :param filters:
         :param options:
         :return:
         """
-        user_notifications = self._get_prepaged_notifications(user_id, filters, options)[0]
+        _options = options if options else {}
 
-        result_set = [MongoUserNotification.to_data_object(item, user_id) for item in user_notifications['user_notification']]
+        limit = _options.get('limit', const.NOTIFICATION_MAX_LIST_SIZE)
+        offset = _options.get('offset', 0)
 
+        # make sure passed in limit is allowed
+        # as we don't want to blow up the query too large here
+        if limit > const.NOTIFICATION_MAX_LIST_SIZE:
+            raise ValueError('Max limit is {limit}'.format(limit=limit))
+
+        user_notification_result = self._get_prepaged_notifications(user_id, filters, options)
+        user_notifications = []
+        if len(user_notification_result) > 0:
+            user_notifications = self._get_prepaged_notifications(user_id, filters, options)[0]
+
+            user_notifications = user_notifications['user_notification'][offset: offset+limit]
+
+        result_set = [MongoUserNotification.to_data_object(item, user_id) for item in user_notifications]
         return result_set
 
     def mark_user_notifications_read(self, user_id, filters=None):
-        pass
+        _filters = copy.copy(filters) if filters else {}
+        _filters.update({
+            'read': False,
+            'unread': True,
+        })
+        user_notification_result = self._get_prepaged_notifications(user_id, _filters)
+        if len(user_notification_result) > 0:
+            notifications = user_notification_result[0]['user_notification']
+            self.collection.update({'user_id': user_id}, {'$pullAll': {'user_notification': notifications}})
+            for notification in notifications:
+                notification['read_at'] = datetime.datetime.now(pytz.UTC)
+            self.collection.update({'user_id': user_id}, {'$pushAll': {'user_notification': notifications}})
 
     def get_num_notifications_for_user(self, user_id, filters=None):
-        return len(self._get_prepaged_notifications(user_id, filters)[0]['user_notification'])
+        user_notifications_result = self._get_prepaged_notifications(user_id, filters)
+        if len(user_notifications_result) > 0:
+            return len(user_notifications_result[0]['user_notification'])
+        else:
+            return 0
 
     def purge_expired_notifications(self, purge_read_messages_older_than, purge_unread_messages_older_than):
         pass
@@ -103,39 +147,69 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
             )
             raise BulkOperationTooLarge(msg)
 
+        bulk = self.collection.initialize_unordered_bulk_op()
+        for user_msg in user_msgs:
+            pass
+            # bulk.find({'user_msg': user_msg.user_id}).upsert().update({'$push':{'vals':1})
+
     def get_notification_for_user(self, user_id, msg_id):
-        collection = self.collection.find({
-            'user_id': user_id,
-            'user_notification.msg_id': msg_id
-        })
-        return list(collection)
+        collection = self.collection.find({'user_id': user_id},
+                                          {"user_notification": {"$elemMatch": {"msg_id": msg_id}}})
+        user_notification = list(collection)[0]['user_notification'][0]
+        result_set = MongoUserNotification.to_data_object(user_notification, user_id)
+        return result_set
 
     def save_user_notification(self, user_msg):
         """
         Create or Update the mapping of a user to a notification.
         """
+        user_notification_dict = {
+            'msg_id': user_msg.msg.id,
+            'msg_type_name': user_msg.msg.msg_type.name,
+            'namespace': user_msg.msg.namespace,
+            'created': user_msg.created,
+            'modified': datetime.datetime.now(pytz.UTC),
+            'user_context': user_msg.user_context if user_msg.user_context else None,
+            'read_at': user_msg.read_at
+        }
 
-        user_notification = self.collection.update(
-            {
+        user_notification = self.collection.find_and_modify(
+            query={
                 'user_id': user_msg.user_id,
+                'user_notification': {'$elemMatch': {'msg_id': user_msg.msg.id}}
             },
-            {
-                '$set': {'user_id': user_msg.user_id},
-                '$push': {
-                    'user_notification': {
-                        '$each':
-                        [{
-                            'msg_id': user_msg.msg.id,
-                            'msg_type_name': user_msg.msg.msg_type.name,
-                            'namespace': user_msg.msg.namespace,
-                            'created': datetime.datetime.now(pytz.UTC),
-                            'modified': datetime.datetime.now(pytz.UTC),
-                            'user_context': user_msg.user_context if user_msg.user_context else None,
-                            'read_at': user_msg.read_at if user_msg.read_at else None
-                        }]
-                    }
+            update={
+                '$set': {
+                    'user_id': user_msg.user_id,
+                    'user_notification.$': user_notification_dict
                 }
-            },
-            upsert=True
+            }
         )
+        if user_notification is None:
+            user_notification = self.collection.update(
+                {
+                    'user_id': user_msg.user_id,
+                },
+                {
+                    '$set': {
+                        'user_id': user_msg.user_id
+                    },
+                    '$push': {
+                        'user_notification': {
+                            '$each':
+                            [{
+                                'msg_id': user_msg.msg.id,
+                                'msg_type_name': user_msg.msg.msg_type.name,
+                                'namespace': user_msg.msg.namespace,
+                                'created': datetime.datetime.now(pytz.UTC),
+                                'modified': datetime.datetime.now(pytz.UTC),
+                                'user_context': user_msg.user_context if user_msg.user_context else None,
+                                'read_at': user_msg.read_at if user_msg.read_at else None
+                            }],
+                            '$position': 0
+                        }
+                    }
+                },
+                upsert=True
+            )
         return list(user_notification)
