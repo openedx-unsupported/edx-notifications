@@ -310,7 +310,7 @@ def with_inline_css(html_without_css):
     returns html with inline css if css file path exists
     else returns html with out the inline css.
     """
-    css_filepath = finders.find(const.NOTIFICATION_DIGEST_EMAIL_CSS)
+    css_filepath = finders.AppDirectoriesFinder().find(const.NOTIFICATION_DIGEST_EMAIL_CSS)
 
     if css_filepath:
         with open(css_filepath, "r") as _file:
@@ -398,7 +398,7 @@ def attach_image(img_dict, filename):
     """
     attach images in the email headers
     """
-    img_path = finders.find(img_dict['path'])
+    img_path = finders.AppDirectoriesFinder().find(img_dict['path'])
     if img_path:
         with open(img_path, 'rb') as img:
             msg_image = MIMEImage(img.read(), name=os.path.basename(img_path))
