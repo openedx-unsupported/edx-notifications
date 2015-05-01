@@ -69,7 +69,7 @@ NOTIFICATION_TRIGGERED_EMAIL_SUBJECT = getattr(
 NOTIFICATION_BRANDED_DEFAULT_LOGO = getattr(
     settings,
     "NOTIFICATION_BRANDED_DEFAULT_LOGO",
-    'img/edx-openedx-logo-tag.png'
+    'edx_notifications/img/edx-openedx-logo-tag.png'
 )
 
 NOTIFICATION_EMAIL_FROM_ADDRESS = getattr(
@@ -129,7 +129,7 @@ NOTIFICATION_DIGEST_GROUP_CONFIG = getattr(
 NOTIFICATION_DIGEST_EMAIL_CSS = getattr(
     settings,
     "NOTIFICATION_DIGEST_EMAIL_CSS",
-    'css/email_digests.css'
+    "edx_notifications/css/email_digests.css"
 )
 
 # SITE_NAME
