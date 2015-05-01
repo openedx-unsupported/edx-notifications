@@ -94,7 +94,7 @@ class TriggeredEmailChannelProvider(MsgTypeToUrlResolverMixin, BaseNotificationC
             log.info('Sending Notification email to {email}'.format(email=email))
 
             msg = EmailMessage(const.NOTIFICATION_TRIGGERED_EMAIL_SUBJECT, None,
-                               const.NOTIFICATION_TRIGGERED_EMAIL_FROM_ADDRESS, [email])
+                               const.NOTIFICATION_EMAIL_FROM_ADDRESS, [email])
             msg.attach(html_part)
             msg.send()
         return user_msg

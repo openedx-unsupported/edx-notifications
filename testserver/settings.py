@@ -218,6 +218,8 @@ NOTIFICATION_BRANDED_DEFAULT_LOGO = 'img/edx-openedx-logo-tag.png'
 # digest email css
 NOTIFICATION_DIGEST_EMAIL_CSS = 'css/email_digests.css'
 
+NOTIFICATION_SITE_NAME = "http://localhost:8000/"
+
 try:
     from local_settings import *
 except Exception:

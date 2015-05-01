@@ -53,32 +53,29 @@ NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME = 'weekly-notification-digest'
 NOTIFICATION_DAILY_DIGEST_SUBJECT = getattr(
     settings,
     "NOTIFICATION_DAILY_DIGEST_SUBJECT",
-    "Please set NOTIFICATION_DAILY_DIGEST_SUBJECT in Django settings"
+    "Your dialy digest of Notifications from Open edX"
 )
 NOTIFICATION_WEEKLY_DIGEST_SUBJECT = getattr(
     settings,
     "NOTIFICATION_WEEKLY_DIGEST_SUBJECT",
-    "Please set NOTIFICATION_WEEKLY_DIGEST_SUBJECT in Django settings"
+    "Your weekly digest of Notifications from Open edX"
 )
-
 NOTIFICATION_TRIGGERED_EMAIL_SUBJECT = getattr(
     settings,
     "NOTIFICATION_TRIGGERED_EMAIL_SUBJECT",
-    "Please set NOTIFICATION_TRIGGERED_EMAIL_SUBJECT in Django settings"
+    "You have received a Notification from Open edX"
 )
 
-NOTIFICATION_BRANDED_DEFAULT_LOGO = getattr(settings, "NOTIFICATION_BRANDED_DEFAULT_LOGO", None)
+NOTIFICATION_BRANDED_DEFAULT_LOGO = getattr(
+    settings,
+    "NOTIFICATION_BRANDED_DEFAULT_LOGO",
+    'img/edx-openedx-logo-tag.png'
+)
 
-NOTIFICATION_DIGEST_FROM_ADDRESS = getattr(
+NOTIFICATION_EMAIL_FROM_ADDRESS = getattr(
     settings,
     "NOTIFICATION_DAILY_FROM_ADDRESS",
-    "please_set_NOTIFICATION_DIGEST_FROM_ADDRESS@settings.com"
-)
-
-NOTIFICATION_TRIGGERED_EMAIL_FROM_ADDRESS = getattr(
-    settings,
-    "NOTIFICATION_TRIGGERED_EMAIL_FROM_ADDRESS",
-    "please_set_NOTIFICATION_TRIGGERED_EMAIL_FROM_ADDRESS@settings.com"
+    "please_set_NOTIFICATION_EMAIL_FROM_ADDRESS@settings.com"
 )
 
 NOTIFICATION_DONT_SEND_EMPTY_DIGEST = getattr(settings, 'NOTIFICATION_DONT_SEND_EMPTY_DIGEST', True)
@@ -128,7 +125,16 @@ NOTIFICATION_DIGEST_GROUP_CONFIG = getattr(
     }
 )
 
-NOTIFICATION_DIGEST_EMAIL_CSS = getattr(settings, "NOTIFICATION_DIGEST_EMAIL_CSS", None)
+# digest email css
+NOTIFICATION_DIGEST_EMAIL_CSS = getattr(
+    settings,
+    "NOTIFICATION_DIGEST_EMAIL_CSS",
+    'css/email_digests.css'
+)
 
 # SITE_NAME
-NOTIFICATION_SITE_NAME = getattr(settings, "NOTIFICATION_SITE_NAME", 'http://localhost.com')
+NOTIFICATION_SITE_NAME = getattr(
+    settings,
+    "NOTIFICATION_SITE_NAME",
+    'http://localhost'
+)

@@ -65,14 +65,14 @@ CANNED_TEST_PAYLOAD = {
     },
     'open-edx.lms.discussions.reply-to-thread': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'original_poster_id': 1,
         'action_username': 'testuser',
         'thread_title': 'A demo posting to the discussion forums',
     },
     'open-edx.lms.discussions.thread-followed': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'original_poster_id': 1,
         'action_username': 'testuser',
         'thread_title': 'A demo posting to the discussion forums',
@@ -80,7 +80,7 @@ CANNED_TEST_PAYLOAD = {
     },
     'open-edx.lms.discussions.post-upvoted': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'original_poster_id': 1,
         'action_username': 'testuser',
         'thread_title': 'A demo posting to the discussion forums',
@@ -88,20 +88,20 @@ CANNED_TEST_PAYLOAD = {
     },
     'open-edx.lms.discussions.comment-upvoted': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'action_username': 'testuser',
         'thread_title': 'A demo posting to the discussion forums',
         'num_upvotes': 5,
     },
     'open-edx.studio.announcements.new-announcement': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'title': 'Gettysburg Address',
         'excerpt': 'Four score and seven years ago our fathers brought forth on this continent, a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal.'
     },
     'open-edx.lms.discussions.cohorted-thread-added': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'original_poster_id': 1,
         'action_user_id': 2,
         'action_username': 'testuser',
@@ -110,7 +110,7 @@ CANNED_TEST_PAYLOAD = {
     },
     'open-edx.lms.discussions.cohorted-comment-added': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'original_poster_id': 1,
         'action_user_id': 2,
         'action_username': 'testuser',
@@ -119,45 +119,45 @@ CANNED_TEST_PAYLOAD = {
     },
     'open-edx.lms.leaderboard.progress.rank-changed': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'rank': 2,
         'leaderboard_name': 'Progress'
     },
     'open-edx.lms.leaderboard.gradebook.rank-changed': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'rank': 3,
         'leaderboard_name': 'Proficiency'
     },
     'open-edx.lms.leaderboard.engagement.rank-changed': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'rank': 1,
         'leaderboard_name': 'Engagement'
     },
     'open-edx.xblock.group-project.file-uploaded': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'action_username': 'testuser',
         'activity_name': 'First Activity',
         'verb': 'uploaded a file',
     },
     'open-edx.xblock.group-project.stage-open': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'activity_name': 'First Activity',
         'stage': 'Upload(s)',
     },
     'open-edx.xblock.group-project.stage-due': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'activity_name': 'First Activity',
         'stage': 'Upload(s)',
         'due_date': '4/25'
     },
     'open-edx.xblock.group-project.grades-posted': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'activity_name': 'First Activity',
     },
 }
