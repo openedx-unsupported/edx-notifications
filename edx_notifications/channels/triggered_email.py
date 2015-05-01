@@ -37,7 +37,18 @@ class TriggeredEmailChannelProvider(MsgTypeToUrlResolverMixin, BaseNotificationC
 
         # call into one of the registered resolvers to get the email for this
         # user
-        scope_results = resolve_user_scope('user_email_resolver', {'user_id': user_id})
+        scope_results = resolve_user_scope(
+            'user_email_resolver',
+            {
+                'user_id': user_id,
+                'fields': {
+                    'user_id': True,
+                    'email': True,
+                    'first_name': True,
+                    'last_name': True,
+                }
+            }
+        )
         msg = self._get_linked_resolved_msg(msg)
         msg.created = datetime.datetime.now(pytz.UTC)
 
@@ -104,7 +115,8 @@ class TriggeredEmailChannelProvider(MsgTypeToUrlResolverMixin, BaseNotificationC
         Perform a bulk dispatch of the notification message to
         all user_ids that will be enumerated over in user_ids.
 
-        user_ids should be a list, a generator function, or a django.db.models.query.ValuesListQuerySet
+        user_ids should be a list, a generator function, or a
+        django.db.models.query.ValuesQuerySet/ValuesListQuerySet
         when directly feeding in a Django ORM queryset, where we select just the id column of the user
         """
 

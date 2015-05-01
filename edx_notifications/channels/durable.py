@@ -73,7 +73,8 @@ class BaseDurableNotificationChannel(MsgTypeToUrlResolverMixin, BaseNotification
 
         NOTE: We will chunk together up to NOTIFICATION_BULK_PUBLISH_CHUNK_SIZE
 
-        user_ids should be a list, a generator function, or a django.db.models.query.ValuesListQuerySet
+        user_ids should be a list, a generator function, or a
+        django.db.models.query.ValuesQuerySet/ValuesListQuerySet
         when directly feeding in a Django ORM queryset, where we select just the id column of the user
         """
 

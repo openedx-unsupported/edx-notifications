@@ -55,6 +55,13 @@ class CohortedCommentAddedRenderer(UnderscoreStaticFileRenderer):
     underscore_template_name = 'forums/cohorted_comment_added.underscore'
 
 
+class PostFlaggedRenderer(UnderscoreStaticFileRenderer):
+    """
+    Renders a discussion form flagged notification
+    """
+    underscore_template_name = 'forums/post_flagged.underscore'
+
+
 @receiver(perform_type_registrations)
 def register_notification_types(sender, **kwargs):  # pylint: disable=unused-argument
     """
@@ -108,5 +115,13 @@ def register_notification_types(sender, **kwargs):  # pylint: disable=unused-arg
         NotificationType(
             name='open-edx.lms.discussions.comment-upvoted',
             renderer='edx_notifications.openedx.forums.CommentUpvotedRenderer',
+        )
+    )
+
+    # someone flagging a post use-case
+    register_notification_type(
+        NotificationType(
+            name='open-edx.lms.discussions.post-flagged',
+            renderer='edx_notifications.openedx.forums.PostFlaggedRenderer',
         )
     )

@@ -178,7 +178,7 @@ def _send_to_scoped_users(msg, scope_name, scope_context, preferred_channel=None
     that can be passed into a NotificationScopeResolver
     """
 
-    # user_ids can be a list, a generator function, or a ValuesListQuerySet (Django ORM)
+    # user_ids can be a list, a generator function, or a ValuesQuerySet/ValuesListQuerySet (Django ORM)
     user_ids = resolve_user_scope(scope_name, scope_context)
 
     if not user_ids:

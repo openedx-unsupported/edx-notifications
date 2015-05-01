@@ -160,6 +160,12 @@ CANNED_TEST_PAYLOAD = {
         '_click_link': 'http://localhost:8000',
         'activity_name': 'First Activity',
     },
+    'open-edx.lms.discussions.post-flagged': {
+        '_schema_version': 1,
+        '_click_link': 'http://localhost:8000',
+        'action_username': 'testuser',
+        'title': 'A demo posting to the discussion forums',
+    }
 }
 
 
