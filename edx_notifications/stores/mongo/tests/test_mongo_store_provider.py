@@ -558,7 +558,8 @@ class TestMongoStoreProvider(TestCase):
             self.provider.get_num_notifications_for_user(
                 self.test_user_id,
                 filters={
-                    'start_date': msg1.created + timedelta(days=1)
+                    'start_date': msg1.created + timedelta(days=1),
+                    'end_date': msg1.created + timedelta(days=-1)
                 }
             ),
             0
