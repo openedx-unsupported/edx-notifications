@@ -7,6 +7,9 @@ from edx_notifications.stores.sql.models import SQLNotificationMessage
 
 
 class MongoUserNotification(object):
+    """
+    Class with utility methods to allow conversion to the UserNotification object in place of the Django ORM's model.
+    """
 
     @classmethod
     def to_data_object(cls, mongo_user_notification, user_id):

@@ -1,6 +1,8 @@
+"""
+Concrete MongoDB implementation of the of the data provider abstract base class (interface)
+"""
 import copy
 import datetime
-import pymongo
 from pymongo import MongoClient
 import pytz
 from edx_notifications import const
@@ -11,14 +13,14 @@ from edx_notifications.stores.sql.store_provider import SQLNotificationStoreProv
 
 class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
     """
-
+    Concrete MongoDB implementation of the of the data provider abstract base class (interface)
     """
 
     def __init__(self, **kwargs):
         super(MongoNotificationStoreProvider, self).__init__(**kwargs)
         self.client = MongoClient(kwargs.get('host'), kwargs.get('port'))
-        self.db = self.client[kwargs.get('database_name')]
-        self.collection = self.db.user_notification
+        self.db_instance = self.client[kwargs.get('database_name')]
+        self.collection = self.db_instance.user_notification
         # self.bulk = self.collection.initializeUnorderedBulkOp()
 
     def _get_prepaged_notifications(self, user_id, filters=None, options=None):
@@ -101,14 +103,14 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
         if len(user_notification_result) > 0:
             user_notifications = self._get_prepaged_notifications(user_id, filters, options)[0]
 
-            user_notifications = user_notifications['user_notification'][offset: offset+limit]
+            user_notifications = user_notifications['user_notification'][offset: offset + limit]
 
         result_set = [MongoUserNotification.to_data_object(item, user_id) for item in user_notifications]
         return result_set
 
     def mark_user_notifications_read(self, user_id, filters=None):
         """
-
+        Marks all the unread notifications as read.
         """
         _filters = copy.copy(filters) if filters else {}
         _filters.update({
@@ -125,6 +127,7 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
 
     def get_num_notifications_for_user(self, user_id, filters=None):
         """
+        Returns the count of a user's notifications after applying filters.
         """
         user_notifications_result = self._get_prepaged_notifications(user_id, filters)
         if len(user_notifications_result) > 0:
@@ -132,7 +135,10 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
         else:
             return 0
 
-    def purge_expired_notifications(self, purge_read_messages_older_than, purge_unread_messages_older_than):
+    def purge_expired_notifications(self, purge_read_messages_older_than=None, purge_unread_messages_older_than=None):  # pylint: disable=invalid-name
+        """
+        Purges read and unread notifications older than specified dates.
+        """
         pass
 
     def bulk_create_user_notification(self, user_msgs):
@@ -152,11 +158,10 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
             )
             raise BulkOperationTooLarge(msg)
 
-        bulk = self.collection.initialize_unordered_bulk_op()
+        # bulk = self.collection.initialize_unordered_bulk_op()
         for user_msg in user_msgs:
             self._create_new_user_notification(user_msg)
             # bulk.find({'user_msg': user_msg.user_id}).upsert().update({'$push':{'vals':1})
-
 
     def get_notification_for_user(self, user_id, msg_id):
         collection = self.collection.find({'user_id': user_id},
@@ -195,13 +200,16 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
             ]
         }
         """
-        updated_user_notification = self._update_existing_user_notification(user_msg)
+        updated_user_notification = self._update_user_notification(user_msg)
         user_notification = []
         if updated_user_notification is None:
             user_notification = self._create_new_user_notification(user_msg)
         return list(user_notification)
 
     def _create_new_user_notification(self, user_msg):
+        """
+        This method creates a new document for a user id, or inserts a UserNotification in the array of that document.
+        """
         user_notification = self.collection.update(
             {
                 'user_id': user_msg.user_id,
@@ -231,10 +239,10 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
 
         return user_notification
 
-    def _update_existing_user_notification(self, user_msg):
-        # find and modify the updated user_notification.
-        # if the notifications is mark as read it will be
-        # updated in the mongodb backend
+    def _update_user_notification(self, user_msg):
+        """
+        Finds and modifies the user_notification. e.g. when marking the notifications as read.
+        """
         updated_user_notification = self.collection.find_and_modify(
             query={
                 'user_id': user_msg.user_id,
