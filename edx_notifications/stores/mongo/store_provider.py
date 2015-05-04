@@ -140,6 +140,15 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
         Purges read and unread notifications older than specified dates.
         """
         pass
+        # if purge_read_messages_older_than is not None:
+        #     SQLUserNotification.objects.filter(
+        #         read_at__lte=purge_read_messages_older_than).delete()
+        #
+        # if purge_unread_messages_older_than is not None:
+        #     SQLUserNotification.objects.filter(
+        #         created__lte=purge_unread_messages_older_than,
+        #         read_at__isnull=True
+        #     ).delete()
 
     def bulk_create_user_notification(self, user_msgs):
         """

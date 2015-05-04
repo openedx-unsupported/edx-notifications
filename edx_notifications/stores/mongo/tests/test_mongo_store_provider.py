@@ -538,20 +538,20 @@ class TestMongoStoreProvider(TestCase):
         )
         self.assertEqual(len(notifications), 0)
 
-        # #
-        # # test start_date and end_date filtering.
-        # #
         #
-        # self.assertEqual(
-        #     self.provider.get_num_notifications_for_user(
-        #         self.test_user_id,
-        #         filters={
-        #             'start_date': msg1.created,
-        #             'end_date': msg2.created + timedelta(days=1)
-        #         }
-        #     ),
-        #     2
-        # )
+        # test start_date and end_date filtering.
+        #
+
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'start_date': msg1.created,
+                    'end_date': msg2.created + timedelta(days=1)
+                }
+            ),
+            2
+        )
 
         # filters by end_date
         self.assertEqual(
