@@ -59,12 +59,12 @@ NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME = 'weekly-notification-digest'
 NOTIFICATION_DAILY_DIGEST_SUBJECT = getattr(
     settings,
     "NOTIFICATION_DAILY_DIGEST_SUBJECT",
-    "Your dialy digest of Notifications from Open edX"
+    "Your unread Notifications for '{display_name}'"
 )
 NOTIFICATION_WEEKLY_DIGEST_SUBJECT = getattr(
     settings,
     "NOTIFICATION_WEEKLY_DIGEST_SUBJECT",
-    "Your weekly digest of Notifications from Open edX"
+    "Your unread Notifications for '{display_name}'"
 )
 
 NOTIFICATION_BRANDED_DEFAULT_LOGO = getattr(

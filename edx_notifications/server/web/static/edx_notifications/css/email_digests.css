@@ -136,23 +136,12 @@ span.xns-counter.multi-digit {
     border: none;
 }
 
-.xns-container .xns-actions ul li.active a {
+
+.xns-container .xns-items ul li a {
+    font-weight: 400;
     color: #999;
     text-decoration: none;
     cursor: default;
-}
-
-.xns-container .xns-actions ul li.disabled a {
-    color: #999;
-    text-decoration: none;
-    cursor: default;
-}
-
-.xns-container .xns-actions ul li a {
-    color: #3384CA;
-    /*font-family: open sans; */
-    font-size: .85714rem;
-    font-weight: 700;
 }
 
 .xns-container .xns-actions ul li a:hover {

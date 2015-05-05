@@ -389,6 +389,10 @@ def _send_user_digest(namespace_info, from_timestamp, to_timestamp, user_id,
 
     log.info('Sending Notification Digest email to {email}'.format(email=email))
 
+    # do a formatting pass on the email subject in case we need
+    # to also present the namespace display_name
+    subject = subject.format(display_name=namespace_info['display_name'])
+
     msg = EmailMessage(subject, None, from_email, [email])
     msg.attach(html_part)
     msg.send()
@@ -474,10 +478,19 @@ def get_group_rendering(group_data):
                 'Missing renderer for HTML format on '
                 'msg_type "{}". Skipping....'.format(user_msg.msg.msg_type.name)
             )
+
+        click_link = user_msg.msg.payload.get('_click_link')
+        if click_link and not click_link.startswith('http'):
+            click_link = '{root}{click_link}'.format(
+                root=const.NOTIFICATION_EMAIL_CLICK_LINK_ROOT,
+                click_link=click_link
+            )
+
         notification_renderings.append(
             {
                 'user_msg': user_msg,
                 'msg': user_msg.msg,
+                'click_link': click_link,
                 # render the particular NotificationMessage
                 'html': notification_html,
                 'group_name': get_group_name_for_msg_type(user_msg.msg.msg_type.name)
