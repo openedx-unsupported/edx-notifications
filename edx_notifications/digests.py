@@ -68,12 +68,18 @@ class NotificationDigestMessageCallback(NotificationCallbackTimerHandler):
         # record a 'to_timestamp'
         to_timestamp = datetime.datetime.now(pytz.UTC)
 
-        # get the last time we ran this timer, this should be the "from_timestamp"
-        if timer.context and 'last_ran' in timer.context:
-            from_timestamp = timer.context['last_ran']
+        # do we just want unread notifications since we last ran the
+        # digest?
+        if const.NOTIFICATION_DIGEST_SEND_TIMEFILTERED:
+            if timer.context and 'last_ran' in timer.context:
+                from_timestamp = timer.context['last_ran']
+            else:
+                tdelta = datetime.timedelta(days=1) if is_daily_digest else datetime.timedelta(days=7)
+                from_timestamp = to_timestamp - tdelta
         else:
-            tdelta = datetime.timedelta(days=1) if is_daily_digest else datetime.timedelta(days=7)
-            from_timestamp = to_timestamp - tdelta
+            # send all unread notifications regardless
+            # of time filter
+            from_timestamp = None
 
         subject = timer.context['subject']
         from_email = timer.context['from_email']

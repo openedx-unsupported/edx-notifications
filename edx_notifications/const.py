@@ -82,6 +82,12 @@ NOTIFICATION_EMAIL_FROM_ADDRESS = getattr(
 NOTIFICATION_DONT_SEND_EMPTY_DIGEST = getattr(settings, 'NOTIFICATION_DONT_SEND_EMPTY_DIGEST', True)
 NOTIFICATION_DIGEST_UNREAD_ONLY = getattr(settings, 'NOTIFICATION_DIGEST_UNREAD_ONLY', True)
 
+# whether Digests should contain only those unread items
+# for the specific timerange of the digest (True) or
+# it should include all unread notifications, regardless of
+# the time range
+NOTIFICATION_DIGEST_SEND_TIMEFILTERED = getattr(settings, "NOTIFICATION_DIGEST_SEND_TIMEFILTERED", True)
+
 # this describes how we want to group together notification types into visual groups
 NOTIFICATION_DIGEST_GROUP_CONFIG = getattr(
     settings,
