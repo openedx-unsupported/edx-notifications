@@ -37,8 +37,8 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
         read = _filters.get('read', True)
         unread = _filters.get('unread', True)
         type_name = _filters.get('type_name')
-        start_date = _filters.get('start_date')
-        end_date = _filters.get('end_date')
+        created_after = _filters.get('created_after')
+        created_before = _filters.get('created_before')
         query_object = {'user_id': user_id}
         if not read and not unread:
             raise ValueError('Bad arg combination either read or unread must be set to True')
@@ -55,11 +55,14 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
         if type_name:
             query_object.update({'user_notification.msg_type_name': type_name})
 
-        if start_date:
-            query_object.update({'created': {"gte": start_date}})
+        if created_after:
+            query_object.update({'user_notification.created': {"$gte": created_after}})
 
-        if end_date:
-            query_object.update({'created': {"lte": end_date}})
+        if created_before:
+            if 'user_notification.created' in query_object.keys():
+                query_object['user_notification.created'].update({"$lte": created_before})
+            else:
+                query_object.update({'user_notification.created': {"$lte": created_before}})
 
         collection = self.collection.aggregate([
             {
@@ -69,12 +72,10 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
                 '$unwind': "$user_notification"
             },
             {
-                '$match':
-                    query_object
+                '$match': query_object
             },
             {
-                '$group':
-                    {'_id': "$user_id", 'user_notification': {'$addToSet': "$user_notification"}}
+                '$group': {'_id': "$user_id", 'user_notification': {'$addToSet': "$user_notification"}}
             }
         ])
 
@@ -139,16 +140,33 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
         """
         Purges read and unread notifications older than specified dates.
         """
-        pass
-        # if purge_read_messages_older_than is not None:
-        #     SQLUserNotification.objects.filter(
-        #         read_at__lte=purge_read_messages_older_than).delete()
-        #
-        # if purge_unread_messages_older_than is not None:
-        #     SQLUserNotification.objects.filter(
-        #         created__lte=purge_unread_messages_older_than,
-        #         read_at__isnull=True
-        #     ).delete()
+        if purge_read_messages_older_than is not None:
+            self.collection.update(
+                {},
+                {
+                    '$pull': {
+                        'user_notification': {
+                            'read_at': {"$ne": None},
+                            'created': {"$lte": purge_read_messages_older_than}
+                        }
+                    }
+                },
+                multi=True
+            )
+
+        if purge_unread_messages_older_than is not None:
+            self.collection.update(
+                {},
+                {
+                    '$pull': {
+                        'user_notification': {
+                            'read_at': None,
+                            'created': {"$lte": purge_unread_messages_older_than}
+                        }
+                    }
+                },
+                multi=True
+            )
 
     def bulk_create_user_notification(self, user_msgs):
         """

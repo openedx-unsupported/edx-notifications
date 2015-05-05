@@ -539,90 +539,89 @@ class TestMongoStoreProvider(TestCase):
         self.assertEqual(len(notifications), 0)
 
         #
-        # test start_date and end_date filtering.
+        # test created_before and created_after filtering.
         #
 
         self.assertEqual(
             self.provider.get_num_notifications_for_user(
                 self.test_user_id,
                 filters={
-                    'start_date': msg1.created,
-                    'end_date': msg2.created + timedelta(days=1)
+                    'created_after': msg1.created,
+                    'created_before': msg2.created + timedelta(days=1)
                 }
             ),
             2
         )
 
-        # filters by end_date
+        # filters by created date
         self.assertEqual(
             self.provider.get_num_notifications_for_user(
                 self.test_user_id,
                 filters={
-                    'start_date': msg1.created + timedelta(days=1),
-                    'end_date': msg1.created + timedelta(days=-1)
+                    'created_after': msg1.created + timedelta(days=1),
+                    'created_before': msg1.created + timedelta(days=-1)
                 }
             ),
             0
         )
 
-        # # filters by end_date
-        # self.assertEqual(
-        #     self.provider.get_num_notifications_for_user(
-        #         self.test_user_id,
-        #         filters={
-        #             'end_date': msg2.created + timedelta(days=1)
-        #         }
-        #     ),
-        #     2
-        # )
+        # filters by created_before
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'created_before': msg2.created + timedelta(days=1)
+                }
+            ),
+            2
+        )
 
-        # notifications = self.provider.get_notifications_for_user(
-        #     self.test_user_id,
-        #     filters={
-        #         'start_date': msg1.created,
-        #         'end_date': msg2.created + timedelta(days=1)
-        #     }
-        # )
-        # self.assertEqual(len(notifications), 2)
-        # self.assertEqual(notifications[0].msg, msg2)
-        # self.assertEqual(notifications[1].msg, msg1)
+        notifications = self.provider.get_notifications_for_user(
+            self.test_user_id,
+            filters={
+                'created_after': msg1.created,
+                'created_before': msg2.created + timedelta(days=1)
+            }
+        )
+        self.assertEqual(len(notifications), 2)
+        self.assertEqual(notifications[0].msg, msg1)
+        self.assertEqual(notifications[1].msg, msg2)
 
-        # update the created time for msg2 data object.
-        # user_msg = SQLUserNotification.objects.get(msg_id=msg2.id)
-        # user_msg.created = msg2.created - timedelta(days=1)
-        # user_msg.save()
-        #
-        # # now the msg 2 should not be in the filtered_list
-        # self.assertEqual(
-        #     self.provider.get_num_notifications_for_user(
-        #         self.test_user_id,
-        #         filters={
-        #             'start_date': msg1.created,
-        #             'end_date': datetime.now(pytz.UTC) + timedelta(days=1)
-        #         }
-        #     ),
-        #     1
-        # )
-        #
-        # self.assertEqual(
-        #     self.provider.get_num_notifications_for_user(
-        #         self.test_user_id,
-        #         filters={
-        #             'start_date': msg1.created
-        #         }
-        #     ),
-        #     1
-        # )
-        #
-        # self.assertEqual(
-        #     self.provider.get_num_notifications_for_user(
-        #         self.test_user_id,
-        #         filters={
-        #             'end_date': user_msg.created - timedelta(days=1)
-        #         }
-        #     ),
-        #     0
-        # )
+        # # update the created time for msg1 data object.
+        map1.msg.created -= timedelta(days=1)
+        self.provider._update_user_notification(map1)
+
+        # now the msg 1 should not be in the filtered_list
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'created_after': msg2.created,
+                    'created_before': datetime.now(pytz.UTC) + timedelta(days=1)
+                }
+            ),
+            1
+        )
+
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'created_after': msg2.created
+                }
+            ),
+            1
+        )
+
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'created_before': msg2.created - timedelta(days=1)
+                }
+            ),
+            0
+        )
 
     def test_read_unread_flags(self):
         """
