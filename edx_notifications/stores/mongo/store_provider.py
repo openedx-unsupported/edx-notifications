@@ -185,10 +185,8 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
             )
             raise BulkOperationTooLarge(msg)
 
-        # bulk = self.collection.initialize_unordered_bulk_op()
         for user_msg in user_msgs:
             self._create_new_user_notification(user_msg)
-            # bulk.find({'user_msg': user_msg.user_id}).upsert().update({'$push':{'vals':1})
 
     def get_notification_for_user(self, user_id, msg_id):
         collection = self.collection.find({'user_id': user_id},
