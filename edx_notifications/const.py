@@ -48,6 +48,12 @@ NOTIFICATIONS_PREFERENCE_WEEKLYDIGEST_DEFAULT = getattr(
 
 NOTIFICATION_NAMESPACE_USER_SCOPE_NAME = 'namespace_scope'
 
+NOTIFICATION_TRIGGERED_EMAIL_SUBJECT = getattr(
+    settings,
+    "NOTIFICATION_TRIGGERED_EMAIL_SUBJECT",
+    "You have received a Notification from Open edX"
+)
+
 NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME = 'daily-notification-digest'
 NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME = 'weekly-notification-digest'
 NOTIFICATION_DAILY_DIGEST_SUBJECT = getattr(
@@ -59,11 +65,6 @@ NOTIFICATION_WEEKLY_DIGEST_SUBJECT = getattr(
     settings,
     "NOTIFICATION_WEEKLY_DIGEST_SUBJECT",
     "Your weekly digest of Notifications from Open edX"
-)
-NOTIFICATION_TRIGGERED_EMAIL_SUBJECT = getattr(
-    settings,
-    "NOTIFICATION_TRIGGERED_EMAIL_SUBJECT",
-    "You have received a Notification from Open edX"
 )
 
 NOTIFICATION_BRANDED_DEFAULT_LOGO = getattr(
@@ -133,8 +134,8 @@ NOTIFICATION_DIGEST_EMAIL_CSS = getattr(
 )
 
 # SITE_NAME
-NOTIFICATION_SITE_NAME = getattr(
+NOTIFICATION_EMAIL_CLICK_LINK_ROOT = getattr(
     settings,
-    "NOTIFICATION_SITE_NAME",
+    "NOTIFICATION_EMAIL_CLICK_LINK_ROOT",
     'http://localhost'
 )

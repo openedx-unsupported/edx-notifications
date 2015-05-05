@@ -157,7 +157,7 @@ def create_default_notification_preferences():
 
     daily_digest_preference = NotificationPreference(
         name=const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
-        display_name=_('Daily Notification Digest'),
+        display_name=_('Receive daily email'),
         display_description=_('This setting will cause a daily digest of all notifications to be sent to your'
                               ' registered email address'),
         default_value=const.NOTIFICATIONS_PREFERENCE_DAILYDIGEST_DEFAULT
@@ -167,7 +167,7 @@ def create_default_notification_preferences():
 
     weekly_digest_preference = NotificationPreference(
         name=const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME,
-        display_name=_('Weekly Notification Digest'),
+        display_name=_('Receive weekly email'),
         display_description=_('This setting will cause a weekly digest of all notifications to be sent to your'
                               ' registered email address'),
         default_value=const.NOTIFICATIONS_PREFERENCE_WEEKLYDIGEST_DEFAULT
@@ -269,7 +269,7 @@ def send_notifications_namespace_digest(namespace, from_timestamp, to_timestamp,
     # Loop over all users that are within the scope of the namespace
     # and specify that we want id, email, first_name, and last_name fields
     for user in users:
-        user_id = user['id']
+        user_id = int(user['id'])
         email = user['email']
         first_name = user['first_name']
         last_name = user['last_name']
@@ -310,7 +310,9 @@ def with_inline_css(html_without_css):
     returns html with inline css if css file path exists
     else returns html with out the inline css.
     """
-    css_filepath = finders.AppDirectoriesFinder().find(const.NOTIFICATION_DIGEST_EMAIL_CSS)
+    css_filepath = const.NOTIFICATION_DIGEST_EMAIL_CSS
+    if not css_filepath.startswith('/'):
+        css_filepath = finders.AppDirectoriesFinder().find(const.NOTIFICATION_DIGEST_EMAIL_CSS)
 
     if css_filepath:
         with open(css_filepath, "r") as _file:
@@ -398,7 +400,11 @@ def attach_image(img_dict, filename):
     """
     attach images in the email headers
     """
-    img_path = finders.AppDirectoriesFinder().find(img_dict['path'])
+
+    img_path = img_dict['path']
+    if not img_path.startswith('/'):
+        img_path = finders.AppDirectoriesFinder().find(img_path)
+
     if img_path:
         with open(img_path, 'rb') as img:
             msg_image = MIMEImage(img.read(), name=os.path.basename(img_path))

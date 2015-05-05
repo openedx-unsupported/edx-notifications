@@ -62,6 +62,8 @@ var NotificationPreferencesView = Backbone.View.extend({
                 }
             }
         );
+        e.stopPropagation();
+        e.preventDefault();
     },
     collectionChanged: function() {
         /* redraw for now */

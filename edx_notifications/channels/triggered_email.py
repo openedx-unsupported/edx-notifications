@@ -82,6 +82,9 @@ class TriggeredEmailChannelProvider(MsgTypeToUrlResolverMixin, BaseNotificationC
             resolve_links = user_msg.msg.resolve_links
             click_link = user_msg.msg.payload['_click_link']
 
+            if resolve_links:
+                click_link = const.NOTIFICATION_EMAIL_CLICK_LINK_ROOT + click_link
+
             context = {
                 'branded_logo': branded_logo['cid'],
                 'notification_html': notification_html,
@@ -89,7 +92,7 @@ class TriggeredEmailChannelProvider(MsgTypeToUrlResolverMixin, BaseNotificationC
                 'user_last_name': result['last_name'] if isinstance(result, dict) else None,
                 'group_name': group_name,
                 'group_title': config['groups'][group_name]['display_name'],
-                'click_link': const.NOTIFICATION_SITE_NAME + click_link if resolve_links else click_link
+                'click_link': click_link
             }
 
             # render the notifications html template
