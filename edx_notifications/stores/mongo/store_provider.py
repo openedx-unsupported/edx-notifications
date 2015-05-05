@@ -21,7 +21,6 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
         self.client = MongoClient(kwargs.get('host'), kwargs.get('port'))
         self.db_instance = self.client[kwargs.get('database_name')]
         self.collection = self.db_instance.user_notification
-        # self.bulk = self.collection.initializeUnorderedBulkOp()
 
     def _get_prepaged_notifications(self, user_id, filters=None, options=None):
         """
