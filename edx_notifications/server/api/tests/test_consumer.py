@@ -30,6 +30,7 @@ from edx_notifications.data import (
     NotificationMessage,
     NotificationPreference
 )
+from edx_notifications import const
 
 from edx_notifications.server.api.urls import urlpatterns
 
@@ -606,7 +607,16 @@ class ConsumerAPITests(LoggedInTestCase):
         )
         set_notification_preference(notification_preference_daily)
 
-        data = {'value': "Test User 1"}
+        data = {'value': "true"}
+        # post the api with the valid data
+        # this will create a new user preference
+        response = self.client.post(
+            reverse('edx_notifications.consumer.user_preferences.detail', args=['daily-digest-emails']),
+            data=data
+        )
+        self.assertEqual(response.status_code, 200)
+
+        data = {'value': "false"}
         # post the api with the valid data
         # this will create a new user preference
         response = self.client.post(
@@ -648,6 +658,81 @@ class ConsumerAPITests(LoggedInTestCase):
         self.assertEqual(len(results), 1)
 
         self.assertEqual(data['value'], results[0]['value'])
+
+    def test_single_digest(self):
+        """
+        Make sure when we select one digest, the other preference is de-selected
+        """
+
+        notification_preference_daily = NotificationPreference(
+            name=const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+            display_name='Daily Emails',
+            display_description='Daily Digestion Email ',
+            default_value='false'
+        )
+        set_notification_preference(notification_preference_daily)
+
+        notification_preference_weekly = NotificationPreference(
+            name=const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME,
+            display_name='Daily Emails',
+            display_description='Daily Digestion Email ',
+            default_value='false'
+        )
+        set_notification_preference(notification_preference_weekly)
+
+        response = self.client.post(
+            reverse(
+                'edx_notifications.consumer.user_preferences.detail',
+                args=[const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME]
+            ),
+            data={
+                'value': 'true'
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(
+            reverse(
+                'edx_notifications.consumer.user_preferences.detail',
+                args=[const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME]
+            ),
+            data={
+                'value': 'false'
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+
+        # now set the weekly and make sure the daily gets turned off
+        response = self.client.post(
+            reverse(
+                'edx_notifications.consumer.user_preferences.detail',
+                args=[const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME]
+            ),
+            data={
+                'value': 'true'
+            }
+        )
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(
+            reverse(
+                'edx_notifications.consumer.user_preferences.detail',
+                args=[const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME]
+            ))
+        self.assertEqual(response.status_code, 200)
+        results = json.loads(response.content)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]['value'], 'false')
+
+        response = self.client.get(
+            reverse(
+                'edx_notifications.consumer.user_preferences.detail',
+                args=[const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME]
+            ))
+        self.assertEqual(response.status_code, 200)
+        results = json.loads(response.content)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]['value'], 'true')
 
     def test_mock_uls(self):
         """
