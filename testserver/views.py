@@ -309,13 +309,9 @@ def send_digest(request):
     # just send to logged in user
     register_namespace_resolver(TestNotificationNamespaceResolver(request.user))
     send_notifications_digest(
-        datetime.now(pytz.UTC) - timedelta(days=1),
+        datetime.now(pytz.UTC) - timedelta(days=1) if const.NOTIFICATION_DIGEST_SEND_TIMEFILTERED else None,
         datetime.now(pytz.UTC),
         const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
         const.NOTIFICATION_DAILY_DIGEST_SUBJECT,
-        const.NOTIFICATION_DIGEST_FROM_ADDRESS
+        const.NOTIFICATION_EMAIL_FROM_ADDRESS
     )
-
-
-
-

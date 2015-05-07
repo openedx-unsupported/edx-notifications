@@ -38,6 +38,7 @@ span.xns-counter.multi-digit {
     border-radius: 0 0 3px 3px;
     padding: 0px 0px 20px 10px;
     position: relative;
+    width: 600px;
 }
 
 .xns-container .xns-list-body {
@@ -251,6 +252,13 @@ span.xns-counter.multi-digit {
 }
 
 .xns-digest-description-title {
-    color: #3384CA;
+    color: #5597dd;
     font-size: 1.2em;
+    margin-bottom: 2px;
+}
+
+.xns-digest-description-body {
+    margin: 0;
+    font-size: 12px;
+    color: #777777;
 }

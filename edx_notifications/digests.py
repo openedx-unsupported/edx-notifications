@@ -3,6 +3,7 @@ Create and register a new NotificationCallbackTimerHandler
 """
 import datetime
 import os
+import urllib
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -487,9 +488,12 @@ def get_group_rendering(group_data):
 
         click_link = user_msg.msg.payload.get('_click_link')
         if click_link and not click_link.startswith('http'):
-            click_link = '{root}{click_link}'.format(
-                root=const.NOTIFICATION_EMAIL_CLICK_LINK_ROOT,
-                click_link=click_link
+            click_link = const.NOTIFICATION_EMAIL_CLICK_LINK_URL_FORMAT.format(
+                url_path=click_link,
+                encoded_url_path=urllib.quote(click_link),
+                user_msg_id=user_msg.id,
+                msg_id=user_msg.msg.id,
+                hostname=const.NOTIFICATION_APP_HOSTNAME
             )
 
         notification_renderings.append(

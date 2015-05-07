@@ -8,6 +8,7 @@ from email.mime.text import MIMEText
 import logging
 import datetime
 import uuid
+import urllib
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 import pytz
@@ -82,8 +83,14 @@ class TriggeredEmailChannelProvider(MsgTypeToUrlResolverMixin, BaseNotificationC
             resolve_links = user_msg.msg.resolve_links
             click_link = user_msg.msg.payload['_click_link']
 
-            if resolve_links:
-                click_link = const.NOTIFICATION_EMAIL_CLICK_LINK_ROOT + click_link
+            if resolve_links and not click_link.startswith('http'):
+                click_link = const.NOTIFICATION_EMAIL_CLICK_LINK_URL_FORMAT.format(
+                    url_path=click_link,
+                    encoded_url_path=urllib.quote(click_link),
+                    user_msg_id=user_msg.id,
+                    msg_id=user_msg.msg.id,
+                    hostname=const.NOTIFICATION_APP_HOSTNAME
+                )
 
             context = {
                 'branded_logo': branded_logo['cid'],
