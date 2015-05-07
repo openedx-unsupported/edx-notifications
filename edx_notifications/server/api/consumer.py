@@ -299,7 +299,27 @@ class UserPreferenceDetail(AuthenticatedAPIView):
         try:
             # this will raise an ItemNotFoundError
             # if the notification_preference cannot be found
-            set_user_notification_preference(int(request.user.id), name, request.DATA.get('value'))
+            value = request.DATA.get('value')
+            set_user_notification_preference(int(request.user.id), name, value)
+
+            if const.NOTIFICATION_ENFORCE_SINGLE_DIGEST_PREFERENCE:
+                # If the user sets one digest preference, make sure
+                # only one of them is enabled, i.e. turn off the other one
+                is_digest_setting = (
+                    name in [
+                        const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+                        const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME
+                    ]
+                )
+
+                if is_digest_setting and value.lower() == 'true':
+                    other_setting = const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME if name \
+                        == const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME else \
+                        const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME
+
+                    # turn off the other setting
+                    set_user_notification_preference(int(request.user.id), other_setting, "false")
+
         except ItemNotFoundError:
             raise Http404()
 

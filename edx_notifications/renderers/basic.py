@@ -105,7 +105,7 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
 
         _payload = copy.deepcopy(msg.payload)
 
-        created_str = msg.created.strftime("%B %d, %Y") + ' at ' + msg.created.strftime("%H:%M%p")
+        created_str = msg.created.strftime("%B %d, %Y") + ' at ' + msg.created.strftime("%H:%M%p") + ' GMT'
 
         _payload.update({
             '__display_created': created_str
