@@ -85,17 +85,21 @@ class NotificationDigestMessageCallback(NotificationCallbackTimerHandler):
 
         # call into the main entry point
         # for generating digests
-        send_notifications_digest(
-            from_timestamp,
-            to_timestamp,
-            preference_name,
-            subject,
-            from_email,
-            unread_only=unread_only
-        )
+        errors = []
+        try:
+            send_notifications_digest(
+                from_timestamp,
+                to_timestamp,
+                preference_name,
+                subject,
+                from_email,
+                unread_only=unread_only
+            )
+        except Exception, ex:  # pylint: disable=broad-except
+            errors.append(str(ex))
 
         result = {
-            'errors': [],
+            'errors': errors,
             'reschedule_in_mins': timer.periodicity_min,
             # be sure to update the timer context, to record when we
             # last ran this digest
