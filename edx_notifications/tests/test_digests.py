@@ -21,7 +21,8 @@ from edx_notifications.scopes import (
 
 from edx_notifications.digests import (
     send_notifications_digest,
-    create_default_notification_preferences
+    create_default_notification_preferences,
+    register_digest_timers
 )
 from edx_notifications.stores.store import notification_store
 from edx_notifications.lib.publisher import (
@@ -443,3 +444,26 @@ class DigestTestCases(TestCase):
             ),
             3
         )
+
+    def test_preserve_execute_at(self):
+        """
+        Make sure the execute at timestamps don't get reset
+        across system restarts
+        """
+
+        register_digest_timers(None)
+
+        timer = notification_store().get_notification_timer(const.DAILY_DIGEST_TIMER_NAME)
+
+        callback_at = timer.callback_at - datetime.timedelta(days=1)
+
+        timer.callback_at = callback_at
+        notification_store().save_notification_timer(timer)
+
+        # restart
+        register_digest_timers(None)
+
+        timer = notification_store().get_notification_timer(const.DAILY_DIGEST_TIMER_NAME)
+
+        # make sure the timestamp did not get reset
+        self.assertEqual(timer.callback_at, callback_at)

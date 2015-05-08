@@ -34,9 +34,6 @@ from edx_notifications.callbacks import NotificationCallbackTimerHandler
 
 log = logging.getLogger(__name__)
 
-DAILY_DIGEST_TIMER_NAME = 'daily-digest-timer'
-WEEKLY_DIGEST_TIMER_NAME = 'weekly-digest-timer'
-
 
 class NotificationDigestMessageCallback(NotificationCallbackTimerHandler):
     """
@@ -122,8 +119,17 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
     first_execution_at = datetime.datetime.now(pytz.UTC) + datetime.timedelta(days=1)
     first_execution_at = first_execution_at.replace(hour=0, minute=0, second=0, microsecond=0)
 
+    # see if we have an existing timer set, and preserve that execution time
+    # that is, don't reset it across startups
+    try:
+        existing_daily_digest_timer = store.get_notification_timer(const.DAILY_DIGEST_TIMER_NAME)
+        if existing_daily_digest_timer:
+            first_execution_at = existing_daily_digest_timer.callback_at
+    except ItemNotFoundError:
+        pass
+
     daily_digest_timer = NotificationCallbackTimer(
-        name=DAILY_DIGEST_TIMER_NAME,
+        name=const.DAILY_DIGEST_TIMER_NAME,
         callback_at=first_execution_at,
         class_name='edx_notifications.digests.NotificationDigestMessageCallback',
         is_active=True,
@@ -139,7 +145,7 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
     store.save_notification_timer(daily_digest_timer)
 
     weekly_digest_timer = NotificationCallbackTimer(
-        name=WEEKLY_DIGEST_TIMER_NAME,
+        name=const.WEEKLY_DIGEST_TIMER_NAME,
         callback_at=first_execution_at,
         class_name='edx_notifications.digests.NotificationDigestMessageCallback',
         is_active=True,
