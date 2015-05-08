@@ -110,20 +110,6 @@ class TimerTests(TestCase):
         self.assertIsNone(timer1.err_msg)
         self.assertNotEqual(timer.callback_at, timer1.callback_at)  # verify the callback time is incremented
 
-        poll_and_execute_timers()
-
-        timer2 = self.store.get_notification_timer(timer.name)
-        self.assertIsNone(timer2.executed_at)  # should be marked as still to execute
-        self.assertIsNone(timer2.err_msg)
-        self.assertNotEqual(timer1.callback_at, timer2.callback_at)
-
-        poll_and_execute_timers()
-
-        timer3 = self.store.get_notification_timer(timer.name)
-        self.assertIsNone(timer3.executed_at)  # should be marked as still to execute
-        self.assertIsNone(timer3.err_msg)
-        self.assertNotEqual(timer2.callback_at, timer3.callback_at)  # verify the callback time is incremented
-
     def test_bad_handler(self):
         """
         Make sure that a timer with a bad class_name doesn't operate

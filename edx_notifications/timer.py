@@ -65,6 +65,11 @@ def poll_and_execute_timers(**kwargs):  # pylint: disable=unused-argument
                 rerun_delta = rerun_delta if rerun_delta >= min_delta else min_delta
 
                 timer.callback_at = timer.callback_at + timedelta(minutes=rerun_delta)
+
+                # is the rescheduling still in the past?
+                if timer.callback_at < datetime.now(pytz.UTC):
+                    timer.callback_at = datetime.now(pytz.UTC) + timedelta(minutes=rerun_delta)
+
                 timer.executed_at = None  # need to reset this or it won't get picked up again
 
             if results.get('errors'):
