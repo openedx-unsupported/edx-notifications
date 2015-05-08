@@ -4,6 +4,7 @@ Create and register a new NotificationCallbackTimerHandler
 import datetime
 import os
 import urllib
+import copy
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -123,14 +124,24 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
     first_execution_at = datetime.datetime.now(pytz.UTC) + datetime.timedelta(days=1)
     first_execution_at = first_execution_at.replace(hour=0, minute=0, second=0, microsecond=0)
     periodicity_min = const.MINUTES_IN_A_DAY
+    context = {
+        'is_daily_digest': True,
+        'preference_name': const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+        'subject': const.NOTIFICATION_DAILY_DIGEST_SUBJECT,
+        'from_email': const.NOTIFICATION_EMAIL_FROM_ADDRESS,
+        'unread_only': const.NOTIFICATION_DIGEST_UNREAD_ONLY,
+    }
 
     # see if we have an existing timer set, and preserve that execution time
     # that is, don't reset it across startups
     try:
-        existing_daily_digest_timer = store.get_notification_timer(const.DAILY_DIGEST_TIMER_NAME)
-        if existing_daily_digest_timer:
-            first_execution_at = existing_daily_digest_timer.callback_at
-            periodicity_min = existing_daily_digest_timer.periodicity_min
+        existing_digest_timer = store.get_notification_timer(const.DAILY_DIGEST_TIMER_NAME)
+        if existing_digest_timer:
+            first_execution_at = existing_digest_timer.callback_at
+            periodicity_min = existing_digest_timer.periodicity_min
+            new_context = copy.deepcopy(existing_digest_timer.context)
+            new_context.update(context)
+            context = copy.deepcopy(new_context)
     except ItemNotFoundError:
         pass
 
@@ -140,25 +151,29 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
         class_name='edx_notifications.digests.NotificationDigestMessageCallback',
         is_active=True,
         periodicity_min=periodicity_min,
-        context={
-            'is_daily_digest': True,
-            'preference_name': const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
-            'subject': const.NOTIFICATION_DAILY_DIGEST_SUBJECT,
-            'from_email': const.NOTIFICATION_EMAIL_FROM_ADDRESS,
-            'unread_only': const.NOTIFICATION_DIGEST_UNREAD_ONLY,
-        }
+        context=context
     )
     store.save_notification_timer(daily_digest_timer)
 
     periodicity_min = const.MINUTES_IN_A_WEEK
+    context = {
+        'is_daily_digest': False,
+        'preference_name': const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME,
+        'subject': const.NOTIFICATION_DAILY_DIGEST_SUBJECT,
+        'from_email': const.NOTIFICATION_EMAIL_FROM_ADDRESS,
+        'unread_only': const.NOTIFICATION_DIGEST_UNREAD_ONLY,
+    }
 
     # see if we have an existing timer set, and preserve that execution time
     # that is, don't reset it across startups
     try:
-        existing_daily_digest_timer = store.get_notification_timer(const.WEEKLY_DIGEST_TIMER_NAME)
-        if existing_daily_digest_timer:
-            first_execution_at = existing_daily_digest_timer.callback_at
-            periodicity_min = existing_daily_digest_timer.periodicity_min
+        existing_digest_timer = store.get_notification_timer(const.WEEKLY_DIGEST_TIMER_NAME)
+        if existing_digest_timer:
+            first_execution_at = existing_digest_timer.callback_at
+            periodicity_min = existing_digest_timer.periodicity_min
+            new_context = copy.deepcopy(existing_digest_timer.context)
+            new_context.update(context)
+            context = copy.deepcopy(new_context)
     except ItemNotFoundError:
         pass
 
@@ -168,13 +183,7 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
         class_name='edx_notifications.digests.NotificationDigestMessageCallback',
         is_active=True,
         periodicity_min=periodicity_min,
-        context={
-            'is_daily_digest': False,
-            'preference_name': const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME,
-            'subject': const.NOTIFICATION_DAILY_DIGEST_SUBJECT,
-            'from_email': const.NOTIFICATION_EMAIL_FROM_ADDRESS,
-            'unread_only': const.NOTIFICATION_DIGEST_UNREAD_ONLY,
-        }
+        context=context
     )
     store.save_notification_timer(weekly_digest_timer)
 
