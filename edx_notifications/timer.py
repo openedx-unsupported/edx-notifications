@@ -56,18 +56,18 @@ def poll_and_execute_timers(**kwargs):  # pylint: disable=unused-argument
             # for the timer
             timer.results = copy.deepcopy(results)
 
-            if not results.get('errors'):
-                # successful, see if we should reschedule
-                rerun_delta = results.get('reschedule_in_mins')
-                rerun_delta = rerun_delta if rerun_delta else timer.periodicity_min
+            # successful, see if we should reschedule
+            rerun_delta = results.get('reschedule_in_mins')
+            rerun_delta = rerun_delta if rerun_delta else timer.periodicity_min
 
-                if rerun_delta:
-                    min_delta = const.NOTIFICATION_MINIMUM_PERIODICITY_MINS
-                    rerun_delta = rerun_delta if rerun_delta >= min_delta else min_delta
+            if rerun_delta:
+                min_delta = const.NOTIFICATION_MINIMUM_PERIODICITY_MINS
+                rerun_delta = rerun_delta if rerun_delta >= min_delta else min_delta
 
-                    timer.callback_at = timer.callback_at + timedelta(minutes=rerun_delta)
-                    timer.executed_at = None  # need to reset this or it won't get picked up again
-            else:
+                timer.callback_at = timer.callback_at + timedelta(minutes=rerun_delta)
+                timer.executed_at = None  # need to reset this or it won't get picked up again
+
+            if results.get('errors'):
                 timer.err_msg = str(results['errors'])
 
             # see if the callback returned a 'context_update'
