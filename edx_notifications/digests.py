@@ -122,6 +122,7 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
     # Set first execution time as upcoming midnight after the server is run for the first time.
     first_execution_at = datetime.datetime.now(pytz.UTC) + datetime.timedelta(days=1)
     first_execution_at = first_execution_at.replace(hour=0, minute=0, second=0, microsecond=0)
+    periodicity_min = const.MINUTES_IN_A_DAY
 
     # see if we have an existing timer set, and preserve that execution time
     # that is, don't reset it across startups
@@ -129,6 +130,7 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
         existing_daily_digest_timer = store.get_notification_timer(const.DAILY_DIGEST_TIMER_NAME)
         if existing_daily_digest_timer:
             first_execution_at = existing_daily_digest_timer.callback_at
+            periodicity_min = existing_daily_digest_timer.periodicity_min
     except ItemNotFoundError:
         pass
 
@@ -137,7 +139,7 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
         callback_at=first_execution_at,
         class_name='edx_notifications.digests.NotificationDigestMessageCallback',
         is_active=True,
-        periodicity_min=const.MINUTES_IN_A_DAY,
+        periodicity_min=periodicity_min,
         context={
             'is_daily_digest': True,
             'preference_name': const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
@@ -148,12 +150,24 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
     )
     store.save_notification_timer(daily_digest_timer)
 
+    periodicity_min = const.MINUTES_IN_A_WEEK
+
+    # see if we have an existing timer set, and preserve that execution time
+    # that is, don't reset it across startups
+    try:
+        existing_daily_digest_timer = store.get_notification_timer(const.WEEKLY_DIGEST_TIMER_NAME)
+        if existing_daily_digest_timer:
+            first_execution_at = existing_daily_digest_timer.callback_at
+            periodicity_min = existing_daily_digest_timer.periodicity_min
+    except ItemNotFoundError:
+        pass
+
     weekly_digest_timer = NotificationCallbackTimer(
         name=const.WEEKLY_DIGEST_TIMER_NAME,
         callback_at=first_execution_at,
         class_name='edx_notifications.digests.NotificationDigestMessageCallback',
         is_active=True,
-        periodicity_min=const.MINUTES_IN_A_WEEK,
+        periodicity_min=periodicity_min,
         context={
             'is_daily_digest': False,
             'preference_name': const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME,
