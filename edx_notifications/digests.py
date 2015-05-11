@@ -159,7 +159,7 @@ def register_digest_timers(sender, **kwargs):  # pylint: disable=unused-argument
     context = {
         'is_daily_digest': False,
         'preference_name': const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME,
-        'subject': const.NOTIFICATION_DAILY_DIGEST_SUBJECT,
+        'subject': const.NOTIFICATION_WEEKLY_DIGEST_SUBJECT,
         'from_email': const.NOTIFICATION_EMAIL_FROM_ADDRESS,
         'unread_only': const.NOTIFICATION_DIGEST_UNREAD_ONLY,
     }
