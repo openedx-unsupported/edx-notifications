@@ -382,6 +382,7 @@ def _send_user_digest(namespace_info, from_timestamp, to_timestamp, user_id,
             'unread': True,
             'start_date': from_timestamp,
             'end_timestamp': to_timestamp,
+            'namespace': namespace_info['namespace'],
         },
         options={
             'select_related': True,  # make sure we do JOINs on the initial query
