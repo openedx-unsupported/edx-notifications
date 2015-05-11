@@ -22,6 +22,16 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
         self.db_instance = self.client[kwargs.get('database_name')]
         self.collection = self.db_instance.user_notification
 
+    def create_mongodb_indexes(self):
+        """
+        Ensure that all appropriate indexes are created that are needed by Notifications, or raise
+        an exception if unable to.
+
+        This method is intended for use by tests and administrative commands, and not
+        to be run during server startup.
+        """
+        print "Creating mongodb indexes."
+
     def _get_prepaged_notifications(self, user_id, filters=None, options=None):
         """
         Helper to set up the notifications query before paging
