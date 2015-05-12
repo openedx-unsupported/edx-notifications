@@ -4,6 +4,7 @@ var NotificationPaneView = Backbone.View.extend({
         this.view_templates = options.view_templates;
         this.counter_icon_view = options.counter_icon_view;
         this.namespace = options.namespace;
+        this.endpoints = options.endpoints;
 
         var self = this;
 
@@ -63,10 +64,11 @@ var NotificationPaneView = Backbone.View.extend({
         'click .xns-all-action': 'allUserNotificationsClicked',
         'click .xns-unread-action': 'unreadNotificationsClicked',
         'click .xns-mark-read-action': 'markNotificationsRead',
+        'click .xns-notification-preferences': 'notificationPreferencesView',
         'click .xns-hide-pane': 'hidePane',
         'click .xns-item': 'visitNotification',
         'click .xns-close-item': 'closeNotification',
-        'click': 'preventHidingWhenClickedInside'
+        'click .xns-content': 'preventHidingWhenClickedInside'
     },
 
     template: null,
@@ -571,5 +573,30 @@ var NotificationPaneView = Backbone.View.extend({
       else {
         return false;
       }
+    },
+    /* cached notifications preferences tab view */
+    notification_preferences_tab: null,
+
+    notificationPreferencesView: function(e){
+        // make sure the right tab is highlighted
+        this.$el.find($('ul.xns-tab-list > li')).removeClass('active');
+        $(e.currentTarget).addClass('active');
+        if (this.selected_pane != 'notification_preference') {
+            this.selected_pane = 'notification_preference';
+            $('.xns-mark-read-action').addClass('disabled');
+
+            if (!this.notification_preferences_tab) {
+                this.notification_preferences_tab = new NotificationPreferencesView({
+                    el: this.$el.find('.xns-list-body'),
+                    endpoints: this.endpoints,
+                    global_variables: this.global_variables
+                });
+            }
+            else {
+                // redraw the settings notification_preferences_tab.
+                this.notification_preferences_tab.showFetchedPreferences(this.$el.find('.xns-list-body'));
+            }
+        }
+        e.preventDefault();
     }
 });

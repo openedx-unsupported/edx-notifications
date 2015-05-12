@@ -1,0 +1,26 @@
+<div class="xns-list-body">
+    <ul class="xns-items">
+        {% if grouped_user_notifications.length == 0 %}
+            <li class='xns-empty-list'>
+                <p class="xns-no-notifications-msg xns-item">You have no unread notifications.</p>
+            </li>
+        {% else %}
+            {% for grouped_user_notification in grouped_user_notifications %}
+                <h3 class="xns-group">{{ grouped_user_notification.group_title }}</h3>
+                {% for message in grouped_user_notification.messages %}
+                    <li class="xns-item">
+                        {% if message.click_link %}
+                        <a href='{{message.click_link}}'>
+                        {% endif %}
+                        <div class="xns-item-body">
+                                    <span class='xns-{{ message.group_name }}'>{% autoescape off %}{{ message.html }}{% endautoescape %}</span>
+                        </div>
+                        {% if message.click_link %}
+                        </a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            {% endfor %}
+        {% endif %}
+    </ul>
+</div>

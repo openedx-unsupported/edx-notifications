@@ -7,8 +7,8 @@ import logging
 
 from edx_notifications.lib.publisher import (
     publish_notification_to_user,
-    bulk_publish_notification_to_users
-)
+    bulk_publish_notification_to_users,
+    purge_expired_notifications)
 from edx_notifications.scopes import resolve_user_scope
 from edx_notifications.stores.store import notification_store
 from edx_notifications.exceptions import ItemNotFoundError
@@ -178,7 +178,7 @@ def _send_to_scoped_users(msg, scope_name, scope_context, preferred_channel=None
     that can be passed into a NotificationScopeResolver
     """
 
-    # user_ids can be a list, a generator function, or a ValuesListQuerySet (Django ORM)
+    # user_ids can be a list, a generator function, or a ValuesQuerySet/ValuesListQuerySet (Django ORM)
     user_ids = resolve_user_scope(scope_name, scope_context)
 
     if not user_ids:
@@ -202,3 +202,25 @@ def _send_to_scoped_users(msg, scope_name, scope_context, preferred_channel=None
     )
 
     return num_dispatched
+
+
+class PurgeNotificationsCallbackHandler(NotificationCallbackTimerHandler):
+    """
+        This is the callback class called by the NotificationTimer for purging old notifications.
+        It will be rescheduled daily and will purge the old notifications by calling the StoreProvider
+        method
+
+        The return dictionary must contain the key 'reschedule_in_mins' with
+        the value timer.periodicity_min in order to re-arm the callback to
+        trigger again after the specified interval.
+    """
+
+    def notification_timer_callback(self, timer):
+        purge_expired_notifications()
+
+        # Reschedule the timer to run again the next day.
+        result = {
+            'errors': [],
+            'reschedule_in_mins': timer.periodicity_min,
+        }
+        return result

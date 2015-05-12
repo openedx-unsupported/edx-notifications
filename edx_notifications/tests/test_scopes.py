@@ -3,6 +3,7 @@ All tests regarding scopes.py
 """
 
 from django.test import TestCase
+from django.contrib.auth.models import User
 
 from edx_notifications.scopes import (
     SingleUserScopeResolver,
@@ -55,6 +56,22 @@ class TestGeneratorScopeResolver(NotificationUserScopeResolver):
         return None
 
 
+class DjangoORMResolver(NotificationUserScopeResolver):
+    """
+    Test scope resolver that returns a database query
+    """
+
+    def resolve(self, scope_name, scope_context, instance_context):
+        """
+        Handles both the ValuesListQuerySet and the ValuesQuerySet
+        """
+
+        if scope_name == 'values_list_query_set':
+            return User.objects.values_list('id', flat=True).all()
+        elif scope_name == 'values_query_set':
+            return User.objects.values('id').all()
+
+
 class BadTestScopeResolver(NotificationUserScopeResolver):
     """
     Test scope resolver that should not work
@@ -76,6 +93,14 @@ class ScopesTests(TestCase):
         clear_user_scope_resolvers()
         register_user_scope_resolver('list_scope', TestListScopeResolver())
         register_user_scope_resolver('generator_scope', TestGeneratorScopeResolver())
+        register_user_scope_resolver('values_list_query_set', DjangoORMResolver())
+        register_user_scope_resolver('values_query_set', DjangoORMResolver())
+
+        # create a test user in the Django ORM
+
+        self.test_user = User(username='foo', email='foo@bar.com', first_name='Foo', last_name='Bar')
+        self.test_user.is_active = True
+        self.test_user.save()
 
     def test_resolving_scope(self):
         """
@@ -156,3 +181,18 @@ class ScopesTests(TestCase):
         resolver = SingleUserScopeResolver()
         user_ids = resolver.resolve('user', {'user_id': 1}, {})
         self.assertEquals(user_ids, [1])
+
+    def test_django_orm_based_resolver(self):
+        """
+        Assert proper operations when working with Django ORM cursors
+        """
+
+        users = resolve_user_scope('values_list_query_set', {})
+        users_list = [user for user in users]
+        self.assertEqual(len(users_list), 1)
+        self.assertEqual(users_list[0], self.test_user.id)
+
+        users = resolve_user_scope('values_query_set', {})
+        users_list = [user for user in users]
+        self.assertEqual(len(users_list), 1)
+        self.assertEqual(users_list[0]['id'], self.test_user.id)

@@ -13,9 +13,10 @@ import pytz
 import copy
 from contracts import contract
 
-from django.db.models.query import ValuesListQuerySet
+from django.db.models.query import ValuesQuerySet, ValuesListQuerySet
 
 from edx_notifications.channels.channel import get_notification_channel
+from edx_notifications import const
 from edx_notifications.stores.store import notification_store
 from edx_notifications.exceptions import ItemNotFoundError
 
@@ -147,13 +148,14 @@ def bulk_publish_notification_to_users(user_ids, msg, exclude_user_ids=None,
     # is something malformatted or missing in the NotificationMessage
     msg.validate()
 
-    if (not isinstance(user_ids, list) and not
-            isinstance(user_ids, types.GeneratorType) and not
-            isinstance(user_ids, ValuesListQuerySet)):
+    if (not isinstance(user_ids, list) and
+            not isinstance(user_ids, types.GeneratorType) and
+            not isinstance(user_ids, ValuesListQuerySet) and
+            not isinstance(user_ids, ValuesQuerySet)):
 
         err_msg = (
             'bulk_publish_notification_to_users() can only be called with a user_ids argument '
-            'of type list, GeneratorType, or ValuesListQuerySet. Type {arg_type} was passed in!'
+            'of type list, GeneratorType, or ValuesQuerySet/ValuesListQuerySet. Type {arg_type} was passed in!'
             .format(arg_type=type(user_ids))
         )
         raise TypeError(err_msg)
@@ -328,3 +330,27 @@ def cancel_timed_notification(timer_name, exception_on_not_found=True):
             'but it does not exist. Skipping...'
         ).format(name=timer_name)
         log.error(err_msg)
+
+
+def purge_expired_notifications():
+    """
+    This method reads from the configuration how long (in days) old notifications (read and unread separately)
+    can remain in the system before being purged. Lack of configuration (or None) means "don't purge ever"
+    and calls into the store provider's purge_expired_notifications() method.
+    """
+
+    store = notification_store()
+    now = datetime.datetime.now(pytz.UTC)
+
+    purge_read_older_than = None
+    if const.NOTIFICATION_PURGE_READ_OLDER_THAN_DAYS:
+        purge_read_older_than = now - datetime.timedelta(days=const.NOTIFICATION_PURGE_READ_OLDER_THAN_DAYS)
+
+    purge_unread_older_than = None
+    if const.NOTIFICATION_PURGE_UNREAD_OLDER_THAN_DAYS:
+        purge_unread_older_than = now - datetime.timedelta(days=const.NOTIFICATION_PURGE_UNREAD_OLDER_THAN_DAYS)
+
+    store.purge_expired_notifications(
+        purge_read_messages_older_than=purge_read_older_than,
+        purge_unread_messages_older_than=purge_unread_older_than
+    )

@@ -5,6 +5,7 @@
 <script src="{{ STATIC_URL }}edx_notifications/js/views/counter_icon_view.js"></script>
 <script src="{{ STATIC_URL }}edx_notifications/js/views/notification_pane_view.js"></script>
 
+{% include 'django/notifications_widget_preferences_header.html' %}
 
 <script type="text/template" id="xns-counter-template">
     <% if (typeof count !== 'undefined' && count > 0) { %>
@@ -14,7 +15,7 @@
 
 <script type="text/template" id="xns-pane-template">
     <div class="xns-container">
-        <div class="xns-content <%= selected_pane %>">
+        <div class="xns-content xns-pane-<%= selected_pane %>">
             <div class="xns-list-header">
                 <h2>Notifications</h2>
                 <div class="xns-actions">
@@ -25,6 +26,10 @@
                         <% if (typeof this.global_variables.hide_link_is_visible != 'undefined' &&
                         this.global_variables.hide_link_is_visible != 'False') { %>
                             <li class="xns-hide-pane"><a href="#">Hide</a></li>
+                        <% } %>
+                        <% if (typeof this.global_variables.notification_preference_tab_is_visible != 'undefined' &&
+                        this.global_variables.notification_preference_tab_is_visible == 'True') { %>
+                            <li class="xns-notification-preferences"><a href="#">Settings</a></li>
                         <% } %>
                     </ul>
                 </div>

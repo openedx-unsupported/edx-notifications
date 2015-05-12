@@ -2,6 +2,8 @@
 View handlers for HTML serving
 """
 
+from datetime import datetime, timedelta
+import pytz
 from django.template import RequestContext, loader
 from django.http import (
     HttpResponse,
@@ -25,14 +27,29 @@ from edx_notifications.data import (
     NotificationMessage,
 )
 
+
+from edx_notifications.namespaces import (
+    NotificationNamespaceResolver,
+    register_namespace_resolver
+)
+
+
+from edx_notifications.scopes import (
+    NotificationUserScopeResolver
+)
+
+from edx_notifications.digests import send_notifications_digest
+
 from edx_notifications.server.web.utils import get_notifications_widget_context
+from edx_notifications import const
+from edx_notifications.scopes import register_user_scope_resolver
 
 from .forms import *
 
 # set up three optional namespaces that we can switch through to test proper
 # isolation of Notifications
-NAMESPACES = [None, 'foo/bar/baz', 'test/test/test']
-NAMESPACE = None
+NAMESPACES = ['foo/bar/baz', 'test/test/test']
+NAMESPACE = 'foo/bar/baz'
 
 CANNED_TEST_PAYLOAD = {
     'testserver.type1': {
@@ -48,14 +65,14 @@ CANNED_TEST_PAYLOAD = {
     },
     'open-edx.lms.discussions.reply-to-thread': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'original_poster_id': 1,
         'action_username': 'testuser',
         'thread_title': 'A demo posting to the discussion forums',
     },
     'open-edx.lms.discussions.thread-followed': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'original_poster_id': 1,
         'action_username': 'testuser',
         'thread_title': 'A demo posting to the discussion forums',
@@ -63,7 +80,7 @@ CANNED_TEST_PAYLOAD = {
     },
     'open-edx.lms.discussions.post-upvoted': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'original_poster_id': 1,
         'action_username': 'testuser',
         'thread_title': 'A demo posting to the discussion forums',
@@ -71,20 +88,20 @@ CANNED_TEST_PAYLOAD = {
     },
     'open-edx.lms.discussions.comment-upvoted': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'action_username': 'testuser',
         'thread_title': 'A demo posting to the discussion forums',
         'num_upvotes': 5,
     },
     'open-edx.studio.announcements.new-announcement': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'title': 'Gettysburg Address',
         'excerpt': 'Four score and seven years ago our fathers brought forth on this continent, a new nation, conceived in Liberty, and dedicated to the proposition that all men are created equal.'
     },
     'open-edx.lms.discussions.cohorted-thread-added': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'original_poster_id': 1,
         'action_user_id': 2,
         'action_username': 'testuser',
@@ -93,7 +110,7 @@ CANNED_TEST_PAYLOAD = {
     },
     'open-edx.lms.discussions.cohorted-comment-added': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'original_poster_id': 1,
         'action_user_id': 2,
         'action_username': 'testuser',
@@ -102,47 +119,53 @@ CANNED_TEST_PAYLOAD = {
     },
     'open-edx.lms.leaderboard.progress.rank-changed': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'rank': 2,
         'leaderboard_name': 'Progress'
     },
     'open-edx.lms.leaderboard.gradebook.rank-changed': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'rank': 3,
         'leaderboard_name': 'Proficiency'
     },
     'open-edx.lms.leaderboard.engagement.rank-changed': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'rank': 1,
         'leaderboard_name': 'Engagement'
     },
     'open-edx.xblock.group-project.file-uploaded': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'action_username': 'testuser',
         'activity_name': 'First Activity',
         'verb': 'uploaded a file',
     },
     'open-edx.xblock.group-project.stage-open': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'activity_name': 'First Activity',
         'stage': 'Upload(s)',
     },
     'open-edx.xblock.group-project.stage-due': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'activity_name': 'First Activity',
         'stage': 'Upload(s)',
         'due_date': '4/25'
     },
     'open-edx.xblock.group-project.grades-posted': {
         '_schema_version': 1,
-        '_click_link': 'http://localhost',
+        '_click_link': 'http://localhost:8000',
         'activity_name': 'First Activity',
     },
+    'open-edx.lms.discussions.post-flagged': {
+        '_schema_version': 1,
+        '_click_link': 'http://localhost:8000',
+        'action_username': 'testuser',
+        'title': 'A demo posting to the discussion forums',
+    }
 }
 
 
@@ -154,11 +177,19 @@ def index(request):
     global NAMESPACE
 
     if request.method == 'POST':
+
+        register_user_scope_resolver('user_email_resolver', TestUserResolver(request.user))
+
         if request.POST.get('change_namespace'):
             namespace_str = request.POST['namespace']
             NAMESPACE = namespace_str if namespace_str != "None" else None
+        elif request.POST.get('send_digest'):
+            send_digest(request)
         else:
             type_name = request.POST['notification_type']
+            channel_name = request.POST['notification_channel']
+            if not channel_name:
+                channel_name = None
             msg_type = get_notification_type(type_name)
 
             msg = NotificationMessage(
@@ -173,7 +204,7 @@ def index(request):
                     'param2': 'param_val2',
                 })
 
-            publish_notification_to_user(request.user.id, msg)
+            publish_notification_to_user(request.user.id, msg, preferred_channel=channel_name)
 
     template = loader.get_template('index.html')
 
@@ -188,6 +219,7 @@ def index(request):
             'app_name': 'Notification Test Server',
             'hide_link_is_visible': settings.HIDE_LINK_IS_VISIBLE,
             'always_show_dates_on_unread': True,
+            'notification_preference_tab_is_visible': settings.NOTIFICATION_PREFERENCES_IS_VISIBLE,
         },
         # for test purposes, set up a short-poll which contacts the server
         # every 10 seconds to see if there is a new notification
@@ -243,3 +275,43 @@ def register_success(request):
 def logout_page(request):
     logout(request)
     return HttpResponseRedirect('/')
+
+
+class TestUserResolver(NotificationUserScopeResolver):
+    def __init__(self, send_to):
+        self.send_to = send_to
+
+    def resolve(self, scope_name, scope_context, instance_context):
+        return [
+            {
+                'id': self.send_to.id,
+                'email': self.send_to.email,
+                'first_name': 'Joe',
+                'last_name': 'Smith'
+            }
+        ]
+
+class TestNotificationNamespaceResolver(NotificationNamespaceResolver):
+    def __init__(self, send_to):
+        self.send_to = send_to
+
+    def resolve(self, namespace, instance_context):
+        return {
+            'namespace': namespace,
+            'display_name': 'A Test Namespace',
+            'features': {
+                'digests': True,
+            },
+            'default_user_resolver': TestUserResolver(self.send_to)
+        }
+
+def send_digest(request):
+    # just send to logged in user
+    register_namespace_resolver(TestNotificationNamespaceResolver(request.user))
+    send_notifications_digest(
+        datetime.now(pytz.UTC) - timedelta(days=1) if const.NOTIFICATION_DIGEST_SEND_TIMEFILTERED else None,
+        datetime.now(pytz.UTC),
+        const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME,
+        const.NOTIFICATION_DAILY_DIGEST_SUBJECT,
+        const.NOTIFICATION_EMAIL_FROM_ADDRESS
+    )
