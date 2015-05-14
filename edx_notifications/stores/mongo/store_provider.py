@@ -4,6 +4,7 @@ Concrete MongoDB implementation of the of the data provider abstract base class 
 import copy
 import datetime
 from pymongo import MongoClient
+import pymongo
 import pytz
 from edx_notifications import const
 from edx_notifications.exceptions import BulkOperationTooLarge
@@ -21,6 +22,22 @@ class MongoNotificationStoreProvider(SQLNotificationStoreProvider):
         self.client = MongoClient(kwargs.get('host'), kwargs.get('port'))
         self.db_instance = self.client[kwargs.get('database_name')]
         self.collection = self.db_instance.user_notification
+
+    def create_mongodb_indexes(self):
+        """
+        Ensure that all appropriate indexes are created that are needed by Notifications, or raise
+        an exception if unable to.
+
+        This method is intended for use by tests and administrative commands, and not
+        to be run during server startup.
+        """
+
+        self.collection.ensure_index([("user_id", pymongo.ASCENDING)], name='user_id index')
+        self.collection.ensure_index([("user_notification.msg_id", pymongo.ASCENDING)], name='user msg id index')
+        self.collection.ensure_index([("user_notification.read_at", pymongo.ASCENDING)], name='user msg read_at index')
+        self.collection.ensure_index(
+            [("user_notification.msg_id", pymongo.ASCENDING), ("user_notification.read_at", pymongo.ASCENDING)],
+            name='user msg msg_id->read_at compound_index')
 
     def _get_prepaged_notifications(self, user_id, filters=None, options=None):
         """
