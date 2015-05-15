@@ -36,10 +36,15 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         ARGS: kwargs
             - MAX_MSG_TYPE_CACHE_SIZE: Maximum size of the LRU cache around
               msg_types
+            - MAX_NOTIFICATION_MSG_CACHE_SIZE: Maximum size of the LRU cache around
+              notification_messages
         """
 
         _msg_type_cache_size = kwargs.get('MAX_MSG_TYPE_CACHE_SIZE', 1024)
         self._msg_type_cache = pylru.lrucache(_msg_type_cache_size)
+
+        _notification_msg_cache_size = kwargs.get('MAX_NOTIFICATION_MSG_CACHE_SIZE', 1024)
+        self._notification_msg_cache = pylru.lrucache(_notification_msg_cache_size)
 
     def _get_notification_by_id(self, msg_id, options=None):
         """
@@ -50,6 +55,11 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         _options = options if options else {}
         select_related = _options.get('select_related', True)
 
+        # pull from the cache, if we have it
+        if msg_id in self._notification_msg_cache:
+            data_object = self._notification_msg_cache[msg_id]
+            return data_object
+
         try:
             query = SQLNotificationMessage.objects
             if select_related:
@@ -57,8 +67,11 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
             obj = query.get(id=msg_id)
         except ObjectDoesNotExist:
             raise ItemNotFoundError()
+        data_object = obj.to_data_object(options=options)
 
-        return obj.to_data_object(options=options)
+        # refresh the cache
+        self._notification_msg_cache[msg_id] = data_object
+        return data_object
 
     def get_notification_message_by_id(self, msg_id, options=None):
         """
@@ -87,6 +100,9 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
             obj = SQLNotificationMessage.from_data_object(msg)
 
         obj.save()
+        # remove cached entry
+        if msg.id in self._notification_msg_cache:
+            del self._notification_msg_cache[msg.id]
         return obj.to_data_object()
 
     def get_notification_type(self, name):  # pylint: disable=no-self-use

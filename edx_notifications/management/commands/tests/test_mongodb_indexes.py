@@ -24,11 +24,6 @@ class MongoDbIndexesTests(TestCase):
     """
     Test suite for the management command
     """
-
-    # @override_settings(NOTIFICATION_STORE_PROVIDER=TEST_NOTIFICATION_STORE_PROVIDER)
-    # def setUp(self):
-    #     super(MongoDbIndexesTests, self).setUp()
-
     def test_create_indexes(self):
         """
         Invoke the Management Command

@@ -248,6 +248,11 @@ class TestMongoStoreProvider(TestCase):
         self.assertEqual(msg.resolve_links, fetched_msg.resolve_links)
         self.assertEqual(msg.object_id, fetched_msg.object_id)
 
+        msg.payload = {
+            'updated': True,
+        }
+        # delete msg cache entry by updating the user msg
+        msg = self.provider.save_notification_message(msg)
         # by not selecting_related (default True), this will cause another round
         # trip to the database
         with self.assertNumQueries(2):
