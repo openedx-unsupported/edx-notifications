@@ -184,7 +184,7 @@ def index(request):
             namespace_str = request.POST['namespace']
             NAMESPACE = namespace_str if namespace_str != "None" else None
         elif request.POST.get('send_digest'):
-            send_digest(request)
+            send_digest(request, request.POST.get('digest_email'))
         else:
             type_name = request.POST['notification_type']
             channel_name = request.POST['notification_channel']
@@ -284,8 +284,8 @@ class TestUserResolver(NotificationUserScopeResolver):
     def resolve(self, scope_name, scope_context, instance_context):
         return [
             {
-                'id': self.send_to.id,
-                'email': self.send_to.email,
+                'id': 1,
+                'email': self.send_to,
                 'first_name': 'Joe',
                 'last_name': 'Smith'
             }
@@ -305,9 +305,9 @@ class TestNotificationNamespaceResolver(NotificationNamespaceResolver):
             'default_user_resolver': TestUserResolver(self.send_to)
         }
 
-def send_digest(request):
+def send_digest(request, digest_email):
     # just send to logged in user
-    register_namespace_resolver(TestNotificationNamespaceResolver(request.user))
+    register_namespace_resolver(TestNotificationNamespaceResolver(request.user.email if not digest_email else digest_email))
     send_notifications_digest(
         datetime.now(pytz.UTC) - timedelta(days=1) if const.NOTIFICATION_DIGEST_SEND_TIMEFILTERED else None,
         datetime.now(pytz.UTC),
