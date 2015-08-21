@@ -7,7 +7,7 @@
   "devDependencies": {
     "gulp": "latest",
     "gulp-karma": "latest",
-    "karma": "latest",
+    "karma": ">=0.10 <=0.13",
     "karma-chrome-launcher": "latest",
     "karma-coverage": "latest",
     "karma-firefox-launcher": "latest",
