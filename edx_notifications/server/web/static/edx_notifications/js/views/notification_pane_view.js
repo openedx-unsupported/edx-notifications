@@ -209,6 +209,7 @@ var NotificationPaneView = Backbone.View.extend({
             'open-edx.lms.leaderboard.*': 'leaderboards',
             'open-edx.studio.announcements.*': 'announcements',
             'open-edx.xblock.group-project.*': 'group_work',
+            'open-edx.xblock.group-project-v2.*': 'group_work',
             '*': '_default'
         }
     },
