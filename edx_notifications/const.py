@@ -130,6 +130,7 @@ NOTIFICATION_DIGEST_GROUP_CONFIG = getattr(
             'open-edx.lms.leaderboard.*': 'leaderboards',
             'open-edx.studio.announcements.*': 'announcements',
             'open-edx.xblock.group-project.*': 'group_work',
+            'open-edx.xblock.group-project-v2.*': 'group_work',
             '*': '_default'
         },
     }

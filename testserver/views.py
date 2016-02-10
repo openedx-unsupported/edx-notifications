@@ -160,6 +160,31 @@ CANNED_TEST_PAYLOAD = {
         '_click_link': 'http://localhost:8000',
         'activity_name': 'First Activity',
     },
+    'open-edx.xblock.group-project-v2.file-uploaded': {
+        '_schema_version': 1,
+        '_click_link': 'http://localhost:8000',
+        'action_username': 'testuser V2',
+        'activity_name': 'First Activity V2',
+        'verb': 'uploaded a file',
+    },
+    'open-edx.xblock.group-project-v2.stage-open': {
+        '_schema_version': 1,
+        '_click_link': 'http://localhost:8000',
+        'activity_name': 'First Activity V2',
+        'stage': 'Upload(s) V2',
+    },
+    'open-edx.xblock.group-project-v2.stage-due': {
+        '_schema_version': 1,
+        '_click_link': 'http://localhost:8000',
+        'activity_name': 'First Activity V2',
+        'stage': 'Upload(s) V2',
+        'due_date': '4/25'
+    },
+    'open-edx.xblock.group-project-v2.grades-posted': {
+        '_schema_version': 1,
+        '_click_link': 'http://localhost:8000',
+        'activity_name': 'First Activity V2',
+    },
     'open-edx.lms.discussions.post-flagged': {
         '_schema_version': 1,
         '_click_link': 'http://localhost:8000',

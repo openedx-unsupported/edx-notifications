@@ -27,6 +27,10 @@ class TestAddNotifications(WebAppTest):
         'open-edx.xblock.group-project.stage-open': 'First Activity: Upload(s) are open',
         'open-edx.xblock.group-project.stage-due': 'First Activity: Upload(s) due 4/25',
         'open-edx.xblock.group-project.grades-posted': 'First Activity: Grade(s) are posted',
+        'open-edx.xblock.group-project-v2.file-uploaded': 'First Activity V2: testuser V2 uploaded a file',
+        'open-edx.xblock.group-project-v2.stage-open': 'First Activity V2: Upload(s) V2 are open',
+        'open-edx.xblock.group-project-v2.stage-due': 'First Activity V2: Upload(s) V2 due 4/25',
+        'open-edx.xblock.group-project-v2.grades-posted': 'First Activity V2: Grade(s) are posted',
     }
 
     short_notification_dict = {
