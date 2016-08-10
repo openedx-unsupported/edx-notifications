@@ -226,7 +226,7 @@ def send_notifications_digest(from_timestamp, to_timestamp, preference_name, sub
     digests_sent = 0
 
     # Get a collection of all namespaces
-    namespaces = notification_store().get_all_namespaces()
+    namespaces = notification_store().get_all_namespaces(from_timestamp, to_timestamp)
 
     # Loop over all namespaces
     for namespace in namespaces:

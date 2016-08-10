@@ -5,6 +5,7 @@ Unit tests for the digests.py file
 import datetime
 import pytz
 from django.test import TestCase
+from freezegun import freeze_time
 
 from edx_notifications.namespaces import (
     NotificationNamespaceResolver,
@@ -121,23 +122,25 @@ class DigestTestCases(TestCase):
         )
 
         # create two notifications
-        msg = self.store.save_notification_message(
-            NotificationMessage(
-                msg_type=self.msg_type,
-                namespace='foo',
-                payload={'subject': 'foo', 'body': 'bar'},
+        with freeze_time(self.to_timestamp):
+            msg = self.store.save_notification_message(
+                NotificationMessage(
+                    msg_type=self.msg_type,
+                    namespace='foo',
+                    payload={'subject': 'foo', 'body': 'bar'},
+                )
             )
-        )
-        self.notification1 = publish_notification_to_user(self.test_user_id, msg)
+            self.notification1 = publish_notification_to_user(self.test_user_id, msg)
 
-        msg = self.store.save_notification_message(
-            NotificationMessage(
-                msg_type=self.msg_type_no_renderer,
-                namespace='bar',
-                payload={'subject': 'foo', 'body': 'bar'},
+        with freeze_time(self.to_timestamp):
+            msg = self.store.save_notification_message(
+                NotificationMessage(
+                    msg_type=self.msg_type_no_renderer,
+                    namespace='bar',
+                    payload={'subject': 'foo', 'body': 'bar'},
+                )
             )
-        )
-        self.notification2 = publish_notification_to_user(self.test_user_id, msg)
+            self.notification2 = publish_notification_to_user(self.test_user_id, msg)
 
     def test_no_namespace_resolver(self):
         """
@@ -386,14 +389,19 @@ class DigestTestCases(TestCase):
             )
         )
         # create cohort notification
-        msg = self.store.save_notification_message(
-            NotificationMessage(
-                msg_type=msg_type,
-                namespace='cohort-thread-added',
-                payload={'subject': 'foo', 'body': 'bar'},
+        with freeze_time(self.to_timestamp):
+            msg = self.store.save_notification_message(
+                NotificationMessage(
+                    msg_type=msg_type,
+                    namespace='cohort-thread-added',
+                    payload={
+                        'subject': 'foo',
+                        'body': 'bar',
+                        'thread_title': 'A demo posting to the discussion forums'
+                    },
+                )
             )
-        )
-        publish_notification_to_user(self.test_user_id, msg)
+            publish_notification_to_user(self.test_user_id, msg)
 
         register_namespace_resolver(TestNamespaceResolver())
 
@@ -421,14 +429,15 @@ class DigestTestCases(TestCase):
             )
         )
         # create cohort notification
-        msg = self.store.save_notification_message(
-            NotificationMessage(
-                msg_type=msg_type,
-                namespace='cohort-thread-added',
-                payload={'subject': 'foo', 'body': 'bar'},
+        with freeze_time(self.to_timestamp):
+            msg = self.store.save_notification_message(
+                NotificationMessage(
+                    msg_type=msg_type,
+                    namespace='cohort-thread-added',
+                    payload={'subject': 'foo', 'body': 'bar'},
+                )
             )
-        )
-        publish_notification_to_user(self.test_user_id, msg)
+            publish_notification_to_user(self.test_user_id, msg)
 
         register_namespace_resolver(TestNamespaceResolver())
 

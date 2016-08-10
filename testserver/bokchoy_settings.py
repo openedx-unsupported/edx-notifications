@@ -19,6 +19,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # This is just a container for running tests
 DEBUG = True
 TEMPLATE_DEBUG = True
+SECRET_KEY='SHHHHHH'
 
 # Application definition
 
@@ -34,7 +35,6 @@ INSTALLED_APPS = (
     'edx_notifications',
     'edx_notifications.server.web',
     'django_nose',
-    'south',
 )
 
 MIDDLEWARE_CLASSES = (

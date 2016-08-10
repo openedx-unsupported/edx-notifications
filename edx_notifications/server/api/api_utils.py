@@ -21,7 +21,7 @@ class AuthenticatedAPIView(APIView):
         Helper to make sure we have valid post parameters names being passed in
         """
 
-        for key, value in request.DATA.iteritems():
+        for key, value in request.data.iteritems():
 
             # check parameter name
             if key not in self._allowed_post_parameters:

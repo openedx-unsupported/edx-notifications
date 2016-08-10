@@ -171,7 +171,7 @@ class BadImplementationStoreProvider(BaseNotificationStoreProvider):
         """
         super(BadImplementationStoreProvider, self).get_all_active_timers(until_time=until_time)
 
-    def get_all_namespaces(self):
+    def get_all_namespaces(self, start_datetime=None, end_datetime=None):
         """
         This will return all unique namespaces that have been used
         """
