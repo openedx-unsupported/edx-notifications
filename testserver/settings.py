@@ -35,7 +35,6 @@ INSTALLED_APPS = (
     'edx_notifications',
     'edx_notifications.server.web',
     'django_nose',
-    'south',
 )
 
 MIDDLEWARE_CLASSES = (

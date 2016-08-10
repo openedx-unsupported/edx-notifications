@@ -1,12 +1,12 @@
 # Django/Framework Packages
-django>=1.4.12,<=1.4.18
-django-model-utils==1.4.0
-South>=0.7.6
+django==1.8.13
+django-model-utils==2.3.1
 python-dateutil==2.1
 pylru==1.0.6
-djangorestframework>=2.3.5,<=2.3.14
+#djangorestframework==3.2.3
+git+https://github.com/edx/django-rest-framework.git@3c72cb5ee5baebc4328947371195eae2077197b0#egg=djangorestframework==3.2.3
 pytz==2015.2
-PyContracts==1.6.5
+PyContracts==1.7.1
 underscore.py==0.1.6
 pynliner==0.5.2
 -e git+https://github.com/dgrtwo/ParsePy.git@7949b9f754d1445eff8e8f20d0e967b9a6420639#egg=parse_rest

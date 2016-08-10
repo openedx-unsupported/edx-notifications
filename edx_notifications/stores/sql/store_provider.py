@@ -140,12 +140,12 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
 
         try:
             obj.save()
-        except IntegrityError:
+        except IntegrityError:  # pylint: disable=catching-non-exception
             # there could be some concurrency between multiple processes
             # on startup, so try again
             try:
                 obj.save()
-            except IntegrityError:
+            except IntegrityError:  # pylint: disable=catching-non-exception
                 pass
 
         # remove cached entry

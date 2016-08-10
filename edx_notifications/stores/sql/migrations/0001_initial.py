@@ -1,122 +1,146 @@
 # -*- coding: utf-8 -*-
-from south.utils import datetime_utils as datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from __future__ import unicode_literals
+
+from django.db import migrations, models
+import django.utils.timezone
+import model_utils.fields
 
 
-class Migration(SchemaMigration):
+class Migration(migrations.Migration):
 
-    def forwards(self, orm):
-        # Adding model 'SQLNotificationType'
-        db.create_table('edx_notifications_notificationtype', (
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255, primary_key=True)),
-            ('renderer', self.gf('django.db.models.fields.CharField')(max_length=255)),
-        ))
-        db.send_create_signal('edx_notifications', ['SQLNotificationType'])
+    dependencies = [
+    ]
 
-        # Adding model 'SQLNotificationMessage'
-        db.create_table('edx_notifications_notificationmessage', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('created', self.gf('model_utils.fields.AutoCreatedField')(default=datetime.datetime.now)),
-            ('modified', self.gf('model_utils.fields.AutoLastModifiedField')(default=datetime.datetime.now)),
-            ('namespace', self.gf('django.db.models.fields.CharField')(max_length=128, null=True, db_index=True)),
-            ('msg_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['edx_notifications.SQLNotificationType'])),
-            ('from_user_id', self.gf('django.db.models.fields.IntegerField')(null=True)),
-            ('payload', self.gf('django.db.models.fields.TextField')()),
-            ('deliver_no_earlier_than', self.gf('django.db.models.fields.DateTimeField')(null=True)),
-            ('expires_at', self.gf('django.db.models.fields.DateTimeField')(null=True, db_index=True)),
-            ('expires_secs_after_read', self.gf('django.db.models.fields.IntegerField')(null=True)),
-            ('priority', self.gf('django.db.models.fields.IntegerField')(default=0)),
-        ))
-        db.send_create_signal('edx_notifications', ['SQLNotificationMessage'])
-
-        # Adding model 'SQLUserNotification'
-        db.create_table('edx_notifications_usernotification', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('created', self.gf('model_utils.fields.AutoCreatedField')(default=datetime.datetime.now)),
-            ('modified', self.gf('model_utils.fields.AutoLastModifiedField')(default=datetime.datetime.now)),
-            ('user_id', self.gf('django.db.models.fields.IntegerField')(db_index=True)),
-            ('msg', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['edx_notifications.SQLNotificationMessage'])),
-            ('read_at', self.gf('django.db.models.fields.DateTimeField')(null=True, db_index=True)),
-            ('user_context', self.gf('django.db.models.fields.TextField')(null=True)),
-        ))
-        db.send_create_signal('edx_notifications', ['SQLUserNotification'])
-
-        # Adding unique constraint on 'SQLUserNotification', fields ['user_id', 'msg']
-        db.create_unique('edx_notifications_usernotification', ['user_id', 'msg_id'])
-
-        # Adding model 'SQLNotificationChannel'
-        db.create_table('edx_notifications_notificationchannel', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-        ))
-        db.send_create_signal('edx_notifications', ['SQLNotificationChannel'])
-
-        # Adding model 'SQLUserNotificationPreferences'
-        db.create_table('edx_notifications_usernotificationpreferences', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-        ))
-        db.send_create_signal('edx_notifications', ['SQLUserNotificationPreferences'])
-
-
-    def backwards(self, orm):
-        # Removing unique constraint on 'SQLUserNotification', fields ['user_id', 'msg']
-        db.delete_unique('edx_notifications_usernotification', ['user_id', 'msg_id'])
-
-        # Deleting model 'SQLNotificationType'
-        db.delete_table('edx_notifications_notificationtype')
-
-        # Deleting model 'SQLNotificationMessage'
-        db.delete_table('edx_notifications_notificationmessage')
-
-        # Deleting model 'SQLUserNotification'
-        db.delete_table('edx_notifications_usernotification')
-
-        # Deleting model 'SQLNotificationChannel'
-        db.delete_table('edx_notifications_notificationchannel')
-
-        # Deleting model 'SQLUserNotificationPreferences'
-        db.delete_table('edx_notifications_usernotificationpreferences')
-
-
-    models = {
-        'edx_notifications.sqlnotificationchannel': {
-            'Meta': {'object_name': 'SQLNotificationChannel', 'db_table': "'edx_notifications_notificationchannel'"},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
-        },
-        'edx_notifications.sqlnotificationmessage': {
-            'Meta': {'ordering': "['-created']", 'object_name': 'SQLNotificationMessage', 'db_table': "'edx_notifications_notificationmessage'"},
-            'created': ('model_utils.fields.AutoCreatedField', [], {'default': 'datetime.datetime.now'}),
-            'deliver_no_earlier_than': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
-            'expires_at': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'db_index': 'True'}),
-            'expires_secs_after_read': ('django.db.models.fields.IntegerField', [], {'null': 'True'}),
-            'from_user_id': ('django.db.models.fields.IntegerField', [], {'null': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'modified': ('model_utils.fields.AutoLastModifiedField', [], {'default': 'datetime.datetime.now'}),
-            'msg_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['edx_notifications.SQLNotificationType']"}),
-            'namespace': ('django.db.models.fields.CharField', [], {'max_length': '128', 'null': 'True', 'db_index': 'True'}),
-            'payload': ('django.db.models.fields.TextField', [], {}),
-            'priority': ('django.db.models.fields.IntegerField', [], {'default': '0'})
-        },
-        'edx_notifications.sqlnotificationtype': {
-            'Meta': {'object_name': 'SQLNotificationType', 'db_table': "'edx_notifications_notificationtype'"},
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'primary_key': 'True'}),
-            'renderer': ('django.db.models.fields.CharField', [], {'max_length': '255'})
-        },
-        'edx_notifications.sqlusernotification': {
-            'Meta': {'ordering': "['-created']", 'unique_together': "(('user_id', 'msg'),)", 'object_name': 'SQLUserNotification', 'db_table': "'edx_notifications_usernotification'"},
-            'created': ('model_utils.fields.AutoCreatedField', [], {'default': 'datetime.datetime.now'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'modified': ('model_utils.fields.AutoLastModifiedField', [], {'default': 'datetime.datetime.now'}),
-            'msg': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['edx_notifications.SQLNotificationMessage']"}),
-            'read_at': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'db_index': 'True'}),
-            'user_context': ('django.db.models.fields.TextField', [], {'null': 'True'}),
-            'user_id': ('django.db.models.fields.IntegerField', [], {'db_index': 'True'})
-        },
-        'edx_notifications.sqlusernotificationpreferences': {
-            'Meta': {'object_name': 'SQLUserNotificationPreferences', 'db_table': "'edx_notifications_usernotificationpreferences'"},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
-        }
-    }
-
-    complete_apps = ['edx_notifications']
+    operations = [
+        migrations.CreateModel(
+            name='SQLNotificationCallbackTimer',
+            fields=[
+                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, verbose_name='created', editable=False)),
+                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, verbose_name='modified', editable=False)),
+                ('name', models.CharField(max_length=255, serialize=False, primary_key=True)),
+                ('callback_at', models.DateTimeField(db_index=True)),
+                ('class_name', models.CharField(max_length=255)),
+                ('context', models.TextField(null=True)),
+                ('is_active', models.BooleanField(default=True, db_index=True)),
+                ('periodicity_min', models.IntegerField(null=True)),
+                ('executed_at', models.DateTimeField(null=True)),
+                ('err_msg', models.TextField(null=True)),
+                ('results', models.TextField(null=True)),
+            ],
+            options={
+                'db_table': 'edx_notifications_notificationcallbacktimer',
+            },
+        ),
+        migrations.CreateModel(
+            name='SQLNotificationChannel',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+            ],
+            options={
+                'db_table': 'edx_notifications_notificationchannel',
+            },
+        ),
+        migrations.CreateModel(
+            name='SQLNotificationMessage',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, verbose_name='created', editable=False)),
+                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, verbose_name='modified', editable=False)),
+                ('namespace', models.CharField(max_length=128, null=True, db_index=True)),
+                ('from_user_id', models.IntegerField(null=True)),
+                ('payload', models.TextField()),
+                ('deliver_no_earlier_than', models.DateTimeField(null=True)),
+                ('expires_at', models.DateTimeField(null=True, db_index=True)),
+                ('expires_secs_after_read', models.IntegerField(null=True)),
+                ('priority', models.IntegerField(default=0)),
+                ('resolve_links', models.TextField(null=True)),
+                ('object_id', models.CharField(max_length=255, null=True, db_index=True)),
+            ],
+            options={
+                'ordering': ['-created'],
+                'db_table': 'edx_notifications_notificationmessage',
+            },
+        ),
+        migrations.CreateModel(
+            name='SQLNotificationPreference',
+            fields=[
+                ('name', models.CharField(max_length=255, serialize=False, primary_key=True)),
+                ('display_name', models.CharField(max_length=255)),
+                ('display_description', models.CharField(max_length=1023)),
+                ('default_value', models.CharField(max_length=255, null=True)),
+            ],
+            options={
+                'db_table': 'edx_notifications_notificationpreference',
+            },
+        ),
+        migrations.CreateModel(
+            name='SQLNotificationType',
+            fields=[
+                ('name', models.CharField(max_length=255, serialize=False, primary_key=True)),
+                ('renderer', models.CharField(max_length=255)),
+                ('renderer_context', models.TextField(null=True)),
+            ],
+            options={
+                'db_table': 'edx_notifications_notificationtype',
+            },
+        ),
+        migrations.CreateModel(
+            name='SQLUserNotification',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, verbose_name='created', editable=False)),
+                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, verbose_name='modified', editable=False)),
+                ('user_id', models.IntegerField(db_index=True)),
+                ('read_at', models.DateTimeField(null=True, db_index=True)),
+                ('user_context', models.TextField(null=True)),
+                ('msg', models.ForeignKey(to='edx_notifications.SQLNotificationMessage')),
+            ],
+            options={
+                'ordering': ['-created'],
+                'db_table': 'edx_notifications_usernotification',
+            },
+        ),
+        migrations.CreateModel(
+            name='SQLUserNotificationArchive',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, verbose_name='created', editable=False)),
+                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, verbose_name='modified', editable=False)),
+                ('user_id', models.IntegerField(db_index=True)),
+                ('read_at', models.DateTimeField(null=True, db_index=True)),
+                ('user_context', models.TextField(null=True)),
+                ('msg', models.ForeignKey(to='edx_notifications.SQLNotificationMessage')),
+            ],
+            options={
+                'ordering': ['-created'],
+                'db_table': 'edx_notifications_usernotificationarchive',
+            },
+        ),
+        migrations.CreateModel(
+            name='SQLUserNotificationPreferences',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', model_utils.fields.AutoCreatedField(default=django.utils.timezone.now, verbose_name='created', editable=False)),
+                ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, verbose_name='modified', editable=False)),
+                ('user_id', models.IntegerField(db_index=True)),
+                ('value', models.CharField(max_length=255)),
+                ('preference', models.ForeignKey(to='edx_notifications.SQLNotificationPreference')),
+            ],
+            options={
+                'db_table': 'edx_notifications_usernotificationpreferences',
+            },
+        ),
+        migrations.AddField(
+            model_name='sqlnotificationmessage',
+            name='msg_type',
+            field=models.ForeignKey(to='edx_notifications.SQLNotificationType'),
+        ),
+        migrations.AlterUniqueTogether(
+            name='sqlusernotificationarchive',
+            unique_together=set([('user_id', 'msg')]),
+        ),
+        migrations.AlterUniqueTogether(
+            name='sqlusernotification',
+            unique_together=set([('user_id', 'msg')]),
+        ),
+    ]

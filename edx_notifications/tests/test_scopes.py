@@ -67,9 +67,9 @@ class DjangoORMResolver(NotificationUserScopeResolver):
         """
 
         if scope_name == 'values_list_query_set':
-            return User.objects.values_list('id', flat=True).all()
+            return User.objects.values_list('id', flat=True).all()  # pylint: disable=no-member
         elif scope_name == 'values_query_set':
-            return User.objects.values('id').all()
+            return User.objects.values('id').all()  # pylint: disable=no-member
 
 
 class BadTestScopeResolver(NotificationUserScopeResolver):
