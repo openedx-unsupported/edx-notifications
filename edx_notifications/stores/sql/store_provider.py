@@ -544,10 +544,13 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
                 read_at__isnull=True
             ).delete()
 
-    def get_all_namespaces(self):
+    def get_all_namespaces(self, start_datetime=None, end_datetime=None):
         """
         This will return all unique namespaces that have been used
         """
-        resultset = SQLNotificationMessage.objects.values_list('namespace', flat=True).order_by('namespace').distinct()
+        result_set = SQLNotificationMessage.objects.all()
+        if start_datetime and end_datetime:
+            result_set = result_set.filter(created__gte=start_datetime, created__lte=end_datetime)
+        result_set = result_set.values_list('namespace', flat=True).order_by('namespace').distinct()
 
-        return resultset
+        return result_set
