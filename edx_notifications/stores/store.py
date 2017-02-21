@@ -295,7 +295,7 @@ class BaseNotificationStoreProvider(object):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def get_all_namespaces(self):
+    def get_all_namespaces(self, start_datetime=None, end_datetime=None):
         """
         This will return all unique namespaces that have been used
         """

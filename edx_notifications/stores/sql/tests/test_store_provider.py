@@ -85,7 +85,7 @@ class TestSQLStoreProvider(TestCase):
         self.assertEqual(result, notification_type)
 
         # re-save and make sure the cache entry got invalidated
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(2):
             notification_type = self._save_notification_type()
 
         # since we invalidated the cached entry on the last save
@@ -96,7 +96,7 @@ class TestSQLStoreProvider(TestCase):
         self.assertIsNotNone(result)
         self.assertEqual(result, notification_type)
 
-    def _save_notification_preference(self, name, display_name, display_description=''):
+    def _save_notification_preference(self, number_of_queries, name, display_name, display_description=''):
         """
         Helper method to create a new notification_preference
         """
@@ -106,18 +106,19 @@ class TestSQLStoreProvider(TestCase):
             display_description=display_description
         )
 
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(number_of_queries):
             test_notification_preference_saved = self.provider.save_notification_preference(test_notification_preference)
 
         self.assertIsNotNone(test_notification_preference_saved)
         self.assertIsNotNone(test_notification_preference_saved.name)
         return test_notification_preference_saved
 
-    def _save_user_notification_preference(self, preference_name, user_id, value):
+    def _save_user_notification_preference(self, number_of_queries, preference_name, user_id, value):
         """
         Helper method to create a new user_notification_preference
         """
         notification_preference = self._save_notification_preference(
+            number_of_queries=number_of_queries,
             name=preference_name,
             display_name='Test Preference'
         )
@@ -379,7 +380,7 @@ class TestSQLStoreProvider(TestCase):
 
         # This should be fine saving again, since nothing is changing
 
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(2):
             self.provider.save_notification_type(notification_type)
 
     def test_get_no_notifications_for_user(self):
@@ -727,11 +728,7 @@ class TestSQLStoreProvider(TestCase):
         # mark one as read
         map1.read_at = datetime.utcnow()
 
-        # Not sure I understand why Django ORM is making 3 calls here
-        # seems like it should just be 2. I might investigate more
-        # later, but writes are less of a priority as this
-        # will be read intensive
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(2):
             self.provider.save_user_notification(map1)
 
         # there should be one read notification
@@ -996,6 +993,7 @@ class TestSQLStoreProvider(TestCase):
         test save notification preference in the store provide.
         """
         notification_preference = self._save_notification_preference(
+            number_of_queries=3,
             name='test_notification_preference',
             display_name="Test Preference",
             display_description="This is the test preference"
@@ -1013,13 +1011,14 @@ class TestSQLStoreProvider(TestCase):
         """
         with self.assertNumQueries(3):
             notification_preference = self._save_notification_preference(
+                number_of_queries=3,
                 name='test_notification_preference',
                 display_name="Test Preference",
                 display_description="This is the test preference"
             )
 
         notification_preference.display_name = 'Updated Test Preference'
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(2):
             notification_preference_saved_twice = self.provider.save_notification_preference(notification_preference)
 
         with self.assertNumQueries(1):
@@ -1033,12 +1032,14 @@ class TestSQLStoreProvider(TestCase):
         test to get all the user notification preferences.
         """
         test_notification_preference = self._save_notification_preference(
+            number_of_queries=3,
             name='test_notification_preference,',
             display_name="Test Preference",
             display_description="This is the test preference"
         )
 
         test2_notification_preference = self._save_notification_preference(
+            number_of_queries=3,
             name='notification_preference2',
             display_name="Test Preference 2",
             display_description="This is the second test preference"
@@ -1065,6 +1066,7 @@ class TestSQLStoreProvider(TestCase):
         test to get the saved the user preference.
         """
         user_notification_preference = self._save_user_notification_preference(
+            number_of_queries=3,
             preference_name='Test Preference 1',
             user_id=1,
             value='User Preference 1'
@@ -1081,6 +1083,7 @@ class TestSQLStoreProvider(TestCase):
         test to get the updated user preference
         """
         user_notification_preferences = self._save_user_notification_preference(
+            number_of_queries=3,
             preference_name='Test Preference 1',
             user_id=1,
             value='User Preference 1')
@@ -1113,6 +1116,7 @@ class TestSQLStoreProvider(TestCase):
         user_id = 1
         for i in range(5):
             self._save_user_notification_preference(
+                number_of_queries=3,
                 preference_name='test_preference{i}'.format(i=i + 1),
                 user_id=user_id,
                 value='User Preferences'
@@ -1126,12 +1130,15 @@ class TestSQLStoreProvider(TestCase):
         Test all user preferences with name
         """
         user_preference1 = self._save_user_notification_preference(
+            number_of_queries=3,
             preference_name='test_preference',
             user_id=1,
             value='User-Preferences'
         )
 
+        # SQLNotificationPreference with this name already created above so one less query than user_preference1
         user_preference2 = self._save_user_notification_preference(
+            number_of_queries=2,
             preference_name='test_preference',
             user_id=2,
             value='User-Preferences'

@@ -323,6 +323,7 @@ class SQLUserNotificationPreferences(TimeStampedModel):
         """
         app_label = 'edx_notifications'  # since we have this models.py file not in the root app directory
         db_table = 'edx_notifications_usernotificationpreferences'
+        unique_together = ("user_id", "preference")
 
     user_id = models.IntegerField(db_index=True)
 

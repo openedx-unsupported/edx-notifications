@@ -204,8 +204,8 @@ class NotificationDetail(AuthenticatedAPIView):
         if not self.validate_post_parameters(request):
             return Response({}, status.HTTP_400_BAD_REQUEST)
 
-        if 'mark_as' in request.DATA:
-            mark_as_read = request.DATA['mark_as'] == 'read'
+        if 'mark_as' in request.data:
+            mark_as_read = request.data['mark_as'] == 'read'
             try:
                 # this will raise an ItemNotFoundError if the user_id/msg_id combo
                 # cannot be found
@@ -293,13 +293,13 @@ class UserPreferenceDetail(AuthenticatedAPIView):
         """
         HTTP POST Handler
         """
-        if 'value' not in request.DATA:
+        if 'value' not in request.data:
             raise Http404()
 
         try:
             # this will raise an ItemNotFoundError
             # if the notification_preference cannot be found
-            value = request.DATA.get('value')
+            value = request.data.get('value')
             set_user_notification_preference(int(request.user.id), name, value)
 
             if const.NOTIFICATION_ENFORCE_SINGLE_DIGEST_PREFERENCE:

@@ -54,9 +54,10 @@ NOTIFICATION_STORE_PROVIDER = {
     }
 }
 
-# This setting already exists in the LMS, please
-# update it
-SOUTH_MIGRATION_MODULES = {
+# By default django looks for migrations in migrations package for each app but
+# we can override this on per-apps basis by updating MIGRATION_MODULES setting.
+# This setting already exists in the LMS, please update it
+MIGRATION_MODULES = {
     'djcelery': 'ignore',
     'edx_notifications': 'edx_notifications.stores.sql.migrations',
 }
