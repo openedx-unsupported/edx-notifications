@@ -42,9 +42,9 @@ class Command(BaseCommand):
                             user_id=user_id, preference=preference
                         ).exclude(id=user_prefs[0]).delete()
                         removed_count += (pref_count - 1)
-                    except Exception as ex:
-                        log.info(
-                            "Error while removing user preference for user_id %s and preference %s",
-                            user_id, preference.name
+                    except Exception, ex:  # pylint: disable=broad-except
+                        log.exception(
+                            "Error while removing user preference for user_id %s and preference %s %s",
+                            user_id, preference.name, ex
                         )
-        log.info("Total %d duplicate preferences removed" % removed_count)
+        log.info("Total %d duplicate preferences removed", removed_count)
