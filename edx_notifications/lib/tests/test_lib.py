@@ -365,7 +365,7 @@ class TestPublisherLibrary(TestCase):
             }
         )
 
-        resultset = User.objects.values_list('id', flat=True).all()
+        resultset = User.objects.values_list('id', flat=True).all()  # pylint: disable=no-member
 
         num_sent = bulk_publish_notification_to_users(
             resultset,
@@ -376,7 +376,7 @@ class TestPublisherLibrary(TestCase):
         self.assertEqual(num_sent, 3)
 
         # now read them back
-        for user in User.objects.all():
+        for user in User.objects.all():  # pylint: disable=no-member
             notifications = get_notifications_for_user(user.id)
 
             self.assertTrue(isinstance(notifications, list))
