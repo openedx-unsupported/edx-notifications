@@ -132,6 +132,7 @@ var CounterIconView = Backbone.View.extend({
         }
      }
 
+     e.preventDefault();
      e.stopPropagation();
   },
 
