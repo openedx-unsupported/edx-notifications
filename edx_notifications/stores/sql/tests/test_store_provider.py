@@ -578,6 +578,43 @@ class TestSQLStoreProvider(TestCase):
             )
             self.assertEqual(len(notifications), 0)
 
+        #
+        # test start_date and end_date filtering.
+        #
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'start_date': msg1.created.date(),
+                    'end_date': msg2.created.date()
+                }
+            ),
+            2
+        )
+
+        with self.assertNumQueries(1):
+            notifications = self.provider.get_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'start_date': msg1.created.date(),
+                    'end_date': msg2.created.date()
+                }
+            )
+            self.assertEqual(len(notifications), 2)
+            self.assertEqual(notifications[0].msg, msg2)
+            self.assertEqual(notifications[1].msg, msg1)
+
+        self.assertEqual(
+            self.provider.get_num_notifications_for_user(
+                self.test_user_id,
+                filters={
+                    'start_date': msg1.created.date() + timedelta(days=1),
+                    'end_date': msg2.created.date() + timedelta(days=1)
+                }
+            ),
+            0
+        )
+
     def test_bad_user_msg_update(self):
         """
         Test exception when trying to update a non-existing
