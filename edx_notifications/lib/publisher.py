@@ -183,8 +183,10 @@ def bulk_publish_notification_to_users(user_ids, msg, exclude_user_ids=None,
 
 
 @contract(msg=NotificationMessage)
-def bulk_publish_notification_to_tag(tag, msg, exclude_user_ids=None,
-                                       preferred_channel=None, channel_context=None):
+def bulk_publish_notification_to_tag(
+        tag, msg, exclude_user_ids=None, preferred_channel=None,
+        channel_context=None
+):
     """
     This top level API method will publish a notification
     to a group (potentially large). We have a distinct entry

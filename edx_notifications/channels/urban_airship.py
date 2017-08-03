@@ -110,7 +110,7 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
 
         # Send request to UA API
         resp = requests.post(
-            UA_API_ENDPOINT+'api/push',
+            UA_API_ENDPOINT + 'api/push',
             data=obj,
             headers=HEADER_DICT,
             auth=HTTPBasicAuth(self.application_id, self.rest_api_key)
