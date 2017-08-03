@@ -12,7 +12,7 @@ install:
     - npm install
     - "pip install -r requirements.txt"
     - "pip install -r test_requirements.txt"
-    - "pip install coveralls"
+    - "pip install coveralls==1.1"
 
 script:
     - ./manage.py syncdb --noinput --settings=testserver.settings

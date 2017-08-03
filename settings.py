@@ -115,6 +115,13 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
             'rest_api_key': 'test_rest_api_key',
         }
     },
+    'urban-airship': {
+        'class': 'edx_notifications.channels.urban_airship.UrbanAirshipNotificationChannelProvider',
+        'options': {
+            'application_id': 'test_id',
+            'rest_api_key': 'test_rest_api_key',
+        }
+    },
     'triggered-email': {
         'class': 'edx_notifications.channels.triggered_email.TriggeredEmailChannelProvider',
         'options': {
