@@ -183,6 +183,56 @@ def bulk_publish_notification_to_users(user_ids, msg, exclude_user_ids=None,
 
 
 @contract(msg=NotificationMessage)
+def bulk_publish_notification_to_tag(tag, msg, exclude_user_ids=None,
+                                       preferred_channel=None, channel_context=None):
+    """
+    This top level API method will publish a notification
+    to a group (potentially large). We have a distinct entry
+    point to consider any optimizations that might be possible
+    when doing bulk operations
+
+    Ultimately this method will look up the user's preference
+    to which NotificationChannel to distribute this over.
+
+    ARGS:
+        - tag: an iterator that we can enumerate over, say a list or a
+        generator or a ORM resultset
+        - msg: A NotificationMessage
+
+    IMPORTANT: If caller wishes to send in a resutset from a Django ORM query, you must
+    only select the 'id' column and flatten the results. For example, to send a notification
+    to everyone in the Users table, do:
+
+        num_sent = bulk_publish_notification_to_users(
+            User.objects.values_list('id', flat=True).all(),
+            msg
+        )
+
+    """
+
+    log.info('Publishing bulk Notification with message: {msg}'.format(msg=msg))
+
+    # validate the msg, this will raise a ValidationError if there
+    # is something malformatted or missing in the NotificationMessage
+    msg.validate()
+
+    # get the system defined msg_type -> channel mapping
+    # note, when we enable user preferences, we will
+    # have to change this
+    channel = get_notification_channel(None, msg.msg_type, preferred_channel=preferred_channel)
+
+    # Get the proper message - aka payload - for the given channel
+    _msg = msg.get_message_for_channel(channel.name)
+
+    num_sent = channel.bulk_dispatch_notification_to_tag(
+        tag,
+        _msg,
+    )
+
+    return num_sent
+
+
+@contract(msg=NotificationMessage)
 def bulk_publish_notification_to_scope(scope_name, scope_context, msg, exclude_user_ids=None,
                                        preferred_channel=None, channel_context=None):
     """

@@ -235,6 +235,16 @@ class BaseNotificationChannelProvider(object):
         raise NotImplementedError()
 
     @abc.abstractmethod
+    def bulk_dispatch_notification_to_tag(
+            self, tag, msg
+    ):
+        """
+        Perform a bulk dispatch of the notification message to
+        the given tag.
+        """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
     def resolve_msg_link(self, msg, link_name, params, channel_context=None):
         """
         Generates the appropriate link given a msg, a link_name, and params

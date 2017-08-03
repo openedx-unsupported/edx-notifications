@@ -114,3 +114,8 @@ class BaseDurableNotificationChannel(MsgTypeToUrlResolverMixin, BaseNotification
             store.bulk_create_user_notification(user_msgs)
 
         return total
+
+    def bulk_dispatch_notification_to_tag(
+            self, tag, msg
+    ):
+        return None
