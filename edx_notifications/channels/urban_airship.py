@@ -120,7 +120,6 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
             auth=HTTPBasicAuth(self.application_id, self.rest_api_key)
         )
 
-        # For debugging TODO remove it
         resp = resp.json()
         return resp
 
