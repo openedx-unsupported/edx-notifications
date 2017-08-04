@@ -183,9 +183,8 @@ def bulk_publish_notification_to_users(user_ids, msg, exclude_user_ids=None,
 
 
 @contract(msg=NotificationMessage)
-def bulk_publish_notification_to_tag(
-        tag, msg, exclude_user_ids=None, preferred_channel=None,
-        channel_context=None
+def publish_notification_to_tag(
+        msg, group, tag=None, preferred_channel=None
 ):
     """
     This top level API method will publish a notification
@@ -227,8 +226,9 @@ def bulk_publish_notification_to_tag(
     _msg = msg.get_message_for_channel(channel.name)
 
     num_sent = channel.bulk_dispatch_notification_to_tag(
-        tag,
         _msg,
+        group,
+        tag,
     )
 
     return num_sent

@@ -128,7 +128,7 @@ class BadChannel(BaseNotificationChannelProvider):
         )
 
     def bulk_dispatch_notification_to_tag(
-            self, tag, msg
+            self, msg, group, tag=None
     ):
         raise super(BadChannel, self).bulk_dispatch_notification_to_tag(tag, msg)
 

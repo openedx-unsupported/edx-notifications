@@ -143,6 +143,6 @@ class TriggeredEmailChannelProvider(MsgTypeToUrlResolverMixin, BaseNotificationC
         return total
 
     def bulk_dispatch_notification_to_tag(
-            self, tag, msg
+            self, msg, group, tag=None
     ):
         return None

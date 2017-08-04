@@ -89,23 +89,27 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
         return cnt
 
     def bulk_dispatch_notification_to_tag(
-            self, tag, msg
+            self, msg, group, tag=None
     ):
         """
         Perform bulk dispatch to all the named users in given tag
+        :param group:
         :param tag:
         :param msg:
         :return:
         """
         # Tag validation
-        if tag is None or len(tag) < 1:
+        if group is None or len(group) < 1:
             raise Exception('No tag is provided')
 
         obj = {
             'notification': {'alert': msg.payload['excerpt']},
             'device_types': 'all',
-            'audience': {'tag': tag}
+            'audience': {'group': group}
         }
+        if tag:
+            (obj['audience'])['tag'] = tag
+
         obj = json.dumps(obj)
 
         # Send request to UA API
@@ -118,7 +122,7 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
 
         # For debugging TODO remove it
         resp = resp.json()
-        print resp
+        return resp
 
     def resolve_msg_link(self, msg, link_name, params, channel_context=None):
         """
