@@ -11,8 +11,8 @@ from requests.auth import HTTPBasicAuth
 from edx_notifications.channels.channel import BaseNotificationChannelProvider
 
 # system defined constants that only we should know about
-UA_API_ENDPOINT = 'https://go.urbanairship.com/'
-HEADER_DICT = {
+UA_API_PUSH_ENDPOINT = 'https://go.urbanairship.com/api/push/'
+PUSH_REQUEST_HEADER = {
     'Content-Type': 'application/json',
     'Accept': 'application/vnd.urbanairship+json; version=3;'
 }
@@ -62,13 +62,22 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
         }
         obj = json.dumps(obj)
 
-        resp = requests.post(
-            UA_API_ENDPOINT + 'api/push',
-            obj,
-            headers=HEADER_DICT,
-            auth=HTTPBasicAuth(self.application_id, self.rest_api_key)
-        )
-        print resp
+        resp = {}
+        try:
+            resp = requests.post(
+                UA_API_PUSH_ENDPOINT,
+                obj,
+                headers=PUSH_REQUEST_HEADER,
+                auth=HTTPBasicAuth(self.application_id, self.rest_api_key)
+            )
+            resp = resp.json()
+            if not resp['ok']:
+                log.warning(resp['error'])
+
+        except Exception as e:
+            log.error(e.message)
+
+        return resp
 
     def bulk_dispatch_notification(self, user_ids, msg, exclude_user_ids=None, channel_context=None):
         """
@@ -88,9 +97,7 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
 
         return cnt
 
-    def dispatch_notification_to_tag(
-            self, msg, group, tag=None
-    ):
+    def dispatch_notification_to_tag(self, msg, group, tag):
         """
         Perform bulk dispatch to all the named users in given tag
         :param group:
@@ -98,29 +105,46 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
         :param msg:
         :return:
         """
-        # Tag validation
-        if group is None or len(group) < 1:
-            raise Exception('No tag is provided')
-
+        assert (msg.payload['excerpt'], 'No excerpt defined in payload')
+        assert (msg.payload['announcement_date'], 'No announcement date '
+                                                  'defined in payload')
+        # Create request JSON object
         obj = {
-            'notification': {'alert': msg.payload['excerpt']},
+            'notification': {
+                'alert': msg.payload['excerpt'],
+                'actions': {
+                    'open': {
+                        'type': 'url',
+                        'content': 'https://www.mckinseyacademy.com/{}/'
+                                   'announcements/{}'.format(tag, msg.payload['announcement_date'])
+                    }
+                }
+            },
             'device_types': 'all',
-            'audience': {'group': group}
+            'audience': {
+                'group': group,
+                'tag': tag
+            }
         }
-        if tag:
-            (obj['audience'])['tag'] = tag
 
         obj = json.dumps(obj)
 
         # Send request to UA API
-        resp = requests.post(
-            UA_API_ENDPOINT + 'api/push',
-            data=obj,
-            headers=HEADER_DICT,
-            auth=HTTPBasicAuth(self.application_id, self.rest_api_key)
-        )
+        resp = {}
+        try:
+            resp = requests.post(
+                UA_API_PUSH_ENDPOINT,
+                data=obj,
+                headers=PUSH_REQUEST_HEADER,
+                auth=HTTPBasicAuth(self.application_id, self.rest_api_key)
+            )
+            resp = resp.json()
+            if not resp['ok']:
+                log.warning(resp['details'])
 
-        resp = resp.json()
+        except Exception as ex:
+            log.error(ex.message)
+
         return resp
 
     def resolve_msg_link(self, msg, link_name, params, channel_context=None):

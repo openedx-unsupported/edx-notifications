@@ -235,9 +235,7 @@ class BaseNotificationChannelProvider(object):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def dispatch_notification_to_tag(
-            self, msg, group, tag=None
-    ):
+    def dispatch_notification_to_tag(self, msg, group, tag):
         """
         Perform a bulk dispatch of the notification message to
         the given tag.

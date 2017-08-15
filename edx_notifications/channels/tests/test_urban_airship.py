@@ -14,6 +14,7 @@ from edx_notifications.lib.publisher import (
 from testserver.views import CANNED_TEST_PAYLOAD
 
 TEST_TAG = 'cs101'
+TEST_DATE = 20100101
 
 
 class UrbanAirTestCases(TestCase):
@@ -42,7 +43,9 @@ class UrbanAirTestCases(TestCase):
         Test publish notification to a tag group
         :return:
         """
+        self.msg.payload['announcement_date'] = TEST_DATE
         resp = publish_notification_to_tag(
             self.msg, 'enrollments', TEST_TAG, 'urban-airship'
         )
+        self.assertTrue(resp)
         self.assertTrue(resp['ok'])

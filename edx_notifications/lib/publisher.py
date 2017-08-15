@@ -225,11 +225,7 @@ def publish_notification_to_tag(
     # Get the proper message - aka payload - for the given channel
     _msg = msg.get_message_for_channel(channel.name)
 
-    num_sent = channel.dispatch_notification_to_tag(
-        _msg,
-        group,
-        tag,
-    )
+    num_sent = channel.dispatch_notification_to_tag(_msg, group, tag)
 
     return num_sent
 
