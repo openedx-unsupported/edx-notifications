@@ -72,10 +72,10 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
             )
             resp = resp.json()
             if not resp['ok']:
-                log.warning(resp['error'])
+                log.warning(resp['details'])
 
-        except Exception as e:
-            log.error(e.message)
+        except Exception as ex:
+            log.error(ex.message)
 
         return resp
 
@@ -105,9 +105,9 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
         :param msg:
         :return:
         """
-        assert (msg.payload['excerpt'], 'No excerpt defined in payload')
-        assert (msg.payload['announcement_date'], 'No announcement date '
-                                                  'defined in payload')
+        assert msg.payload['excerpt'], 'No excerpt defined in payload'
+        assert msg.payload['announcement_date'], 'No announcement date ' \
+                                                 'defined in payload'
         # Create request JSON object
         obj = {
             'notification': {

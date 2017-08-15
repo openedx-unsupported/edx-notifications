@@ -13,7 +13,7 @@ from edx_notifications.lib.publisher import (
     publish_notification_to_tag)
 from testserver.views import CANNED_TEST_PAYLOAD
 
-TEST_TAG = 'cs101'
+TEST_TAG = 'cs50'
 TEST_DATE = 20100101
 
 
