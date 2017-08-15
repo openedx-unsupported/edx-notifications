@@ -7,6 +7,7 @@ import logging
 
 import requests
 from requests.auth import HTTPBasicAuth
+from requests.exceptions import RequestException
 
 from edx_notifications.channels.channel import BaseNotificationChannelProvider
 
@@ -74,7 +75,7 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
             if not resp['ok']:
                 log.warning(resp['details'])
 
-        except Exception as ex:
+        except RequestException as ex:
             log.error(ex.message)
 
         return resp
@@ -142,7 +143,7 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
             if not resp['ok']:
                 log.warning(resp['details'])
 
-        except Exception as ex:
+        except RequestException as ex:
             log.error(ex.message)
 
         return resp
