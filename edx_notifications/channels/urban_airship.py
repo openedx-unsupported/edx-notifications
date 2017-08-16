@@ -12,6 +12,8 @@ from requests.exceptions import RequestException
 from edx_notifications.channels.channel import BaseNotificationChannelProvider
 
 # system defined constants that only we should know about
+from settings import MCKA_APP_URL
+
 UA_API_PUSH_ENDPOINT = 'https://go.urbanairship.com/api/push/'
 PUSH_REQUEST_HEADER = {
     'Content-Type': 'application/json',
@@ -106,58 +108,9 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
                 'actions': {
                     'open': {
                         'type': 'url',
-                        'content': 'https://www.mckinseyacademy.com/{}/'
-                                   'announcements/{}/'.format(tag, announcement_date)
-                    }
-                }
-            },
-            'device_types': 'all',
-            'audience': {
-                'group': group,
-                'tag': tag
-            }
-        }
-
-        obj = json.dumps(obj)
-
-        # Send request to UA API
-        resp = {}
-        try:
-            resp = requests.post(
-                UA_API_PUSH_ENDPOINT,
-                data=obj,
-                headers=PUSH_REQUEST_HEADER,
-                auth=HTTPBasicAuth(self.application_id, self.rest_api_key)
-            )
-            resp = resp.json()
-            if not resp['ok']:
-                log.warning(resp['details'])
-
-        except RequestException as ex:
-            log.error(ex.message)
-
-        return resp
-
-    def dispatch_notification_to_tag(self, msg, group, tag):
-        """
-        Perform bulk dispatch to all the named users in given tag
-        :param group:
-        :param tag:
-        :param msg:
-        :return:
-        """
-        assert msg.payload['excerpt'], 'No excerpt defined in payload'
-        assert msg.payload['announcement_date'], 'No announcement date ' \
-                                                 'defined in payload'
-        # Create request JSON object
-        obj = {
-            'notification': {
-                'alert': msg.payload['excerpt'],
-                'actions': {
-                    'open': {
-                        'type': 'url',
-                        'content': 'https://www.mckinseyacademy.com/{}/'
-                                   'announcements/{}/'.format(tag, msg.payload['announcement_date'])
+                        'content': MCKA_APP_URL + '{}/announcements/{}/'.format(
+                            tag, announcement_date
+                        )
                     }
                 }
             },

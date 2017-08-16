@@ -160,3 +160,4 @@ NOTIFICATION_BRANDED_DEFAULT_LOGO = 'edx_notifications/img/edx-openedx-logo-tag.
 
 # digest email css
 NOTIFICATION_DIGEST_EMAIL_CSS = 'edx_notifications/css/email_digests.css'
+MCKA_APP_URL = 'https://www.mckinseyacademy.com/'
