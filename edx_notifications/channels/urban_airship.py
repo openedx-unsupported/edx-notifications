@@ -90,13 +90,53 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
         :param channel_context:
         :return:
         """
-        cnt = 0
-        for user_id in user_ids:
-            if not exclude_user_ids or user_id not in exclude_user_ids:
-                self.dispatch_notification_to_user(user_id, msg, channel_context=channel_context)
-                cnt += 1
+        assert channel_context['group'], 'No group is defined in context'
+        assert channel_context['tag'], 'No tag is defined in context'
+        assert msg.payload['excerpt'], 'No excerpt defined in payload'
+        assert msg.payload['announcement_date'], 'No announcement date ' \
+                                                 'defined in payload'
+        group = channel_context['group']
+        tag = channel_context['tag']
+        excerpt = msg.payload['excerpt']
+        announcement_date = msg.payload['announcement_date']
 
-        return cnt
+        obj = {
+            'notification': {
+                'alert': excerpt,
+                'actions': {
+                    'open': {
+                        'type': 'url',
+                        'content': 'https://www.mckinseyacademy.com/{}/'
+                                   'announcements/{}/'.format(tag, announcement_date)
+                    }
+                }
+            },
+            'device_types': 'all',
+            'audience': {
+                'group': group,
+                'tag': tag
+            }
+        }
+
+        obj = json.dumps(obj)
+
+        # Send request to UA API
+        resp = {}
+        try:
+            resp = requests.post(
+                UA_API_PUSH_ENDPOINT,
+                data=obj,
+                headers=PUSH_REQUEST_HEADER,
+                auth=HTTPBasicAuth(self.application_id, self.rest_api_key)
+            )
+            resp = resp.json()
+            if not resp['ok']:
+                log.warning(resp['details'])
+
+        except RequestException as ex:
+            log.error(ex.message)
+
+        return resp
 
     def dispatch_notification_to_tag(self, msg, group, tag):
         """
@@ -117,7 +157,7 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
                     'open': {
                         'type': 'url',
                         'content': 'https://www.mckinseyacademy.com/{}/'
-                                   'announcements/{}'.format(tag, msg.payload['announcement_date'])
+                                   'announcements/{}/'.format(tag, msg.payload['announcement_date'])
                     }
                 }
             },

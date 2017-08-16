@@ -34,6 +34,3 @@ class NullNotificationChannel(BaseNotificationChannelProvider):
         Generates the appropriate link given a msg, a link_name, and params
         """
         return None
-
-    def dispatch_notification_to_tag(self, msg, group, tag):
-        return None

@@ -10,7 +10,7 @@ from edx_notifications.data import (
 )
 from edx_notifications.lib.publisher import (
     register_notification_type,
-    publish_notification_to_tag)
+    bulk_publish_notification_to_users)
 from testserver.views import CANNED_TEST_PAYLOAD
 
 TEST_TAG = 'cs50'
@@ -44,8 +44,8 @@ class UrbanAirTestCases(TestCase):
         :return:
         """
         self.msg.payload['announcement_date'] = TEST_DATE
-        resp = publish_notification_to_tag(
-            self.msg, 'enrollments', TEST_TAG, 'urban-airship'
-        )
+        channel_context = {'group': 'enrollments', 'tag': TEST_TAG}
+        resp = bulk_publish_notification_to_users([], self.msg,
+                                                  channel_context=channel_context)
         self.assertTrue(resp)
         self.assertTrue(resp['ok'])

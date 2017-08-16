@@ -141,6 +141,3 @@ class TriggeredEmailChannelProvider(MsgTypeToUrlResolverMixin, BaseNotificationC
                 self.dispatch_notification_to_user(user_id, msg, channel_context)
 
         return total
-
-    def dispatch_notification_to_tag(self, msg, group, tag):
-        return None

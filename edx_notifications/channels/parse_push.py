@@ -133,9 +133,6 @@ class ParsePushNotificationChannelProvider(BaseNotificationChannelProvider):
         # Click through links do not apply for mobile push notifications
         return None
 
-    def dispatch_notification_to_tag(self, msg, group, tag):
-        return None
-
     @classmethod
     def publish_notification(cls, namespace, msg_type_name, payload, parse_channel_ids, send_at=None, timer_name=None):
         """
