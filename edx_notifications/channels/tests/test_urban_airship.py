@@ -10,11 +10,14 @@ from edx_notifications.data import (
 )
 from edx_notifications.lib.publisher import (
     register_notification_type,
-    bulk_publish_notification_to_users)
+    bulk_publish_notification_to_users,
+    publish_notification_to_user
+)
 from testserver.views import CANNED_TEST_PAYLOAD
 
 TEST_TAG = 'cs50'
 TEST_DATE = 20100101
+TEST_USER = 123
 
 
 class UrbanAirTestCases(TestCase):
@@ -38,7 +41,7 @@ class UrbanAirTestCases(TestCase):
             payload=CANNED_TEST_PAYLOAD['open-edx.studio.announcements.new-announcement']
         )
 
-    def test_publish_notification_tag(self):
+    def test_bulk_publish_notification(self):
         """
         Test publish notification to a tag group
         :return:
@@ -47,5 +50,14 @@ class UrbanAirTestCases(TestCase):
         channel_context = {'group': 'enrollments', 'tag': TEST_TAG}
         resp = bulk_publish_notification_to_users([], self.msg,
                                                   channel_context=channel_context)
+        self.assertTrue(resp)
+        self.assertTrue(resp['ok'])
+
+    def test_publish_notification_user(self):
+        """
+        Test publish notification to a single user
+        :return:
+        """
+        resp = publish_notification_to_user(TEST_USER, self.msg)
         self.assertTrue(resp)
         self.assertTrue(resp['ok'])
