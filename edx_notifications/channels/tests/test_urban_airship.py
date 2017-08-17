@@ -58,6 +58,8 @@ class UrbanAirTestCases(TestCase):
         Test publish notification to a single user
         :return:
         """
+        print TEST_USER
+        print self.msg
         resp = publish_notification_to_user(TEST_USER, self.msg)
         self.assertTrue(resp)
         self.assertTrue(resp['ok'])
