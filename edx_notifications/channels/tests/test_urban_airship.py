@@ -60,6 +60,6 @@ class UrbanAirTestCases(TestCase):
         """
         print TEST_USER
         print self.msg
-        resp = publish_notification_to_user(TEST_USER, self.msg)
+        resp = publish_notification_to_user(TEST_USER, self.msg,
+                                            'urban-airship')
         self.assertTrue(resp)
-        self.assertTrue(resp['ok'])
