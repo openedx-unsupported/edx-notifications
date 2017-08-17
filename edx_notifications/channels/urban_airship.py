@@ -61,7 +61,7 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
         obj = {
             'notification': {'alert': msg.payload['excerpt']},
             'audience': {'named_user': user_id},
-            'device_types': 'all'
+            'device_types': ['ios', 'android']
         }
         obj = json.dumps(obj)
 
