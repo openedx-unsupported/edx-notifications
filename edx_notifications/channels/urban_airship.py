@@ -152,7 +152,7 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
                 'actions': {
                     'open': {
                         'type': 'url',
-                        'content': MCKA_APP_URL + '{}/announcements/{}/'.format(
+                        'content': MCKA_APP_URL + 'courses/{}/announcements/{}/'.format(
                             tag, announcement_date
                         )
                     }
