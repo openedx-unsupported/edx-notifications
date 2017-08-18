@@ -82,6 +82,12 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
 
     @staticmethod
     def create_payload(msg, user_id):
+        """
+        Creates payload for UA push request
+        :param msg:
+        :param user_id:
+        :return:
+        """
         assert msg.payload['excerpt'], 'No excerpt defined in payload'
         assert user_id, 'No user id given'
         obj = {
@@ -126,7 +132,7 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
     @staticmethod
     def bulk_create_payload(channel_context, msg):
         """
-        Validate message and context and create payload
+        Creates payload for UA push request for tag group
         :param channel_context:
         :param msg:
         :return:

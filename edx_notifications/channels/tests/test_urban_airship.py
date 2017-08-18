@@ -10,8 +10,6 @@ from edx_notifications.data import (
 )
 from edx_notifications.lib.publisher import (
     register_notification_type,
-    bulk_publish_notification_to_users,
-    publish_notification_to_user
 )
 from edx_notifications.channels.urban_airship import UrbanAirshipNotificationChannelProvider
 from testserver.views import CANNED_TEST_PAYLOAD
