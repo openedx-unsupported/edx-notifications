@@ -118,8 +118,8 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
     'urban-airship': {
         'class': 'edx_notifications.channels.urban_airship.UrbanAirshipNotificationChannelProvider',
         'options': {
-            'application_id': '1uQHCCsrQzyzfXheW8bqaQ',
-            'rest_api_key': 'YC0I-59xSBatXPu2F0DK2g',
+            'application_id': 'test_id',
+            'rest_api_key': 'test_rest_api_key',
         }
     },
     'triggered-email': {
@@ -148,7 +148,6 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
 # list all of the mappings of notification types to channel
 NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS = {
     '*': 'durable',  # default global mapping
-    'open-edx.studio.announcements.new-announcement': 'urban-airship'
 }
 
 # Constants to set how long (in days) old READ and UNREAD notifications can remain in the system before being purged.

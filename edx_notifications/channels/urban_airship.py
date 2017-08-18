@@ -58,6 +58,7 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
         :return:
         """
         obj = self.create_payload(msg, user_id)
+        obj = json.dumps(obj)
 
         resp = {}
         try:
@@ -88,7 +89,7 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
             'audience': {'named_user': str(user_id)},
             'device_types': ['ios', 'android']
         }
-        obj = json.dumps(obj)
+
         return obj
 
     def bulk_dispatch_notification(self, user_ids, msg, exclude_user_ids=None, channel_context=None):
@@ -102,6 +103,7 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
         :return:
         """
         obj = self.bulk_create_payload(channel_context, msg)
+        obj = json.dumps(obj)
 
         # Send request to UA API
         resp = {}
@@ -156,7 +158,7 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
                 'tag': tag
             }
         }
-        obj = json.dumps(obj)
+
         return obj
 
     def resolve_msg_link(self, msg, link_name, params, channel_context=None):
