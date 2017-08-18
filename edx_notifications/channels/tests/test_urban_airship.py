@@ -13,6 +13,7 @@ from edx_notifications.lib.publisher import (
     bulk_publish_notification_to_users,
     publish_notification_to_user
 )
+from edx_notifications.channels.urban_airship import UrbanAirshipNotificationChannelProvider
 from testserver.views import CANNED_TEST_PAYLOAD
 
 TEST_TAG = 'cs50'
@@ -48,18 +49,24 @@ class UrbanAirTestCases(TestCase):
         """
         self.msg.payload['announcement_date'] = TEST_DATE
         channel_context = {'group': 'enrollments', 'tag': TEST_TAG}
-        resp = bulk_publish_notification_to_users([], self.msg,
-                                                  channel_context=channel_context)
-        self.assertTrue(resp)
-        self.assertTrue(resp['ok'])
+        obj = UrbanAirshipNotificationChannelProvider\
+            .bulk_create_payload(channel_context, self.msg)
+
+        self.assertTrue(obj)
+        self.assertTrue(obj['notification'])
+        self.assertTrue(obj['notification']['alert'])
+        self.assertTrue(obj['device_types'])
+        self.assertTrue(obj['audience'])
 
     def test_publish_notification_user(self):
         """
         Test publish notification to a single user
         :return:
         """
-        print TEST_USER
-        print self.msg
-        resp = publish_notification_to_user(TEST_USER, self.msg,
-                                            'urban-airship')
-        self.assertTrue(resp)
+        obj = UrbanAirshipNotificationChannelProvider.create_payload(
+            self.msg, TEST_USER)
+        self.assertTrue(obj)
+        self.assertTrue(obj['notification'])
+        self.assertTrue(obj['notification']['alert'])
+        self.assertTrue(obj['device_types'])
+        self.assertTrue(obj['audience'])

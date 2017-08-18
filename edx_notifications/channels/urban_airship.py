@@ -57,13 +57,7 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
         :param channel_context:
         :return:
         """
-
-        obj = {
-            'notification': {'alert': msg.payload['excerpt']},
-            'audience': {'named_user': user_id},
-            'device_types': ['ios', 'android']
-        }
-        obj = json.dumps(obj)
+        obj = self.create_payload(msg, user_id)
 
         resp = {}
         try:
@@ -75,12 +69,27 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
             )
             resp = resp.json()
             if not resp['ok']:
-                log.warning(resp['details'])
+                if resp['details']:
+                    log.warning(resp['details']['error'])
+                else:
+                    log.warning(resp['error'])
 
         except RequestException as ex:
             log.error(ex.message)
 
         return resp
+
+    @staticmethod
+    def create_payload(msg, user_id):
+        assert msg.payload['excerpt'], 'No excerpt defined in payload'
+        assert user_id, 'No user id given'
+        obj = {
+            'notification': {'alert': msg.payload['excerpt']},
+            'audience': {'named_user': str(user_id)},
+            'device_types': ['ios', 'android']
+        }
+        obj = json.dumps(obj)
+        return obj
 
     def bulk_dispatch_notification(self, user_ids, msg, exclude_user_ids=None, channel_context=None):
         """
@@ -92,36 +101,7 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
         :param channel_context:
         :return:
         """
-        assert channel_context['group'], 'No group is defined in context'
-        assert channel_context['tag'], 'No tag is defined in context'
-        assert msg.payload['excerpt'], 'No excerpt defined in payload'
-        assert msg.payload['announcement_date'], 'No announcement date ' \
-                                                 'defined in payload'
-        group = channel_context['group']
-        tag = channel_context['tag']
-        excerpt = msg.payload['excerpt']
-        announcement_date = msg.payload['announcement_date']
-
-        obj = {
-            'notification': {
-                'alert': excerpt,
-                'actions': {
-                    'open': {
-                        'type': 'url',
-                        'content': MCKA_APP_URL + '{}/announcements/{}/'.format(
-                            tag, announcement_date
-                        )
-                    }
-                }
-            },
-            'device_types': 'all',
-            'audience': {
-                'group': group,
-                'tag': tag
-            }
-        }
-
-        obj = json.dumps(obj)
+        obj = self.bulk_create_payload(channel_context, msg)
 
         # Send request to UA API
         resp = {}
@@ -140,6 +120,44 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
             log.error(ex.message)
 
         return resp
+
+    @staticmethod
+    def bulk_create_payload(channel_context, msg):
+        """
+        Validate message and context and create payload
+        :param channel_context:
+        :param msg:
+        :return:
+        """
+        assert channel_context['group'], 'No group is defined in context'
+        assert channel_context['tag'], 'No tag is defined in context'
+        assert msg.payload['excerpt'], 'No excerpt defined in payload'
+        assert msg.payload['announcement_date'], 'No announcement date ' \
+                                                 'defined in payload'
+        group = channel_context['group']
+        tag = channel_context['tag']
+        excerpt = msg.payload['excerpt']
+        announcement_date = msg.payload['announcement_date']
+        obj = {
+            'notification': {
+                'alert': excerpt,
+                'actions': {
+                    'open': {
+                        'type': 'url',
+                        'content': MCKA_APP_URL + '{}/announcements/{}/'.format(
+                            tag, announcement_date
+                        )
+                    }
+                }
+            },
+            'device_types': 'all',
+            'audience': {
+                'group': group,
+                'tag': tag
+            }
+        }
+        obj = json.dumps(obj)
+        return obj
 
     def resolve_msg_link(self, msg, link_name, params, channel_context=None):
         """
