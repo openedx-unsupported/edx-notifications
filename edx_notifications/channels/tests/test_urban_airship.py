@@ -46,9 +46,10 @@ class UrbanAirTestCases(TestCase):
         :return:
         """
         self.msg.payload['announcement_date'] = TEST_DATE
-        channel_context = {'group': 'enrollments', 'tag': TEST_TAG}
+        self.msg.payload['group'] = 'enrollments'
+        self.msg.namespace = TEST_TAG
         obj = UrbanAirshipNotificationChannelProvider\
-            .bulk_create_payload(channel_context, self.msg)
+            .bulk_create_payload(self.msg)
 
         self.assertTrue(obj)
         self.assertTrue(obj['notification'])

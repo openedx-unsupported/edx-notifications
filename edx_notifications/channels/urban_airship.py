@@ -108,7 +108,7 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
         :param channel_context:
         :return:
         """
-        obj = self.bulk_create_payload(channel_context, msg)
+        obj = self.bulk_create_payload(msg)
         obj = json.dumps(obj)
 
         # Send request to UA API
@@ -130,20 +130,20 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
         return resp
 
     @staticmethod
-    def bulk_create_payload(channel_context, msg):
+    def bulk_create_payload(msg):
         """
         Creates payload for UA push request for tag group
         :param channel_context:
         :param msg:
         :return:
         """
-        assert channel_context['group'], 'No group is defined in context'
-        assert channel_context['tag'], 'No tag is defined in context'
+        assert msg.namespace, 'No tag is defined in context'
+        assert msg.payload['group'], 'No group is defined in context'
         assert msg.payload['excerpt'], 'No excerpt defined in payload'
         assert msg.payload['announcement_date'], 'No announcement date ' \
                                                  'defined in payload'
-        group = channel_context['group']
-        tag = channel_context['tag']
+        group = msg.payload['group']
+        tag = msg.namespace
         excerpt = msg.payload['excerpt']
         announcement_date = msg.payload['announcement_date']
         obj = {
