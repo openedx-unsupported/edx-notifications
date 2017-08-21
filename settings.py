@@ -115,6 +115,13 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
             'rest_api_key': 'test_rest_api_key',
         }
     },
+    'urban-airship': {
+        'class': 'edx_notifications.channels.urban_airship.UrbanAirshipNotificationChannelProvider',
+        'options': {
+            'application_id': 'test_id',
+            'rest_api_key': 'test_rest_api_key',
+        }
+    },
     'triggered-email': {
         'class': 'edx_notifications.channels.triggered_email.TriggeredEmailChannelProvider',
         'options': {
@@ -152,3 +159,4 @@ NOTIFICATION_BRANDED_DEFAULT_LOGO = 'edx_notifications/img/edx-openedx-logo-tag.
 
 # digest email css
 NOTIFICATION_DIGEST_EMAIL_CSS = 'edx_notifications/css/email_digests.css'
+MCKA_APP_URL = 'https://www.mckinseyacademy.com/'
