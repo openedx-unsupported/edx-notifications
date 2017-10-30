@@ -1,6 +1,10 @@
 language: python
 python:
   - "2.7"
+
+addons:
+  firefox: "46.0"
+
 env:
   - DJANGO_SETTINGS_MODULE=settings
 
@@ -15,11 +19,10 @@ install:
     - "pip install coveralls==1.1"
 
 script:
-    - ./manage.py syncdb --noinput --settings=testserver.settings
     - ./manage.py migrate --settings=testserver.settings
     - coverage run ./manage.py test edx_notifications
     - coverage report -m
-    - gulp test
+    - ./node_modules/gulp/bin/gulp.js test
     - bash ./run_bokchoy_tests.sh
     - pep8 edx_notifications
     - pylint edx_notifications --report=no

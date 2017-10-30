@@ -25,9 +25,6 @@ else
     echo "No existing test db file found"
 fi
 
-echo "Creating new test db and sync data..."
-./manage.py syncdb --noinput --settings=testserver.bokchoy_settings
-
 echo "Migrate data"
 ./manage.py migrate --noinput --settings=testserver.bokchoy_settings
 
