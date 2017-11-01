@@ -22,6 +22,6 @@ def register_notification_types(sender, **kwargs):  # pylint: disable=unused-arg
     register_notification_type(
         NotificationType(
             name='open-edx.mobileapps.notifications',
-            renderer=''
+            renderer='edx_notifications.renderers.basic.JsonRenderer'  # using this for tests to pass.
         )
     )
