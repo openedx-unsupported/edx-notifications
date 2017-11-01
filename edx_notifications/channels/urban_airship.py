@@ -57,7 +57,8 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
         """
         payload = self.create_payload(msg, user_id)
         payload = json.dumps(payload)
-        return self.call_ua_push_api(payload)
+        api_credentials = channel_context.get('api_credentials') if channel_context else None
+        return self.call_ua_push_api(payload, api_credentials)
 
     @staticmethod
     def create_payload(msg, user_id):
@@ -77,10 +78,11 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
 
         return obj
 
-    def call_ua_push_api(self, payload):
+    def call_ua_push_api(self, payload, api_credentials):
         """
         Calls Urban Airship push API to send push notifications
         :param payload: json payload to be passed to push notifications API
+        :param api_credentials: dict containing provider id and secret key
         Returns: json response sent by UA
         """
         resp = {}
@@ -89,7 +91,7 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
                 UA_API_PUSH_ENDPOINT,
                 payload,
                 headers=PUSH_REQUEST_HEADER,
-                auth=HTTPBasicAuth(self.application_id, self.rest_api_key)
+                auth=HTTPBasicAuth(api_credentials["provider_key"], api_credentials["provider_secret"])
             )
             resp = resp.json()
             if not resp['ok']:
@@ -114,6 +116,8 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
         """
         if 'tag_group' in msg.payload:
             payload = self.create_tag_group_payload(msg)
+        elif 'send_to_all' in msg.payload and msg.payload['send_to_all'] is True:
+            payload = self.create_all_user_payload(msg)
         else:
             exclude_user_ids = exclude_user_ids if exclude_user_ids else []
             actual_user_ids = []
@@ -122,7 +126,8 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
                     actual_user_ids.append(user_id)
             payload = self.create_bulk_user_payload(actual_user_ids, msg)
         payload = json.dumps(payload)
-        return self.call_ua_push_api(payload)
+        api_credentials = channel_context.get('api_credentials') if channel_context else None
+        return self.call_ua_push_api(payload, api_credentials)
 
     @staticmethod
     def create_tag_group_payload(msg):
@@ -175,6 +180,25 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
             "audience": {
                 "named_user": [str(user_id) for user_id in user_ids]
             }
+        }
+
+        return obj
+
+    @staticmethod
+    def create_all_user_payload(msg):
+        """
+        Creates payload to send UA push notification to all users
+        :param msg:
+        :return:
+        """
+        assert msg.payload['title'], 'Notification title not available in payload'
+
+        obj = {
+            "notification": {
+                "alert": msg.payload['title']
+            },
+            "device_types": "all",
+            "audience": "all"
         }
 
         return obj

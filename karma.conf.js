@@ -1,6 +1,6 @@
 
 //Add ability to turn coverage off when the tests are run in debug mode
-var sourcePreprocessors = 'coverage';
+var sourcePreprocessors = ['coverage'];
 
 function isDebug(argument) {
     return argument === 'debug';
@@ -27,7 +27,7 @@ module.exports = function(config) {
     ],
 
     // start the browser
-    browsers: ['Firefox'],
+    browsers: ['PhantomJS'],
 
     //frameworks to use
     frameworks: ['jasmine-jquery', 'jasmine', 'sinon'],
