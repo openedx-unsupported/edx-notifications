@@ -26,18 +26,10 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
     Implementation of the BaseNotificationChannelProvider abstract interface
     """
 
-    def __init__(self, name=None, display_name=None, display_description=None,
-                 link_resolvers=None, application_id=None, rest_api_key=None):
+    def __init__(self, name=None, display_name=None, display_description=None, link_resolvers=None):
         """
         Initializer
         """
-
-        if not application_id or not rest_api_key:
-            raise Exception('Missing application_id or rest_api_key configuration!')
-
-        self.application_id = application_id
-        self.rest_api_key = rest_api_key
-
         super(UrbanAirshipNotificationChannelProvider, self).__init__(
             name=name,
             display_name=display_name,
