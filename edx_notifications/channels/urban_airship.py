@@ -117,9 +117,34 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
                 if user_id not in exclude_user_ids:
                     actual_user_ids.append(user_id)
             payload = self.create_bulk_user_payload(actual_user_ids, msg)
+
+        self._add_type_in_payload(msg, payload)
         payload = json.dumps(payload)
         api_credentials = channel_context.get('api_credentials') if channel_context else None
         return self.call_ua_push_api(payload, api_credentials)
+
+    def _add_type_in_payload(self, msg, payload):
+        """
+        Adds a notification type in payload if notification_type is present in the message
+
+        Notification types:
+            - courseannouncement
+
+        :param msg:
+        :param payload:
+        """
+        if 'notification_type' in msg.payload:
+            extra = {
+                "extra": {
+                    "notification_type": msg.payload['notification_type']
+                }
+            }
+
+            ios_android_extras = {
+                "ios": extra,
+                "android": extra,
+            }
+            payload['notification'].update(ios_android_extras)
 
     @staticmethod
     def create_tag_group_payload(msg):

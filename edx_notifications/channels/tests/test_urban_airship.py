@@ -44,7 +44,6 @@ class UrbanAirTestCases(TestCase):
     def test_tag_group_notification(self, mock_ua_push_api):
         """
         Test publish notification to a tag group
-        :return:
         """
         mock_ua_push_api.return_value = {'ok': 'true'}
         self.msg.payload['open_url'] = 'http://example.com'
@@ -57,7 +56,6 @@ class UrbanAirTestCases(TestCase):
     def test_bulk_user_notification(self, mock_ua_push_api):
         """
         Test publish notification to list of users
-        :return:
         """
         mock_ua_push_api.return_value = {'ok': 'true'}
         response = bulk_publish_notification_to_users([10, 11, 12], self.msg, preferred_channel='urban-airship')
@@ -67,8 +65,20 @@ class UrbanAirTestCases(TestCase):
     def test_single_user_notification(self, mock_ua_push_api):
         """
         Test publish notification to a single user
-        :return:
         """
         mock_ua_push_api.return_value = {'ok': 'true'}
         response = publish_notification_to_user(10, self.msg, preferred_channel='urban-airship')
+        self.assertEqual(response['ok'], 'true')
+
+    @patch("edx_notifications.channels.urban_airship.UrbanAirshipNotificationChannelProvider.call_ua_push_api")
+    def test_tag_group_announcement(self, mock_ua_push_api):
+        """
+        Test publish notification to a tag group when notification_type is present
+        """
+        mock_ua_push_api.return_value = {'ok': 'true'}
+        self.msg.payload['open_url'] = 'http://example.com'
+        self.msg.payload['tag_group'] = 'enrollments'
+        self.msg.payload['notification_type'] = 'courseannouncement'
+        response = bulk_publish_notification_to_users([], self.msg, preferred_channel='urban-airship')
+        self.assertTrue(response)
         self.assertEqual(response['ok'], 'true')
