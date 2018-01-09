@@ -1,0 +1,57 @@
+<html>
+<head>
+    <link href='http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900,300italic,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="static/css/styles.css">
+
+    <!-- <script src="/static/js/jquery-1.11.2.min.js"></script> -->
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="/static/js/underscore.js"></script>
+    <script type="text/javascript" src="/static/js/backbone.js"></script>
+    <script type="text/javascript" src="/static/js/date.js"></script>
+
+</head>
+<body>
+
+    <p>Welcome {{ user.username }} !!!</p>
+    <a href="/logout/">Logout</a>
+
+        <h2>CURRENT NAMESPACE: {{namespace}}</h2>
+    <h3>Here are some actions you can take</h3>
+    <form method='POST'>
+        {% csrf_token %}
+        <br />
+        <label>Change Namespace</label>
+        <select name='namespace'>
+            <option value='foo/bar/baz'>foo/bar/baz</option>
+            <option value='test/test/test'>test/test/test</option>
+        </select>
+        <input type='submit' name='change_namespace' value='Change Namespace' />
+        <br />
+        <br />
+        <label>Notification Type</label><select name='notification_type' >
+            {% for t in notification_types %}
+                <option value='{{t.name}}'>{{t.name}}</option>
+            {% endfor %}
+        </select>
+        <label>Dispatch Channel</label><select name='notification_channel' >
+            <option value=''>----default----</option>
+            <option value='durable'>durable</option>
+            <option value='triggered-email'>triggered-email</option>
+        </select>
+        <input type='submit' name='add_notifications' value='add a notification' />
+        <br /><br />
+        <label>Send to:</label><input name='digest_email' />&nbsp;<input type='submit' name='send_digest' value='Send an unread Notifications Daily Digest' />&nbsp;NOTE: digest may or may not be sent depending on the preference setting of logged in user
+    </form>
+
+    <hr />
+
+    <div>
+        <img class="xns-icon" src="/static/edx_notifications/img/notification_icon.jpg" />
+        <span class='xns-counter'></span>
+    </div>
+    <div class="xns-pane"></div>
+
+    {# use the "drop-in" widget that is defined in edx_notifications/server/web/templates/django #}
+    {% include "django/notifications_widget.html" %}
+</body>
+</html>

@@ -1,0 +1,8 @@
+[run]
+branch = True
+source = edx_notifications
+omit =
+    **/__init__.py
+    **/migrations/*
+    edx_notifications/server/envs/*
+    edx_notifications/server/wsgi.py
