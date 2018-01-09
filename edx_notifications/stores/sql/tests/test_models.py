@@ -51,7 +51,7 @@ class SQLModelsTests(TestCase):
         msg = orm_obj.to_data_object()
         self.assertIsNotNone(msg)
 
-    def test_user_notification_model_has_all_fields_of_archive_user_notification_model(self):
+    def test_user_notification_model_fields(self):  # pylint: disable=C0103
         """
         Test to check that the SQLUserNotification Model has all the fields (names) of
         the SQLUserNotificationArchive model.
@@ -61,7 +61,7 @@ class SQLModelsTests(TestCase):
         for archive_attr in user_notification_archive.__dict__.keys():
             self.assertIn(archive_attr, user_notification.__dict__.keys())
 
-    def test_archive_user_notification_model_has_all_fields_of_user_notification_model(self):
+    def test_archive_user_notification_model_fields(self):  # pylint: disable=C0103
         """
         Test to check that the SQLUserNotificationArchive Model has all the fields (names) of
         the SQLUserNotification model.

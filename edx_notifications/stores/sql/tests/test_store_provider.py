@@ -1,7 +1,7 @@
 """
 Tests which exercise the MySQL test_data_provider
 """
-
+# pylint: disable=invalid-name
 from freezegun import freeze_time
 import mock
 import pytz
@@ -100,18 +100,18 @@ class TestSQLStoreProvider(TestCase):
         """
         Helper method to create a new notification_preference
         """
-        test_notification_preference = NotificationPreference(
+        notification_preference = NotificationPreference(
             name=name,
             display_name=display_name,
             display_description=display_description
         )
 
         with self.assertNumQueries(number_of_queries):
-            test_notification_preference_saved = self.provider.save_notification_preference(test_notification_preference)
+            notification_preference_saved = self.provider.save_notification_preference(notification_preference)
 
-        self.assertIsNotNone(test_notification_preference_saved)
-        self.assertIsNotNone(test_notification_preference_saved.name)
-        return test_notification_preference_saved
+        self.assertIsNotNone(notification_preference_saved)
+        self.assertIsNotNone(notification_preference_saved.name)
+        return notification_preference_saved
 
     def _save_user_notification_preference(self, number_of_queries, preference_name, user_id, value):
         """
@@ -135,7 +135,7 @@ class TestSQLStoreProvider(TestCase):
         self.assertEqual(user_notification_preference.preference, notification_preference)
         return user_notification_preference
 
-    def _save_new_notification(self, payload='This is a test payload'):
+    def _save_new_notification(self):
         """
         Helper method to create a new notification
         """
@@ -173,7 +173,7 @@ class TestSQLStoreProvider(TestCase):
 
     def test_mark_user_notification_read(self):
         """
-
+        Test user notification message has been marked as read.
         """
         msg_type = self._save_notification_type()
         for __ in range(10):
@@ -214,7 +214,7 @@ class TestSQLStoreProvider(TestCase):
 
     def test_mark_read_namespaced(self):
         """
-
+        Test user notification has been marked as read in namespace
         """
 
         msg_type = self._save_notification_type()
@@ -495,7 +495,7 @@ class TestSQLStoreProvider(TestCase):
 
         # set up some notifications
 
-        map1, msg1, map2, msg2 = self._setup_user_notifications()
+        __, msg1, __, msg2 = self._setup_user_notifications()
 
         # read back and compare the notifications
         with self.assertNumQueries(1):
@@ -723,7 +723,7 @@ class TestSQLStoreProvider(TestCase):
         """
 
         # set up some notifications
-        map1, msg1, map2, msg2 = self._setup_user_notifications()
+        map1, msg1, __, msg2 = self._setup_user_notifications()
 
         # mark one as read
         map1.read_at = datetime.utcnow()
@@ -792,7 +792,7 @@ class TestSQLStoreProvider(TestCase):
             )
 
         # set up some notifications
-        map1, msg1, map2, msg2 = self._setup_user_notifications()
+        __, msg1, __, msg2 = self._setup_user_notifications()
 
         # test limit, we should only get the first one
         with self.assertNumQueries(1):
