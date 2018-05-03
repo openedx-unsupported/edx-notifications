@@ -447,11 +447,11 @@ var NotificationPaneView = Backbone.View.extend({
             }
             self.collection.fetch(
                 {
-                    headers: {
-                        "X-CSRFToken": this.getCSRFToken()
-                    },
                     type: 'POST',
                     data: data,
+                    beforeSend: function (request) {
+                      request.setRequestHeader("X-CSRFToken", self.getCSRFToken());
+                    },
                     success: function () {
                         self.$el.removeClass('xns-ui-loading');
                         self.selected_pane = 'unread';
@@ -491,13 +491,13 @@ var NotificationPaneView = Backbone.View.extend({
             var self = this;
             self.collection.fetch(
                 {
-                    headers: {
-                        "X-CSRFToken": this.getCSRFToken()
-                    },
                     data: {
                       "mark_as": "read"
                     },
                     type: 'POST',
+                    beforeSend: function (request) {
+                      request.setRequestHeader("X-CSRFToken", self.getCSRFToken());
+                    },
                     success: function () {
                         if (clickLink) {
                             window.location.href = clickLink;
