@@ -434,7 +434,7 @@ def _send_user_digest(namespace_info, from_timestamp, to_timestamp, user_id,
     # to also present the namespace display_name
     subject = subject.format(display_name=namespace_info['display_name'])
 
-    msg = EmailMessage(subject, None, from_email, [email])
+    msg = EmailMessage(subject, '', from_email, [email])
     msg.attach(html_part)
     msg.send()
 

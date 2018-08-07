@@ -14,7 +14,7 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 TEST_ROOT = "tests"
 TRANSACTIONS_MANAGED = {}
 USE_TZ = True
-TIME_ZONE = {}
+TIME_ZONE = 'UTC'
 SECRET_KEY='SHHHHHH'
 
 DATABASES = {
@@ -62,7 +62,11 @@ ROOT_URLCONF = 'edx_notifications.server.urls'
 
 WSGI_APPLICATION = 'edx_notifications.server.wsgi.application'
 
-TEMPLATE_DIRS = ['edx_notifications/server/web/templates']
+
+TEMPLATES = [{
+    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    'DIRS': ['edx_notifications/server/web/templates']
+}]
 
 NOTIFICATION_STORE_PROVIDER = {
     "class": "edx_notifications.stores.sql.store_provider.SQLNotificationStoreProvider",

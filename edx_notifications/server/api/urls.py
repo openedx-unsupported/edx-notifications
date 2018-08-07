@@ -1,7 +1,7 @@
 """
 All URL mappings for HTTP-based APIs
 """
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from rest_framework.urlpatterns import format_suffix_patterns
 
@@ -20,8 +20,7 @@ from .url_regex import (
     CONSUMER_USER_PREFERENCES_DETAIL_NO_PARAM_REGEX)
 
 
-urlpatterns = patterns(  # pylint: disable=invalid-name
-    '',
+urlpatterns = [  # pylint: disable=invalid-name
     url(
         CONSUMER_NOTIFICATIONS_COUNT_REGEX,
         consumer_views.NotificationCount.as_view(),
@@ -73,6 +72,6 @@ urlpatterns = patterns(  # pylint: disable=invalid-name
         name='edx_notifications.consumer.user_preferences.detail.no_param'
     ),
 
-)
+]
 
 urlpatterns = format_suffix_patterns(urlpatterns)  # pylint: disable=invalid-name

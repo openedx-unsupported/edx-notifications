@@ -4,7 +4,7 @@ File that manages how notification distribution scopes are handled
 
 import types
 import abc
-from django.db.models.query import ValuesQuerySet, ValuesListQuerySet
+from django.db.models.query import QuerySet
 
 _SCOPE_RESOLVERS = {}
 
@@ -107,8 +107,7 @@ def resolve_user_scope(scope_name, scope_context):
 
     if (not isinstance(user_ids, list) and
             not isinstance(user_ids, types.GeneratorType) and
-            not isinstance(user_ids, ValuesListQuerySet) and
-            not isinstance(user_ids, ValuesQuerySet)):
+            not isinstance(user_ids, QuerySet)):
 
         err_msg = (
             'NotificationUserScopeResolver "{scope_name}" with context "{scope_context}" should return an instance '

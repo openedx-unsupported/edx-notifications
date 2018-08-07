@@ -13,7 +13,7 @@ import pytz
 import copy
 from contracts import contract
 
-from django.db.models.query import ValuesQuerySet, ValuesListQuerySet
+from django.db.models.query import QuerySet
 
 from edx_notifications.channels.channel import get_notification_channel
 from edx_notifications import const
@@ -150,12 +150,11 @@ def bulk_publish_notification_to_users(user_ids, msg, exclude_user_ids=None,
 
     if (not isinstance(user_ids, list) and
             not isinstance(user_ids, types.GeneratorType) and
-            not isinstance(user_ids, ValuesListQuerySet) and
-            not isinstance(user_ids, ValuesQuerySet)):
+            not isinstance(user_ids, QuerySet)):
 
         err_msg = (
             'bulk_publish_notification_to_users() can only be called with a user_ids argument '
-            'of type list, GeneratorType, or ValuesQuerySet/ValuesListQuerySet. Type {arg_type} was passed in!'
+            'of type list, GeneratorType, or QuerySet. Type {arg_type} was passed in!'
             .format(arg_type=type(user_ids))
         )
         raise TypeError(err_msg)
