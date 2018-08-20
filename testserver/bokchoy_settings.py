@@ -18,7 +18,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # SECURITY WARNING: don't run with debug turned on in production!
 # This is just a container for running tests
 DEBUG = True
-TEMPLATE_DEBUG = True
 SECRET_KEY='SHHHHHH'
 
 # Application definition
@@ -64,15 +63,20 @@ ROOT_URLCONF = 'testserver.urls'
 
 WSGI_APPLICATION = 'testserver.wsgi.application'
 
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
 
-TEMPLATE_DIRS = [
-    os.path.join(BASE_DIR, 'testserver/templates'),
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'testserver/templates')],
+        'OPTIONS': {
+            'debug': True,
+            'loaders': [
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+            ]
+        },
+    }
 ]
-
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases

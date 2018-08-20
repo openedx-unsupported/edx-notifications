@@ -27,7 +27,7 @@ def mock_handler(request):  # pylint: disable=unused-argument
     return HttpResponseBadRequest()
 
 
-urlpatterns = [
+urlpatterns = [  # pylint: disable=invalid-name
     url(
         CONSUMER_NOTIFICATIONS_COUNT_REGEX,
         mock_handler,
