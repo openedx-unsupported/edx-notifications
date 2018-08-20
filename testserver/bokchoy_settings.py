@@ -70,6 +70,9 @@ TEMPLATES = [
         'DIRS': [os.path.join(BASE_DIR, 'testserver/templates')],
         'OPTIONS': {
             'debug': True,
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+            ],
             'loaders': [
                 'django.template.loaders.filesystem.Loader',
                 'django.template.loaders.app_directories.Loader',
