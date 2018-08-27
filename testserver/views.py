@@ -4,7 +4,7 @@ View handlers for HTML serving
 
 from datetime import datetime, timedelta
 import pytz
-from django.template import RequestContext, loader
+from django.template import loader
 from django.http import (
     HttpResponse,
 )
@@ -263,7 +263,7 @@ def index(request):
         'namespace': NAMESPACE,
     })
 
-    return HttpResponse(template.render(RequestContext(request, context_dict)))
+    return HttpResponse(template.render(context=context_dict, request=request))
 
 
 @csrf_protect
@@ -281,11 +281,9 @@ def register(request):
             raise Exception('Invalid registration form')
     else:
         form = RegistrationForm()
-        variables = RequestContext(
-            request, {
-                'form': form
-            }
-        )
+        variables = {
+            'form': form
+        }
 
     return render_to_response(
         'registration/register.html',
