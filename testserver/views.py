@@ -12,7 +12,7 @@ from django.http import (
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.views.decorators.csrf import csrf_protect
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, render
 from django.http import HttpResponseRedirect
 from django.conf import settings
 from django.templatetags.static import static
@@ -285,9 +285,10 @@ def register(request):
             'form': form
         }
 
-    return render_to_response(
-        'registration/register.html',
-        variables,
+    return render(
+        request=request,
+        template_name='registration/register.html',
+        context=variables,
     )
 
 def register_success(request):
