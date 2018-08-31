@@ -3,7 +3,7 @@ All URL mappings for the API's which do not get mapped to Django REST Frameworks
 This is useful for when we need a UI tier to do a reverse on URL's where we don't need to import
 all of the backend
 """
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.http import HttpResponseBadRequest
 
 from .url_regex import (
@@ -27,8 +27,7 @@ def mock_handler(request):  # pylint: disable=unused-argument
     return HttpResponseBadRequest()
 
 
-urlpatterns = patterns(  # pylint: disable=invalid-name
-    '',
+urlpatterns = [  # pylint: disable=invalid-name
     url(
         CONSUMER_NOTIFICATIONS_COUNT_REGEX,
         mock_handler,
@@ -79,4 +78,4 @@ urlpatterns = patterns(  # pylint: disable=invalid-name
         mock_handler,
         name='edx_notifications.consumer.user_preferences.detail.no_param'
     ),
-)
+]

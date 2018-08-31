@@ -1,6 +1,8 @@
-<script src="{{ STATIC_URL }}edx_notifications/js/models/notification_preferences_model.js"></script>
-<script src="{{ STATIC_URL }}edx_notifications/js/collections/notification_preferences_collection.js"></script>
-<script src="{{ STATIC_URL }}edx_notifications/js/views/notification_preferences_view.js"></script>
+{% load static %}
+
+<script src="{% static 'edx_notifications/js/models/notification_preferences_model.js' %}"></script>
+<script src="{% static 'edx_notifications/js/collections/notification_preferences_collection.js' %}"></script>
+<script src="{% static 'edx_notifications/js/views/notification_preferences_view.js' %}"></script>
 
 <script type="text/template" id="xns-notification-preferences-template">
     <div class='xns-preference-pane'>

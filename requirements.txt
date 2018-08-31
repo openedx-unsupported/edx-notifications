@@ -1,11 +1,10 @@
 # Django/Framework Packages
-django==1.8.18
+django==1.11.15
 django-model-utils==2.3.1
 python-dateutil==2.1
 requests==2.9.1
 pylru==1.0.6
-git+https://github.com/edx/django-rest-framework.git@3c72cb5ee5baebc4328947371195eae2077197b0#egg=djangorestframework==3.2.3
-pytz==2016.7
+git+https://github.com/edx/django-rest-framework.git@1ceda7c086fddffd1c440cc86856441bbf0bd9cb#egg=djangorestframework==3.6.3
 PyContracts==1.7.1
 underscore.py==0.1.6
 pynliner==0.5.2

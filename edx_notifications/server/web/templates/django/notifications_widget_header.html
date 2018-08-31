@@ -1,9 +1,11 @@
-<script src="{{ STATIC_URL }}edx_notifications/js/models/counter_icon_model.js"></script>
-<script src="{{ STATIC_URL }}edx_notifications/js/models/user_notification_model.js"></script>
-<script src="{{ STATIC_URL }}edx_notifications/js/collections/notification_collection.js"></script>
+{% load static %}
 
-<script src="{{ STATIC_URL }}edx_notifications/js/views/counter_icon_view.js"></script>
-<script src="{{ STATIC_URL }}edx_notifications/js/views/notification_pane_view.js"></script>
+<script src="{% static 'edx_notifications/js/models/counter_icon_model.js' %}"></script>
+<script src="{% static 'edx_notifications/js/models/user_notification_model.js' %}"></script>
+<script src="{% static 'edx_notifications/js/collections/notification_collection.js' %}"></script>
+
+<script src="{% static 'edx_notifications/js/views/counter_icon_view.js' %}"></script>
+<script src="{% static 'edx_notifications/js/views/notification_pane_view.js' %}"></script>
 
 {% include 'django/notifications_widget_preferences_header.html' %}
 
