@@ -17,6 +17,7 @@ var NotificationPreferencesView = Backbone.View.extend({
         /* set the API endpoint that was passed into our initializer */
         this.collection.url = this.notification_preferences_all;
 
+
         /* re-render if the model changes */
         this.listenTo(this.collection, 'change', this.collectionChanged);
 
@@ -58,6 +59,7 @@ var NotificationPreferencesView = Backbone.View.extend({
                 success: function () {
                     // fetch the user preferences again.
                     self.collection.url = self.notification_preferences_all;
+
                     self.hydrate();
                 }
             }
@@ -76,7 +78,8 @@ var NotificationPreferencesView = Backbone.View.extend({
         /* we might - at some point - add a visual element to the */
         /* loading, like a spinner */
         var self = this;
-        this.collection.fetch({
+        var language_code = ($('html').attr('lang') ? $('html').attr('lang') : 'en-us');
+        this.collection.fetch({data: $.param({ course_lang: language_code}),
             success: function(){
                 self.render();
             }

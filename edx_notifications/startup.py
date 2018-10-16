@@ -20,7 +20,6 @@ from edx_notifications.namespaces import DefaultNotificationNamespaceResolver, r
 # to import the modules, otherwise, they will
 # not register their Django signal receivers
 
-
 def initialize(namespace_resolver=None, register_system_types=True):
     """
     Startup entry point for the Notification subsystem

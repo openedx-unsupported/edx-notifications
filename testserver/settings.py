@@ -1,3 +1,5 @@
+#!/usr/bin/bash
+# -*- coding: utf-8 -*
 """
 Django settings for edx_notifications test project.
 For more information on this file, see
@@ -69,6 +71,23 @@ EMAIL_HOST_USER = 'your-user-email'
 EMAIL_HOST_PASSWORD = 'user-email-password'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+LANGUAGE_CODE = 'ar'
+LANGUAGES = (
+    ('en', u'English '),
+    ('ar', u'العربية'),  # Arabic
+    ('zh', u'中文(简体)'),
+    ('es', u'Español'),
+    ('nl', u'Dutch '),
+    ('pt', u'Português')
+)
+
+LOCALE_PATHS = [
+    # "/edx/app/apros/venvs/mcka_apros/src/edx-notifications/locale",
+    # "/edx/app/apros/mcka_apros/locale/",
+    os.path.join(BASE_DIR, 'locale'),
+]
+
+LANGUAGE_COOKIE_NAME = "preferred_language"
 
 TEMPLATES = [
     {
@@ -101,7 +120,6 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
@@ -159,7 +177,7 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
                 # matching on the value
                 'msg_type_to_url': {
                     'class': 'edx_notifications.channels.link_resolvers.MsgTypeToUrlLinkResolver',
-                    'config': {
+                    'conf': {
                         '_click_link': NOTIFICATION_CLICK_LINK_URL_MAPS,
                     }
                 }
@@ -176,7 +194,7 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
                 # matching on the value
                 'msg_type_to_url': {
                     'class': 'edx_notifications.channels.link_resolvers.MsgTypeToUrlLinkResolver',
-                    'config': {
+                    'conf': {
                         '_click_link': NOTIFICATION_CLICK_LINK_URL_MAPS,
                     }
                 }

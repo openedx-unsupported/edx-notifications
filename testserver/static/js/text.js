@@ -277,7 +277,7 @@ define(['module'], function (module) {
                 }
             }
 
-            //Allow overrides specified in config
+            //Allow overrides specified in conf
             if (masterConfig.onXhr) {
                 masterConfig.onXhr(xhr, url);
             }

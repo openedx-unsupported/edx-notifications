@@ -252,8 +252,8 @@ class NotificationPreferenceList(AuthenticatedAPIView):
         HTTP Get Handler
         """
         notification_preferences = get_notification_preferences()
-        result_set = [notification_preference.get_fields() for notification_preference in notification_preferences]
 
+        result_set = [notification_preference.get_fields() for notification_preference in notification_preferences]
         return Response(result_set, status.HTTP_200_OK)
 
 

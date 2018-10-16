@@ -163,12 +163,12 @@ class MsgTypeToUrlResolverMixin(object):
 
         resolver = None
         if self.link_resolvers and resolver_name in self.link_resolvers:
-            # need to have link_resolvers defined in our channel options config
+            # need to have link_resolvers defined in our channel options conf
             if 'class' in self.link_resolvers[resolver_name]:
                 _class_name = self.link_resolvers[resolver_name]['class']
                 config = {}
-                if 'config' in self.link_resolvers[resolver_name]:
-                    config = self.link_resolvers[resolver_name]['config']
+                if 'conf' in self.link_resolvers[resolver_name]:
+                    config = self.link_resolvers[resolver_name]['conf']
 
                 # now create an instance of the resolver
                 module_path, _, name = _class_name.rpartition('.')
@@ -188,7 +188,7 @@ class MsgTypeToUrlResolverMixin(object):
 
         # right now we just support resolution through
         # type_name -> key lookups, aka 'type_to_url' in our
-        # link_resolvers config dict. This is reserved for
+        # link_resolvers conf dict. This is reserved for
         # future extension
         resolver = self._get_link_resolver('msg_type_to_url')
 

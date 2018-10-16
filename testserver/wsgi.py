@@ -1,5 +1,5 @@
 """
-WSGI config for edx-notifications project. This is normally used
+WSGI conf for edx-notifications project. This is normally used
 It exposes the WSGI callable as a module-level variable named ``application``.
 For more information on this file, see
 https://docs.djangoproject.com/en/1.6/howto/deployment/wsgi/

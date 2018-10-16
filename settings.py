@@ -1,3 +1,5 @@
+#!/usr/bin/bash
+# -*- coding: utf-8 -*
 """
 Django settings file for local development purposes
 """
@@ -23,6 +25,31 @@ DATABASES = {
         'NAME': '{}/db/notifications.db'.format(TEST_ROOT)
     },
 }
+
+js_info_dict = {
+    'packages': 'edx_notifications.server.web',
+
+}
+# LANGUAGE_CODE = 'ar'
+LANGUAGES = (
+    ('en', u'English '),
+    ('ar', u'العربية'),  # Arabic
+    ('Ar-sa', u'Arabic'),  # Arabic Saudi Arabia
+    ('zh', u'中文(简体)'),
+    ('ES419', u'Latin Spanish'),
+    ('es', u'Español'),
+    ('ja', u'Japanese'),
+    ('de', u'German'),
+    ('fr', u'french'),
+    ('nl', u'Dutch '),
+    ('pt', u'Português')
+)
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+]
+
+
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -52,12 +79,13 @@ if not TEST_MODE:
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
 )
-
+LANGUAGE_COOKIE_NAME = "preferred_language"
 ROOT_URLCONF = 'edx_notifications.server.urls'
 
 WSGI_APPLICATION = 'edx_notifications.server.wsgi.application'
@@ -92,7 +120,10 @@ NOTIFICATION_CLICK_LINK_URL_MAPS = {
     'open-edx.edx_notifications.lib.tests.*': '/alternate/path/to/{param1}/url/{param2}',
     'open-edx-edx_notifications.lib.*': '/third/way/to/get/to/{param1}/url/{param2}',
 }
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.i18n', # this one
 
+)
 # list all known channel providers
 NOTIFICATION_CHANNEL_PROVIDERS = {
     'durable': {
@@ -105,7 +136,7 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
                 # matching on the value
                 'msg_type_to_url': {
                     'class': 'edx_notifications.channels.link_resolvers.MsgTypeToUrlLinkResolver',
-                    'config': {
+                    'conf': {
                         '_click_link': NOTIFICATION_CLICK_LINK_URL_MAPS,
                     }
                 }
@@ -133,7 +164,7 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
                 # matching on the value
                 'msg_type_to_url': {
                     'class': 'edx_notifications.channels.link_resolvers.MsgTypeToUrlLinkResolver',
-                    'config': {
+                    'conf': {
                         '_click_link': NOTIFICATION_CLICK_LINK_URL_MAPS,
                     }
                 }
