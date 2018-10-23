@@ -15,7 +15,8 @@ var NotificationPreferencesView = Backbone.View.extend({
         this.collection = new NotificationPreferencesCollection();
 
         /* set the API endpoint that was passed into our initializer */
-        this.collection.url = this.notification_preferences_all;
+
+        this.collection.url = this.notification_preferences_all+ "&course_lang=fr";
 
         /* re-render if the model changes */
         this.listenTo(this.collection, 'change', this.collectionChanged);

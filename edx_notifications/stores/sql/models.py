@@ -19,6 +19,7 @@ from edx_notifications.data import (
 from edx_notifications import const
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
+from django.utils.translation import ugettext as _
 
 
 class SQLNotificationType(models.Model):
@@ -48,7 +49,7 @@ class SQLNotificationType(models.Model):
         """
 
         return NotificationType(
-            name=self.name,
+            name=_(self.name),
             renderer=self.renderer,
             renderer_context=DictField.from_json(self.renderer_context)
         )
@@ -117,7 +118,7 @@ class SQLNotificationMessage(TimeStampedModel):
 
         msg = NotificationMessage(
             id=self.id,
-            namespace=self.namespace,
+            namespace=_(self.namespace),
             msg_type=self.msg_type.to_data_object(),
             from_user_id=self.from_user_id,
             deliver_no_earlier_than=self.deliver_no_earlier_than,
@@ -285,10 +286,10 @@ class SQLNotificationPreference(models.Model):
         """
 
         return NotificationPreference(
-            name=self.name,
-            display_name=self.display_name,
-            display_description=self.display_description,
-            default_value=self.default_value
+            name=_(self.name),
+            display_name=_(self.display_name),
+            display_description=_(self.display_description),
+            default_value=_(self.default_value)
         )
 
     @classmethod
@@ -392,7 +393,7 @@ class SQLNotificationCallbackTimer(TimeStampedModel):
         """
 
         return NotificationCallbackTimer(
-            name=self.name,
+            name=_(self.name),
             callback_at=self.callback_at,
             class_name=self.class_name,
             context=DictField.from_json(self.context),  # special case, dict<-->JSON string
