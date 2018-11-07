@@ -1,3 +1,5 @@
+#!/usr/bin/bash
+# -*- coding: utf-8 -*
 """
 Django settings file for local development purposes
 """
@@ -14,7 +16,7 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 TEST_ROOT = "tests"
 TRANSACTIONS_MANAGED = {}
 USE_TZ = True
-TIME_ZONE = {}
+TIME_ZONE = 'UTC'
 SECRET_KEY='SHHHHHH'
 
 DATABASES = {
@@ -23,6 +25,10 @@ DATABASES = {
         'NAME': '{}/db/notifications.db'.format(TEST_ROOT)
     },
 }
+
+USE_I18N = True
+USE_L10N = True
+
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -50,19 +56,45 @@ if not TEST_MODE:
         }
     })
 
+
+LANGUAGE_CODE = "en"
+LANGUAGE_COOKIE_NAME = "openedx-language-preference"
+LANGUAGES = (
+    ('en', u'English '),
+    ('ar', u'العربية'),  # Arabic
+    ('es', u'Español'),
+    ('nl', u'Dutch '),
+    ('pt', u'Português'),
+    ('zh-ch', u'中文(简体)'),
+    ('fr', u'Français'),
+    ('jp', u'日本人'),
+    ('de', u'Deutsche'),
+)
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+]
+
 MIDDLEWARE_CLASSES = (
+
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+
 )
 
 ROOT_URLCONF = 'edx_notifications.server.urls'
 
 WSGI_APPLICATION = 'edx_notifications.server.wsgi.application'
 
-TEMPLATE_DIRS = ['edx_notifications/server/web/templates']
+
+TEMPLATES = [{
+    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    'DIRS': ['edx_notifications/server/web/templates']
+}]
 
 NOTIFICATION_STORE_PROVIDER = {
     "class": "edx_notifications.stores.sql.store_provider.SQLNotificationStoreProvider",
