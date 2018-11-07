@@ -19,7 +19,7 @@ from edx_notifications.data import (
 from edx_notifications import const
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 
 class SQLNotificationType(models.Model):
