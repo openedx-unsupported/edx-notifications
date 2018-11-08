@@ -1,3 +1,5 @@
+#!/usr/bin/bash
+# -*- coding: utf-8 -*
 """
 Django settings for edx_notifications test project.
 For more information on this file, see
@@ -35,6 +37,32 @@ INSTALLED_APPS = (
     'edx_notifications.server.web',
     'django_nose',
 )
+
+js_info_dict = {
+    'packages': 'edx_notifications.server.web',
+ }
+# js_info_dict = {
+#     'packages': 'edx_notifications.server.web',
+#  }
+#
+# LANGUAGE_CODE = 'en'
+# LANGUAGES = (
+#     ('en', u'English '),
+#     ('ar', u'العربية'),  # Arabic
+#     ('Ar-sa', u'Arabic'),  # Arabic Saudi Arabia
+#     ('zh', u'中文(简体)'),
+#     ('ES419', u'Latin Spanish'),
+#     ('es', u'Español'),
+#     ('ja', u'Japanese'),
+#     ('de', u'German'),
+#     ('fr', u'french'),
+#     ('nl', u'Dutch '),
+#     ('pt', u'Português')
+# )
+#
+# LOCALE_PATHS = [
+#     os.path.join(BASE_DIR, 'locale'),
+# ]
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -188,6 +216,10 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
         'options': {}
     }
 }
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.i18n', # this one
+ )
 
 # list all of the mappings of notification types to channel
 NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS = {

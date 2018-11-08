@@ -76,7 +76,8 @@ var NotificationPreferencesView = Backbone.View.extend({
         /* we might - at some point - add a visual element to the */
         /* loading, like a spinner */
         var self = this;
-        this.collection.fetch({
+        var language_code = ($('html').attr('lang') ? $('html').attr('lang') : 'en-us');
+        this.collection.fetch({data: $.param({ course_lang: language_code}),
             success: function(){
                 self.render();
             }
