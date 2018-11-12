@@ -19,7 +19,7 @@ from edx_notifications.data import (
 from edx_notifications import const
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext_lazy as _
 
 
 class SQLNotificationType(models.Model):
@@ -307,10 +307,10 @@ class SQLNotificationPreference(models.Model):
         Hydrate ourselves from a passed in notification_preference
         """
 
-        self.name = notification_preference.name  # pylint: disable=attribute-defined-outside-init
-        self.display_name = notification_preference.display_name
-        self.display_description = notification_preference.display_description
-        self.default_value = notification_preference.default_value
+        self.name = _(notification_preference.name) # pylint: disable=attribute-defined-outside-init
+        self.display_name = _(notification_preference.display_name)
+        self.display_description = _(notification_preference.display_description)
+        self.default_value = _(notification_preference.default_value)
 
 
 class SQLUserNotificationPreferences(TimeStampedModel):
