@@ -106,9 +106,10 @@ class TypedField(object):
 
         value_type = type(value)
 
-        if value and value_type not in self._expected_types and value != ugettext_lazy("str").__class__:
+        if value and value_type not in self._expected_types:
             print (self._expected_types)
             print (value_type)
+            print (value)
             raise TypeError(
                 (
                     "Field expected type of '{expected}' got '{got}'"
