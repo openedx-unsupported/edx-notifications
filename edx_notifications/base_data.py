@@ -118,7 +118,6 @@ class TypedField(object):
         print ("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
         if value and value_type not in self._expected_types:
 
-
             raise TypeError(
                 (
                     "Field expected type of '{expected}' got '{got}'"
@@ -146,7 +145,7 @@ class StringField(TypedField):
     Specialized subclass of TypedField(unicode) as a convienence
     """
 
-    _expected_types = [unicode, str, ugettext_lazy("").__class__]
+    _expected_types = [unicode, str, type(ugettext_lazy("").__class__)]
 
 
 class IntegerField(TypedField):
