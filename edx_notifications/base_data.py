@@ -104,7 +104,7 @@ class TypedField(object):
 
         self._assert_has_name()
 
-        value_type = value.__class__
+        value_type = type(value)
 
         print ('comparison gives')
         # self._expected_types.append(value_type)
@@ -117,9 +117,6 @@ class TypedField(object):
         print (isinstance(value, ugettext_lazy("").__class__))
         print ("field value")
         print (value)
-
-        if isinstance(value, ugettext_lazy("").__class__):
-            value_type = value.__class__
         print ("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 
         if value and value_type not in self._expected_types:
@@ -152,7 +149,7 @@ class StringField(TypedField):
     Specialized subclass of TypedField(unicode) as a convienence
     """
 
-    _expected_types = [unicode, str, ugettext_lazy("").__class__]
+    _expected_types = [unicode, str, type(ugettext_lazy())]
 
 
 class IntegerField(TypedField):
