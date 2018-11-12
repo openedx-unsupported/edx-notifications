@@ -106,6 +106,7 @@ class TypedField(object):
 
         value_type = type(value)
 
+        print (value_type not in self._expected_types)
 
         if value and value_type not in self._expected_types:
             print (self._expected_types)
