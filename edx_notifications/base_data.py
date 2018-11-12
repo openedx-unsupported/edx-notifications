@@ -107,7 +107,7 @@ class TypedField(object):
         value_type = type(value)
 
         print ('comparison gives')
-        self._expected_types.append(value_type)
+        # self._expected_types.append(value_type)
         print (value_type not in self._expected_types)
         print ('expected_types')
         print (self._expected_types)
@@ -125,7 +125,7 @@ class TypedField(object):
                     "Field expected type of '{expected}' got '{got}'"
                 ).format(expected=self._expected_types, got=value_type)
             )
-        self._expected_types.pop()
+        # self._expected_types.pop()
 
         if not hasattr(data_object, '_field_data'):
             data_object._field_data = {}  # pylint: disable=protected-access
@@ -148,7 +148,7 @@ class StringField(TypedField):
     Specialized subclass of TypedField(unicode) as a convienence
     """
 
-    _expected_types = [unicode, str, ugettext_lazy("").encode('utf-8').__class__]
+    _expected_types = [unicode, str, ugettext_lazy("")]
 
 
 class IntegerField(TypedField):
