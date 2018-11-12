@@ -112,10 +112,14 @@ class TypedField(object):
         print ('expected_types')
         print (self._expected_types)
         print ("value type")
-        print (isinstance(value_type, ugettext_lazy("").__class__))
+        print (value_type)
+        print ("testing object")
+        print (isinstance(value, ugettext_lazy("").__class__))
         print ("field value")
         print (value)
 
+        if isinstance(value, ugettext_lazy("").__class__):
+            value_type = value.__class__
         print ("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 
         if value and value_type not in self._expected_types:
