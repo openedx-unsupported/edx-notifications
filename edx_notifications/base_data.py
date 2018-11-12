@@ -7,7 +7,13 @@ import inspect
 import dateutil.parser
 import copy
 from datetime import datetime, timedelta
+
+import six
+from django.utils.functional import SimpleLazyObject, lazy
+from django.utils.translation import ugettext, ugettext_lazy
 from freezegun.api import FakeDatetime
+from django.utils.functional import lazy
+from pytz.lazy import LazyDict
 
 
 class DateTimeWithDeltaCompare(datetime):
@@ -59,6 +65,8 @@ class TypedField(object):
         Initializer which takes in the type this field
         should be set it is set
         """
+        # from django.utils.functional import __proxy__
+        # self._expected_types.append(__proxy__)
 
         if not self._expected_types:
             raise TypeError(
@@ -99,6 +107,7 @@ class TypedField(object):
         value_type = type(value)
 
         if value and value_type not in self._expected_types:
+            print (self._expected_types)
             raise TypeError(
                 (
                     "Field expected type of '{expected}' got '{got}'"
@@ -126,7 +135,7 @@ class StringField(TypedField):
     Specialized subclass of TypedField(unicode) as a convienence
     """
 
-    _expected_types = [unicode, str]
+    _expected_types = [unicode, str, ugettext_lazy("str").__class__]
 
 
 class IntegerField(TypedField):
