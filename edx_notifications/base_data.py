@@ -107,11 +107,12 @@ class TypedField(object):
         value_type = type(value)
 
         print (value_type not in self._expected_types)
-
+        print (self._expected_types)
+        print (value_type)
+        print (value)
         if value and value_type not in self._expected_types:
-            print (self._expected_types)
-            print (value_type)
-            print (value)
+
+
             raise TypeError(
                 (
                     "Field expected type of '{expected}' got '{got}'"
