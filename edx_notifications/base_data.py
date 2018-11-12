@@ -112,7 +112,7 @@ class TypedField(object):
         print ('expected_types')
         print (self._expected_types)
         print ("value type")
-        print (value_type)
+        print (isinstance(value_type, ugettext_lazy("").__class__))
         print ("field value")
         print (value)
 
@@ -148,7 +148,7 @@ class StringField(TypedField):
     Specialized subclass of TypedField(unicode) as a convienence
     """
 
-    _expected_types = [unicode, str, ugettext_lazy("")]
+    _expected_types = [unicode, str, ugettext_lazy("").__class__]
 
 
 class IntegerField(TypedField):
