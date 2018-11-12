@@ -39,7 +39,6 @@ INSTALLED_APPS = (
 )
 
 
-LANGUAGE_CODE = "en"
 LANGUAGE_COOKIE_NAME = "openedx-language-preference"
 LANGUAGES = (
     ('en', u'English '),
@@ -118,7 +117,6 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
