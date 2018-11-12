@@ -106,10 +106,16 @@ class TypedField(object):
 
         value_type = type(value)
 
+        print ('comparison gives')
         print (value_type not in self._expected_types)
+        print ('expected_types')
         print (self._expected_types)
+        print ("value type")
         print (value_type)
+        print ("field value")
         print (value)
+
+        print ("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
         if value and value_type not in self._expected_types:
 
 
