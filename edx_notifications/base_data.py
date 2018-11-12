@@ -104,7 +104,7 @@ class TypedField(object):
 
         self._assert_has_name()
 
-        value_type = type(value)
+        value_type = value.__class__
 
         print ('comparison gives')
         # self._expected_types.append(value_type)
