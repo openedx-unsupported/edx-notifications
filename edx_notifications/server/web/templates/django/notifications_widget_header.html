@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 
 <script src="{% static 'edx_notifications/js/models/counter_icon_model.js' %}"></script>
 <script src="{% static 'edx_notifications/js/models/user_notification_model.js' %}"></script>
@@ -6,10 +7,10 @@
 
 <script src="{% static 'edx_notifications/js/views/counter_icon_view.js' %}"></script>
 <script src="{% static 'edx_notifications/js/views/notification_pane_view.js' %}"></script>
-
+<script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 
 {% include 'django/notifications_widget_preferences_header.html' %}
-{% load i18n %}
+
 <script type="text/template" id="xns-counter-template">
     <% if (typeof count !== 'undefined' && count > 0) { %>
     <%= count %>

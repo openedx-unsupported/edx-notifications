@@ -38,6 +38,9 @@ INSTALLED_APPS = (
     'django_nose',
 )
 
+js_info_dict = {
+    'packages': 'edx_notifications.server.web',
+ }
 # js_info_dict = {
 #     'packages': 'edx_notifications.server.web',
 #  }
