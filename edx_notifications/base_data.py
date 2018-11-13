@@ -7,13 +7,8 @@ import inspect
 import dateutil.parser
 import copy
 from datetime import datetime, timedelta
-
-import six
-from django.utils.functional import SimpleLazyObject, lazy
-from django.utils.translation import ugettext, ugettext_lazy
+from django.utils.translation import ugettext_lazy
 from freezegun.api import FakeDatetime
-from django.utils.functional import lazy
-from pytz.lazy import LazyDict
 
 
 class DateTimeWithDeltaCompare(datetime):
