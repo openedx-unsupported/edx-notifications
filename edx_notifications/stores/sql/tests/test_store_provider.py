@@ -22,6 +22,8 @@ from edx_notifications.exceptions import (
     BulkOperationTooLarge
 )
 from edx_notifications import const
+from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as getext
 
 
 class TestSQLStoreProvider(TestCase):
@@ -119,8 +121,9 @@ class TestSQLStoreProvider(TestCase):
         """
         notification_preference = self._save_notification_preference(
             number_of_queries=number_of_queries,
-            name=preference_name,
-            display_name='Test Preference'
+            name=_(preference_name),
+            display_name=getext('Test Preference'),
+            display_description=getext('this is a Test Preference')
         )
         test_user_notification_preference = UserNotificationPreferences(
             user_id=user_id,
@@ -1033,16 +1036,16 @@ class TestSQLStoreProvider(TestCase):
         """
         test_notification_preference = self._save_notification_preference(
             number_of_queries=3,
-            name='test_notification_preference,',
-            display_name="Test Preference",
-            display_description="This is the test preference"
+            name=getext("test_notification_preference,"),
+            display_name=getext("Test Preference"),
+            display_description=getext("This is the test preference")
         )
 
         test2_notification_preference = self._save_notification_preference(
             number_of_queries=3,
-            name='notification_preference2',
-            display_name="Test Preference 2",
-            display_description="This is the second test preference"
+            name=getext('notification_preference2'),
+            display_name=getext("Test Preference 2"),
+            display_description=getext("This is the second test preference")
         )
 
         with self.assertNumQueries(1):
