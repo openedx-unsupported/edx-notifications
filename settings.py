@@ -54,7 +54,7 @@ if not TEST_MODE:
 
 
 js_info_dict = {
-    'packages': 'edx_notifications.server.web',
+    # 'packages': 'edx_notifications.server.web',
  }
 LANGUAGE_CODE = 'en'
 LANGUAGES = (
