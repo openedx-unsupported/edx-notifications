@@ -135,6 +135,14 @@ class StringField(TypedField):
     Specialized subclass of TypedField(unicode) as a convienence
     """
 
+    _expected_types = [unicode, str]
+
+
+class LazyField(TypedField):
+    """
+    Specialized subclass of TypedField(unicode) as a convienence
+    """
+
     _expected_types = [unicode, str, type(ugettext_lazy())]
 
 

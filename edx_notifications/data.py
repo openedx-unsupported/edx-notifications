@@ -18,7 +18,7 @@ from edx_notifications.base_data import (
     RelatedObjectField,
     BaseDataObject,
     BooleanField,
-)
+    LazyField)
 
 
 class NotificationChannel(BaseDataObject):
@@ -42,7 +42,7 @@ class NotificationType(BaseDataObject):
     """
 
     # the name (including namespace) of the notification, e.g. open-edx.lms.forums.reply-to-post
-    name = StringField()
+    name = LazyField()
 
     # default delivery channel for this type
     # None = no default
@@ -50,7 +50,7 @@ class NotificationType(BaseDataObject):
 
     # renderer class - as a string - that will handle the rendering of
     # this type
-    renderer = StringField()
+    renderer = LazyField()
 
     # any context information to pass into the renderer
     renderer_context = DictField()
@@ -405,13 +405,13 @@ class NotificationPreference(BaseDataObject):
     """
 
     # the internal name of the channel
-    name = StringField()
+    name = LazyField()
 
     # display_name for notification preference
-    display_name = StringField()
+    display_name = LazyField()
 
     # display description for notification preference
-    display_description = StringField()
+    display_description = LazyField()
 
     # default_value for notification preference
     default_value = StringField()
@@ -428,7 +428,7 @@ class UserNotificationPreferences(BaseDataObject):
     # instance of NotificationPreference, None = unloaded
     preference = RelatedObjectField(NotificationPreference)
 
-    value = StringField()
+    value = LazyField()
 
     # timestamps
     created = DateTimeField()

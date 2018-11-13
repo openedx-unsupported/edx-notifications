@@ -118,7 +118,7 @@ class SQLNotificationMessage(TimeStampedModel):
 
         msg = NotificationMessage(
             id=self.id,
-            namespace=_(self.namespace),
+            namespace=self.namespace,
             msg_type=self.msg_type.to_data_object(),
             from_user_id=self.from_user_id,
             deliver_no_earlier_than=self.deliver_no_earlier_than,
@@ -289,7 +289,7 @@ class SQLNotificationPreference(models.Model):
             name=_(self.name),
             display_name=_(self.display_name),
             display_description=_(self.display_description),
-            default_value=_(self.default_value)
+            default_value=self.default_value
         )
 
     @classmethod
@@ -307,10 +307,10 @@ class SQLNotificationPreference(models.Model):
         Hydrate ourselves from a passed in notification_preference
         """
 
-        self.name = _(notification_preference.name) # pylint: disable=attribute-defined-outside-init
-        self.display_name = _(notification_preference.display_name)
-        self.display_description = _(notification_preference.display_description)
-        self.default_value = _(notification_preference.default_value)
+        self.name = notification_preference.name  # pylint: disable=attribute-defined-outside-init
+        self.display_name = notification_preference.display_name
+        self.display_description = notification_preference.display_description
+        self.default_value = notification_preference.default_value
 
 
 class SQLUserNotificationPreferences(TimeStampedModel):
@@ -341,7 +341,7 @@ class SQLUserNotificationPreferences(TimeStampedModel):
         return UserNotificationPreferences(
             user_id=self.user_id,
             preference=self.preference.to_data_object(),  # pylint: disable=no-member,
-            value=self.value
+            value=_(self.value)
         )
 
     @classmethod
@@ -393,7 +393,7 @@ class SQLNotificationCallbackTimer(TimeStampedModel):
         """
 
         return NotificationCallbackTimer(
-            name=_(self.name),
+            name=self.name,
             callback_at=self.callback_at,
             class_name=self.class_name,
             context=DictField.from_json(self.context),  # special case, dict<-->JSON string
