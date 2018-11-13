@@ -140,7 +140,7 @@ class StringField(TypedField):
 
 class LazyField(TypedField):
     """
-    Specialized subclass of TypedField(unicode) as a convienence
+    Specialized subclass of TypedField(unicode) as a convienence for Translations support
     """
 
     _expected_types = [unicode, str, type(ugettext_lazy())]
