@@ -106,19 +106,6 @@ class TypedField(object):
 
         value_type = type(value)
 
-        print ('comparison gives')
-        # self._expected_types.append(value_type)
-        print (value_type not in self._expected_types)
-        print ('expected_types')
-        print (self._expected_types)
-        print ("value type")
-        print (value_type)
-        print ("testing object")
-        print (isinstance(value, ugettext_lazy("").__class__))
-        print ("field value")
-        print (value)
-        print ("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-
         if value and value_type not in self._expected_types:
 
             raise TypeError(
@@ -126,7 +113,6 @@ class TypedField(object):
                     "Field expected type of '{expected}' got '{got}'"
                 ).format(expected=self._expected_types, got=value_type)
             )
-        # self._expected_types.pop()
 
         if not hasattr(data_object, '_field_data'):
             data_object._field_data = {}  # pylint: disable=protected-access
