@@ -19,6 +19,7 @@ from edx_notifications.data import (
 from edx_notifications import const
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
+from django.utils.translation import ugettext_lazy as _
 
 
 class SQLNotificationType(models.Model):
@@ -48,7 +49,7 @@ class SQLNotificationType(models.Model):
         """
 
         return NotificationType(
-            name=self.name,
+            name=_(self.name),
             renderer=self.renderer,
             renderer_context=DictField.from_json(self.renderer_context)
         )
@@ -285,9 +286,9 @@ class SQLNotificationPreference(models.Model):
         """
 
         return NotificationPreference(
-            name=self.name,
-            display_name=self.display_name,
-            display_description=self.display_description,
+            name=_(self.name),
+            display_name=_(self.display_name),
+            display_description=_(self.display_description),
             default_value=self.default_value
         )
 
@@ -340,7 +341,7 @@ class SQLUserNotificationPreferences(TimeStampedModel):
         return UserNotificationPreferences(
             user_id=self.user_id,
             preference=self.preference.to_data_object(),  # pylint: disable=no-member,
-            value=self.value
+            value=_(self.value)
         )
 
     @classmethod
