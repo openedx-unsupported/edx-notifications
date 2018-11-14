@@ -18,10 +18,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
+#: static_cache/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
 msgid "You are now"
-msgstr ""
+msgstr "tu eres ahora"
 
-#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
+#: static_cache/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
+msgid "for"
+msgstr "en"
+
+#: static_cache/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
 msgid "in the cohort!"
-msgstr ""
+msgstr "en el grupo."
+
+#: static_cache/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
+msgid "Progress"
+msgstr "Avance"

@@ -17,10 +17,14 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
+#: static_cache/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
 msgid "You are now"
 msgstr ""
 
-#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
+#: static_cache/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
+msgid "for"
+msgstr ""
+
+#: static_cache/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
 msgid "in the cohort!"
 msgstr ""

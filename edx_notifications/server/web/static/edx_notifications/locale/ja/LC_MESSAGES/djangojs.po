@@ -16,12 +16,22 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
+#: static_cache/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
 msgid "You are now"
-msgstr ""
+msgstr "あなたは今"
 
-#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
+#: static_cache/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
+msgid "for"
+msgstr "に"
+
+#: static_cache/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
 msgid "in the cohort!"
-msgstr ""
+msgstr "グループで"
+
+#: static_cache/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
+msgid "Progress"
+msgstr "進度"
+
+

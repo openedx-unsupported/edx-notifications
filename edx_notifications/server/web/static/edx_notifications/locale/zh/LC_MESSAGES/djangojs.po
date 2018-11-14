@@ -16,12 +16,19 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
+#: static_cache/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
 msgid "You are now"
-msgstr ""
+msgstr "您目前在"
 
-#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
+#: static_cache/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
+msgid "for"
+msgstr "对于"
+
+#: static_cache/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
 msgid "in the cohort!"
-msgstr ""
+msgstr "在小组中 !"
+
+#: static_cache/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
+msgid "Progress"
+msgstr "进度"
