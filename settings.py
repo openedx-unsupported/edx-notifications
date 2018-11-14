@@ -72,7 +72,7 @@ LANGUAGES = (
 )
 LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'locale'),
-    os.path.join(BASE_DIR, 'static/locale'),
+    os.path.join(BASE_DIR, 'static_cache/locale'),
 ]
 
 MIDDLEWARE_CLASSES = (
