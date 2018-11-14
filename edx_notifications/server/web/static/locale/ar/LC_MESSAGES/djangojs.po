@@ -30,3 +30,7 @@ msgstr "في"
 #: static_cache/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
 msgid "in the cohort!"
 msgstr "!على مستوى المجموعة"
+
+#: static_cache/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
+msgid "Progress"
+msgstr "التقدم المحرز"
