@@ -34,3 +34,23 @@ msgstr "!على مستوى المجموعة"
 #: static_cache/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
 msgid "Progress"
 msgstr "التقدم المحرز"
+
+#: const.py:103
+msgid "Announcements"
+msgstr "إعلانات"
+
+#: const.py:108
+msgid "Group Work"
+msgstr "العمل الجماعي"
+
+#: const.py:113
+msgid "Leaderboards"
+msgstr "لوحات المتسابقين"
+
+#: const.py:118
+msgid "Discussion"
+msgstr "النقاش"
+
+#: const.py:123
+msgid "Other"
+msgstr "أخرى"

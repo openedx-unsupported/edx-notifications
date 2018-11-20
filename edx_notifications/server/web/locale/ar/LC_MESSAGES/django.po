@@ -42,3 +42,5 @@ msgstr "ليس لديك إشعارات غير مقروءة."
 #: templates/django/notifications_widget_preferences_header.html:11
 msgid "Notification preferences"
 msgstr "تفضيلات الإشعارات"
+
+
