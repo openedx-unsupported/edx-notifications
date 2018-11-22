@@ -19,6 +19,26 @@ msgstr ""
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 
+#: static/edx_notifications/js/views/notification_pane_view.js:181
+msgid "Announcements"
+msgstr "إعلانات"
+
+#: static/edx_notifications/js/views/notification_pane_view.js:186
+msgid "Group Work"
+msgstr "العمل الجماعي"
+
+#: static/edx_notifications/js/views/notification_pane_view.js:191
+msgid "Leaderboards"
+msgstr "لوحات المتسابقين"
+
+#: static/edx_notifications/js/views/notification_pane_view.js:196
+msgid "Discussion"
+msgstr "النقاش"
+
+#: static/edx_notifications/js/views/notification_pane_view.js:201
+msgid "Other"
+msgstr "أخرى"
+
 #: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
 msgid "You are now"
 msgstr "أنت الآن"
@@ -34,3 +54,4 @@ msgstr "!على مستوى المجموعة"
 #: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
 msgid "Progress"
 msgstr "التقدم المحرز"
+

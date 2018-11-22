@@ -17,10 +17,38 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
-msgid "You are now"
+#: static/edx_notifications/js/views/notification_pane_view.js:181
+msgid "Announcements"
+msgstr "Anuncios"
+
+#: static/edx_notifications/js/views/notification_pane_view.js:186
+msgid "Group Work"
+msgstr "Trabajo en grupo"
+
+#: static/edx_notifications/js/views/notification_pane_view.js:191
+msgid "Leaderboards"
+msgstr "Tableros de calificaciones"
+
+#: static/edx_notifications/js/views/notification_pane_view.js:196
+msgid "Discussion"
+msgstr "Debates"
+
+#: static/edx_notifications/js/views/notification_pane_view.js:201
+msgid "Other"
 msgstr ""
 
-#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
+#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
+msgid "You are now"
+msgstr "tu eres ahora"
+
+#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
+msgid "for"
+msgstr "en"
+
+#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
 msgid "in the cohort!"
-msgstr ""
+msgstr "en el grupo."
+
+#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
+msgid "Progress"
+msgstr "Avance"

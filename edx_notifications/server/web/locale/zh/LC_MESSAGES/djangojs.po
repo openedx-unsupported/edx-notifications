@@ -17,6 +17,26 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: static/edx_notifications/js/views/notification_pane_view.js:181
+msgid "Announcements"
+msgstr "公告"
+
+#: static/edx_notifications/js/views/notification_pane_view.js:186
+msgid "Group Work"
+msgstr "群组工作"
+
+#: static/edx_notifications/js/views/notification_pane_view.js:191
+msgid "Leaderboards"
+msgstr "排行榜"
+
+#: static/edx_notifications/js/views/notification_pane_view.js:196
+msgid "Discussion"
+msgstr "讨论"
+
+#: static/edx_notifications/js/views/notification_pane_view.js:201
+msgid "Other"
+msgstr ""
+
 #: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
 msgid "You are now"
 msgstr "您目前在"
@@ -32,3 +52,4 @@ msgstr "在小组中 !"
 #: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
 msgid "Progress"
 msgstr "进度"
+

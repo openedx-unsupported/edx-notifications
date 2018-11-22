@@ -18,6 +18,26 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: static/edx_notifications/js/views/notification_pane_view.js:181
+msgid "Announcements"
+msgstr "Anuncios"
+
+#: static/edx_notifications/js/views/notification_pane_view.js:186
+msgid "Group Work"
+msgstr "Trabajo en grupo"
+
+#: static/edx_notifications/js/views/notification_pane_view.js:191
+msgid "Leaderboards"
+msgstr "Tableros de calificaciones"
+
+#: static/edx_notifications/js/views/notification_pane_view.js:196
+msgid "Discussion"
+msgstr "Debates"
+
+#: static/edx_notifications/js/views/notification_pane_view.js:201
+msgid "Other"
+msgstr ""
+
 #: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
 msgid "You are now"
 msgstr "tu eres ahora"
