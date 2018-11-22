@@ -115,8 +115,9 @@ var NotificationPaneView = Backbone.View.extend({
         /* we might - at some point - add a visual element to the */
         /* loading, like a spinner */
         var self = this;
+        var language_code = ($('html').attr('lang') ? $('html').attr('lang') : 'en-us');
         self.$el.addClass('xns-ui-loading');
-        this.collection.fetch({
+        this.collection.fetch({data: $.param({ course_lang: language_code}),
             success: function(){
                 self.$el.removeClass('xns-ui-loading');
                 self.render();
@@ -178,27 +179,27 @@ var NotificationPaneView = Backbone.View.extend({
         groups: {
             'announcements': {
                 name: 'announcements',
-                display_name: 'Announcements',
+                display_name: gettext('Announcements'),
                 group_order: 1
             },
             'group_work': {
                 name: 'group_work',
-                display_name: 'Group Work',
+                display_name: gettext('Group Work'),
                 group_order: 2
             },
             'leaderboards': {
                 name: 'leaderboards',
-                display_name: 'Leaderboards',
+                display_name: gettext('Leaderboards'),
                 group_order: 3
             },
             'discussions': {
                 name: 'discussions',
-                display_name: 'Discussion',
+                display_name: gettext('Discussion'),
                 group_order: 4
             },
             '_default': {
                 name: '_default',
-                display_name: 'Other',
+                display_name: gettext('Other'),
                 group_order: 5
             }
         },
@@ -379,7 +380,7 @@ var NotificationPaneView = Backbone.View.extend({
             var created_str = '';
             var created_date = new Date(user_msg.created);
             if (Date.equals(new Date(created_date).clearTime(), Date.today())) {
-                created_str = 'Today at '+ created_date.toString("h:mmtt");
+                created_str = gettext('Today at ')+ created_date.toString("h:mmtt");
             } else {
                 created_str = created_date.toString("MMMM dd, yyyy") + ' at ' + created_date.toString("h:mmtt");
             }

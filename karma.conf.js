@@ -34,16 +34,18 @@ module.exports = function(config) {
 
     //patterns to load all files in child folders
     files: [
+
         'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/jquery.js',
         'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/underscore.js',
         'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/backbone.js',
         'edx_notifications/server/web/static/edx_notifications/js/vendor/dev/date.js',
+        'edx_notifications/server/web/static/edx_notifications/js/i18n.js',
         'edx_notifications/server/web/static/edx_notifications/js/models/user_notification_model.js',
         'edx_notifications/server/web/static/edx_notifications/js/models/counter_icon_model.js',
         'edx_notifications/server/web/static/edx_notifications/js/collections/notification_collection.js',
         'edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js',
         'edx_notifications/server/web/static/edx_notifications/js/views/counter_icon_view.js',
-        'edx_notifications/server/web/static/edx_notifications/js/test/spec/*.js'
+        'edx_notifications/server/web/static/edx_notifications/js/test/spec/*.js',
     ],
 
     // preprocess matching files before serving them to the browser
