@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-11-14 16:03+0500\n"
+"POT-Creation-Date: 2018-11-22 15:55+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,38 +19,34 @@ msgstr ""
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 
-#: static_cache/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
-msgid "You are now"
-msgstr "أنت الآن"
-
-#: static_cache/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
-msgid "for"
-msgstr "في"
-
-#: static_cache/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
-msgid "in the cohort!"
-msgstr "!على مستوى المجموعة"
-
-#: static_cache/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
-msgid "Progress"
-msgstr "التقدم المحرز"
-
-#: const.py:103
+#: static/edx_notifications/js/views/notification_pane_view.js:181
 msgid "Announcements"
 msgstr "إعلانات"
 
-#: const.py:108
+#: static/edx_notifications/js/views/notification_pane_view.js:186
 msgid "Group Work"
 msgstr "العمل الجماعي"
 
-#: const.py:113
+#: static/edx_notifications/js/views/notification_pane_view.js:191
 msgid "Leaderboards"
 msgstr "لوحات المتسابقين"
 
-#: const.py:118
+#: static/edx_notifications/js/views/notification_pane_view.js:196
 msgid "Discussion"
 msgstr "النقاش"
 
-#: const.py:123
+#: static/edx_notifications/js/views/notification_pane_view.js:201
 msgid "Other"
 msgstr "أخرى"
+
+msgid "You are now"
+msgstr "أنت الآن"
+
+msgid "for"
+msgstr "في"
+
+msgid "in the cohort!"
+msgstr "!على مستوى المجموعة"
+
+msgid "Progress"
+msgstr "التقدم المحرز"
