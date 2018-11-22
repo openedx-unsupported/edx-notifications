@@ -1,1 +1,1 @@
-You are now <span class='xns-rank'>#<%= rank %></span> for <span class='xns-title'><%= leaderboard_name %></span> in the cohort!
+<%- gettext("You are now") %> <span class='xns-rank'>#<%= rank %> </span> <%= gettext("for") %> <span class='xns-title'> <%=gettext(leaderboard_name) %></span> <%- gettext("in the cohort!") %>
