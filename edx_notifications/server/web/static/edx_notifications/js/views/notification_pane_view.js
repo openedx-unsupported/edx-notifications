@@ -178,27 +178,27 @@ var NotificationPaneView = Backbone.View.extend({
         groups: {
             'announcements': {
                 name: 'announcements',
-                display_name: 'Announcements',
+                display_name: gettext('Announcements'),
                 group_order: 1
             },
             'group_work': {
                 name: 'group_work',
-                display_name: 'Group Work',
+                display_name: gettext('Group Work'),
                 group_order: 2
             },
             'leaderboards': {
                 name: 'leaderboards',
-                display_name: 'Leaderboards',
+                display_name: gettext('Leaderboards'),
                 group_order: 3
             },
             'discussions': {
                 name: 'discussions',
-                display_name: 'Discussion',
+                display_name: gettext('Discussion'),
                 group_order: 4
             },
             '_default': {
                 name: '_default',
-                display_name: 'Other',
+                display_name: gettext('Other'),
                 group_order: 5
             }
         },
