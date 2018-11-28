@@ -118,7 +118,7 @@ class SQLNotificationMessage(TimeStampedModel):
 
         msg = NotificationMessage(
             id=self.id,
-            namespace=_(self.namespace),
+            namespace=self.namespace,
             msg_type=self.msg_type.to_data_object(),
             from_user_id=self.from_user_id,
             deliver_no_earlier_than=self.deliver_no_earlier_than,
