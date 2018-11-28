@@ -136,6 +136,8 @@ class SQLNotificationMessage(TimeStampedModel):
         title = payload['title']
         title = title.split(" ")
         title = "{} {} {} {} {}".format(_(title[0]), _(title[1]), title[2], title[3], title[4])
+        print "///////////###############//////////////////"
+        print (title)
         payload['title'] = title
         return payload
 
