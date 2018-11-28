@@ -23,6 +23,10 @@ msgstr ""
 msgid "Announcements"
 msgstr "إعلانات"
 
+#: static/edx_notifications/templates/renderers/course_announcements/new_announcement.underscore:2
+msgid "Announcement"
+msgstr "إعلان"
+
 #: const.py:108
 msgid "Group Work"
 msgstr "العمل الجماعي"
