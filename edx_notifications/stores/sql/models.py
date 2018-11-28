@@ -135,7 +135,7 @@ class SQLNotificationMessage(TimeStampedModel):
     def translate_payload_title(self, payload):
         title = payload['title']
         title = title.split(" ")
-        title = "%s %s %s %s %s" (_(title[0]), _(title[1]), title[2], title[3], title[4])
+        title = "{} {} {} {} {}".format(_(title[0]), _(title[1]), title[2], title[3], title[4])
         payload['title'] = title
         return payload
 
