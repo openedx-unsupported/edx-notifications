@@ -23,7 +23,7 @@ msgstr ""
 msgid "Announcements"
 msgstr "إعلانات"
 
-#: const.py:103
+#: const.py:167
 msgid "Announcement"
 msgstr "إعلان"
 
