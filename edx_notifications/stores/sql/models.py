@@ -118,19 +118,26 @@ class SQLNotificationMessage(TimeStampedModel):
 
         msg = NotificationMessage(
             id=self.id,
-            namespace=self.namespace,
+            namespace=_(self.namespace),
             msg_type=self.msg_type.to_data_object(),
             from_user_id=self.from_user_id,
             deliver_no_earlier_than=self.deliver_no_earlier_than,
             expires_at=self.expires_at,
             expires_secs_after_read=self.expires_secs_after_read,
-            payload=DictField.from_json(self.payload),  # special case, dict<-->JSON string
+            payload=DictField.from_json(self.translate_payload_title(self.payload)),  # special case, dict<-->JSON string
             created=self.created,
             resolve_links=DictField.from_json(self.resolve_links),  # special case, dict<-->JSON string
             object_id=self.object_id
         )
 
         return msg
+
+    def translate_payload_title(self, payload):
+        title = payload['title']
+        title = title.split(" ")
+        title = "%s %s %s %s %s" (_(title[0]), _(title[1]), title[2], title[3], title[4])
+        payload['title'] = title
+        return payload
 
     @classmethod
     def from_data_object(cls, msg):
