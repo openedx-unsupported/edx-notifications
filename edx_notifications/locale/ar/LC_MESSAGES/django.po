@@ -70,6 +70,6 @@ msgstr ""
 "الإلكتروني المسجل"
 
 #: stores/sql/models.py:145
-#, python-brace-format
+#| msgid "Announcement on {annoucement_date}"
 msgid "Announcement on {annoucement_date}"
 msgstr " الإعلان عن المساق {annoucement_date}"
