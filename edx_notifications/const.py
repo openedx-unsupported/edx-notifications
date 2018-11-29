@@ -164,5 +164,5 @@ NOTIFICATION_ENFORCE_SINGLE_DIGEST_PREFERENCE = getattr(
 )
 
 STRINGS_TO_TRANSLATE = [
-    _("Announcement"),
+    _("Announcement on"),
 ]
