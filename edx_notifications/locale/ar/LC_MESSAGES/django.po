@@ -23,6 +23,10 @@ msgstr ""
 msgid "Announcements"
 msgstr "إعلانات"
 
+#: const.py:167
+msgid "Announcement on"
+msgstr "الإعلان عن المساق"
+
 #: const.py:108
 msgid "Group Work"
 msgstr "العمل الجماعي"
@@ -63,6 +67,3 @@ msgstr ""
 "هذا الإعداد سيؤدي لإرسال ملخص أسبوعي بجميع الإشعارات إلى عنوان بريدك "
 "الإلكتروني المسجل"
 
-#: const.py:167
-msgid "Announcement on"
-msgstr "الإعلان عن المساق"
