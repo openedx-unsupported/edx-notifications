@@ -20,7 +20,6 @@ from edx_notifications import const
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
-from django.utils.translation import ugettext as _gettext
 
 
 class SQLNotificationType(models.Model):
@@ -137,11 +136,12 @@ class SQLNotificationMessage(TimeStampedModel):
         announcement_date = payload['announcement_date']
         title = payload['title']
         title = title.split(" ")
-        print "///////////###############//////////////////"
-
+        print "///////////#######b4########//////////////////"
         title = "{} {}".format(title[0], title[1])
         print (_(title))
         title = "{} {}".format(_(title), announcement_date)
+        print "///////////#######after########//////////////////"
+        print title
         payload['title'] = title
         return payload
 
