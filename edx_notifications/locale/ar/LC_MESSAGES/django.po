@@ -73,4 +73,4 @@ msgstr ""
 #, python-brace-format
 #| msgid "Announcement on {annoucement_date}"
 msgid "Announcement on {annoucement_date}"
-msgstr " الإعلان عن المساق {annoucement_date}"
+msgstr "{annoucement_date} الإعلان عن المساق "
