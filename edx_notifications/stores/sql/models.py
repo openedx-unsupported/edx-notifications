@@ -141,7 +141,7 @@ class SQLNotificationMessage(TimeStampedModel):
 
         title = "{} {}".format(title[0], title[1])
         print (_(title))
-        title = "{} {} ".format(_(title), announcement_date)
+        title = "{} {}".format(_(title), announcement_date)
         payload['title'] = title
         return payload
 
