@@ -39,12 +39,6 @@ msgstr "النقاش"
 msgid "Other"
 msgstr "أخرى"
 
-#: const.py:167
-#, fuzzy
-#| msgid "Announcements"
-msgid "Announcement"
-msgstr "إعلانات"
-
 #: digests.py:200
 msgid "Receive daily email"
 msgstr "استلام بريد إلكتروني يوميًا"
