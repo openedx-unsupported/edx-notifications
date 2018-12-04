@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-30 22:48+0500\n"
+"POT-Creation-Date: 2018-11-29 17:12+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,6 +38,12 @@ msgstr "Discussões"
 msgid "Other"
 msgstr ""
 
+#: const.py:167
+#, fuzzy
+#| msgid "Announcements"
+msgid "Announcement"
+msgstr "Avisos"
+
 #: digests.py:200
 msgid "Receive daily email"
 msgstr "Receber e-mail diário"
@@ -46,8 +52,9 @@ msgstr "Receber e-mail diário"
 msgid ""
 "This setting will cause a daily digest of all notifications to be sent to "
 "your registered email address"
-msgstr "Esta configuração fará com que um resumo diário de todas as"
- "notificações seja enviado para seu endereço de e-mail registrado"
+msgstr ""
+"Esta configuração fará com que um resumo diário de todas asnotificações seja "
+"enviado para seu endereço de e-mail registrado"
 
 #: digests.py:210
 msgid "Receive weekly email"
@@ -57,5 +64,11 @@ msgstr "Receber e-mail semanal"
 msgid ""
 "This setting will cause a weekly digest of all notifications to be sent to "
 "your registered email address"
-msgstr "Esta configuração fará com que um resumo semanal de todas"
- "as notificações seja enviado para o seu endereço de e-mail cadastrado"
+msgstr ""
+"Esta configuração fará com que um resumo semanal de todasas notificações "
+"seja enviado para o seu endereço de e-mail cadastrado"
+
+#: stores/sql/models.py:145
+#, python-brace-format
+msgid "Announcement on {annoucement_date}"
+msgstr ""

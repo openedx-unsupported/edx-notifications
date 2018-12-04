@@ -65,7 +65,7 @@ LANGUAGES = (
     ('es', u'Español'),
     ('nl', u'Dutch '),
     ('pt', u'Português'),
-    ('zh-ch', u'中文(简体)'),
+    ('zh-cn', u'中文(简体)'),
     ('fr', u'Français'),
     ('jp', u'日本人'),
     ('de', u'Deutsche'),

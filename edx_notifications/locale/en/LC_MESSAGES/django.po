@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-30 22:48+0500\n"
+"POT-Creation-Date: 2018-11-29 17:12+0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,6 +37,10 @@ msgstr ""
 msgid "Other"
 msgstr ""
 
+#: const.py:167
+msgid "Announcement"
+msgstr ""
+
 #: digests.py:200
 msgid "Receive daily email"
 msgstr ""
@@ -55,4 +59,9 @@ msgstr ""
 msgid ""
 "This setting will cause a weekly digest of all notifications to be sent to "
 "your registered email address"
+msgstr ""
+
+#: stores/sql/models.py:145
+#, python-brace-format
+msgid "Announcement on {annoucement_date}"
 msgstr ""
