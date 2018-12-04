@@ -38,12 +38,6 @@ msgstr "Debates"
 msgid "Other"
 msgstr ""
 
-#: const.py:167
-#, fuzzy
-#| msgid "Announcements"
-msgid "Announcement"
-msgstr "Anuncios"
-
 #: digests.py:200
 msgid "Receive daily email"
 msgstr "Recibir a diario por correo electrónico"
@@ -71,4 +65,4 @@ msgstr ""
 #: stores/sql/models.py:145
 #, python-brace-format
 msgid "Announcement on {annoucement_date}"
-msgstr ""
+msgstr "anuncio el {annoucement_date}"

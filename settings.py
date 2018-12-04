@@ -3,10 +3,6 @@
 """
 Django settings file for local development purposes
 """
-import sys
-sys.setdefaultencoding('utf-8')
-import sys
-
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os

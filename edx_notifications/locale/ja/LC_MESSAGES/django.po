@@ -38,12 +38,6 @@ msgstr "検討事項"
 msgid "Other"
 msgstr ""
 
-#: const.py:167
-#, fuzzy
-#| msgid "Announcements"
-msgid "Announcement"
-msgstr "お知らせ"
-
 #: digests.py:200
 msgid "Receive daily email"
 msgstr "デイリーメールを受信する"
@@ -71,4 +65,4 @@ msgstr ""
 #: stores/sql/models.py:145
 #, python-brace-format
 msgid "Announcement on {annoucement_date}"
-msgstr ""
+msgstr "についての発表 {annoucement_date}"

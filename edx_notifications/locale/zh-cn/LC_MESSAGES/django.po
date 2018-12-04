@@ -37,12 +37,6 @@ msgstr "讨论"
 msgid "Other"
 msgstr ""
 
-#: const.py:167
-#, fuzzy
-#| msgid "Announcements"
-msgid "Announcement"
-msgstr "公告"
-
 #: digests.py:200
 msgid "Receive daily email"
 msgstr "接收每日电子邮件"
@@ -66,4 +60,4 @@ msgstr "此设置将使所有通知的每周摘要都发送到您注册的电子
 #: stores/sql/models.py:145
 #, python-brace-format
 msgid "Announcement on {annoucement_date}"
-msgstr ""
+msgstr "公告 {annoucement_date}"
