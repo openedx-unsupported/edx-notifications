@@ -19,7 +19,7 @@ from edx_notifications.data import (
 from edx_notifications import const
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
-from django.utils.translation import get_language,ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 
 
 class SQLNotificationType(models.Model):
@@ -124,7 +124,8 @@ class SQLNotificationMessage(TimeStampedModel):
             deliver_no_earlier_than=self.deliver_no_earlier_than,
             expires_at=self.expires_at,
             expires_secs_after_read=self.expires_secs_after_read,
-            payload=self.translate_payload_title(DictField.from_json(self.payload)),  # special case, dict<-->JSON string
+            payload=self.translate_payload_title
+            (DictField.from_json(self.payload)),  # special case, dict<-->JSON string
             created=self.created,
             resolve_links=DictField.from_json(self.resolve_links),  # special case, dict<-->JSON string
             object_id=self.object_id
@@ -133,9 +134,14 @@ class SQLNotificationMessage(TimeStampedModel):
         return msg
 
     def translate_payload_title(self, payload):
+        """
+        translate a the title of any announcement to the current course language
+        :param payload:
+        :return:
+        """
         if payload and 'notification_type' in payload and payload['notification_type'] == "courseannouncement":
             announcement_date = payload['announcement_date']
-            title = _('Announcement on {annoucement_date}').format(annoucement_date=announcement_date)
+            title = _('Announcement on {annoucement_date}').format(annoucement_date=announcement_date)   # pylint: disable=line-too-long, no-member
             payload['title'] = title
         return payload
 
