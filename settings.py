@@ -3,8 +3,6 @@
 """
 Django settings file for local development purposes
 """
-import sys
-
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
@@ -65,7 +63,7 @@ LANGUAGES = (
     ('es', u'Español'),
     ('nl', u'Dutch '),
     ('pt', u'Português'),
-    ('zh-ch', u'中文(简体)'),
+    ('zh-cn', u'中文(简体)'),
     ('fr', u'Français'),
     ('jp', u'日本人'),
     ('de', u'Deutsche'),
