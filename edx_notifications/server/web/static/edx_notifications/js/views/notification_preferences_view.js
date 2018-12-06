@@ -10,7 +10,17 @@ var NotificationPreferencesView = Backbone.View.extend({
         this.user_notification_preferences = options.endpoints.user_notification_preferences;
         this.user_notification_preferences_detail = options.endpoints.user_notification_preferences_detail;
 
-
+        this.EDX_LANGUAGES_CODE_MAP  = {
+            'ar': 'ar',
+            'de': 'de-de',
+            'en': 'en',
+            'es': 'es-419',
+            'fr': 'fr',
+            'ja': 'ja-jp',
+            'nl': 'nl-nl',
+            'pt': 'pt-br',
+            'zh': 'zh-cn',
+        };
         /* set up our collection */
         this.collection = new NotificationPreferencesCollection();
 
