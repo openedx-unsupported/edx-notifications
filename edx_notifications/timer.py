@@ -9,6 +9,7 @@ import copy
 from datetime import datetime, timedelta
 
 from importlib import import_module
+from django.conf import settings
 
 from django.dispatch import receiver
 from edx_notifications.data import NotificationCallbackTimer
@@ -21,7 +22,7 @@ from edx_notifications.signals import perform_notification_scan, perform_timer_r
 
 PURGE_NOTIFICATIONS_TIMER_NAME = 'purge-notifications-timer'
 
-log = logging.getLogger(__name__)
+log = logging.getLogger()
 
 
 @receiver(perform_notification_scan)  # tie into the background_check management command execution
@@ -34,6 +35,12 @@ def poll_and_execute_timers(**kwargs):  # pylint: disable=unused-argument
 
     log.info('Starting poll_and_execute_timers()...')
     store = notification_store()
+
+    if settings.FEATURES.get('ENABLE_NOTIFICATIONS', False) == False:
+        log.info('Feature flag "ENABLE_NOTIFICATIONS" is set to False')
+
+    if settings.FEATURES.get('ENABLE_DISCUSSION_EMAIL_DIGEST', False) == False:
+        log.info('Feature flag "ENABLE_DISCUSSION_EMAIL_DIGEST" is set to False')
 
     timers_not_executed = store.get_all_active_timers()
 
@@ -75,6 +82,9 @@ def poll_and_execute_timers(**kwargs):  # pylint: disable=unused-argument
             if results.get('errors'):
                 timer.err_msg = str(results['errors'])
 
+                # Log temporarily added for debugging purpose.
+                log.error('Notification digest failed with errors: {}'.format(str(results['errors'])))
+
             # see if the callback returned a 'context_update'
             # which means that we should persist this in
             # the timer context
@@ -89,6 +99,9 @@ def poll_and_execute_timers(**kwargs):  # pylint: disable=unused-argument
             store.save_notification_timer(timer)
 
             log.exception(ex)
+
+            # Log temporarily added for debugging purpose.
+            log.error('Notification digest failed with errors: {}'.format(str(ex)))
 
     log.info('Ending poll_and_execute_timers()...')
 
