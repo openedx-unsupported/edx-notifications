@@ -21,7 +21,7 @@ from edx_notifications.signals import perform_notification_scan, perform_timer_r
 
 PURGE_NOTIFICATIONS_TIMER_NAME = 'purge-notifications-timer'
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 
 @receiver(perform_notification_scan)  # tie into the background_check management command execution
@@ -75,9 +75,6 @@ def poll_and_execute_timers(**kwargs):  # pylint: disable=unused-argument
             if results.get('errors'):
                 timer.err_msg = str(results['errors'])
 
-                # Log temporarily added for debugging purpose.
-                log.error('Notification digest failed with errors: {}'.format(str(results['errors'])))
-
             # see if the callback returned a 'context_update'
             # which means that we should persist this in
             # the timer context
@@ -92,9 +89,6 @@ def poll_and_execute_timers(**kwargs):  # pylint: disable=unused-argument
             store.save_notification_timer(timer)
 
             log.exception(ex)
-
-            # Log temporarily added for debugging purpose.
-            log.error('Notification digest failed with errors: {}'.format(str(ex)))
 
     log.info('Ending poll_and_execute_timers()...')
 

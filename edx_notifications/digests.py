@@ -33,7 +33,7 @@ from edx_notifications.lib.consumer import (
 )
 from edx_notifications.callbacks import NotificationCallbackTimerHandler
 
-log = logging.getLogger()
+log = logging.getLogger(__name__)
 
 
 class NotificationDigestMessageCallback(NotificationCallbackTimerHandler):
@@ -239,10 +239,6 @@ def send_notifications_digest(from_timestamp, to_timestamp, preference_name, sub
             unread_only=unread_only
         )
 
-    # Log temporarily added for debugging purpose.
-    log.info(
-        'Total digests email sent are: {}'.format(str(digests_sent)))
-
     return digests_sent
 
 
@@ -323,8 +319,6 @@ def send_notifications_namespace_digest(namespace, from_timestamp, to_timestamp,
             user_preference = get_user_preference_by_name(user_id, preference_name)
             user_wants_digest = user_preference.value.lower() == 'true'
         except ItemNotFoundError:
-            # Log temporarily added for debugging purpose.
-            log.info('User preference not found. Skipping user...')
             # use the default
             pass
 
@@ -334,9 +328,6 @@ def send_notifications_namespace_digest(namespace, from_timestamp, to_timestamp,
                 'to user_id = {user_id} at email '
                 '{email}...'.format(namespace=namespace, user_id=user_id, email=email)
             )
-            # Log temporarily added for debugging purpose.
-            log.info(
-                'Sending digest email from namespace "{namespace}"'.format(namespace=namespace))
 
             digests_sent += _send_user_digest(
                 namespace_info,
@@ -404,9 +395,6 @@ def _send_user_digest(namespace_info, from_timestamp, to_timestamp, user_id,
     # unread notifications
     if not notification_groups and const.NOTIFICATION_DONT_SEND_EMPTY_DIGEST:
         log.debug('Digest email for {email} is empty. Not sending...'.format(email=email))
-
-        # Log temporarily added for debugging purpose.
-        log.error('Digest email for a user is empty. Not sending...')
         return 0
 
     context = {
@@ -445,15 +433,10 @@ def _send_user_digest(namespace_info, from_timestamp, to_timestamp, user_id,
     # do a formatting pass on the email subject in case we need
     # to also present the namespace display_name
     subject = subject.format(display_name=namespace_info['display_name'])
-    try:
-        msg = EmailMessage(subject, None, from_email, [email])
-        msg.attach(html_part)
-        msg.send()
-    except Exception, ex:
-        # Log temporarily added for debugging purpose.
-        log.error(
-            'There was a problem sending notification email. Error message is: "{err_msg}".'.format(
-                err_msg=str(ex)))
+
+    msg = EmailMessage(subject, None, from_email, [email])
+    msg.attach(html_part)
+    msg.send()
 
     return 1
 
