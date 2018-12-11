@@ -9,7 +9,6 @@ import copy
 from datetime import datetime, timedelta
 
 from importlib import import_module
-from django.conf import settings
 
 from django.dispatch import receiver
 from edx_notifications.data import NotificationCallbackTimer
@@ -35,12 +34,6 @@ def poll_and_execute_timers(**kwargs):  # pylint: disable=unused-argument
 
     log.info('Starting poll_and_execute_timers()...')
     store = notification_store()
-
-    if settings.FEATURES.get('ENABLE_NOTIFICATIONS', False) == False:
-        log.info('Feature flag "ENABLE_NOTIFICATIONS" is set to False')
-
-    if settings.FEATURES.get('ENABLE_DISCUSSION_EMAIL_DIGEST', False) == False:
-        log.info('Feature flag "ENABLE_DISCUSSION_EMAIL_DIGEST" is set to False')
 
     timers_not_executed = store.get_all_active_timers()
 
