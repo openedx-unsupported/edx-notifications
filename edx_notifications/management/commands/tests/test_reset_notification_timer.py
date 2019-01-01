@@ -2,7 +2,6 @@
 Tests for the Django management command reset_notification_timer
 """
 
-from freezegun import freeze_time
 import pytz
 from datetime import datetime, timedelta
 
