@@ -68,6 +68,11 @@ class Command(BaseCommand):
                 self.store.save_notification_timer(timer)
 
     def reset_digest_notification_timer(self):
+        """
+        Gets old timers of daily and weekly digests and update callback_at value with current
+        UTC datetime and add timedelta and last_ran value with current UTC datetime to avoid
+        sending old notification digest emails to users.
+        """
         context = {
             'last_ran': datetime.now(pytz.UTC),
         }
@@ -81,6 +86,8 @@ class Command(BaseCommand):
                                if digest_timer.periodicity_min
                                else const.MINUTES_IN_A_DAY)
                 digest_timer.callback_at = datetime.now(pytz.UTC) + timedelta(minutes=rerun_delta)
+                digest_timer.callback_at = digest_timer.callback_at.replace(hour=0, minute=0,
+                                                                            second=0, microsecond=0)
                 digest_timer.context.update(context)
 
                 self.store.save_notification_timer(digest_timer)
@@ -96,6 +103,8 @@ class Command(BaseCommand):
                                if digest_timer.periodicity_min
                                else const.MINUTES_IN_A_WEEK)
                 digest_timer.callback_at = datetime.now(pytz.UTC) + timedelta(minutes=rerun_delta)
+                digest_timer.callback_at = digest_timer.callback_at.replace(hour=0, minute=0,
+                                                                            second=0, microsecond=0)
                 digest_timer.context.update(context)
 
                 self.store.save_notification_timer(digest_timer)
