@@ -70,6 +70,9 @@ def poll_and_execute_timers(**kwargs):  # pylint: disable=unused-argument
                 if timer.callback_at < datetime.now(pytz.UTC):
                     timer.callback_at = datetime.now(pytz.UTC) + timedelta(minutes=rerun_delta)
 
+                timer.callback_at = timer.callback_at.replace(hour=0, minute=0, second=0,
+                                                              microsecond=0)
+
                 timer.executed_at = None  # need to reset this or it won't get picked up again
 
             if results.get('errors'):
