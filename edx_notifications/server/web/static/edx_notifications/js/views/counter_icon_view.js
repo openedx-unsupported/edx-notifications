@@ -1,4 +1,4 @@
-let notification_refresher = null;
+var notification_refresher = null;
 
 var CounterIconView = Backbone.View.extend({
   initialize: function(options){
