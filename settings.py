@@ -1,3 +1,5 @@
+#!/usr/bin/bash
+# -*- coding: utf-8 -*
 """
 Django settings file for local development purposes
 """
@@ -49,6 +51,29 @@ if not TEST_MODE:
             'user': '10/sec',
         }
     })
+
+
+js_info_dict = {
+    # 'packages': 'edx_notifications.server.web',
+ }
+LANGUAGE_CODE = 'en'
+LANGUAGES = (
+    ('en', u'English '),
+    ('ar', u'العربية'),  # Arabic
+    ('Ar-sa', u'Arabic'),  # Arabic Saudi Arabia
+    ('zh', u'中文(简体)'),
+    ('ES419', u'Latin Spanish'),
+    ('es', u'Español'),
+    ('ja', u'Japanese'),
+    ('de', u'German'),
+    ('fr', u'french'),
+    ('nl', u'Dutch '),
+    ('pt', u'Português')
+)
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+    os.path.join(BASE_DIR, 'static_cache/locale'),
+]
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',

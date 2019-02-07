@@ -1,3 +1,5 @@
+#!/usr/bin/bash
+# -*- coding: utf-8 -*
 """
 Django settings for edx_notifications test project.
 For more information on this file, see
@@ -36,8 +38,28 @@ INSTALLED_APPS = (
     'django_nose',
 )
 
+
+LANGUAGE_COOKIE_NAME = "openedx-language-preference"
+LANGUAGES = (
+    ('en', u'English '),
+    ('ar', u'العربية'),  # Arabic
+    ('es', u'Español'),
+    ('nl', u'Dutch '),
+    ('pt', u'Português'),
+    ('zh-ch', u'中文(简体)'),
+    ('fr', u'Français'),
+    ('jp', u'日本人'),
+    ('de', u'Deutsche'),
+)
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+]
+
 MIDDLEWARE_CLASSES = (
+
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -95,11 +117,10 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
 
-USE_I18N = True
+USE_I18N = False
 
 USE_L10N = True
 
