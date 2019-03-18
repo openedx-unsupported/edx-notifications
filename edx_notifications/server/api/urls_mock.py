@@ -17,6 +17,7 @@ from .url_regex import (
     CONSUMER_NOTIFICATIONS_PREFERENCES_REGEX,
     CONSUMER_USER_PREFERENCES_REGEX,
     CONSUMER_USER_PREFERENCES_DETAIL_NO_PARAM_REGEX,
+    ADMIN_USERS_DELETE
 )
 
 
@@ -78,5 +79,10 @@ urlpatterns = patterns(  # pylint: disable=invalid-name
         CONSUMER_USER_PREFERENCES_DETAIL_NO_PARAM_REGEX,
         mock_handler,
         name='edx_notifications.consumer.user_preferences.detail.no_param'
+    ),
+    url(
+        ADMIN_USERS_DELETE,
+        mock_handler,
+        name='edx_notifications.admin.delete_user_notifications'
     ),
 )
