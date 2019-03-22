@@ -505,10 +505,11 @@ var NotificationPaneView = Backbone.View.extend({
             this.collection.url = this.mark_notification_read_endpoint + messageId;
 
             var self = this;
+            var csrf_token = this.getCSRFToken();
             self.collection.fetch(
                 {
-                    headers: {
-                        "X-CSRFToken": this.getCSRFToken()
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader('X-CSRFToken', csrf_token);
                     },
                     data: {
                       "mark_as": "read"
