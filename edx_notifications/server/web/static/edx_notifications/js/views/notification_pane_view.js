@@ -463,8 +463,8 @@ var NotificationPaneView = Backbone.View.extend({
             }
             self.collection.fetch(
                 {
-                    headers: {
-                        "X-CSRFToken": this.getCSRFToken()
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader('X-CSRFToken', self.getCSRFToken());
                     },
                     type: 'POST',
                     data: data,
@@ -539,8 +539,8 @@ var NotificationPaneView = Backbone.View.extend({
             var self = this;
             self.collection.fetch(
                 {
-                    headers: {
-                        "X-CSRFToken": this.getCSRFToken()
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader('X-CSRFToken', self.getCSRFToken());
                     },
                     data: {
                       "mark_as": "read"
