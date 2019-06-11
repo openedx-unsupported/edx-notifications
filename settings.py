@@ -6,7 +6,7 @@ Django settings file for local development purposes
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+BASE_DIR = os.path.dirname(__file__)
 
 DEBUG=True
 TEST_MODE=True
@@ -67,10 +67,11 @@ LANGUAGES = (
     ('fr', u'Français'),
     ('jp', u'日本人'),
     ('de', u'Deutsche'),
+    ('pl', u'Polskie'),
 )
 
 LOCALE_PATHS = [
-    os.path.join(BASE_DIR, 'locale'),
+    os.path.join(BASE_DIR, 'edx_notifications', 'locale'),
 ]
 
 MIDDLEWARE_CLASSES = (
