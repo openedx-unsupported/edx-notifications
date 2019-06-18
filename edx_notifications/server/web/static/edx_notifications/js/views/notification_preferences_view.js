@@ -19,6 +19,7 @@ var NotificationPreferencesView = Backbone.View.extend({
             'ja': 'ja-jp',
             'nl': 'nl-nl',
             'pt': 'pt-br',
+            'pl': 'pl',
             'zh': 'zh-cn',
         };
         /* set up our collection */
