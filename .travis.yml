@@ -1,16 +1,29 @@
 language: python
 python:
   - "2.7"
-
-addons:
-  firefox: "46.0"
+  - "3.5"
 
 env:
   - DJANGO_SETTINGS_MODULE=settings
 
+matrix:
+  include:
+    - python: "2.7"
+      env: DJANGO_SETTINGS_MODULE=settings
+    - python: "3.5"
+      env: DJANGO_SETTINGS_MODULE=settings
+  allow_failures:
+    - python: "3.5"
+      env: DJANGO_SETTINGS_MODULE=settings
+
+addons:
+  firefox: "46.0"
+
+services:
+  - xvfb
+
 before_install:
   - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
 
 install:
     - npm install
@@ -19,13 +32,9 @@ install:
     - "pip install coveralls==1.1"
 
 script:
-    - ./manage.py migrate --settings=testserver.settings
-    - coverage run ./manage.py test edx_notifications
-    - coverage report -m
+    - tox
     - ./node_modules/gulp/bin/gulp.js test
     - bash ./run_bokchoy_tests.sh
-    - pep8 edx_notifications
-    - pylint edx_notifications --report=no
 
 after_success: coveralls
 
