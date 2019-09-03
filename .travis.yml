@@ -13,6 +13,8 @@ matrix:
     - python: "3.5"
       env: DJANGO_SETTINGS_MODULE=settings
   allow_failures:
+    - python: "2.7"
+      env: DJANGO_SETTINGS_MODULE=settings
     - python: "3.5"
       env: DJANGO_SETTINGS_MODULE=settings
 
