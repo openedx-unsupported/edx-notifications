@@ -1,20 +1,21 @@
 language: python
-python:
-  - "2.7"
-  - "3.5"
-
-env:
-  - DJANGO_SETTINGS_MODULE=settings
 
 matrix:
   include:
     - python: "2.7"
       env: DJANGO_SETTINGS_MODULE=settings
+      script:
+        - tox -e py27
+        - ./node_modules/gulp/bin/gulp.js test
+        - bash ./run_bokchoy_tests.sh
+
     - python: "3.5"
       env: DJANGO_SETTINGS_MODULE=settings
+      script:
+        - tox -e py35
+        - ./node_modules/gulp/bin/gulp.js test
+        - bash ./run_bokchoy_tests.sh
   allow_failures:
-    - python: "2.7"
-      env: DJANGO_SETTINGS_MODULE=settings
     - python: "3.5"
       env: DJANGO_SETTINGS_MODULE=settings
 
@@ -32,11 +33,6 @@ install:
     - "pip install -r requirements.txt"
     - "pip install -r test_requirements.txt"
     - "pip install coveralls==1.1"
-
-script:
-    - tox
-    - ./node_modules/gulp/bin/gulp.js test
-    - bash ./run_bokchoy_tests.sh
 
 after_success: coveralls
 
