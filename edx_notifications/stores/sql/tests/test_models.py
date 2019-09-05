@@ -2,16 +2,15 @@
 Specific tests for the models.py file
 """
 
+from __future__ import absolute_import
+
 from django.test import TestCase
-
+from edx_notifications.data import NotificationType, NotificationMessage
 from edx_notifications.stores.sql.models import (
-    SQLNotificationMessage,
     SQLNotificationType,
-    SQLUserNotification, SQLUserNotificationArchive)
-
-from edx_notifications.data import (
-    NotificationMessage,
-    NotificationType
+    SQLUserNotification,
+    SQLNotificationMessage,
+    SQLUserNotificationArchive
 )
 
 
@@ -59,7 +58,7 @@ class SQLModelsTests(TestCase):
         user_notification = SQLUserNotification()
         user_notification_archive = SQLUserNotificationArchive()
         for archive_attr in user_notification_archive.__dict__.keys():
-            self.assertIn(archive_attr, user_notification.__dict__.keys())
+            self.assertIn(archive_attr, list(user_notification.__dict__.keys()))
 
     def test_archive_user_notification_model_fields(self):  # pylint: disable=C0103
         """
@@ -69,4 +68,4 @@ class SQLModelsTests(TestCase):
         user_notification_orig = SQLUserNotification()
         user_notification_archive = SQLUserNotificationArchive()
         for orig_attr in user_notification_orig.__dict__.keys():
-            self.assertIn(orig_attr, user_notification_archive.__dict__.keys())
+            self.assertIn(orig_attr, list(user_notification_archive.__dict__.keys()))

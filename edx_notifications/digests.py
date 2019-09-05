@@ -1,37 +1,43 @@
 """
 Create and register a new NotificationCallbackTimerHandler
 """
-import datetime
+from __future__ import absolute_import
+
 import os
-import urllib
 import copy
+import uuid
+import logging
+import datetime
+from itertools import groupby
+from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from itertools import groupby
-import logging
-from django.contrib.staticfiles import finders
-import uuid
-from django.core.mail import EmailMessage
-from django.template.loader import render_to_string
-import pynliner
-from edx_notifications import const
-from django.dispatch import receiver
+
 import pytz
-from edx_notifications.data import NotificationCallbackTimer, NotificationPreference
+import six.moves.urllib.error  # pylint: disable=import-error
+import six.moves.urllib.parse  # pylint: disable=import-error
+import six.moves.urllib.request  # pylint: disable=import-error
+
+import pynliner
+from django.dispatch import receiver
+from django.core.mail import EmailMessage
+from edx_notifications import const
+from django.template.loader import render_to_string
+from edx_notifications.data import NotificationPreference, NotificationCallbackTimer
+from django.utils.translation import ugettext as _
 from edx_notifications.signals import perform_timer_registrations
-from edx_notifications.stores.sql.store_provider import SQLNotificationStoreProvider
-from edx_notifications.stores.store import notification_store
+from django.contrib.staticfiles import finders
+from edx_notifications.callbacks import NotificationCallbackTimerHandler
 from edx_notifications.exceptions import ItemNotFoundError
 from edx_notifications.namespaces import resolve_namespace
-from edx_notifications.renderers.renderer import get_renderer_for_type
-from django.utils.translation import ugettext as _
 from edx_notifications.lib.consumer import (
-    get_user_preference_by_name,
+    get_notifications_for_user,
     get_notification_preference,
-    get_notifications_for_user
+    get_user_preference_by_name
 )
-from edx_notifications.callbacks import NotificationCallbackTimerHandler
+from edx_notifications.stores.store import notification_store
+from edx_notifications.renderers.renderer import get_renderer_for_type
+from edx_notifications.stores.sql.store_provider import SQLNotificationStoreProvider
 
 log = logging.getLogger(__name__)
 
@@ -96,7 +102,7 @@ class NotificationDigestMessageCallback(NotificationCallbackTimerHandler):
                 from_email,
                 unread_only=unread_only
             )
-        except Exception, ex:  # pylint: disable=broad-except
+        except Exception as ex:  # pylint: disable=broad-except
             errors.append(str(ex))
 
         result = {
@@ -524,7 +530,7 @@ def get_group_rendering(group_data):
         if click_link and not click_link.startswith('http'):
             click_link = const.NOTIFICATION_EMAIL_CLICK_LINK_URL_FORMAT.format(
                 url_path=click_link,
-                encoded_url_path=urllib.quote(click_link),
+                encoded_url_path=six.moves.urllib.parse.quote(click_link),
                 user_msg_id=user_msg.id,
                 msg_id=user_msg.msg.id,
                 hostname=const.NOTIFICATION_APP_HOSTNAME
@@ -565,7 +571,7 @@ def render_notifications_by_type(user_notifications):
     # then we want to order the groups according to the grouping_config
     # so we can specify which groups go up at the top
     config = const.NOTIFICATION_DIGEST_GROUP_CONFIG
-    group_orderings = sorted(config['groups'].items(), key=lambda t: t[1]['group_order'])
+    group_orderings = sorted(list(config['groups'].items()), key=lambda t: t[1]['group_order'])
 
     for group_key, _ in group_orderings:
         if group_key in grouped_user_notifications:

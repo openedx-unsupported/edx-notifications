@@ -2,8 +2,9 @@
 Unit tests for utils.py
 """
 
-from django.test import TestCase
+from __future__ import absolute_import
 
+from django.test import TestCase
 from edx_notifications.server.web.utils import get_notifications_widget_context
 
 

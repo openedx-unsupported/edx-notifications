@@ -2,29 +2,22 @@
 NotificationChannelProvider to integrate with the Parse mobile push notification services
 """
 
+from __future__ import absolute_import
+
 import logging
 
-from edx_notifications.channels.channel import BaseNotificationChannelProvider
-from edx_notifications.lib.publisher import (
-    publish_notification_to_user,
-    publish_timed_notification,
-    get_notification_type,
-    register_notification_type,
-)
-
-from edx_notifications.data import (
-    NotificationMessage,
-    NotificationType,
-)
-
-from edx_notifications.exceptions import (
-    ItemNotFoundError,
-    ChannelError,
-)
-
-from parse_rest.installation import Push
-from parse_rest.connection import register
 from parse_rest.core import ParseError
+from parse_rest.connection import register
+from edx_notifications.data import NotificationType, NotificationMessage
+from parse_rest.installation import Push
+from edx_notifications.exceptions import ChannelError, ItemNotFoundError
+from edx_notifications.lib.publisher import (
+    get_notification_type,
+    publish_timed_notification,
+    register_notification_type,
+    publish_notification_to_user
+)
+from edx_notifications.channels.channel import BaseNotificationChannelProvider
 
 # system defined constants that only we should know about
 _PARSE_SERVICE_USER_ID = -1000  # 'system' user_ids are < 0

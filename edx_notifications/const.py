@@ -2,6 +2,8 @@
 Lists of constants that can be used in the Notifications subsystem
 """
 
+from __future__ import absolute_import
+
 from django.conf import settings
 
 NOTIFICATION_PRIORITY_NONE = 0

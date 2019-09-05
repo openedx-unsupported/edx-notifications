@@ -6,33 +6,25 @@
 All tests for the test_consumer.py
 """
 
+from __future__ import absolute_import
+
 import json
 
+from six.moves import range  # pylint: disable=redefined-builtin
+
+from edx_notifications import const
 from django.test.client import Client
-from django.core.urlresolvers import reverse, NoReverseMatch
-
-from .utils import (
-    LoggedInTestCase,
-)
-
-from edx_notifications.lib.publisher import (
-    register_notification_type,
-    publish_notification_to_user
-)
-
+from edx_notifications.data import NotificationType, NotificationMessage, NotificationPreference
+from django.core.urlresolvers import NoReverseMatch, reverse
 from edx_notifications.lib.consumer import (
     mark_notification_read,
-    set_notification_preference, set_user_notification_preference
+    set_notification_preference,
+    set_user_notification_preference
 )
-
-from edx_notifications.data import (
-    NotificationType,
-    NotificationMessage,
-    NotificationPreference
-)
-from edx_notifications import const
-
+from edx_notifications.lib.publisher import register_notification_type, publish_notification_to_user
 from edx_notifications.server.api.urls import urlpatterns
+
+from .utils import LoggedInTestCase
 
 
 class ConsumerAPITests(LoggedInTestCase):

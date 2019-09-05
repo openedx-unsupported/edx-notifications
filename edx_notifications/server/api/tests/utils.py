@@ -2,13 +2,15 @@
 Subclasses Django test client to allow for easy login
 """
 
+from __future__ import absolute_import
+
 from importlib import import_module
 
 from django.conf import settings
-from django.contrib.auth import login
 from django.http import HttpRequest
-from django.test.client import Client
 from django.test import TestCase
+from django.test.client import Client
+from django.contrib.auth import login
 from django.contrib.auth.models import User
 
 

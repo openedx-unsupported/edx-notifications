@@ -2,13 +2,12 @@
 Django management command to remove duplicate notifications preferences.
 """
 
+from __future__ import absolute_import
+
 import logging
 
 from django.core.management.base import BaseCommand
-from edx_notifications.stores.sql.models import (
-    SQLUserNotificationPreferences,
-    SQLNotificationPreference
-)
+from edx_notifications.stores.sql.models import SQLNotificationPreference, SQLUserNotificationPreferences
 
 log = logging.getLogger(__file__)
 

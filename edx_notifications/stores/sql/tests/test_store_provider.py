@@ -2,26 +2,28 @@
 Tests which exercise the MySQL test_data_provider
 """
 # pylint: disable=invalid-name
-from freezegun import freeze_time
-import mock
-import pytz
+from __future__ import absolute_import
+
 from datetime import datetime, timedelta
 
-from django.test import TestCase
-from edx_notifications.stores.sql.models import SQLUserNotification, SQLUserNotificationArchive
+import pytz
+from six.moves import range  # pylint: disable=redefined-builtin
 
-from edx_notifications.stores.sql.store_provider import SQLNotificationStoreProvider
+import mock
+from freezegun import freeze_time
+from django.test import TestCase
+from edx_notifications import const
 from edx_notifications.data import (
-    NotificationMessage,
     NotificationType,
     UserNotification,
+    NotificationMessage,
+    NotificationPreference,
     NotificationCallbackTimer,
-    NotificationPreference, UserNotificationPreferences)
-from edx_notifications.exceptions import (
-    ItemNotFoundError,
-    BulkOperationTooLarge
+    UserNotificationPreferences
 )
-from edx_notifications import const
+from edx_notifications.exceptions import ItemNotFoundError, BulkOperationTooLarge
+from edx_notifications.stores.sql.models import SQLUserNotification, SQLUserNotificationArchive
+from edx_notifications.stores.sql.store_provider import SQLNotificationStoreProvider
 
 
 class TestSQLStoreProvider(TestCase):

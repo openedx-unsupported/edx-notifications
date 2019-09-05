@@ -6,6 +6,8 @@ NOTIFICATION_PURGE_UNREAD_OLDER_THAN_DAYS
 Optionally, the NOTIFICATION_ARCHIVE_ENABLED flag can be set to archive the purged notifications.
 """
 
+from __future__ import absolute_import
+
 import logging
 
 from django.core.management.base import BaseCommand

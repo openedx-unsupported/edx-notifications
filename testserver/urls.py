@@ -2,10 +2,14 @@
 URL mappings for Notifications Server
 """
 
+from __future__ import absolute_import
+
 from django.conf.urls import url, include
-from django.contrib.auth.views import login
 from django.views.i18n import JavaScriptCatalog
-import views as testserver_views
+from django.contrib.auth.views import login
+
+from . import views as testserver_views
+
 urlpatterns = [  # pylint: disable=invalid-name
     url(r'^$', testserver_views.index),
     url(r'^accounts/login/$', login),

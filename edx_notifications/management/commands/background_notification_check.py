@@ -3,9 +3,14 @@ Django management command to raise a 'fire_background_notification_check' signal
 application-level listeners
 """
 
+from __future__ import absolute_import
+
+import sys
 import logging
 import logging.config
-import sys
+
+from django.core.management.base import BaseCommand
+from edx_notifications.background import fire_background_notification_check
 
 # Have all logging go to stdout with management commands
 # this must be up at the top otherwise the
@@ -25,9 +30,6 @@ LOGGING = {
 }
 logging.config.dictConfig(LOGGING)
 
-from django.core.management.base import BaseCommand
-
-from edx_notifications.background import fire_background_notification_check
 
 log = logging.getLogger(__file__)
 

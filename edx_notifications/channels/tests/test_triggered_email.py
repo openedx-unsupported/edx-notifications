@@ -1,12 +1,14 @@
 """
 Test Triggered Emails
 """
+from __future__ import absolute_import
+
 from django.test import TestCase
 from edx_notifications import startup
 from edx_notifications.data import NotificationMessage
-from edx_notifications.lib.publisher import bulk_publish_notification_to_users
-from edx_notifications.scopes import register_user_scope_resolver, NotificationUserScopeResolver
+from edx_notifications.scopes import NotificationUserScopeResolver, register_user_scope_resolver
 from edx_notifications.stores.store import notification_store
+from edx_notifications.lib.publisher import bulk_publish_notification_to_users
 
 
 class TestUserResolver(NotificationUserScopeResolver):

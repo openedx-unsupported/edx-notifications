@@ -4,4 +4,5 @@ directory. We want our SQL implementation to live in edx_notifications.stores.sq
 lets import everything from there
 """
 
+from __future__ import absolute_import
 from edx_notifications.stores.sql.models import *  # pylint: disable=wildcard-import

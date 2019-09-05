@@ -2,26 +2,29 @@
 Any internal Timer callbacks
 """
 
+from __future__ import absolute_import
+
 import abc
 import logging
 
-from edx_notifications.lib.publisher import (
-    publish_notification_to_user,
-    bulk_publish_notification_to_users,
-    purge_expired_notifications)
+import six
+
 from edx_notifications.scopes import resolve_user_scope
-from edx_notifications.stores.store import notification_store
 from edx_notifications.exceptions import ItemNotFoundError
+from edx_notifications.stores.store import notification_store
+from edx_notifications.lib.publisher import (
+    purge_expired_notifications,
+    publish_notification_to_user,
+    bulk_publish_notification_to_users
+)
 
 log = logging.getLogger(__name__)
 
 
-class NotificationCallbackTimerHandler(object):
+class NotificationCallbackTimerHandler(six.with_metaclass(abc.ABCMeta, object)):
     """
     Interface for timer callbacks
     """
-
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def notification_timer_callback(self, timer):
@@ -132,7 +135,7 @@ class NotificationDispatchMessageCallback(NotificationCallbackTimerHandler):
                     channel_context=channel_context
                 )
 
-        except Exception, ex:  # pylint: disable=broad-except
+        except Exception as ex:  # pylint: disable=broad-except
             log.exception(ex)
             err_msgs.append(str(ex))
 

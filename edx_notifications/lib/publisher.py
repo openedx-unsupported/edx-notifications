@@ -6,32 +6,31 @@ xBlock runtime service named 'notifications'. Be aware that adding
 any new methods here will also be exposed to xBlocks!!!!
 """
 
-import logging
-import types
-import datetime
-import pytz
+from __future__ import absolute_import
+
 import copy
+import types
+import logging
+import datetime
+
+import pytz
+import six
+
 from contracts import contract
-
-from django.db.models.query import QuerySet
-
-from edx_notifications.channels.channel import get_notification_channel
 from edx_notifications import const
-from edx_notifications.stores.store import notification_store
-from edx_notifications.exceptions import ItemNotFoundError
-
-from edx_notifications.data import (
-    NotificationType,
-    NotificationMessage,
-    NotificationCallbackTimer,
-)
-
-from edx_notifications.renderers.renderer import (
-    register_renderer
-)
+from django.db.models.query import QuerySet
+from edx_notifications.data import NotificationType, NotificationMessage, NotificationCallbackTimer
 from edx_notifications.scopes import resolve_user_scope, has_user_scope_resolver
+from edx_notifications.exceptions import ItemNotFoundError
+from edx_notifications.stores.store import notification_store
+from edx_notifications.channels.channel import get_notification_channel
+from edx_notifications.renderers.renderer import register_renderer
 
 log = logging.getLogger(__name__)
+
+
+if six.PY3:
+    basestring = str  # pylint: disable=redefined-builtin, invalid-name
 
 
 @contract(msg_type=NotificationType)

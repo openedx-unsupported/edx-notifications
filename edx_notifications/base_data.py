@@ -2,11 +2,16 @@
 Base objects that data.py uses
 """
 
+from __future__ import absolute_import
+
+import copy
 import json
 import inspect
-import dateutil.parser
-import copy
 from datetime import datetime, timedelta
+
+import six
+import dateutil.parser
+
 from freezegun.api import FakeDatetime
 
 
@@ -126,7 +131,7 @@ class StringField(TypedField):
     Specialized subclass of TypedField(unicode) as a convienence
     """
 
-    _expected_types = [unicode, str]
+    _expected_types = [six.text_type, str]
 
 
 class IntegerField(TypedField):
@@ -134,7 +139,7 @@ class IntegerField(TypedField):
     Specialized subclass of TypedField(int) as a convienence
     """
 
-    _expected_types = [int, long]
+    _expected_types = list(six.integer_types)
 
 
 class BooleanField(TypedField):
@@ -188,8 +193,8 @@ class DictField(TypedField):
 
         _dict = json.loads(value)
 
-        for key, value in _dict.iteritems():
-            if isinstance(value, basestring):
+        for key, value in six.iteritems(_dict):
+            if isinstance(value, six.string_types):
                 # This could be a datetime posing as a ISO8601 formatted string
                 # we so have to apply some heuristics here
                 # to see if we want to even attempt
@@ -257,7 +262,7 @@ class BaseDataObjectMetaClass(type):
     def __new__(mcs, name, bases, attrs):
         # Iterate over the TypedField attrs before they're bound to the class
         # so that we don't accidentally trigger any __get__ methods
-        for attr_name, attr in attrs.iteritems():
+        for attr_name, attr in six.iteritems(attrs):
             if isinstance(attr, TypedField):
                 attr.__name__ = attr_name
 
@@ -269,14 +274,10 @@ class BaseDataObjectMetaClass(type):
         return super(BaseDataObjectMetaClass, mcs).__new__(mcs, name, bases, attrs)
 
 
-class BaseDataObject(object):
+class BaseDataObject(six.with_metaclass(BaseDataObjectMetaClass, object)):
     """
     A base class for all Notification Data Objects
     """
-
-    # assign a metaclass so that all TypedFields in a BaseDataObject derviced class get a
-    # __name__ attribute set which is the attribute name in the containing object
-    __metaclass__ = BaseDataObjectMetaClass
 
     id = IntegerField(name='id', default=None)  # pylint: disable=invalid-name
 
@@ -349,7 +350,7 @@ class BaseDataObject(object):
         Dump out all of our fields
         """
 
-        return unicode(self.get_fields())
+        return six.text_type(self.get_fields())
 
     @classmethod
     def clone(cls, src):

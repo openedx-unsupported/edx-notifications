@@ -2,25 +2,25 @@
 Tests for the timer.py
 """
 
-from freezegun import freeze_time
-import pytz
-from datetime import datetime, timedelta
-from django.test import TestCase
-from edx_notifications.management.commands import background_notification_check
+from __future__ import absolute_import
 
-from edx_notifications.stores.store import notification_store
-from edx_notifications.callbacks import NotificationCallbackTimerHandler
+from datetime import datetime, timedelta
+
+import pytz
+from six.moves import range  # pylint: disable=redefined-builtin
+
+from freezegun import freeze_time
+from django.test import TestCase
 from edx_notifications import startup
-from edx_notifications.data import (
-    NotificationMessage,
-    NotificationType,
-    NotificationCallbackTimer
-)
-from edx_notifications.tests.test_scopes import TestListScopeResolver
-from edx_notifications.scopes import register_user_scope_resolver
-from edx_notifications.lib.publisher import publish_timed_notification, cancel_timed_notification
+from edx_notifications.data import NotificationType, NotificationMessage, NotificationCallbackTimer
 from edx_notifications.timer import poll_and_execute_timers
+from edx_notifications.scopes import register_user_scope_resolver
+from edx_notifications.callbacks import NotificationCallbackTimerHandler
 from edx_notifications.exceptions import ItemNotFoundError
+from edx_notifications.stores.store import notification_store
+from edx_notifications.lib.publisher import cancel_timed_notification, publish_timed_notification
+from edx_notifications.tests.test_scopes import TestListScopeResolver
+from edx_notifications.management.commands import background_notification_check
 
 
 class BadNotificationCallbackTimerHandler(NotificationCallbackTimerHandler):
