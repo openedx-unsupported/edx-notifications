@@ -2,10 +2,13 @@
 Abstract base class that all NotificationChannels must implement
 """
 
+from __future__ import absolute_import
+
 import abc
 import copy
-
 from importlib import import_module
+
+import six
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -26,7 +29,7 @@ def _init_channel_providers():
     if not config:
         raise ImproperlyConfigured("Settings not configured with NOTIFICATION_CHANNEL_PROVIDERS!")
 
-    for key, channel_config in config.iteritems():
+    for key, channel_config in six.iteritems(config):
         if 'class' not in channel_config or 'options' not in channel_config:
             msg = (
                 "Misconfigured NOTIFICATION_CHANNEL_PROVIDERS settings, "
@@ -165,7 +168,7 @@ def reset_notification_channels():
     _CHANNEL_PROVIDERS_TYPE_MAPS.clear()
 
 
-class BaseNotificationChannelProvider(object):
+class BaseNotificationChannelProvider(six.with_metaclass(abc.ABCMeta, object)):
     """
     The abstract base class that all NotificationChannelProviders
     need to implement
@@ -205,7 +208,6 @@ class BaseNotificationChannelProvider(object):
         return self._link_resolvers
 
     # don't allow instantiation of this class, it must be subclassed
-    __metaclass__ = abc.ABCMeta
 
     def __init__(self, name=None, display_name=None, display_description=None, link_resolvers=None):
         """

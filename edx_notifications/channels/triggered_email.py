@@ -2,24 +2,27 @@
 Implements a email notification channel
 that sends email to the users.
 """
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+from __future__ import absolute_import
 
+import uuid
 import logging
 import datetime
-import uuid
-import urllib
-from django.core.mail import EmailMessage
-from django.template.loader import render_to_string
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 import pytz
+import six.moves.urllib.error  # pylint: disable=import-error
+import six.moves.urllib.parse  # pylint: disable=import-error
+import six.moves.urllib.request  # pylint: disable=import-error
+
+from django.core.mail import EmailMessage
 from edx_notifications import const
-from edx_notifications.channels.channel import BaseNotificationChannelProvider
-from edx_notifications.digests import attach_image, with_inline_css, get_group_name_for_msg_type
-from edx_notifications.renderers.renderer import get_renderer_for_type
-from edx_notifications.scopes import resolve_user_scope
-
+from django.template.loader import render_to_string
 from edx_notifications.data import UserNotification
-
+from edx_notifications.scopes import resolve_user_scope
+from edx_notifications.digests import attach_image, with_inline_css, get_group_name_for_msg_type
+from edx_notifications.channels.channel import BaseNotificationChannelProvider
+from edx_notifications.renderers.renderer import get_renderer_for_type
 from edx_notifications.channels.link_resolvers import MsgTypeToUrlResolverMixin
 
 log = logging.getLogger(__name__)
@@ -86,7 +89,7 @@ class TriggeredEmailChannelProvider(MsgTypeToUrlResolverMixin, BaseNotificationC
             if resolve_links and not click_link.startswith('http'):
                 click_link = const.NOTIFICATION_EMAIL_CLICK_LINK_URL_FORMAT.format(
                     url_path=click_link,
-                    encoded_url_path=urllib.quote(click_link),
+                    encoded_url_path=six.moves.urllib.parse.quote(click_link),
                     user_msg_id=user_msg.id,
                     msg_id=user_msg.msg.id,
                     hostname=const.NOTIFICATION_APP_HOSTNAME

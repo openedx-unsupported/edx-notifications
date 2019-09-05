@@ -2,19 +2,14 @@
 One time initialization of the Notification subsystem
 """
 
+from __future__ import absolute_import
+
 import logging
 
 from django.dispatch import receiver
-
-from edx_notifications.lib.publisher import (
-    register_notification_type,
-)
-
-from edx_notifications.data import (
-    NotificationType,
-)
-
 from edx_notifications import startup
+from edx_notifications.data import NotificationType
+from edx_notifications.lib.publisher import register_notification_type
 
 logger = logging.getLogger("testserver")
 
@@ -48,5 +43,3 @@ def start_up():
     """
 
     startup.initialize()
-
-

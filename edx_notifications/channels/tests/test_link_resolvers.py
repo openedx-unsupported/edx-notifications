@@ -2,12 +2,10 @@
 Unit tests for the resolvers.py file
 """
 
-from django.test import TestCase
+from __future__ import absolute_import
 
-from edx_notifications.channels.link_resolvers import (
-    BaseLinkResolver,
-    MsgTypeToUrlLinkResolver,
-)
+from django.test import TestCase
+from edx_notifications.channels.link_resolvers import BaseLinkResolver, MsgTypeToUrlLinkResolver
 
 
 class BadLinkResolver(BaseLinkResolver):

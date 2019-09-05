@@ -2,47 +2,31 @@
 View handlers for HTML serving
 """
 
+from __future__ import absolute_import
+
 from datetime import datetime, timedelta
+
 import pytz
-from django.template import loader
-from django.http import (
-    HttpResponse,
-)
 
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout
-from django.views.decorators.csrf import csrf_protect
-from django.shortcuts import render_to_response, render
-from django.http import HttpResponseRedirect
 from django.conf import settings
+from django.http import HttpResponse, HttpResponseRedirect
+from django.template import loader
+from django.shortcuts import render, render_to_response
+from edx_notifications import const
+from django.contrib.auth import logout
+from edx_notifications.data import NotificationMessage
+from edx_notifications.scopes import NotificationUserScopeResolver, register_user_scope_resolver
+from edx_notifications.digests import send_notifications_digest
 from django.templatetags.static import static
-
+from django.views.decorators.csrf import csrf_protect
+from edx_notifications.namespaces import NotificationNamespaceResolver, register_namespace_resolver
+from django.contrib.auth.decorators import login_required
 from edx_notifications.lib.publisher import (
-    publish_notification_to_user,
     get_notification_type,
     get_all_notification_types,
+    publish_notification_to_user
 )
-
-from edx_notifications.data import (
-    NotificationMessage,
-)
-
-
-from edx_notifications.namespaces import (
-    NotificationNamespaceResolver,
-    register_namespace_resolver
-)
-
-
-from edx_notifications.scopes import (
-    NotificationUserScopeResolver
-)
-
-from edx_notifications.digests import send_notifications_digest
-
 from edx_notifications.server.web.utils import get_notifications_widget_context
-from edx_notifications import const
-from edx_notifications.scopes import register_user_scope_resolver
 
 from .forms import *
 

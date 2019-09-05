@@ -2,19 +2,17 @@
 Tests for the Django management command force_purge
 """
 
-from freezegun import freeze_time
-import pytz
+from __future__ import absolute_import
+
 from datetime import datetime, timedelta
 
-from edx_notifications.stores.sql.store_provider import SQLNotificationStoreProvider
+import pytz
 
+from freezegun import freeze_time
 from django.test import TestCase
-
+from edx_notifications.data import NotificationType, UserNotification, NotificationMessage
 from edx_notifications.management.commands import force_purge
-
-from edx_notifications.data import (
-    NotificationType, NotificationMessage, UserNotification
-)
+from edx_notifications.stores.sql.store_provider import SQLNotificationStoreProvider
 
 
 class PurgeNotificationsCommandTest(TestCase):

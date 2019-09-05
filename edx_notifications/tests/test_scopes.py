@@ -2,16 +2,19 @@
 All tests regarding scopes.py
 """
 
-from django.test import TestCase
-from django.contrib.auth.models import User
+from __future__ import absolute_import
 
+from six.moves import range  # pylint: disable=redefined-builtin
+
+from django.test import TestCase
 from edx_notifications.scopes import (
     SingleUserScopeResolver,
     NotificationUserScopeResolver,
-    register_user_scope_resolver,
-    clear_user_scope_resolvers,
     resolve_user_scope,
+    clear_user_scope_resolvers,
+    register_user_scope_resolver
 )
+from django.contrib.auth.models import User
 
 
 class TestListScopeResolver(NotificationUserScopeResolver):

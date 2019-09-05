@@ -2,9 +2,12 @@
 Defines abstract class for the Notification Store data tier
 """
 
-import abc
+from __future__ import absolute_import
 
+import abc
 from importlib import import_module
+
+import six
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -58,16 +61,13 @@ def reset_notification_store():
     _STORE_PROVIDER = None
 
 
-class BaseNotificationStoreProvider(object):
+class BaseNotificationStoreProvider(six.with_metaclass(abc.ABCMeta, object)):
     """
     The base abstract class for all notifications data providers, such as MySQL/Django-ORM backed.
 
     IMPORTANT: NotificationStoreProvider is assumed to be a singleton, therefore there must be
     no state stored in the instance of the provider class.
     """
-
-    # don't allow instantiation of this class, it must be subclassed
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def get_notification_message_by_id(self, msg_id, options=None):

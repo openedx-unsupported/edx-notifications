@@ -2,38 +2,30 @@
 Unit tests for the digests.py file
 """
 
-import datetime
-import pytz
-from django.test import TestCase
-from freezegun import freeze_time
+from __future__ import absolute_import
 
+import datetime
+
+import pytz
+
+from freezegun import freeze_time
+from django.test import TestCase
+from edx_notifications import const
+from edx_notifications.data import NotificationType, NotificationMessage
+from edx_notifications.scopes import NotificationUserScopeResolver
+from edx_notifications.digests import (
+    register_digest_timers,
+    send_notifications_digest,
+    create_default_notification_preferences
+)
 from edx_notifications.namespaces import (
     NotificationNamespaceResolver,
     DefaultNotificationNamespaceResolver,
     register_namespace_resolver
 )
-from edx_notifications.data import (
-    NotificationMessage,
-    NotificationType,
-)
-from edx_notifications.scopes import (
-    NotificationUserScopeResolver
-)
-
-from edx_notifications.digests import (
-    send_notifications_digest,
-    create_default_notification_preferences,
-    register_digest_timers
-)
+from edx_notifications.lib.consumer import mark_notification_read, set_user_notification_preference
 from edx_notifications.stores.store import notification_store
-from edx_notifications.lib.publisher import (
-    publish_notification_to_user,
-)
-from edx_notifications.lib.consumer import (
-    set_user_notification_preference,
-    mark_notification_read,
-)
-from edx_notifications import const
+from edx_notifications.lib.publisher import publish_notification_to_user
 
 
 class TestUserResolver(NotificationUserScopeResolver):

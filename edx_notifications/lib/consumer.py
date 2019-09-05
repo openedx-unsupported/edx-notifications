@@ -8,12 +8,15 @@ xBlock runtime service named 'notifications'. Be aware that adding
 any new methods here will also be exposed to xBlocks!!!!
 """
 
-import pytz
-from datetime import datetime
-from contracts import contract
+from __future__ import absolute_import
 
-from edx_notifications.stores.store import notification_store
+from datetime import datetime
+
+import pytz
+
+from contracts import contract
 from edx_notifications.data import UserNotificationPreferences
+from edx_notifications.stores.store import notification_store
 
 
 @contract(user_id='int,>0')

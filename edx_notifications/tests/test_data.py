@@ -2,13 +2,11 @@
 Unit tests to exercise code implemented in data.py
 """
 
+from __future__ import absolute_import
+
 from django.test import TestCase
-
 from django.core.exceptions import ValidationError
-
-from edx_notifications.data import (
-    NotificationMessage,
-)
+from edx_notifications.data import NotificationMessage
 
 
 class DataTests(TestCase):

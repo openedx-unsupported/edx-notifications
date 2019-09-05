@@ -1,13 +1,18 @@
-from bok_choy.web_app_test import WebAppTest
-from testserver.bokchoy_settings import HIDE_LINK_IS_VISIBLE
-from pages import user_name, user_email, password
-from pages.home_page import HomePage
-from pages.registration_page import RegistrationPage
-from pages.registration_success_page import RegistrationSuccess
-from pages.login_page import LoginPage
-from pages.logged_in_home_page import LoggedInHomePage
-from pages.notification_target_page import NotificationTargetPage
+from __future__ import absolute_import
+
 from unittest import skipUnless
+
+import six
+
+from pages import password, user_name, user_email
+from pages.home_page import HomePage
+from pages.login_page import LoginPage
+from bok_choy.web_app_test import WebAppTest
+from pages.registration_page import RegistrationPage
+from pages.logged_in_home_page import LoggedInHomePage
+from testserver.bokchoy_settings import HIDE_LINK_IS_VISIBLE
+from pages.notification_target_page import NotificationTargetPage
+from pages.registration_success_page import RegistrationSuccess
 
 
 class TestAddNotifications(WebAppTest):
@@ -206,7 +211,7 @@ class TestAddNotifications(WebAppTest):
         And a relevant message for the added notification type should be visible in unread notification tab
         """
         self.login()
-        for key, value in self.notification_dict.iteritems():
+        for key, value in six.iteritems(self.notification_dict):
             self.logged_in_home_page.select_notification_type(key)
             self.logged_in_home_page.add_notification()
             self.logged_in_home_page.show_notifications_container()
@@ -228,7 +233,7 @@ class TestAddNotifications(WebAppTest):
         And a relevant message for the added notification type should be visible in view all notification tab
         """
         self.login()
-        for key, value in self.short_notification_dict.iteritems():
+        for key, value in six.iteritems(self.short_notification_dict):
             self.logged_in_home_page.select_notification_type(key)
             self.logged_in_home_page.add_notification()
             self.logged_in_home_page.show_notifications_container()
@@ -507,4 +512,3 @@ class TestAddNotifications(WebAppTest):
             self.login_page.login_to_application(user_name, password)
             self.assertTrue(self.logged_in_home_page.is_browser_on_page())
         self.assertTrue(self.logged_in_home_page.is_browser_on_page())
-

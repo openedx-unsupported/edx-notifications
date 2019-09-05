@@ -1,6 +1,10 @@
+from __future__ import absolute_import
+
 from bok_choy.page_object import PageObject
-from login_page import LoginPage
+
 from . import default_timeout
+from .login_page import LoginPage
+
 
 class RegistrationSuccess(PageObject):
 

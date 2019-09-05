@@ -1,6 +1,9 @@
+from __future__ import absolute_import
+
 from bok_choy.page_object import PageObject
-from logged_in_home_page import LoggedInHomePage
+
 from . import default_timeout
+from .logged_in_home_page import LoggedInHomePage
 
 
 class LoginPage(PageObject):

@@ -2,34 +2,29 @@
 Notification Consumer HTTP-based API enpoints
 """
 
+from __future__ import absolute_import
+
 import logging
 
-from rest_framework import status
-from rest_framework.response import Response
+import six
 
 from django.http import Http404
-
-from edx_notifications.lib.consumer import (
-    get_notifications_count_for_user,
-    get_notifications_for_user,
-    get_notification_preferences,
-    get_notification_for_user,
-    mark_notification_read,
-    mark_all_user_notification_as_read,
-    get_user_preferences,
-    get_user_preference_by_name,
-    set_user_notification_preference
-)
-
-from edx_notifications.renderers.renderer import (
-    get_all_renderers,
-)
-
-from edx_notifications.exceptions import (
-    ItemNotFoundError,
-)
-
+from rest_framework import status
 from edx_notifications import const
+from rest_framework.response import Response
+from edx_notifications.exceptions import ItemNotFoundError
+from edx_notifications.lib.consumer import (
+    get_user_preferences,
+    mark_notification_read,
+    get_notification_for_user,
+    get_notifications_for_user,
+    get_user_preference_by_name,
+    get_notification_preferences,
+    get_notifications_count_for_user,
+    set_user_notification_preference,
+    mark_all_user_notification_as_read
+)
+from edx_notifications.renderers.renderer import get_all_renderers
 
 from .api_utils import AuthenticatedAPIView
 
@@ -38,8 +33,8 @@ LOG = logging.getLogger("api")
 FILTER_PARAMETER_NAMES = [
     ('read', bool),
     ('unread', bool),
-    ('namespace', unicode),
-    ('msg_type', unicode),
+    ('namespace', six.text_type),
+    ('msg_type', six.text_type),
 ]
 
 OPTIONS_PARAMETER_NAMES = [
@@ -84,7 +79,7 @@ def _get_parameters_from_request(request, allowed_parameters):
                     raise ValueError(
                         "Passed in expected bool '{val}' does not map to True or False".format(val=str_val)
                     )
-            elif filter_type == str or filter_type == unicode:
+            elif filter_type == str or filter_type == six.text_type:
                 value = str_val
             else:
                 raise ValueError('Unknown parameter type {name}'.format(name=filter_type))
@@ -338,7 +333,7 @@ class RendererTemplatesList(AuthenticatedAPIView):
 
         result_dict = {}
 
-        for class_name, renderer in get_all_renderers().iteritems():
+        for class_name, renderer in six.iteritems(get_all_renderers()):
             if renderer.can_render_format(const.RENDER_FORMAT_HTML):
                 result_dict[class_name] = renderer.get_template_path(const.RENDER_FORMAT_HTML)
 

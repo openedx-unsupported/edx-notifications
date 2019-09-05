@@ -3,14 +3,15 @@ Notification types that will be used in common use cases for notifications aroun
 Group Projects
 """
 
-from edx_notifications.data import (
-    NotificationType
-)
-from edx_notifications.lib.publisher import register_notification_type
-from edx_notifications.signals import perform_type_registrations
-from edx_notifications.renderers.basic import UnderscoreStaticFileRenderer
+from __future__ import absolute_import
+
+import six
 
 from django.dispatch import receiver
+from edx_notifications.data import NotificationType
+from edx_notifications.signals import perform_type_registrations
+from edx_notifications.lib.publisher import register_notification_type
+from edx_notifications.renderers.basic import UnderscoreStaticFileRenderer
 
 GROUP_PROJECT_V1_NOTIFICATION_PREFIX = u'open-edx.xblock.group-project'
 GROUP_PROJECT_V2_NOTIFICATION_PREFIX = u'open-edx.xblock.group-project-v2'
@@ -70,7 +71,7 @@ def register_notification_types(sender, **kwargs):  # pylint: disable=unused-arg
         NotificationMessageTypes.GRADES_POSTED: 'GroupProjectGradesPostedRenderer',
     }
 
-    for message_type, renderer in mapping.iteritems():
+    for message_type, renderer in six.iteritems(mapping):
         register_notification_type(
             NotificationType(
                 name=u"{prefix}.{type}".format(prefix=GROUP_PROJECT_V1_NOTIFICATION_PREFIX, type=message_type),

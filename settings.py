@@ -3,11 +3,12 @@
 """
 Django settings file for local development purposes
 """
-import sys
-
+from __future__ import absolute_import
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import sys
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 DEBUG=True

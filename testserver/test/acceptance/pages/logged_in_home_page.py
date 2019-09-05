@@ -1,9 +1,12 @@
-from bok_choy.page_object import PageObject
+from __future__ import absolute_import
+
 from bok_choy.promise import EmptyPromise
-from . import user_name, default_timeout
-from notification_target_page import NotificationTargetPage
-from logout_page import LoggedOut
 from selenium.webdriver import ActionChains
+from bok_choy.page_object import PageObject
+
+from . import user_name, default_timeout
+from .logout_page import LoggedOut
+from .notification_target_page import NotificationTargetPage
 
 
 class LoggedInHomePage(PageObject):

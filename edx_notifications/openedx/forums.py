@@ -3,14 +3,13 @@ Notification types that will be used in common use cases for notifications aroun
 discussion forums
 """
 
-from edx_notifications.data import (
-    NotificationType
-)
-from edx_notifications.lib.publisher import register_notification_type
-from edx_notifications.signals import perform_type_registrations
-from edx_notifications.renderers.basic import UnderscoreStaticFileRenderer
+from __future__ import absolute_import
 
 from django.dispatch import receiver
+from edx_notifications.data import NotificationType
+from edx_notifications.signals import perform_type_registrations
+from edx_notifications.lib.publisher import register_notification_type
+from edx_notifications.renderers.basic import UnderscoreStaticFileRenderer
 
 
 class ReplyToThreadRenderer(UnderscoreStaticFileRenderer):

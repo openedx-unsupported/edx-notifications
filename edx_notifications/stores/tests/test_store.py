@@ -2,17 +2,13 @@
 Exercises tests on the base_store_provider file
 """
 
+from __future__ import absolute_import
+
 from django.test import TestCase
 from django.test.utils import override_settings
 from django.core.exceptions import ImproperlyConfigured
-
-from edx_notifications.stores.store import (
-    BaseNotificationStoreProvider,
-    notification_store,
-    reset_notification_store
-)
+from edx_notifications.stores.store import BaseNotificationStoreProvider, notification_store, reset_notification_store
 from edx_notifications.stores.sql.store_provider import SQLNotificationStoreProvider
-
 
 TEST_NOTIFICATION_STORE_PROVIDER = {
     "class": "edx_notifications.stores.sql.store_provider.SQLNotificationStoreProvider",

@@ -2,12 +2,16 @@
 Methods regarding how namespaces are managed
 """
 
+from __future__ import absolute_import
+
 import abc
+
+import six
 
 _NAMESPACE_RESOLVER = None
 
 
-class NotificationNamespaceResolver(object):
+class NotificationNamespaceResolver(six.with_metaclass(abc.ABCMeta, object)):
     """
     Abstract interface that provides and interface
     for the Notification subsystem to get more
@@ -26,8 +30,6 @@ class NotificationNamespaceResolver(object):
 
     or None if the handler cannot resolve it
     """
-
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def resolve(self, namespace, instance_context):

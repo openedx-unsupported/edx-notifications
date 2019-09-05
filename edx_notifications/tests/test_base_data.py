@@ -2,20 +2,13 @@
 Unit tests to exercise code implemented in data.py
 """
 
+from __future__ import absolute_import
+
+import six
+
 from django.test import TestCase
-
-from edx_notifications.base_data import (
-    BaseDataObject,
-    IntegerField,
-    DictField,
-    EnumField,
-    RelatedObjectField,
-)
-
-from edx_notifications.data import (
-    NotificationMessage,
-    NotificationType,
-)
+from edx_notifications.data import NotificationType, NotificationMessage
+from edx_notifications.base_data import DictField, EnumField, IntegerField, BaseDataObject, RelatedObjectField
 
 
 class DataObject(BaseDataObject):
@@ -60,7 +53,7 @@ class BaseDataObjectTests(TestCase):
 
         # test string-ifying the BaseDataObject
         self.assertEqual(str(obj), str(fields))
-        self.assertEqual(unicode(obj), unicode(fields))
+        self.assertEqual(six.text_type(obj), six.text_type(fields))
 
     def test_field_descriptor_get(self):
         """
@@ -122,10 +115,10 @@ class BaseDataObjectTests(TestCase):
 
         # make sure we work with longs as well
         obj = DataObjectWithTypedFields(
-            id=long(1),
+            id=int(1),
         )
 
-        self.assertTrue(isinstance(obj.id, long))
+        self.assertTrue(isinstance(obj.id, int))
 
         # make sure we can set fields after initialization
 

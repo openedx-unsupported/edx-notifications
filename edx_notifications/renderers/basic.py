@@ -2,19 +2,16 @@
 Simple Subject/Body Underscore renderers
 """
 
-import json
+from __future__ import absolute_import
+
 import copy
-from django.templatetags.static import static
-from django.contrib.staticfiles import finders
-
-from edx_notifications.renderers.renderer import BaseNotificationRenderer
-
-from edx_notifications.const import (
-    RENDER_FORMAT_HTML,
-    RENDER_FORMAT_JSON,
-)
+import json
 
 from underscore import _ as us
+from edx_notifications.const import RENDER_FORMAT_HTML, RENDER_FORMAT_JSON
+from django.contrib.staticfiles import finders
+from django.templatetags.static import static
+from edx_notifications.renderers.renderer import BaseNotificationRenderer
 
 
 def path_to_underscore_template(name):

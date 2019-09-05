@@ -2,13 +2,12 @@
 Notification types that will be used in common use cases for mobile apps notifications
 """
 
-from django.dispatch import receiver
+from __future__ import absolute_import
 
-from edx_notifications.data import (
-    NotificationType
-)
-from edx_notifications.lib.publisher import register_notification_type
+from django.dispatch import receiver
+from edx_notifications.data import NotificationType
 from edx_notifications.signals import perform_type_registrations
+from edx_notifications.lib.publisher import register_notification_type
 
 
 @receiver(perform_type_registrations)

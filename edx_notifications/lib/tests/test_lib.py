@@ -2,41 +2,31 @@
 Tests for the publisher.py and consumer.py methods
 """
 
-from django.test import TestCase
+from __future__ import absolute_import
+
+from six.moves import range  # pylint: disable=redefined-builtin
+
 from contracts import ContractNotRespected
-from django.contrib.auth.models import User
-
+from django.test import TestCase
 from edx_notifications import const
-from edx_notifications.lib.publisher import (
-    publish_notification_to_user,
-    bulk_publish_notification_to_users,
-    register_notification_type,
-    bulk_publish_notification_to_scope,
-)
-
+from edx_notifications.data import NotificationType, UserNotification, NotificationMessage
+from edx_notifications.scopes import register_user_scope_resolver
+from django.contrib.auth.models import User
+from edx_notifications.exceptions import ItemNotFoundError
 from edx_notifications.lib.consumer import (
-    get_notifications_count_for_user,
-    get_notifications_for_user,
     mark_notification_read,
+    get_notifications_for_user,
+    get_notifications_count_for_user,
     mark_all_user_notification_as_read
 )
-
-from edx_notifications.data import (
-    NotificationMessage,
-    NotificationType,
-    UserNotification,
+from edx_notifications.lib.publisher import (
+    register_notification_type,
+    publish_notification_to_user,
+    bulk_publish_notification_to_scope,
+    bulk_publish_notification_to_users
 )
-
-from edx_notifications.exceptions import (
-    ItemNotFoundError,
-)
-
-from edx_notifications.renderers.renderer import (
-    clear_renderers
-)
-
-from edx_notifications.scopes import register_user_scope_resolver
 from edx_notifications.tests.test_scopes import TestListScopeResolver
+from edx_notifications.renderers.renderer import clear_renderers
 
 
 class TestPublisherLibrary(TestCase):

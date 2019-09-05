@@ -2,17 +2,16 @@
 Tests for the callback.py
 """
 
-from django.test import TestCase
+from __future__ import absolute_import
 
-from edx_notifications.data import (
-    NotificationCallbackTimer,
-    NotificationMessage,
-    NotificationType,
-)
-from edx_notifications.tests.test_scopes import TestListScopeResolver
+from six.moves import range  # pylint: disable=redefined-builtin
+
+from django.test import TestCase
+from edx_notifications.data import NotificationType, NotificationMessage, NotificationCallbackTimer
 from edx_notifications.scopes import register_user_scope_resolver
 from edx_notifications.callbacks import NotificationDispatchMessageCallback
 from edx_notifications.stores.store import notification_store
+from edx_notifications.tests.test_scopes import TestListScopeResolver
 
 
 class CallbackTests(TestCase):
