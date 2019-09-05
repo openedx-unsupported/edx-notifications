@@ -8,8 +8,9 @@ from __future__ import absolute_import
 
 import copy
 
-from edx_notifications import const
 from django.core.exceptions import ValidationError
+
+from edx_notifications import const
 from edx_notifications.base_data import (
     DictField,
     EnumField,

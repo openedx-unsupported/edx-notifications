@@ -8,8 +8,8 @@ import json
 import datetime
 
 import pytz
-
 from django.test import TestCase
+
 from edx_notifications.data import NotificationType, NotificationMessage
 from edx_notifications.const import RENDER_FORMAT_SMS, RENDER_FORMAT_HTML, RENDER_FORMAT_JSON
 from edx_notifications.lib.publisher import register_notification_type

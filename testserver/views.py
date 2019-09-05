@@ -7,20 +7,20 @@ from __future__ import absolute_import
 from datetime import datetime, timedelta
 
 import pytz
-
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.shortcuts import render, render_to_response
-from edx_notifications import const
 from django.contrib.auth import logout
+from django.templatetags.static import static
+from django.views.decorators.csrf import csrf_protect
+from django.contrib.auth.decorators import login_required
+
+from edx_notifications import const
 from edx_notifications.data import NotificationMessage
 from edx_notifications.scopes import NotificationUserScopeResolver, register_user_scope_resolver
 from edx_notifications.digests import send_notifications_digest
-from django.templatetags.static import static
-from django.views.decorators.csrf import csrf_protect
 from edx_notifications.namespaces import NotificationNamespaceResolver, register_namespace_resolver
-from django.contrib.auth.decorators import login_required
 from edx_notifications.lib.publisher import (
     get_notification_type,
     get_all_notification_types,

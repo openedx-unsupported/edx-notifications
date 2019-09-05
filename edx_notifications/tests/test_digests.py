@@ -7,9 +7,9 @@ from __future__ import absolute_import
 import datetime
 
 import pytz
-
 from freezegun import freeze_time
 from django.test import TestCase
+
 from edx_notifications import const
 from edx_notifications.data import NotificationType, NotificationMessage
 from edx_notifications.scopes import NotificationUserScopeResolver

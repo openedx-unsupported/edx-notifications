@@ -3,7 +3,6 @@ from __future__ import absolute_import
 from unittest import skipUnless
 
 import six
-
 from pages import password, user_name, user_email
 from pages.home_page import HomePage
 from pages.login_page import LoginPage

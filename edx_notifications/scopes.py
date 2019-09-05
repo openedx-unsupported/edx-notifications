@@ -8,7 +8,6 @@ import abc
 import types
 
 import six
-
 from django.db.models.query import QuerySet
 
 _SCOPE_RESOLVERS = {}

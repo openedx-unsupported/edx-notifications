@@ -5,8 +5,8 @@ Unit tests to exercise code implemented in data.py
 from __future__ import absolute_import
 
 import six
-
 from django.test import TestCase
+
 from edx_notifications.data import NotificationType, NotificationMessage
 from edx_notifications.base_data import DictField, EnumField, IntegerField, BaseDataObject, RelatedObjectField
 
@@ -78,7 +78,7 @@ class BaseDataObjectTests(TestCase):
         """
 
         test_class = DataObject(test_variable='foo')
-        self.assertEquals(test_class.test_variable, 'foo')
+        self.assertEqual(test_class.test_variable, 'foo')
 
         with self.assertRaises(ValueError):
             DataObject(doesnt_exist='bar')

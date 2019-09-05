@@ -9,12 +9,13 @@ from datetime import datetime
 
 import pytz
 from dateutil import parser
-
 from django.test import TestCase
 from django.utils.six import BytesIO
-from edx_notifications.data import NotificationType, NotificationMessage  # pylint: disable=unused-import
 from rest_framework.parsers import JSONParser
 from rest_framework.renderers import JSONRenderer
+
+from edx_notifications.data import NotificationMessage  # pylint: disable=unused-import
+from edx_notifications.data import NotificationType
 from edx_notifications.serializers import NotificationMessageSerializer
 
 

@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import logging
 
 from django.core.management.base import BaseCommand
+
 from edx_notifications.lib.publisher import purge_expired_notifications
 
 log = logging.getLogger(__file__)

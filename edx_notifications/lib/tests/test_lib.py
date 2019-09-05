@@ -4,14 +4,14 @@ Tests for the publisher.py and consumer.py methods
 
 from __future__ import absolute_import
 
-from six.moves import range  # pylint: disable=redefined-builtin
-
 from contracts import ContractNotRespected
+from six.moves import range
 from django.test import TestCase
+from django.contrib.auth.models import User
+
 from edx_notifications import const
 from edx_notifications.data import NotificationType, UserNotification, NotificationMessage
 from edx_notifications.scopes import register_user_scope_resolver
-from django.contrib.auth.models import User
 from edx_notifications.exceptions import ItemNotFoundError
 from edx_notifications.lib.consumer import (
     mark_notification_read,
@@ -84,7 +84,7 @@ class TestPublisherLibrary(TestCase):
         # now query back the notification to make sure it got stored
         # and we can retrieve it
 
-        self.assertEquals(
+        self.assertEqual(
             get_notifications_count_for_user(self.test_user_id),
             1
         )
@@ -132,7 +132,7 @@ class TestPublisherLibrary(TestCase):
 
         # now query back the notification to make sure it got stored
         # and we can retrieve it
-        self.assertEquals(
+        self.assertEqual(
             get_notifications_count_for_user(self.test_user_id),
             1
         )
@@ -177,7 +177,7 @@ class TestPublisherLibrary(TestCase):
 
         # now query back the notification to make sure it got stored
         # and we can retrieve it
-        self.assertEquals(
+        self.assertEqual(
             get_notifications_count_for_user(self.test_user_id),
             1
         )
@@ -460,7 +460,7 @@ class TestPublisherLibrary(TestCase):
             publish_notification_to_user(self.test_user_id, msg)
 
         # make sure we have 10 unreads before we do anything else
-        self.assertEquals(
+        self.assertEqual(
             get_notifications_count_for_user(
                 self.test_user_id,
                 filters={
@@ -475,7 +475,7 @@ class TestPublisherLibrary(TestCase):
         mark_all_user_notification_as_read(self.test_user_id)
 
         # shouldn't be counted in unread counts
-        self.assertEquals(
+        self.assertEqual(
             get_notifications_count_for_user(
                 self.test_user_id,
                 filters={
@@ -487,7 +487,7 @@ class TestPublisherLibrary(TestCase):
         )
 
         # Should be counted in read counts
-        self.assertEquals(
+        self.assertEqual(
             get_notifications_count_for_user(
                 self.test_user_id,
                 filters={
@@ -518,7 +518,7 @@ class TestPublisherLibrary(TestCase):
         mark_notification_read(self.test_user_id, sent_user_msg.msg.id)
 
         # shouldn't be counted in unread counts
-        self.assertEquals(
+        self.assertEqual(
             get_notifications_count_for_user(
                 self.test_user_id,
                 filters={
@@ -530,7 +530,7 @@ class TestPublisherLibrary(TestCase):
         )
 
         # Should be counted in read counts
-        self.assertEquals(
+        self.assertEqual(
             get_notifications_count_for_user(
                 self.test_user_id,
                 filters={
@@ -545,7 +545,7 @@ class TestPublisherLibrary(TestCase):
         mark_notification_read(self.test_user_id, sent_user_msg.msg.id, read=False)
 
         # Should be counted in unread counts
-        self.assertEquals(
+        self.assertEqual(
             get_notifications_count_for_user(
                 self.test_user_id,
                 filters={
@@ -557,7 +557,7 @@ class TestPublisherLibrary(TestCase):
         )
 
         # Shouldn't be counted in read counts
-        self.assertEquals(
+        self.assertEqual(
             get_notifications_count_for_user(
                 self.test_user_id,
                 filters={

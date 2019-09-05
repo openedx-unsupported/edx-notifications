@@ -8,8 +8,9 @@ import logging
 
 from parse_rest.core import ParseError
 from parse_rest.connection import register
-from edx_notifications.data import NotificationType, NotificationMessage
 from parse_rest.installation import Push
+
+from edx_notifications.data import NotificationType, NotificationMessage
 from edx_notifications.exceptions import ChannelError, ItemNotFoundError
 from edx_notifications.lib.publisher import (
     get_notification_type,

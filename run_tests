@@ -8,7 +8,7 @@ coverage run manage.py test edx_notifications --verbosity=3
 coverage report -m
 coverage html
 pep8 edx_notifications
-pylint edx_notifications --report=no
+pylint edx_notifications --reports=no
 ECHO ''
 ECHO 'View the full coverage report at {CODE_PATH}/edx-notifications/htmlcov/index.html'
 ECHO ''

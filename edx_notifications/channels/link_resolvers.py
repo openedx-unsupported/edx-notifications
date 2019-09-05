@@ -85,7 +85,7 @@ class MsgTypeToUrlLinkResolver(BaseLinkResolver):
             return None
 
         try:
-            return mapping.format(**params)  # pylint:disable=star-args
+            return mapping.format(**params)
         except KeyError as ex:
             err_msg = (
                 'TypeToURLResolver: attempted to resolve link_name "{link_name}" '
@@ -175,7 +175,7 @@ class MsgTypeToUrlResolverMixin(object):
                 # now create an instance of the resolver
                 module_path, _, name = _class_name.rpartition('.')
                 class_ = getattr(import_module(module_path), name)
-                resolver = class_(config)  # pylint: disable=star-args
+                resolver = class_(config)
 
                 # put in our cache
                 self._cached_resolvers[resolver_name] = resolver

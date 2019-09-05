@@ -8,9 +8,9 @@ from __future__ import absolute_import
 from datetime import datetime, timedelta
 
 import pytz
-
 from django.test import TestCase
 from django.dispatch import receiver
+
 from edx_notifications.data import NotificationCallbackTimer
 from edx_notifications.background import perform_notification_scan
 from edx_notifications.stores.store import notification_store

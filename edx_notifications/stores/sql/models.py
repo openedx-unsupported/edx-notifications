@@ -4,10 +4,12 @@ Django ORM models to support the Notification Store SQL backend
 
 from __future__ import absolute_import
 
+from model_utils.models import TimeStampedModel
 from django.db import models
 from django.dispatch import receiver
+from django.db.models.signals import pre_delete
+
 from edx_notifications import const
-from model_utils.models import TimeStampedModel
 from edx_notifications.data import (
     NotificationType,
     UserNotification,
@@ -16,7 +18,6 @@ from edx_notifications.data import (
     NotificationCallbackTimer,
     UserNotificationPreferences
 )
-from django.db.models.signals import pre_delete
 from edx_notifications.base_data import DictField
 
 

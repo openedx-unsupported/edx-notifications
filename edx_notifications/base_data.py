@@ -11,7 +11,6 @@ from datetime import datetime, timedelta
 
 import six
 import dateutil.parser
-
 from freezegun.api import FakeDatetime
 
 
@@ -103,7 +102,7 @@ class TypedField(object):
 
         value_type = type(value)
 
-        if value and value_type not in self._expected_types:
+        if value and value_type not in self._expected_types:  # pylint: disable=unsupported-membership-test
             raise TypeError(
                 (
                     "Field expected type of '{expected}' got '{got}'"
@@ -183,15 +182,15 @@ class DictField(TypedField):
         return json.dumps(data, default=datetime_to_json)
 
     @classmethod
-    def from_json(cls, value):
+    def from_json(cls, _value):
         """
         Deserialize from json
         """
 
-        if not value:
+        if not _value:
             return None
 
-        _dict = json.loads(value)
+        _dict = json.loads(_value)
 
         for key, value in six.iteritems(_dict):
             if isinstance(value, six.string_types):
@@ -287,7 +286,7 @@ class BaseDataObject(six.with_metaclass(BaseDataObjectMetaClass, object)):
         of attributes which have been explicitly declared in any subclass
         """
 
-        for key in kwargs.keys():
+        for key in kwargs:
             value = kwargs[key]
             if key in dir(self):
                 setattr(self, key, value)

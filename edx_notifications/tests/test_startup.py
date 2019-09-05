@@ -6,6 +6,7 @@ from __future__ import absolute_import
 
 from django.test import TestCase
 from django.dispatch import receiver
+
 from edx_notifications import startup
 
 _SIGNAL_RAISED = False
