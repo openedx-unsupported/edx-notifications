@@ -8,9 +8,10 @@ import copy
 import json
 
 from underscore import _ as us
-from edx_notifications.const import RENDER_FORMAT_HTML, RENDER_FORMAT_JSON
 from django.contrib.staticfiles import finders
 from django.templatetags.static import static
+
+from edx_notifications.const import RENDER_FORMAT_HTML, RENDER_FORMAT_JSON
 from edx_notifications.renderers.renderer import BaseNotificationRenderer
 
 

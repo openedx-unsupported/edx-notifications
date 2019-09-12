@@ -10,14 +10,14 @@ import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-import pytz
-import six.moves.urllib.error  # pylint: disable=import-error
-import six.moves.urllib.parse  # pylint: disable=import-error
+import six.moves.urllib.error
+import six.moves.urllib.parse
 import six.moves.urllib.request  # pylint: disable=import-error
-
+import pytz
 from django.core.mail import EmailMessage
-from edx_notifications import const
 from django.template.loader import render_to_string
+
+from edx_notifications import const
 from edx_notifications.data import UserNotification
 from edx_notifications.scopes import resolve_user_scope
 from edx_notifications.digests import attach_image, with_inline_css, get_group_name_for_msg_type
@@ -115,7 +115,7 @@ class TriggeredEmailChannelProvider(MsgTypeToUrlResolverMixin, BaseNotificationC
             if logo_image:
                 html_part.attach(logo_image)
 
-            log.info('Sending Notification email to {email}'.format(email=email))
+            log.info('Sending Notification email to %s', email)
 
             msg = EmailMessage(const.NOTIFICATION_TRIGGERED_EMAIL_SUBJECT, '',
                                const.NOTIFICATION_EMAIL_FROM_ADDRESS, [email])

@@ -6,12 +6,12 @@ from __future__ import absolute_import
 
 from datetime import datetime, timedelta
 
-import pytz
-from six.moves import range  # pylint: disable=redefined-builtin
-
 import mock
+import pytz
 from freezegun import freeze_time
+from six.moves import range
 from django.test import TestCase
+
 from edx_notifications import const
 from edx_notifications.data import (
     NotificationType,

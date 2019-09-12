@@ -13,20 +13,20 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 
-import pytz
-import six.moves.urllib.error  # pylint: disable=import-error
-import six.moves.urllib.parse  # pylint: disable=import-error
+import six.moves.urllib.error
+import six.moves.urllib.parse
 import six.moves.urllib.request  # pylint: disable=import-error
-
+import pytz
 import pynliner
 from django.dispatch import receiver
 from django.core.mail import EmailMessage
-from edx_notifications import const
 from django.template.loader import render_to_string
-from edx_notifications.data import NotificationPreference, NotificationCallbackTimer
 from django.utils.translation import ugettext as _
-from edx_notifications.signals import perform_timer_registrations
 from django.contrib.staticfiles import finders
+
+from edx_notifications import const
+from edx_notifications.data import NotificationPreference, NotificationCallbackTimer
+from edx_notifications.signals import perform_timer_registrations
 from edx_notifications.callbacks import NotificationCallbackTimerHandler
 from edx_notifications.exceptions import ItemNotFoundError
 from edx_notifications.namespaces import resolve_namespace
@@ -256,29 +256,23 @@ def send_notifications_namespace_digest(namespace, from_timestamp, to_timestamp,
     """
 
     log.info(
-        'Inspecting digest for namespace "{namespace}". time ranges '
-        '{from_timestamp} to {to_timestamp} preference_name='
-        '{preference_name}'.format(
-            namespace=namespace,
-            from_timestamp=from_timestamp,
-            to_timestamp=to_timestamp,
-            preference_name=preference_name
-        )
+        'Inspecting digest for namespace "%s". time ranges %s to %s preference_name=%s',
+        namespace, from_timestamp, to_timestamp, preference_name
     )
 
     # Resolve the namespace to get information about it
     namespace_info = resolve_namespace(namespace)
     if not namespace_info:
         log.info(
-            'Could not resolve namespace "{namespace}". Skipping...'.format(namespace=namespace)
+            'Could not resolve namespace "%s". Skipping...', namespace
         )
         return 0
 
     # see if digests are enabled for this namespace
     if not namespace_info['features'].get('digests'):
         log.info(
-            'Namespace "{namespace}" does not have the digests feature enabled. '
-            'Skipping...'.format(namespace=namespace)
+            'Namespace "%s" does not have the digests feature enabled. '
+            'Skipping...', namespace
         )
         return 0
 
@@ -286,8 +280,8 @@ def send_notifications_namespace_digest(namespace, from_timestamp, to_timestamp,
     resolver = namespace_info['default_user_resolver']
     if not resolver:
         log.info(
-            'Namespace "{namespace}" does not have a default_user_resolver defined. '
-            'Skipping...'.format(namespace=namespace)
+            'Namespace "%s" does not have a default_user_resolver defined. '
+            'Skipping...', namespace
         )
         return 0
 
@@ -331,9 +325,8 @@ def send_notifications_namespace_digest(namespace, from_timestamp, to_timestamp,
 
         if user_wants_digest:
             log.debug(
-                'Sending digest email from namespace "{namespace}" '
-                'to user_id = {user_id} at email '
-                '{email}...'.format(namespace=namespace, user_id=user_id, email=email)
+                'Sending digest email from namespace "%s" to user_id = %s at email %s...',
+                namespace, user_id, email
             )
             digests_sent += _send_user_digest(
                 namespace_info,
@@ -400,7 +393,7 @@ def _send_user_digest(namespace_info, from_timestamp, to_timestamp, user_id,
     # As an option, don't send an email at all if there are no
     # unread notifications
     if not notification_groups and const.NOTIFICATION_DONT_SEND_EMPTY_DIGEST:
-        log.debug('Digest email for {email} is empty. Not sending...'.format(email=email))
+        log.debug('Digest email for %s is empty. Not sending...', email)
         return 0
 
     context = {
@@ -434,7 +427,7 @@ def _send_user_digest(namespace_info, from_timestamp, to_timestamp, user_id,
     if logo_image:
         html_part.attach(logo_image)
 
-    log.info('Sending Notification Digest email to {email}'.format(email=email))
+    log.info('Sending Notification Digest email to %s', email)
 
     # do a formatting pass on the email subject in case we need
     # to also present the namespace display_name
@@ -462,6 +455,7 @@ def attach_image(img_dict, filename):
             msg_image.add_header('Content-ID', '<{}>'.format(img_dict['cid']))
             msg_image.add_header("Content-Disposition", "inline", filename=filename)
         return msg_image
+    return None
 
 
 def get_group_name_for_msg_type(msg_type):
@@ -523,7 +517,7 @@ def get_group_rendering(group_data):
         else:
             log.info(
                 'Missing renderer for HTML format on '
-                'msg_type "{}". Skipping....'.format(user_msg.msg.msg_type.name)
+                'msg_type "%s". Skipping....', user_msg.msg.msg_type.name
             )
 
         click_link = user_msg.msg.payload.get('_click_link')

@@ -4,9 +4,10 @@ All tests regarding scopes.py
 
 from __future__ import absolute_import
 
-from six.moves import range  # pylint: disable=redefined-builtin
-
+from six.moves import range
 from django.test import TestCase
+from django.contrib.auth.models import User
+
 from edx_notifications.scopes import (
     SingleUserScopeResolver,
     NotificationUserScopeResolver,
@@ -14,7 +15,6 @@ from edx_notifications.scopes import (
     clear_user_scope_resolvers,
     register_user_scope_resolver
 )
-from django.contrib.auth.models import User
 
 
 class TestListScopeResolver(NotificationUserScopeResolver):
@@ -73,8 +73,10 @@ class DjangoORMResolver(NotificationUserScopeResolver):
             return User.objects.values_list('id', flat=True).all()  # pylint: disable=no-member
         elif scope_name == 'values_query_set':
             return User.objects.values('id').all()  # pylint: disable=no-member
+        return None
 
 
+# pylint: disable=useless-super-delegation
 class BadTestScopeResolver(NotificationUserScopeResolver):
     """
     Test scope resolver that should not work
@@ -140,7 +142,7 @@ class ScopesTests(TestCase):
         """
 
         with self.assertRaises(TypeError):
-            NotificationUserScopeResolver()
+            NotificationUserScopeResolver()  # pylint: disable=abstract-class-instantiated
 
         register_user_scope_resolver('bad_scope', BadTestScopeResolver())
 
@@ -183,7 +185,7 @@ class ScopesTests(TestCase):
 
         resolver = SingleUserScopeResolver()
         user_ids = resolver.resolve('user', {'user_id': 1}, {})
-        self.assertEquals(user_ids, [1])
+        self.assertEqual(user_ids, [1])
 
     def test_django_orm_based_resolver(self):
         """

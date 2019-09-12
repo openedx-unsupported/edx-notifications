@@ -5,6 +5,7 @@ Unit tests for the resolvers.py file
 from __future__ import absolute_import
 
 from django.test import TestCase
+
 from edx_notifications.channels.link_resolvers import BaseLinkResolver, MsgTypeToUrlLinkResolver
 
 

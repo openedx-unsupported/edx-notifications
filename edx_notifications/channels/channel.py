@@ -9,7 +9,6 @@ import copy
 from importlib import import_module
 
 import six
-
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
@@ -43,7 +42,7 @@ def _init_channel_providers():
         options = copy.deepcopy(channel_config['options'])
         options['name'] = key
 
-        provider = class_(**options)  # pylint: disable=star-args
+        provider = class_(**options)
         _CHANNEL_PROVIDERS[key] = provider
 
 

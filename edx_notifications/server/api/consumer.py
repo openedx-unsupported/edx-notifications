@@ -7,11 +7,11 @@ from __future__ import absolute_import
 import logging
 
 import six
-
 from django.http import Http404
 from rest_framework import status
-from edx_notifications import const
 from rest_framework.response import Response
+
+from edx_notifications import const
 from edx_notifications.exceptions import ItemNotFoundError
 from edx_notifications.lib.consumer import (
     get_user_preferences,

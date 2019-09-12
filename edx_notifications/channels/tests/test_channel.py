@@ -7,6 +7,7 @@ from __future__ import absolute_import
 from django.test import TestCase
 from django.test.utils import override_settings
 from django.core.exceptions import ImproperlyConfigured
+
 from edx_notifications.data import NotificationType
 from edx_notifications.channels.null import NullNotificationChannel
 from edx_notifications.channels.channel import (

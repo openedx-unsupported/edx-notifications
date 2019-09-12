@@ -7,6 +7,7 @@ from __future__ import absolute_import
 import json
 import logging
 
+import six
 import requests
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import RequestException
@@ -95,7 +96,7 @@ class UrbanAirshipNotificationChannelProvider(BaseNotificationChannelProvider):
                 )
 
         except RequestException as ex:
-            log.error("Urban Airship push notifications API failed with error %s", ex.message)
+            log.error("Urban Airship push notifications API failed with error %s", six.text_type(ex))
         return resp
 
     def bulk_dispatch_notification(self, user_ids, msg, exclude_user_ids=None, channel_context=None):

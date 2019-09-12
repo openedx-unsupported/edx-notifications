@@ -8,11 +8,11 @@ import copy
 from datetime import datetime
 
 import pytz
-
 import pylru
 from django.db import IntegrityError
-from edx_notifications import const
 from django.core.exceptions import ObjectDoesNotExist
+
+from edx_notifications import const
 from edx_notifications.exceptions import ItemNotFoundError, BulkOperationTooLarge
 from edx_notifications.stores.store import BaseNotificationStoreProvider
 from edx_notifications.stores.sql.models import (

@@ -5,7 +5,6 @@ Assortment of helper utility methods
 from __future__ import absolute_import
 
 import six
-
 from django.core.urlresolvers import reverse
 from django.templatetags.static import static
 
@@ -42,9 +41,6 @@ class RecursiveDictionary(dict):
                 self[key].rec_update(value)
             else:
                 self[key] = value
-
-    def __repr__(self):
-        return super(self.__class__, self).__repr__()
 
 
 def get_template_path(template_name):
