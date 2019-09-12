@@ -8,7 +8,6 @@ import abc
 from importlib import import_module
 
 import six
-
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 

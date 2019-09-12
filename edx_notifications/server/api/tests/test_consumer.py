@@ -10,12 +10,12 @@ from __future__ import absolute_import
 
 import json
 
-from six.moves import range  # pylint: disable=redefined-builtin
+from six.moves import range
+from django.test.client import Client
+from django.core.urlresolvers import NoReverseMatch, reverse
 
 from edx_notifications import const
-from django.test.client import Client
 from edx_notifications.data import NotificationType, NotificationMessage, NotificationPreference
-from django.core.urlresolvers import NoReverseMatch, reverse
 from edx_notifications.lib.consumer import (
     mark_notification_read,
     set_notification_preference,
@@ -73,7 +73,7 @@ class ConsumerAPITests(LoggedInTestCase):
         )
         self.assertEqual(response.status_code, 200)
 
-        result_dict = json.loads(response.content)
+        result_dict = json.loads(response.content.decode('utf-8'))
         self.assertEqual(len(result_dict), 1)
         self.assertIn(
             'edx_notifications.renderers.basic.BasicSubjectBodyRenderer',
@@ -89,7 +89,7 @@ class ConsumerAPITests(LoggedInTestCase):
         response = self.client.get(reverse('edx_notifications.consumer.notifications.count'))
         self.assertEqual(response.status_code, 200)
 
-        results = json.loads(response.content)
+        results = json.loads(response.content.decode('utf-8'))
         self.assertIn('count', results)
         self.assertEqual(results['count'], 0)
 
@@ -117,7 +117,7 @@ class ConsumerAPITests(LoggedInTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-        results = json.loads(response.content)
+        results = json.loads(response.content.decode('utf-8'))
         self.assertIn('count', results)
         self.assertEqual(results['count'], 1)
 
@@ -125,7 +125,7 @@ class ConsumerAPITests(LoggedInTestCase):
         response = self.client.get(url, {'read': False, 'unread': True})
         self.assertEqual(response.status_code, 200)
 
-        results = json.loads(response.content)
+        results = json.loads(response.content.decode('utf-8'))
         self.assertIn('count', results)
         self.assertEqual(results['count'], 1)
 
@@ -133,7 +133,7 @@ class ConsumerAPITests(LoggedInTestCase):
         response = self.client.get(url, {'read': True, 'unread': False})
         self.assertEqual(response.status_code, 200)
 
-        results = json.loads(response.content)
+        results = json.loads(response.content.decode('utf-8'))
         self.assertIn('count', results)
         self.assertEqual(results['count'], 0)
 
@@ -144,7 +144,7 @@ class ConsumerAPITests(LoggedInTestCase):
         response = self.client.get(url, {'read': False, 'unread': True})
         self.assertEqual(response.status_code, 200)
 
-        results = json.loads(response.content)
+        results = json.loads(response.content.decode('utf-8'))
         self.assertIn('count', results)
         self.assertEqual(results['count'], 0)
 
@@ -152,7 +152,7 @@ class ConsumerAPITests(LoggedInTestCase):
         response = self.client.get(url, {'read': True, 'unread': False})
         self.assertEqual(response.status_code, 200)
 
-        results = json.loads(response.content)
+        results = json.loads(response.content.decode('utf-8'))
         self.assertIn('count', results)
         self.assertEqual(results['count'], 1)
 
@@ -191,7 +191,7 @@ class ConsumerAPITests(LoggedInTestCase):
         response = self.client.get(reverse('edx_notifications.consumer.notifications.count'))
         self.assertEqual(response.status_code, 200)
 
-        results = json.loads(response.content)
+        results = json.loads(response.content.decode('utf-8'))
         self.assertIn('count', results)
         self.assertEqual(results['count'], 0)
 
@@ -227,7 +227,7 @@ class ConsumerAPITests(LoggedInTestCase):
         ))
         self.assertEqual(response.status_code, 200)
 
-        results = json.loads(response.content)
+        results = json.loads(response.content.decode('utf-8'))
 
         self.assertEqual(results['user_id'], self.user.id)
         self.assertIsNone(results['read_at'])
@@ -304,7 +304,7 @@ class ConsumerAPITests(LoggedInTestCase):
         response = self.client.get(reverse('edx_notifications.consumer.notifications'))
         self.assertEqual(response.status_code, 200)
 
-        results = json.loads(response.content)
+        results = json.loads(response.content.decode('utf-8'))
         self.assertEqual(len(results), 2)
 
         # the last one written should be the first one read
@@ -321,7 +321,7 @@ class ConsumerAPITests(LoggedInTestCase):
         )
         self.assertEqual(response.status_code, 200)
 
-        results = json.loads(response.content)
+        results = json.loads(response.content.decode('utf-8'))
         self.assertEqual(len(results), 2)  # did we get two back?
 
         self._compare_user_msg_to_result(user_msg2, results[0])
@@ -379,7 +379,7 @@ class ConsumerAPITests(LoggedInTestCase):
         )
         self.assertEqual(response.status_code, 200)
 
-        results = json.loads(response.content)
+        results = json.loads(response.content.decode('utf-8'))
 
         # did we get back what we expected?
         self.assertEqual(len(results), expected_cnt)
@@ -518,7 +518,7 @@ class ConsumerAPITests(LoggedInTestCase):
         response = self.client.get(reverse('edx_notifications.consumer.notification_preferences'))
         self.assertEqual(response.status_code, 200)
 
-        results = json.loads(response.content)
+        results = json.loads(response.content.decode('utf-8'))
         self.assertEqual(len(results), 2)
 
         self._compare_notification_preference_to_result(notification_preference1, results[0])
@@ -545,7 +545,7 @@ class ConsumerAPITests(LoggedInTestCase):
         response = self.client.get(reverse('edx_notifications.consumer.user_preferences'))
         self.assertEqual(response.status_code, 200)
 
-        results = json.loads(response.content)
+        results = json.loads(response.content.decode('utf-8'))
         self.assertEqual(len(results), 1)
 
         self.assertEqual(user_preference.user_id, results[0]['user_id'])
@@ -580,7 +580,7 @@ class ConsumerAPITests(LoggedInTestCase):
             reverse('edx_notifications.consumer.user_preferences.detail', args=['daily-digest-emails']))
         self.assertEqual(response.status_code, 200)
 
-        results = json.loads(response.content)
+        results = json.loads(response.content.decode('utf-8'))
         self.assertEqual(len(results), 1)
 
         self.assertEqual(user_preference.user_id, results[0]['user_id'])
@@ -646,7 +646,7 @@ class ConsumerAPITests(LoggedInTestCase):
             reverse('edx_notifications.consumer.user_preferences.detail', args=['daily-digest-emails']))
         self.assertEqual(response.status_code, 200)
 
-        results = json.loads(response.content)
+        results = json.loads(response.content.decode('utf-8'))
         self.assertEqual(len(results), 1)
 
         self.assertEqual(data['value'], results[0]['value'])
@@ -712,7 +712,7 @@ class ConsumerAPITests(LoggedInTestCase):
                 args=[const.NOTIFICATION_DAILY_DIGEST_PREFERENCE_NAME]
             ))
         self.assertEqual(response.status_code, 200)
-        results = json.loads(response.content)
+        results = json.loads(response.content.decode('utf-8'))
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]['value'], 'false')
 
@@ -722,7 +722,7 @@ class ConsumerAPITests(LoggedInTestCase):
                 args=[const.NOTIFICATION_WEEKLY_DIGEST_PREFERENCE_NAME]
             ))
         self.assertEqual(response.status_code, 200)
-        results = json.loads(response.content)
+        results = json.loads(response.content.decode('utf-8'))
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0]['value'], 'true')
 

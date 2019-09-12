@@ -4,6 +4,7 @@ Test Triggered Emails
 from __future__ import absolute_import
 
 from django.test import TestCase
+
 from edx_notifications import startup
 from edx_notifications.data import NotificationMessage
 from edx_notifications.scopes import NotificationUserScopeResolver, register_user_scope_resolver

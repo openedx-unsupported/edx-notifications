@@ -6,6 +6,7 @@ from __future__ import absolute_import
 from mock import patch
 from django.test import TestCase
 from testserver.views import CANNED_TEST_PAYLOAD
+
 from edx_notifications import startup
 from edx_notifications.data import NotificationType, NotificationMessage
 from edx_notifications.lib.publisher import (

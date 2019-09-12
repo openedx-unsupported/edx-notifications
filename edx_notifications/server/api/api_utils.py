@@ -5,7 +5,6 @@ Helpers for the HTTP APIs
 from __future__ import absolute_import
 
 import six
-
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication

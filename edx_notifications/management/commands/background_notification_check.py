@@ -10,6 +10,7 @@ import logging
 import logging.config
 
 from django.core.management.base import BaseCommand
+
 from edx_notifications.background import fire_background_notification_check
 
 # Have all logging go to stdout with management commands

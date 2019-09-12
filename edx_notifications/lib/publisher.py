@@ -13,12 +13,12 @@ import types
 import logging
 import datetime
 
-import pytz
 import six
-
+import pytz
 from contracts import contract
-from edx_notifications import const
 from django.db.models.query import QuerySet
+
+from edx_notifications import const
 from edx_notifications.data import NotificationType, NotificationMessage, NotificationCallbackTimer
 from edx_notifications.scopes import resolve_user_scope, has_user_scope_resolver
 from edx_notifications.exceptions import ItemNotFoundError
@@ -30,7 +30,7 @@ log = logging.getLogger(__name__)
 
 
 if six.PY3:
-    basestring = str  # pylint: disable=redefined-builtin, invalid-name
+    basestring = str  # pylint: disable=invalid-name,redefined-builtin
 
 
 @contract(msg_type=NotificationType)
@@ -39,7 +39,7 @@ def register_notification_type(msg_type):
     Registers a new notification type
     """
 
-    log.info('Registering NotificationType: {msg_type}'.format(msg_type=str(msg_type)))
+    log.info('Registering NotificationType: %s', str(msg_type))
 
     # do validation
     msg_type.validate()
@@ -141,7 +141,7 @@ def bulk_publish_notification_to_users(user_ids, msg, exclude_user_ids=None,
 
     """
 
-    log.info('Publishing bulk Notification with message: {msg}'.format(msg=msg))
+    log.info('Publishing bulk Notification with message: %s', msg)
 
     # validate the msg, this will raise a ValidationError if there
     # is something malformatted or missing in the NotificationMessage
@@ -256,7 +256,7 @@ def publish_timed_notification(msg, send_at, scope_name, scope_context, timer_na
             # so, then we should remove any previously stored
             # timed notification
             cancel_timed_notification(timer_name, exception_on_not_found=False)
-        return
+        return None
 
     # make sure we can resolve the scope_name
     if not has_user_scope_resolver(scope_name):

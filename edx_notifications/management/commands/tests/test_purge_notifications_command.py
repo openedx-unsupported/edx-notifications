@@ -7,9 +7,9 @@ from __future__ import absolute_import
 from datetime import datetime, timedelta
 
 import pytz
-
 from freezegun import freeze_time
 from django.test import TestCase
+
 from edx_notifications.data import NotificationType, UserNotification, NotificationMessage
 from edx_notifications.management.commands import force_purge
 from edx_notifications.stores.sql.store_provider import SQLNotificationStoreProvider

@@ -7,9 +7,9 @@ from __future__ import absolute_import
 
 from edx_notifications.timer import register_purge_notifications_timer  # pylint: disable=unused-import
 from edx_notifications.scopes import SingleUserScopeResolver, register_user_scope_resolver
-from edx_notifications.digests import (  # pylint: disable=unused-import
-    register_digest_timers,
-    create_default_notification_preferences
+from edx_notifications.digests import (  # isort:skip  pylint: disable=unused-import
+    create_default_notification_preferences,
+    register_digest_timers
 )
 # we need to import the standard notification type registrations so that they can hook in
 # in their signal receivers

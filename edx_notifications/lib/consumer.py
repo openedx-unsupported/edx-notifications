@@ -13,8 +13,8 @@ from __future__ import absolute_import
 from datetime import datetime
 
 import pytz
-
 from contracts import contract
+
 from edx_notifications.data import UserNotificationPreferences
 from edx_notifications.stores.store import notification_store
 

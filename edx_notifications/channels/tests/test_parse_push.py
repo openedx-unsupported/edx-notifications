@@ -7,10 +7,10 @@ from __future__ import absolute_import
 from datetime import datetime, timedelta
 
 import pytz
-
 from mock import patch
 from django.test import TestCase
 from parse_rest.core import ParseError
+
 from edx_notifications import startup
 from edx_notifications.data import NotificationType, NotificationMessage
 from edx_notifications.timer import poll_and_execute_timers

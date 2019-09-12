@@ -6,6 +6,7 @@ from __future__ import absolute_import
 
 from django.test import TestCase
 from django.core.exceptions import ValidationError
+
 from edx_notifications.data import NotificationMessage
 
 
