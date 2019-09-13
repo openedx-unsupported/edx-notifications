@@ -15,9 +15,6 @@ matrix:
         - tox -e py35
         - ./node_modules/gulp/bin/gulp.js test
         - bash ./run_bokchoy_tests.sh
-  allow_failures:
-    - python: "3.5"
-      env: DJANGO_SETTINGS_MODULE=settings
 
 addons:
   firefox: "46.0"
