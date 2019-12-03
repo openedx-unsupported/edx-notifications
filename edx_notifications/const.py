@@ -5,6 +5,7 @@ Lists of constants that can be used in the Notifications subsystem
 from __future__ import absolute_import
 
 from django.conf import settings
+from django.utils.translation import ugettext_lazy as _
 
 NOTIFICATION_PRIORITY_NONE = 0
 NOTIFICATION_PRIORITY_LOW = 1
@@ -101,27 +102,27 @@ NOTIFICATION_DIGEST_GROUP_CONFIG = getattr(
         'groups': {
             'announcements': {
                 'name': 'announcements',
-                'display_name': 'Announcements',
+                'display_name': _('Announcements'),
                 'group_order': 1
             },
             'group_work': {
                 'name': 'group_work',
-                'display_name': 'Group Work',
+                'display_name': _('Group Work'),
                 'group_order': 2
             },
             'leaderboards': {
                 'name': 'leaderboards',
-                'display_name': 'Leaderboards',
+                'display_name': _('Leaderboards'),
                 'group_order': 3
             },
             'discussions': {
                 'name': 'discussions',
-                'display_name': 'Discussion',
+                'display_name': _('Discussion'),
                 'group_order': 4
             },
             '_default': {
                 'name': '_default',
-                'display_name': 'Other',
+                'display_name': _('Other'),
                 'group_order': 5
             },
         },

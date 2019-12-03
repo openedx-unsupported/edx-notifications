@@ -41,7 +41,7 @@ INSTALLED_APPS = (
     'django_nose',
 )
 
-
+LANGUAGE_CODE = "en"
 LANGUAGE_COOKIE_NAME = "openedx-language-preference"
 LANGUAGES = (
     ('en', u'English '),

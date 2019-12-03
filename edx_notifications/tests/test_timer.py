@@ -589,6 +589,6 @@ class PurgeNotificationsTests(TestCase):
 
             # allow for some slight time arthimetic skew
             expected_callback_at = purge_notifications_timer.callback_at.replace(second=0, microsecond=0)
-            actual_callback_at = (reset_time + timedelta(days=1)).replace(second=0, microsecond=0)
+            actual_callback_at = (reset_time + timedelta(days=1)).replace(hour=0, second=0, microsecond=0)
 
             self.assertEqual(expected_callback_at, actual_callback_at)
