@@ -61,6 +61,6 @@ setup(
     packages=['edx_notifications'],
     dependency_links=[
     ],
-    install_requires=load_requirements('requirements.txt'),
-    tests_require=load_requirements('test_requirements.txt')
+    install_requires=load_requirements('requirements/base.txt'),
+    tests_require=load_requirements('requirements/testing.txt')
 )
