@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'edx_notifications',
     'edx_notifications.server.web',
+    'django_nose',
 )
 
 REST_FRAMEWORK = {

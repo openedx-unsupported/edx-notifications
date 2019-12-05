@@ -139,7 +139,7 @@ class LazyField(TypedField):
     Specialized subclass of TypedField(unicode) as a convienence for Translations support
     """
 
-    _expected_types = [unicode, str, type(ugettext_lazy())]
+    _expected_types = [six.text_type, str, type(ugettext_lazy())]
 
 
 class IntegerField(TypedField):

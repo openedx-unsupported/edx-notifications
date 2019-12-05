@@ -10,8 +10,8 @@ import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-import six.moves.urllib.error
-import six.moves.urllib.parse
+import six.moves.urllib.error  # pylint: disable=import-error
+import six.moves.urllib.parse  # pylint: disable=import-error
 import six.moves.urllib.request  # pylint: disable=import-error
 import pytz
 from django.core.mail import EmailMessage
