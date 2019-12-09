@@ -14,7 +14,6 @@ from django.test import TestCase
 from django.utils.translation import ugettext as getext
 from django.utils.translation import ugettext_lazy as _
 
-
 from edx_notifications import const
 from edx_notifications.data import (
     NotificationType,
