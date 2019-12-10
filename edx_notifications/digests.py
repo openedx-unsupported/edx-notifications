@@ -13,8 +13,8 @@ from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 
-import six.moves.urllib.error
-import six.moves.urllib.parse
+import six.moves.urllib.error  # pylint: disable=import-error
+import six.moves.urllib.parse  # pylint: disable=import-error
 import six.moves.urllib.request  # pylint: disable=import-error
 import pytz
 import pynliner
@@ -233,7 +233,6 @@ def send_notifications_digest(from_timestamp, to_timestamp, preference_name, sub
 
     # Get a collection of all namespaces
     namespaces = notification_store().get_all_namespaces(from_timestamp, to_timestamp)
-
     # Loop over all namespaces
     for namespace in namespaces:
         digests_sent += send_notifications_namespace_digest(
@@ -328,6 +327,7 @@ def send_notifications_namespace_digest(namespace, from_timestamp, to_timestamp,
                 'Sending digest email from namespace "%s" to user_id = %s at email %s...',
                 namespace, user_id, email
             )
+
             digests_sent += _send_user_digest(
                 namespace_info,
                 from_timestamp,

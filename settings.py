@@ -27,6 +27,9 @@ DATABASES = {
     },
 }
 
+USE_I18N = True
+USE_L10N = True
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -36,6 +39,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'edx_notifications',
     'edx_notifications.server.web',
+    'django_nose',
 )
 
 REST_FRAMEWORK = {
@@ -57,6 +61,7 @@ js_info_dict = {
     # 'packages': 'edx_notifications.server.web',
  }
 LANGUAGE_CODE = 'en'
+LANGUAGE_COOKIE_NAME = "openedx-language-preference"
 LANGUAGES = (
     ('en', u'English '),
     ('ar', u'العربية'),  # Arabic
@@ -65,10 +70,12 @@ LANGUAGES = (
     ('ES419', u'Latin Spanish'),
     ('es', u'Español'),
     ('ja', u'Japanese'),
-    ('de', u'German'),
-    ('fr', u'french'),
+    ('de', u'Deutsche'),
+    ('fr', u'Français'),
     ('nl', u'Dutch '),
-    ('pt', u'Português')
+    ('pt', u'Português'),
+    ('zh-cn', u'中文(简体)'),
+    ('jp', u'日本人'),
 )
 LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'locale'),
@@ -77,6 +84,7 @@ LOCALE_PATHS = [
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',

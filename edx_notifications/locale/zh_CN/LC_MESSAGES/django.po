@@ -1,0 +1,63 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-11-29 17:12+0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: const.py:103
+msgid "Announcements"
+msgstr "公告"
+
+#: const.py:108
+msgid "Group Work"
+msgstr "群组工作"
+
+#: const.py:113
+msgid "Leaderboards"
+msgstr "排行榜"
+
+#: const.py:118
+msgid "Discussion"
+msgstr "讨论"
+
+#: const.py:123
+msgid "Other"
+msgstr ""
+
+#: digests.py:200
+msgid "Receive daily email"
+msgstr "接收每日电子邮件"
+
+#: digests.py:201
+msgid ""
+"This setting will cause a daily digest of all notifications to be sent to "
+"your registered email address"
+msgstr "此设置将使所有通知的每日摘要都发送到您注册的电子邮件地址"
+
+#: digests.py:210
+msgid "Receive weekly email"
+msgstr "接收每周电子邮件"
+
+#: digests.py:211
+msgid ""
+"This setting will cause a weekly digest of all notifications to be sent to "
+"your registered email address"
+msgstr "此设置将使所有通知的每周摘要都发送到您注册的电子邮件地址"
+
+#: stores/sql/models.py:145
+#, python-brace-format
+msgid "Announcement on {annoucement_date}"
+msgstr "公告 {annoucement_date}"
