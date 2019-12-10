@@ -1,5 +1,5 @@
 # Django/Framework Packages
-django==1.11.25
+django==1.11.26
 django-model-utils==2.3.1
 python-dateutil==2.1
 requests==2.22.0
