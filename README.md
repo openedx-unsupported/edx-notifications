@@ -124,8 +124,8 @@ virtualenv edxnotifications_env (just do this once)
 
 source edxnotifications_env/bin/activate
 
-pip install -r requirements.txt
-pip install -r test_requirements.txt
+pip install -r requirements/base.txt
+pip install -r requirements/testing.txt
 
 ./manage.py syncdb --settings=testserver.settings
 ./manage.py migrate --settings=testserver.settings
