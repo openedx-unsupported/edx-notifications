@@ -1,3 +1,5 @@
+-r base.txt # Core dependencies for this package
+
 # Testing Packages
 coverage==4.0.2
 astroid==1.6.6
