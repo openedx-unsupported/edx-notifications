@@ -34,7 +34,7 @@ def startup_notification_subsystem():
         from edx_solutions_projects.scope_resolver import GroupProjectParticipantsScopeResolver  # pylint: disable=import-error
         from edx_notifications.scopes import register_user_scope_resolver
         from edx_notifications.namespaces import register_namespace_resolver
-        from util.namespace_resolver import CourseNamespaceResolver  # pylint: disable=import-error
+        from util.namespace_resolver import CourseNamespaceResolver  # pylint: disable=import-error, no-name-in-module
         from edx_notifications import startup
 
         startup.initialize()
@@ -48,7 +48,7 @@ def startup_notification_subsystem():
 
         # register namespace resolver
         register_namespace_resolver(CourseNamespaceResolver())
-    except Exception as ex:
+    except Exception as ex:  # pylint: disable=broad-except
         # Note this will fail when we try to run migrations as manage.py will call startup.py
         # and startup.initialze() will try to manipulate some database tables.
         # We need to research how to identify when we are being started up as part of

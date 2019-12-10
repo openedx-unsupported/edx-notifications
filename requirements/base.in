@@ -10,3 +10,13 @@ underscore.py==0.1.6
 pynliner==0.8.0
 git+https://github.com/milesrichardson/ParsePy.git
 freezegun>=0.1.11
+backports.functools-lru-cache==1.5
+beautifulsoup4==4.7.1
+certifi==2018.11.29
+decorator==4.3.0
+freezegun==0.3.11
+pyparsing==2.2.0
+pytz==2018.9
+six==1.11.0
+soupsieve==1.7.1
+urllib3==1.23
