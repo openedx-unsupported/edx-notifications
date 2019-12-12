@@ -12,5 +12,3 @@ CONSUMER_USER_PREFERENCES_REGEX = r'edx_notifications/v1/consumer/user_preferenc
 CONSUMER_USER_PREFERENCES_DETAIL_REGEX = r'edx_notifications/v1/consumer/user_preferences/(?P<name>[0-9A-Za-z-]+)$'
 CONSUMER_USER_PREFERENCES_DETAIL_NO_PARAM_REGEX = r'edx_notifications/v1/consumer/user_preferences/$'
 CONSUMER_RENDERERS_TEMPLATES_REGEX = r'edx_notifications/v1/consumer/renderers/templates$'
-
-ADMIN_USERS_DELETE = r'edx_notifications/v1/admin/user/delete$'

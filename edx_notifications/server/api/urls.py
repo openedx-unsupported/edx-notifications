@@ -2,9 +2,11 @@
 All URL mappings for HTTP-based APIs
 """
 from django.conf.urls import patterns, url
+
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from edx_notifications.server.api import consumer as consumer_views, admin as admin_views
+from edx_notifications.server.api import consumer as consumer_views
+
 from .url_regex import (
     CONSUMER_NOTIFICATIONS_COUNT_REGEX,
     CONSUMER_NOTIFICATION_DETAIL_REGEX,
@@ -15,9 +17,8 @@ from .url_regex import (
     CONSUMER_USER_PREFERENCES_DETAIL_REGEX,
     CONSUMER_NOTIFICATIONS_PREFERENCES_REGEX,
     CONSUMER_USER_PREFERENCES_REGEX,
-    CONSUMER_USER_PREFERENCES_DETAIL_NO_PARAM_REGEX,
-    ADMIN_USERS_DELETE
-)
+    CONSUMER_USER_PREFERENCES_DETAIL_NO_PARAM_REGEX)
+
 
 urlpatterns = patterns(  # pylint: disable=invalid-name
     '',
@@ -70,11 +71,6 @@ urlpatterns = patterns(  # pylint: disable=invalid-name
         CONSUMER_USER_PREFERENCES_DETAIL_NO_PARAM_REGEX,
         consumer_views.UserPreferenceDetail.as_view(),
         name='edx_notifications.consumer.user_preferences.detail.no_param'
-    ),
-    url(
-        ADMIN_USERS_DELETE,
-        admin_views.DeleteUsersData.as_view(),
-        name='edx_notifications.admin.delete_users_data'
     ),
 
 )

@@ -20,10 +20,7 @@ from edx_notifications.stores.sql.models import (
     SQLNotificationType,
     SQLUserNotification,
     SQLNotificationCallbackTimer,
-    SQLNotificationPreference,
-    SQLUserNotificationPreferences,
-    SQLUserNotificationArchive
-)
+    SQLNotificationPreference, SQLUserNotificationPreferences)
 
 
 class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
@@ -557,20 +554,3 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         result_set = result_set.values_list('namespace', flat=True).order_by('namespace').distinct()
 
         return result_set
-
-    def purge_notifications_for_users(self, user_ids):
-        """
-        This will remove all notifications and preferences for given user IDs
-        """
-        user_notifications = SQLUserNotification.objects.filter(user_id__in=user_ids)
-        archived_notifications = SQLUserNotificationArchive.objects.filter(user_id__in=user_ids)
-        SQLNotificationMessage.objects.filter(id__in=user_notifications.values('msg_id')).delete()
-        SQLNotificationMessage.objects.filter(id__in=archived_notifications.values('msg_id')).delete()
-        SQLUserNotificationArchive.objects.filter(user_id__in=user_ids).delete()
-        SQLUserNotificationPreferences.objects.filter(user_id__in=user_ids).delete()
-
-    def purge_notifications_containing(self, payload):
-        """
-        This will remove all notifications which contains the given payload
-        """
-        SQLNotificationMessage.objects.filter(payload__contains=payload).delete()
