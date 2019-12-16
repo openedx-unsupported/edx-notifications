@@ -12,6 +12,7 @@
 <script type="text/template" id="xns-counter-template">
     <% if (typeof count !== 'undefined' && count > 0) { %>
     <%= count %>
+    <span class="sr-only"> {% trans "unread" %}</span>
     <% } %>
 </script>
 
