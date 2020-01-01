@@ -37,4 +37,3 @@ branches:
     only:
       - master
       - cdodge/mcka-master
-      - cdodge/notification-digest
