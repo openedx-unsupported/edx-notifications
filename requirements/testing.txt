@@ -4,66 +4,61 @@
 #
 #    make upgrade
 #
-astroid==1.6.6
-backports.functools-lru-cache==1.6.1
-beautifulsoup4==4.8.1
-bok-choy==0.6.2
-certifi==2019.11.28
-chardet==3.0.4
-configparser==4.0.2       # via importlib-metadata, pylint
-contextlib2==0.6.0.post1  # via importlib-metadata
-coverage==4.0.2
-cssutils==1.0.2
-ddt==0.8.0
-decorator==4.4.1
-django-model-utils==2.3.1
-django==1.11.25
-django_nose==1.4.5
-git+https://github.com/edx/django-rest-framework.git@1ceda7c086fddffd1c440cc86856441bbf0bd9cb#egg=djangorestframework==3.6.3
-enum34==1.1.6             # via astroid
-filelock==3.0.12          # via tox
-freezegun==0.3.12
-futures==3.3.0; python_version < '3.0'            # via isort
-httpretty==0.9.7
-idna==2.8
-importlib-metadata==1.2.0  # via pluggy
+appdirs==1.4.3            # via virtualenv
+astroid==1.6.6            # via -r requirements/testing.in (line 5), pylint
+beautifulsoup4==4.8.2     # via -r requirements/base.txt (line 7), pynliner
+bok-choy==0.6.2           # via -r requirements/testing.in (line 14)
+certifi==2019.11.28       # via -r requirements/base.txt (line 8), requests
+chardet==3.0.4            # via -r requirements/base.txt (line 9), requests
+coverage==4.0.2           # via -r requirements/testing.in (line 4)
+cssutils==1.0.2           # via -r requirements/base.txt (line 10), pynliner
+ddt==0.8.0                # via -r requirements/testing.in (line 16)
+decorator==4.4.1          # via -r requirements/base.txt (line 11), pycontracts
+distlib==0.3.0            # via virtualenv
+django-model-utils==2.3.1  # via -r requirements/base.txt (line 12)
+django==2.2.10            # via -r requirements/base.txt (line 13), django-model-utils, djangorestframework
+django_nose==1.4.5        # via -r requirements/testing.in (line 6)
+djangorestframework==3.11.0  # via -r requirements/base.txt (line 14)
+filelock==3.0.12          # via tox, virtualenv
+freezegun==0.3.12         # via -r requirements/base.txt (line 15)
+httpretty==0.9.7          # via -r requirements/testing.in (line 8)
+idna==2.8                 # via -r requirements/base.txt (line 16), requests
+importlib-metadata==1.5.0  # via pluggy, virtualenv
+importlib-resources==1.0.2  # via virtualenv
 isort==4.3.21             # via pylint
 lazy-object-proxy==1.4.3  # via astroid
 lazy==1.4                 # via bok-choy
 mccabe==0.6.1             # via pylint
-mock==1.0.1
-more-itertools==5.0.0     # via zipp
+mock==1.0.1               # via -r requirements/testing.in (line 12)
 needle==0.5.0             # via bok-choy
-nose==1.3.7
-git+https://github.com/milesrichardson/ParsePy.git
-pathlib2==2.3.5           # via importlib-metadata
-pep257==0.3.2
-pep8==1.5.7
-pillow==6.2.1             # via needle
+nose==1.3.7               # via -r requirements/testing.in (line 7), django-nose, needle
+git+https://github.com/milesrichardson/ParsePy.git  # via -r requirements/base.txt (line 17)
+pep257==0.3.2             # via -r requirements/testing.in (line 11)
+pep8==1.5.7               # via -r requirements/testing.in (line 9)
+pillow==7.0.0             # via needle
 pluggy==0.13.1            # via tox
-py==1.8.0                 # via tox
-pycontracts==1.7.1
-pylint==1.9.5
-pylru==1.0.6
-pynliner==0.8.0
-pyparsing==2.4.5
-python-dateutil==2.1
-pytz==2019.3
-requests==2.22.0
-scandir==1.10.0           # via pathlib2
-selenium==2.53.1
-singledispatch==3.4.0.3   # via astroid, pylint
-six==1.13.0
-soupsieve==1.9.5
-sure==1.2.3
-testfixtures==4.5.0
+py==1.8.1                 # via tox
+pycontracts==1.7.1        # via -r requirements/base.txt (line 18)
+pylint==1.9.5             # via -r requirements/testing.in (line 10)
+pylru==1.0.6              # via -r requirements/base.txt (line 19)
+pynliner==0.8.0           # via -r requirements/base.txt (line 20)
+pyparsing==2.4.6          # via -r requirements/base.txt (line 21), pycontracts
+python-dateutil==2.1      # via -r requirements/base.txt (line 22), freezegun
+pytz==2019.3              # via -r requirements/base.txt (line 23), django
+requests==2.22.0          # via -r requirements/base.txt (line 24)
+selenium==2.53.1          # via -r requirements/testing.in (line 17), bok-choy, needle
+six==1.14.0               # via -r requirements/base.txt (line 25), astroid, bok-choy, freezegun, httpretty, parse-rest, pylint, python-dateutil, tox, virtualenv
+soupsieve==2.0            # via -r requirements/base.txt (line 26), beautifulsoup4
+sqlparse==0.3.0           # via -r requirements/base.txt (line 27), django
+sure==1.2.3               # via -r requirements/testing.in (line 15)
+testfixtures==4.5.0       # via -r requirements/testing.in (line 13)
 toml==0.10.0              # via tox
-tox==3.7.0
-underscore.py==0.1.6
-urllib3==1.25.7
-virtualenv==16.7.8        # via tox
-wrapt==1.11.2             # via astroid
-zipp==0.6.0               # via importlib-metadata
+tox==3.7.0                # via -r requirements/testing.in (line 18)
+underscore.py==0.1.6      # via -r requirements/base.txt (line 28)
+urllib3==1.25.8           # via -r requirements/base.txt (line 29), requests
+virtualenv==20.0.5        # via tox
+wrapt==1.12.0             # via astroid
+zipp==1.2.0               # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools

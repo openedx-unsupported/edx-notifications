@@ -4,11 +4,11 @@ URL mappings for Notifications Server
 
 from __future__ import absolute_import
 
-from django.conf.urls import url, include
+from django.urls import path, include
 from django.views.i18n import JavaScriptCatalog
 
 urlpatterns = [  # pylint: disable=invalid-name
-    url(r'^web/', include('edx_notifications.server.web.urls')),
-    url(r'^api/', include('edx_notifications.server.api.urls')),
-    url(r'^jsi18n/$', JavaScriptCatalog.as_view(), name='javascript-catalog'),
+    path('web/', include('edx_notifications.server.web.urls')),
+    path('api/', include('edx_notifications.server.api.urls')),
+    path('jsi18n/', JavaScriptCatalog.as_view(), name='javascript-catalog'),
 ]
