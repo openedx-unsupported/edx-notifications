@@ -83,7 +83,7 @@ class SQLNotificationMessage(TimeStampedModel):
     namespace = models.CharField(max_length=128, db_index=True, null=True)
 
     # Notification type
-    msg_type = models.ForeignKey(SQLNotificationType, db_index=True)
+    msg_type = models.ForeignKey(SQLNotificationType, db_index=True, on_delete=models.CASCADE)
 
     # from which identity
     from_user_id = models.IntegerField(null=True)
@@ -171,7 +171,7 @@ class SQLUserNotificationArchive(TimeStampedModel):
 
     user_id = models.IntegerField(db_index=True)
 
-    msg = models.ForeignKey(SQLNotificationMessage, db_index=True)
+    msg = models.ForeignKey(SQLNotificationMessage, db_index=True, on_delete=models.CASCADE)
 
     read_at = models.DateTimeField(null=True, db_index=True)
 
@@ -194,7 +194,7 @@ class SQLUserNotification(TimeStampedModel):
 
     user_id = models.IntegerField(db_index=True)
 
-    msg = models.ForeignKey(SQLNotificationMessage, db_index=True)
+    msg = models.ForeignKey(SQLNotificationMessage, db_index=True, on_delete=models.CASCADE)
 
     read_at = models.DateTimeField(null=True, db_index=True)
 
@@ -328,7 +328,7 @@ class SQLUserNotificationPreferences(TimeStampedModel):
     user_id = models.IntegerField(db_index=True)
 
     # Notification preference
-    preference = models.ForeignKey(SQLNotificationPreference, db_index=True)
+    preference = models.ForeignKey(SQLNotificationPreference, db_index=True, on_delete=models.CASCADE)
 
     value = models.CharField(max_length=255)
 

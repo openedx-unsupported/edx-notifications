@@ -22,6 +22,7 @@ def is_requirement(line):
         line.startswith('git+')
     )
 
+
 def load_requirements(*requirements_paths):
     """
     Load all requirements from the specified requirements files.
@@ -37,7 +38,7 @@ def load_requirements(*requirements_paths):
 
 setup(
     name='edx-notifications',
-    version='1.0.2',
+    version='1.1.0',
     description='Notification subsystem for Open edX',
     long_description=open('README.md').read(),
     author='edX',

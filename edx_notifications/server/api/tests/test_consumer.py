@@ -12,7 +12,7 @@ import json
 
 from six.moves import range
 from django.test.client import Client
-from django.core.urlresolvers import NoReverseMatch, reverse
+from django.urls import NoReverseMatch, reverse
 
 from edx_notifications import const
 from edx_notifications.data import NotificationType, NotificationMessage, NotificationPreference

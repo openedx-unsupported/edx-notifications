@@ -5,7 +5,7 @@ Assortment of helper utility methods
 from __future__ import absolute_import
 
 import six
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.templatetags.static import static
 
 

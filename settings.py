@@ -75,7 +75,7 @@ LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'static_cache/locale'),
 ]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
