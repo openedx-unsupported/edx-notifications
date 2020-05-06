@@ -64,7 +64,7 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
     underscore_template_name = None
     underscore_template = None
 
-    def __init__(self, template_name=None):
+    def __init__(self, template_name=None):  # pylint: disable=super-init-not-called
         """
         Initializer
         """

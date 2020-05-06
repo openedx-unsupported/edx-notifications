@@ -47,10 +47,9 @@ class Dict(dict):
     Create a subclass of dict to make it weak referencable
     per https://docs.python.org/2/library/weakref.html
     """
-    pass
 
 
-class TypedField(object):
+class TypedField:
     """
     Field Decscriptors used to enforce correct typing
     """
@@ -417,7 +416,7 @@ class BaseDataObject(six.with_metaclass(BaseDataObjectMetaClass, object)):
         Validations should throw a ValidationError if there
         is a problem.
         """
-        pass  # this intentionally does nothing
+        # this intentionally does nothing
 
 
 class RelatedObjectField(TypedField):

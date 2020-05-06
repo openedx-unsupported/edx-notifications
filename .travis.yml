@@ -1,13 +1,17 @@
 language: python
 
-matrix:
-  include:
-    - python: "3.5"
-      env: DJANGO_SETTINGS_MODULE=settings
-      script:
-        - tox -e py35
-        - ./node_modules/gulp/bin/gulp.js test
-        - bash ./run_bokchoy_tests.sh
+python:
+  - 3.5
+  - 3.8
+
+envs:
+  - TOXENV=django22
+  - TOXENV=quality
+
+script:
+  - tox
+  - ./node_modules/gulp/bin/gulp.js test
+  - bash ./run_bokchoy_tests.sh
 
 addons:
   firefox: "46.0"

@@ -35,7 +35,7 @@ class SQLNotificationType(models.Model):
     # any context to pass into the above renderer
     renderer_context = models.TextField(null=True)
 
-    class Meta(object):
+    class Meta:
         """
         ORM metadata about this class
         """
@@ -102,7 +102,7 @@ class SQLNotificationMessage(TimeStampedModel):
 
     object_id = models.CharField(max_length=255, db_index=True, null=True)
 
-    class Meta(object):
+    class Meta:
         """
         ORM metadata about this class
         """
@@ -177,7 +177,7 @@ class SQLUserNotificationArchive(TimeStampedModel):
 
     user_context = models.TextField(null=True)
 
-    class Meta(object):
+    class Meta:
         """
         ORM metadata about this class
         """
@@ -200,7 +200,7 @@ class SQLUserNotification(TimeStampedModel):
 
     user_context = models.TextField(null=True)
 
-    class Meta(object):
+    class Meta:
         """
         ORM metadata about this class
         """
@@ -251,7 +251,7 @@ class SQLNotificationChannel(models.Model):
     SMS, iOS Push Notifications, etc.
     """
 
-    class Meta(object):
+    class Meta:
         """
         ORM metadata about this class
         """
@@ -263,7 +263,7 @@ class SQLNotificationPreference(models.Model):
     """
     Notification preference
     """
-    class Meta(object):
+    class Meta:
         """
         ORM metadata about this class
         """
@@ -317,7 +317,7 @@ class SQLUserNotificationPreferences(TimeStampedModel):
     User specific mappings of Notifications to Channel, to reflect user preferences
     """
 
-    class Meta(object):
+    class Meta:
         """
         ORM metadata about this class
         """
@@ -367,7 +367,7 @@ class SQLNotificationCallbackTimer(TimeStampedModel):
     SQL implementation for NotificationCallbackTimer
     """
 
-    class Meta(object):
+    class Meta:
         """
         ORM metadata about this class
         """

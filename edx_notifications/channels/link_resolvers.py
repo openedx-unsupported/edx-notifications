@@ -105,7 +105,7 @@ class MsgTypeToUrlLinkResolver(BaseLinkResolver):
             return None
 
 
-class MsgTypeToUrlResolverMixin(object):
+class MsgTypeToUrlResolverMixin:
     """
     Helper mix-in class to share logic when channels need to use
     similar link resolvers
