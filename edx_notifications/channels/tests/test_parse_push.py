@@ -19,7 +19,7 @@ from edx_notifications.lib.publisher import register_notification_type
 from edx_notifications.channels.parse_push import _PARSE_SERVICE_USER_ID, ParsePushNotificationChannelProvider
 
 
-class MockCrashingParsePush(object):
+class MockCrashingParsePush:
     """
     Simulate an exception
     """

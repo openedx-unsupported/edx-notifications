@@ -28,7 +28,7 @@ class TestListScopeResolver(NotificationUserScopeResolver):
         """
 
         if scope_name == 'list_scope':
-            return [num for num in range(scope_context['range'])]
+            return list(range(scope_context['range']))
 
         if scope_name == 'badtype_scope':
             return 1
@@ -71,7 +71,7 @@ class DjangoORMResolver(NotificationUserScopeResolver):
 
         if scope_name == 'values_list_query_set':
             return User.objects.values_list('id', flat=True).all()  # pylint: disable=no-member
-        elif scope_name == 'values_query_set':
+        if scope_name == 'values_query_set':
             return User.objects.values('id').all()  # pylint: disable=no-member
         return None
 
@@ -116,7 +116,7 @@ class ScopesTests(TestCase):
 
         self.assertIsNotNone(user_ids)
         self.assertEqual(len(user_ids), 5)
-        self.assertEqual(user_ids, [num for num in range(5)])
+        self.assertEqual(user_ids, list(range(5)))
 
         user_ids = resolve_user_scope('generator_scope', {'range': 10})
 
@@ -126,7 +126,7 @@ class ScopesTests(TestCase):
             compare.append(user_id)
 
         # generators dont support len()
-        self.assertEqual(compare, [num for num in range(10)])
+        self.assertEqual(compare, list(range(10)))
 
     def test_no_resolve(self):
         """
@@ -193,7 +193,7 @@ class ScopesTests(TestCase):
         """
 
         users = resolve_user_scope('values_list_query_set', {})
-        users_list = [user for user in users]
+        users_list = list(users)
         self.assertEqual(len(users_list), 1)
         self.assertEqual(users_list[0], self.test_user.id)
 

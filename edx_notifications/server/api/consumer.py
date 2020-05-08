@@ -79,7 +79,7 @@ def _get_parameters_from_request(request, allowed_parameters):
                     raise ValueError(
                         "Passed in expected bool '{val}' does not map to True or False".format(val=str_val)
                     )
-            elif filter_type == str or filter_type == six.text_type:
+            elif filter_type in (str, six.text_type):
                 value = str_val
             else:
                 raise ValueError('Unknown parameter type {name}'.format(name=filter_type))

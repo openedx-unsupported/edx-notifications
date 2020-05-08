@@ -19,7 +19,7 @@ GROUP_PROJECT_V2_NOTIFICATION_PREFIX = u'open-edx.xblock.group-project-v2'
 GROUP_PROJECT_RENDERER_PREFIX = 'edx_notifications.openedx.group_project'
 
 
-class NotificationMessageTypes(object):
+class NotificationMessageTypes:
     """
     Message type constants
     """

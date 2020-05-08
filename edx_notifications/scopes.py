@@ -31,7 +31,7 @@ class NotificationUserScopeResolver(six.with_metaclass(abc.ABCMeta, object)):
         raise NotImplementedError()
 
 
-class SingleUserScopeResolver(object):
+class SingleUserScopeResolver:
     """
     Simple implementation for scope_name='user' where there must
     be a user_id inside the scope_context
