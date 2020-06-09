@@ -65,6 +65,7 @@ LANGUAGES = (
     ('ES419', u'Latin Spanish'),
     ('es', u'Español'),
     ('ja', u'Japanese'),
+    ('ko', u'한국어 (대한민국)'),  # Korean (Korea)
     ('de', u'German'),
     ('fr', u'french'),
     ('nl', u'Dutch '),

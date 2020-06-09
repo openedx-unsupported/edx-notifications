@@ -1,0 +1,41 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgstr ""
+"Project-Id-Version: edx-notifications\n"
+"POT-Creation-Date: 2017-06-08 14:59+0000\n"
+"PO-Revision-Date: 2017-03-16 12:39+0000\n"
+"Last-Translator: \n"
+"Language-Team: Korean (Korea)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ko_KR\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: templates/django/notifications_widget_header.html:26
+msgid "View unread"
+msgstr "읽지 않은 알림 보기"
+
+#: templates/django/notifications_widget_header.html:27
+msgid "View all"
+msgstr "모두 보기"
+
+#: templates/django/notifications_widget_header.html:28
+msgid "Mark as read"
+msgstr "읽은 상태로 표시"
+
+#: templates/django/notifications_widget_header.html:31
+msgid "Hide"
+msgstr "숨김"
+
+#: templates/django/notifications_widget_header.html:44
+msgid "You have no unread notifications."
+msgstr "읽지 않은 알림이 없습니다."
+
+#: templates/django/notifications_widget_preferences_header.html:11
+msgid "Notification preferences"
+msgstr "알림 기본 설정"
