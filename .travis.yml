@@ -39,6 +39,4 @@ after_success: coveralls
 branches:
     only:
       - master
-      - cdodge/mcka-master
-      - cdodge/notification-digest
-      - rebase-ironwood
+      - development
