@@ -1,6 +1,10 @@
 
 var NotificationPaneView = Backbone.View.extend({
     initialize: function(options){
+        // Use i18n methods from mcka_apros namespace
+        // for getting the right translations
+        this.enableMcki18nNamespace();
+
         this.global_variables = options.global_variables;
         this.view_templates = options.view_templates;
         this.counter_icon_view = options.counter_icon_view;
@@ -55,6 +59,22 @@ var NotificationPaneView = Backbone.View.extend({
         this.hydrate();
     },
 
+
+  enableMcki18nNamespace(){
+      var i18nNamespace = 'mcka_apros';
+      if(i18nNamespace in window && window[i18nNamespace].gettext){
+        i18nNamespace = window[i18nNamespace];
+
+        window.pluralidx = i18nNamespace.pluralidx;
+        window.gettext = i18nNamespace.gettext;
+        window.ngettext = i18nNamespace.ngettext;
+        window.gettext_noop = i18nNamespace.gettext_noop;
+        window.pgettext = i18nNamespace.pgettext;
+        window.npgettext = i18nNamespace.npgettext;
+        window.interpolate = i18nNamespace.interpolate;
+        window.get_format = i18nNamespace.get_format;
+      }
+    },
     append_url_param: function(baseUrl, key, value) {
       key = encodeURI(key); value = encodeURIComponent(value);
       var path = baseUrl.split('?')[0];
