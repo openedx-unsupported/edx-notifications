@@ -1,11 +1,14 @@
-<script src="{{ STATIC_URL }}edx_notifications/js/models/notification_preferences_model.js"></script>
-<script src="{{ STATIC_URL }}edx_notifications/js/collections/notification_preferences_collection.js"></script>
-<script src="{{ STATIC_URL }}edx_notifications/js/views/notification_preferences_view.js"></script>
+{% load static %}
+{% load i18n %}
+
+<script src="{% static 'edx_notifications/js/models/notification_preferences_model.js' %}"></script>
+<script src="{% static 'edx_notifications/js/collections/notification_preferences_collection.js' %}"></script>
+<script src="{% static 'edx_notifications/js/views/notification_preferences_view.js' %}"></script>
 
 <script type="text/template" id="xns-notification-preferences-template">
     <div class='xns-preference-pane'>
         <div class='xns-preference-pane-header'>
-            <span>Notification preferences</span>
+            <span> {% trans "Notification preferences" %} </span>
         </div>
         <% _.each(notification_preferences, function(notification_preference){ %>
             <% if ('user_value' in notification_preference) { %>

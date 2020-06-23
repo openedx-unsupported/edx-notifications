@@ -1,3 +1,5 @@
+var notification_refresher = null;
+
 var CounterIconView = Backbone.View.extend({
   initialize: function(options){
       this.options = options;
@@ -37,7 +39,7 @@ var CounterIconView = Backbone.View.extend({
       if(this.refresh_watcher.name == 'short-poll'){
           var period = this.refresh_watcher.args.poll_period_secs;
           var self = this;
-          setInterval(function() { self.autoRefreshNotifications(self); }, period * 1000);
+          notification_refresher = setInterval(function() { self.autoRefreshNotifications(self); }, period * 1000);
       }
   },
 
@@ -174,6 +176,10 @@ var CounterIconView = Backbone.View.extend({
                      counterView.notification_pane.hydrate();
                  }
              }
+         }
+     }).error(function(response){
+         if(response.status === 403){
+             clearInterval(notification_refresher);
          }
      });
   },

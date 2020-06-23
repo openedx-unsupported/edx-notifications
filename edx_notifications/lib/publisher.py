@@ -6,32 +6,31 @@ xBlock runtime service named 'notifications'. Be aware that adding
 any new methods here will also be exposed to xBlocks!!!!
 """
 
-import logging
-import types
-import datetime
-import pytz
+from __future__ import absolute_import
+
 import copy
+import types
+import logging
+import datetime
+
+import six
+import pytz
 from contracts import contract
+from django.db.models.query import QuerySet
 
-from django.db.models.query import ValuesQuerySet, ValuesListQuerySet
-
-from edx_notifications.channels.channel import get_notification_channel
 from edx_notifications import const
-from edx_notifications.stores.store import notification_store
-from edx_notifications.exceptions import ItemNotFoundError
-
-from edx_notifications.data import (
-    NotificationType,
-    NotificationMessage,
-    NotificationCallbackTimer,
-)
-
-from edx_notifications.renderers.renderer import (
-    register_renderer
-)
+from edx_notifications.data import NotificationType, NotificationMessage, NotificationCallbackTimer
 from edx_notifications.scopes import resolve_user_scope, has_user_scope_resolver
+from edx_notifications.exceptions import ItemNotFoundError
+from edx_notifications.stores.store import notification_store
+from edx_notifications.channels.channel import get_notification_channel
+from edx_notifications.renderers.renderer import register_renderer
 
 log = logging.getLogger(__name__)
+
+
+if six.PY3:
+    basestring = str  # pylint: disable=invalid-name,redefined-builtin
 
 
 @contract(msg_type=NotificationType)
@@ -40,7 +39,7 @@ def register_notification_type(msg_type):
     Registers a new notification type
     """
 
-    log.info('Registering NotificationType: {msg_type}'.format(msg_type=str(msg_type)))
+    log.info('Registering NotificationType: %s', str(msg_type))
 
     # do validation
     msg_type.validate()
@@ -142,7 +141,7 @@ def bulk_publish_notification_to_users(user_ids, msg, exclude_user_ids=None,
 
     """
 
-    log.info('Publishing bulk Notification with message: {msg}'.format(msg=msg))
+    log.info('Publishing bulk Notification with message: %s', msg)
 
     # validate the msg, this will raise a ValidationError if there
     # is something malformatted or missing in the NotificationMessage
@@ -150,12 +149,11 @@ def bulk_publish_notification_to_users(user_ids, msg, exclude_user_ids=None,
 
     if (not isinstance(user_ids, list) and
             not isinstance(user_ids, types.GeneratorType) and
-            not isinstance(user_ids, ValuesListQuerySet) and
-            not isinstance(user_ids, ValuesQuerySet)):
+            not isinstance(user_ids, QuerySet)):
 
         err_msg = (
             'bulk_publish_notification_to_users() can only be called with a user_ids argument '
-            'of type list, GeneratorType, or ValuesQuerySet/ValuesListQuerySet. Type {arg_type} was passed in!'
+            'of type list, GeneratorType, or QuerySet. Type {arg_type} was passed in!'
             .format(arg_type=type(user_ids))
         )
         raise TypeError(err_msg)
@@ -258,7 +256,7 @@ def publish_timed_notification(msg, send_at, scope_name, scope_context, timer_na
             # so, then we should remove any previously stored
             # timed notification
             cancel_timed_notification(timer_name, exception_on_not_found=False)
-        return
+        return None
 
     # make sure we can resolve the scope_name
     if not has_user_scope_resolver(scope_name):

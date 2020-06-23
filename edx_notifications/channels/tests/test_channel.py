@@ -2,23 +2,20 @@
 All tests regarding channel.py
 """
 
+from __future__ import absolute_import
+
 from django.test import TestCase
 from django.test.utils import override_settings
 from django.core.exceptions import ImproperlyConfigured
 
-from edx_notifications.channels.channel import (
-    get_notification_channel,
-    reset_notification_channels,
-    BaseNotificationChannelProvider,
-)
-
+from edx_notifications.data import NotificationType
 from edx_notifications.channels.null import NullNotificationChannel
-
-from edx_notifications.channels.durable import BaseDurableNotificationChannel
-
-from edx_notifications.data import (
-    NotificationType,
+from edx_notifications.channels.channel import (
+    BaseNotificationChannelProvider,
+    get_notification_channel,
+    reset_notification_channels
 )
+from edx_notifications.channels.durable import BaseDurableNotificationChannel
 
 # list all known channel providers
 _NOTIFICATION_CHANNEL_PROVIDERS = {

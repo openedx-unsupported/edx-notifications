@@ -1,3 +1,5 @@
+#!/usr/bin/bash
+# -*- coding: utf-8 -*
 """
 Django settings for edx_notifications test project.
 For more information on this file, see
@@ -7,7 +9,11 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from __future__ import absolute_import
+
 import os
+import sys
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -18,7 +24,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # SECURITY WARNING: don't run with debug turned on in production!
 # This is just a container for running tests
 DEBUG = True
-TEMPLATE_DEBUG = True
 SECRET_KEY='SHHHHHH'
 
 # Application definition
@@ -36,6 +41,32 @@ INSTALLED_APPS = (
     'edx_notifications.server.web',
     'django_nose',
 )
+
+js_info_dict = {
+    'packages': 'edx_notifications.server.web',
+ }
+# js_info_dict = {
+#     'packages': 'edx_notifications.server.web',
+#  }
+#
+# LANGUAGE_CODE = 'en'
+# LANGUAGES = (
+#     ('en', u'English '),
+#     ('ar', u'العربية'),  # Arabic
+#     ('Ar-sa', u'Arabic'),  # Arabic Saudi Arabia
+#     ('zh', u'中文(简体)'),
+#     ('ES419', u'Latin Spanish'),
+#     ('es', u'Español'),
+#     ('ja', u'Japanese'),
+#     ('de', u'German'),
+#     ('fr', u'french'),
+#     ('nl', u'Dutch '),
+#     ('pt', u'Português')
+# )
+#
+# LOCALE_PATHS = [
+#     os.path.join(BASE_DIR, 'locale'),
+# ]
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -64,11 +95,6 @@ ROOT_URLCONF = 'testserver.urls'
 
 WSGI_APPLICATION = 'testserver.wsgi.application'
 
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
-
 # smtp configuration settings.
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'your-user-email'
@@ -76,10 +102,22 @@ EMAIL_HOST_PASSWORD = 'user-email-password'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-TEMPLATE_DIRS = [
-    os.path.join(BASE_DIR, 'testserver/templates'),
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'testserver/templates')],
+        'OPTIONS': {
+            'debug': True,
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+            ],
+            'loaders': [
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+            ]
+        },
+    }
 ]
-
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
@@ -183,6 +221,10 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
     }
 }
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.i18n', # this one
+ )
+
 # list all of the mappings of notification types to channel
 NOTIFICATION_CHANNEL_PROVIDER_TYPE_MAPS = {
     '*': 'durable',  # default global mapping
@@ -196,7 +238,6 @@ NOTIFICATIONS_PREFERENCE_DEFAULTS = {
     'WEEKLY_DIGEST': 'true',
 }
 
-import sys
 LOGGING = {
     'version': 1,
     'handlers': {

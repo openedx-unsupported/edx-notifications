@@ -3,20 +3,18 @@ Run these tests @ Devstack:
     rake fasttest_lms[common/djangoapps/api_manager/management/commands/tests/test_migrate_orgdata.py]
 """
 
-import pytz
+from __future__ import absolute_import
+
 from datetime import datetime, timedelta
 
+import pytz
 from django.test import TestCase
 from django.dispatch import receiver
 
-from edx_notifications.management.commands import background_notification_check
-
-from edx_notifications.stores.store import notification_store
-from edx_notifications.background import (
-    perform_notification_scan,
-)
 from edx_notifications.data import NotificationCallbackTimer
-
+from edx_notifications.background import perform_notification_scan
+from edx_notifications.stores.store import notification_store
+from edx_notifications.management.commands import background_notification_check
 
 _SIGNAL_RAISED = False
 

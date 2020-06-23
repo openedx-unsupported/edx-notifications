@@ -2,6 +2,8 @@
 Unit tests for utils.py
 """
 
+from __future__ import absolute_import
+
 from django.test import TestCase
 
 from edx_notifications.server.web.utils import get_notifications_widget_context
@@ -37,4 +39,4 @@ class TestUtils(TestCase):
         # make sure nested dictionary overrides work without destroying
         # the base values
         self.assertFalse(render_context['global_variables']['always_show_dates_on_unread'])
-        self.assertEquals(render_context['global_variables']['app_name'], 'Your App Name Here')
+        self.assertEqual(render_context['global_variables']['app_name'], 'Your App Name Here')

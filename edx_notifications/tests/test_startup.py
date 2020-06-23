@@ -2,6 +2,8 @@
 Tests for the startup process
 """
 
+from __future__ import absolute_import
+
 from django.test import TestCase
 from django.dispatch import receiver
 

@@ -2,29 +2,19 @@
 Tests for renderer.py
 """
 
+from __future__ import absolute_import
+
 import json
-from django.test import TestCase
-import pytz
 import datetime
 
+import pytz
+from django.test import TestCase
 
-from edx_notifications.const import (
-    RENDER_FORMAT_HTML,
-    RENDER_FORMAT_SMS,
-    RENDER_FORMAT_JSON
-)
-from edx_notifications.renderers.renderer import (
-    BaseNotificationRenderer,
-    get_renderer_for_type,
-)
-
-from edx_notifications.renderers.basic import (
-    UnderscoreStaticFileRenderer,
-    JsonRenderer
-)
-
-from edx_notifications.data import NotificationMessage, NotificationType
+from edx_notifications.data import NotificationType, NotificationMessage
+from edx_notifications.const import RENDER_FORMAT_SMS, RENDER_FORMAT_HTML, RENDER_FORMAT_JSON
 from edx_notifications.lib.publisher import register_notification_type
+from edx_notifications.renderers.basic import JsonRenderer, UnderscoreStaticFileRenderer
+from edx_notifications.renderers.renderer import BaseNotificationRenderer, get_renderer_for_type
 
 
 class TestBadRenderer(BaseNotificationRenderer):

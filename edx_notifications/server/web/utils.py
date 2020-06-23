@@ -2,8 +2,11 @@
 Assortment of helper utility methods
 """
 
-from django.templatetags.static import static
+from __future__ import absolute_import
+
+import six
 from django.core.urlresolvers import reverse
+from django.templatetags.static import static
 
 
 class RecursiveDictionary(dict):
@@ -21,11 +24,11 @@ class RecursiveDictionary(dict):
         {'foo': {'baz': 36, 'bar': 42}}
         """
         try:
-            iterator = other.iteritems()
+            iterator = six.iteritems(other)
         except AttributeError:
             iterator = other
         self.iter_rec_update(iterator)
-        self.iter_rec_update(third.iteritems())
+        self.iter_rec_update(six.iteritems(third))
 
     def iter_rec_update(self, iterator):
         """
@@ -38,9 +41,6 @@ class RecursiveDictionary(dict):
                 self[key].rec_update(value)
             else:
                 self[key] = value
-
-    def __repr__(self):
-        return super(self.__class__, self).__repr__()
 
 
 def get_template_path(template_name):

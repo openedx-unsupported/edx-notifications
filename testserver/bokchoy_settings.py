@@ -9,7 +9,10 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from __future__ import absolute_import
+
 import os
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -20,7 +23,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # SECURITY WARNING: don't run with debug turned on in production!
 # This is just a container for running tests
 DEBUG = True
-TEMPLATE_DEBUG = True
 SECRET_KEY='SHHHHHH'
 
 # Application definition
@@ -39,7 +41,6 @@ INSTALLED_APPS = (
     'django_nose',
 )
 
-
 LANGUAGE_CODE = "en"
 LANGUAGE_COOKIE_NAME = "openedx-language-preference"
 LANGUAGES = (
@@ -48,6 +49,7 @@ LANGUAGES = (
     ('es', u'Español'),
     ('nl', u'Dutch '),
     ('pt', u'Português'),
+    ('zh-ch', u'中文(简体)'),
     ('zh-cn', u'中文(简体)'),
     ('fr', u'Français'),
     ('jp', u'日本人'),
@@ -66,7 +68,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-
 )
 
 REST_FRAMEWORK = {
@@ -88,15 +89,23 @@ ROOT_URLCONF = 'testserver.urls'
 
 WSGI_APPLICATION = 'testserver.wsgi.application'
 
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
 
-TEMPLATE_DIRS = [
-    os.path.join(BASE_DIR, 'testserver/templates'),
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'testserver/templates')],
+        'OPTIONS': {
+            'debug': True,
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+            ],
+            'loaders': [
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+            ]
+        },
+    }
 ]
-
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases

@@ -4,21 +4,24 @@ generic dictionaries from being passed around, plus this will help avoid any
 implicit database-specific bindings that come with any uses of ORMs.
 """
 
+from __future__ import absolute_import
+
 import copy
+
 from django.core.exceptions import ValidationError
 
 from edx_notifications import const
-
 from edx_notifications.base_data import (
-    StringField,
     DictField,
-    DateTimeField,
-    IntegerField,
     EnumField,
-    RelatedObjectField,
-    BaseDataObject,
+    StringField,
     BooleanField,
-    LazyField)
+    IntegerField,
+    DateTimeField,
+    BaseDataObject,
+    RelatedObjectField,
+    LazyField
+)
 
 
 class NotificationChannel(BaseDataObject):

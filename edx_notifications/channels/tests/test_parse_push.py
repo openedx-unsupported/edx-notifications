@@ -2,30 +2,21 @@
 Unit tests for parse_push.py
 """
 
-import pytz
+from __future__ import absolute_import
+
 from datetime import datetime, timedelta
+
+import pytz
 from mock import patch
 from django.test import TestCase
-
-from edx_notifications.channels.parse_push import (
-    ParsePushNotificationChannelProvider,
-    _PARSE_SERVICE_USER_ID,
-)
-
-from edx_notifications.lib.publisher import (
-    register_notification_type,
-)
-
-from edx_notifications.data import (
-    NotificationMessage,
-    NotificationType,
-)
-from edx_notifications.timer import poll_and_execute_timers
-from edx_notifications.exceptions import ChannelError
+from parse_rest.core import ParseError
 
 from edx_notifications import startup
-
-from parse_rest.core import ParseError
+from edx_notifications.data import NotificationType, NotificationMessage
+from edx_notifications.timer import poll_and_execute_timers
+from edx_notifications.exceptions import ChannelError
+from edx_notifications.lib.publisher import register_notification_type
+from edx_notifications.channels.parse_push import _PARSE_SERVICE_USER_ID, ParsePushNotificationChannelProvider
 
 
 class MockCrashingParsePush(object):

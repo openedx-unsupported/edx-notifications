@@ -1,3 +1,4 @@
+
 var NotificationPaneView = Backbone.View.extend({
     initialize: function(options){
         this.global_variables = options.global_variables;
@@ -5,7 +6,17 @@ var NotificationPaneView = Backbone.View.extend({
         this.counter_icon_view = options.counter_icon_view;
         this.namespace = options.namespace;
         this.endpoints = options.endpoints;
-
+        this.EDX_LANGUAGES_CODE_MAP  = {
+            'ar': 'ar',
+            'de': 'de-de',
+            'en': 'en',
+            'es': 'es-419',
+            'fr': 'fr',
+            'ja': 'ja-jp',
+            'nl': 'nl-nl',
+            'pt': 'pt-br',
+            'zh': 'zh-cn',
+        };
         var self = this;
 
         /* get out main underscore view template */
@@ -38,6 +49,7 @@ var NotificationPaneView = Backbone.View.extend({
 
         /* re-render if the model changes */
         this.listenTo(this.collection, 'change', this.collectionChanged);
+
 
         this.hydrate();
     },
@@ -115,8 +127,10 @@ var NotificationPaneView = Backbone.View.extend({
         /* we might - at some point - add a visual element to the */
         /* loading, like a spinner */
         var self = this;
+        var language_code = ($('html').attr('lang') ? $('html').attr('lang') : 'en-us');
+        var language_code_mapped =self.EDX_LANGUAGES_CODE_MAP[language_code];
         self.$el.addClass('xns-ui-loading');
-        this.collection.fetch({
+        this.collection.fetch({data: $.param({ course_lang: language_code_mapped}),
             success: function(){
                 self.$el.removeClass('xns-ui-loading');
                 self.render();
@@ -178,27 +192,27 @@ var NotificationPaneView = Backbone.View.extend({
         groups: {
             'announcements': {
                 name: 'announcements',
-                display_name: 'Announcements',
+                display_name: gettext('Announcements'),
                 group_order: 1
             },
             'group_work': {
                 name: 'group_work',
-                display_name: 'Group Work',
+                display_name: gettext('Group Work'),
                 group_order: 2
             },
             'leaderboards': {
                 name: 'leaderboards',
-                display_name: 'Leaderboards',
+                display_name: gettext('Leaderboards'),
                 group_order: 3
             },
             'discussions': {
                 name: 'discussions',
-                display_name: 'Discussion',
+                display_name: gettext('Discussion'),
                 group_order: 4
             },
             '_default': {
                 name: '_default',
-                display_name: 'Other',
+                display_name: gettext('Other'),
                 group_order: 5
             }
         },
@@ -213,6 +227,7 @@ var NotificationPaneView = Backbone.View.extend({
             '*': '_default'
         }
     },
+
     get_group_name_for_msg_type: function(msg_type) {
         /* see if there is an exact match */
         if (msg_type in this.grouping_config.type_mapping) {
@@ -379,7 +394,7 @@ var NotificationPaneView = Backbone.View.extend({
             var created_str = '';
             var created_date = new Date(user_msg.created);
             if (Date.equals(new Date(created_date).clearTime(), Date.today())) {
-                created_str = 'Today at '+ created_date.toString("h:mmtt");
+                created_str = gettext('Today at ')+ created_date.toString("h:mmtt");
             } else {
                 created_str = created_date.toString("MMMM dd, yyyy") + ' at ' + created_date.toString("h:mmtt");
             }
@@ -448,8 +463,8 @@ var NotificationPaneView = Backbone.View.extend({
             }
             self.collection.fetch(
                 {
-                    headers: {
-                        "X-CSRFToken": this.getCSRFToken()
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader('X-CSRFToken', self.getCSRFToken());
                     },
                     type: 'POST',
                     data: data,
@@ -490,10 +505,11 @@ var NotificationPaneView = Backbone.View.extend({
             this.collection.url = this.mark_notification_read_endpoint + messageId;
 
             var self = this;
+            var csrf_token = this.getCSRFToken();
             self.collection.fetch(
                 {
-                    headers: {
-                        "X-CSRFToken": this.getCSRFToken()
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader('X-CSRFToken', csrf_token);
                     },
                     data: {
                       "mark_as": "read"
@@ -523,8 +539,8 @@ var NotificationPaneView = Backbone.View.extend({
             var self = this;
             self.collection.fetch(
                 {
-                    headers: {
-                        "X-CSRFToken": this.getCSRFToken()
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader('X-CSRFToken', self.getCSRFToken());
                     },
                     data: {
                       "mark_as": "read"

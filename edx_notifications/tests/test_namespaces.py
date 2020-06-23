@@ -2,16 +2,19 @@
 Unit tests for namespaces.py
 """
 
+from __future__ import absolute_import
+
 from django.test import TestCase
 
 from edx_notifications.namespaces import (
     NotificationNamespaceResolver,
     DefaultNotificationNamespaceResolver,
-    register_namespace_resolver,
-    resolve_namespace
+    resolve_namespace,
+    register_namespace_resolver
 )
 
 
+# pylint: disable=useless-super-delegation
 class BadNotificationNamespaceResolver(NotificationNamespaceResolver):
     """
     A resolver that does not properly implement the interface

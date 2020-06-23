@@ -1,26 +1,27 @@
 """
 All URL mappings for HTTP-based APIs
 """
-from django.conf.urls import patterns, url
+from __future__ import absolute_import
+
+from django.conf.urls import url
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from edx_notifications.server.api import consumer as consumer_views, admin as admin_views
 from .url_regex import (
-    CONSUMER_NOTIFICATIONS_COUNT_REGEX,
-    CONSUMER_NOTIFICATION_DETAIL_REGEX,
-    CONSUMER_NOTIFICATIONS_MARK_NOTIFICATIONS_REGEX,
     CONSUMER_NOTIFICATIONS_REGEX,
+    CONSUMER_USER_PREFERENCES_REGEX,
+    CONSUMER_NOTIFICATION_DETAIL_REGEX,
+    CONSUMER_NOTIFICATIONS_COUNT_REGEX,
     CONSUMER_RENDERERS_TEMPLATES_REGEX,
-    CONSUMER_NOTIFICATION_DETAIL_NO_PARAM_REGEX,
     CONSUMER_USER_PREFERENCES_DETAIL_REGEX,
     CONSUMER_NOTIFICATIONS_PREFERENCES_REGEX,
-    CONSUMER_USER_PREFERENCES_REGEX,
+    CONSUMER_NOTIFICATION_DETAIL_NO_PARAM_REGEX,
+    CONSUMER_NOTIFICATIONS_MARK_NOTIFICATIONS_REGEX,
     CONSUMER_USER_PREFERENCES_DETAIL_NO_PARAM_REGEX,
     ADMIN_USERS_DELETE
 )
 
-urlpatterns = patterns(  # pylint: disable=invalid-name
-    '',
+urlpatterns = [  # pylint: disable=invalid-name
     url(
         CONSUMER_NOTIFICATIONS_COUNT_REGEX,
         consumer_views.NotificationCount.as_view(),
@@ -77,6 +78,6 @@ urlpatterns = patterns(  # pylint: disable=invalid-name
         name='edx_notifications.admin.delete_users_data'
     ),
 
-)
+]
 
 urlpatterns = format_suffix_patterns(urlpatterns)  # pylint: disable=invalid-name

@@ -10,7 +10,17 @@ var NotificationPreferencesView = Backbone.View.extend({
         this.user_notification_preferences = options.endpoints.user_notification_preferences;
         this.user_notification_preferences_detail = options.endpoints.user_notification_preferences_detail;
 
-
+        this.EDX_LANGUAGES_CODE_MAP  = {
+            'ar': 'ar',
+            'de': 'de-de',
+            'en': 'en',
+            'es': 'es-419',
+            'fr': 'fr',
+            'ja': 'ja-jp',
+            'nl': 'nl-nl',
+            'pt': 'pt-br',
+            'zh': 'zh-cn',
+        };
         /* set up our collection */
         this.collection = new NotificationPreferencesCollection();
 
@@ -76,7 +86,9 @@ var NotificationPreferencesView = Backbone.View.extend({
         /* we might - at some point - add a visual element to the */
         /* loading, like a spinner */
         var self = this;
-        this.collection.fetch({
+        var language_code = ($('html').attr('lang') ? $('html').attr('lang') : 'en-us');
+         var language_code_mapped =self.EDX_LANGUAGES_CODE_MAP[language_code];
+        this.collection.fetch({data: $.param({ course_lang: language_code_mapped}),
             success: function(){
                 self.render();
             }

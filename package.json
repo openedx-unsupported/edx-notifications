@@ -5,18 +5,18 @@
     "url": "git://github.com/edx/edx-notifications"
   },
   "devDependencies": {
-    "gulp": "latest",
-    "gulp-karma": "latest",
+    "gulp": "4.0.2",
+    "gulp-karma": "0.0.5",
     "karma": ">=0.10 <=0.13",
-    "karma-chrome-launcher": "latest",
-    "karma-coverage": "latest",
-    "karma-firefox-launcher": "latest",
-    "jasmine-core": "latest",
-    "karma-jasmine": "latest",
-    "karma-jasmine-jquery": "latest",
-    "karma-phantomjs-launcher": "latest",
-    "sinon": "latest",
-    "karma-sinon": "latest",
-    "karma-spec-reporter": "latest"
+    "karma-chrome-launcher": "3.1.0",
+    "karma-coverage": "2.0.1",
+    "karma-firefox-launcher": "1.2.0",
+    "jasmine-core": "3.5.0",
+    "karma-jasmine": "2.0.1",
+    "karma-jasmine-jquery": "0.1.1",
+    "karma-phantomjs-launcher": "1.0.4",
+    "sinon": "<8.0.0",
+    "karma-sinon": "1.0.5",
+    "karma-spec-reporter": "0.0.32"
   }
 }

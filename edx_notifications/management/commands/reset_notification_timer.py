@@ -6,9 +6,9 @@ Django management command to fetch records from SQLNotificationCallbackTimer wit
 
 import logging.config
 import sys
+from datetime import datetime, timedelta
 import pytz
 
-from datetime import datetime, timedelta
 from django.core.management.base import BaseCommand
 
 from edx_notifications.exceptions import ItemNotFoundError
@@ -62,7 +62,7 @@ class Command(BaseCommand):
         for timer in timers_not_executed:
             if timer.name not in self.INCLUDED_TIMERS:
                 log.info(
-                    'Cancelling timed Notification named {timer}...'.format(timer=str(timer.name)))
+                    'Cancelling timed Notification named %s...', str(timer.name))
 
                 timer.is_active = False
                 self.store.save_notification_timer(timer)

@@ -2,17 +2,16 @@
 Tests for the callback.py
 """
 
+from __future__ import absolute_import
+
+from six.moves import range
 from django.test import TestCase
 
-from edx_notifications.data import (
-    NotificationCallbackTimer,
-    NotificationMessage,
-    NotificationType,
-)
-from edx_notifications.tests.test_scopes import TestListScopeResolver
+from edx_notifications.data import NotificationType, NotificationMessage, NotificationCallbackTimer
 from edx_notifications.scopes import register_user_scope_resolver
 from edx_notifications.callbacks import NotificationDispatchMessageCallback
 from edx_notifications.stores.store import notification_store
+from edx_notifications.tests.test_scopes import TestListScopeResolver
 
 
 class CallbackTests(TestCase):
@@ -75,7 +74,7 @@ class CallbackTests(TestCase):
         """
 
         # assert we have no notifications
-        self.assertEquals(self.store.get_num_notifications_for_user(1), 0)
+        self.assertEqual(self.store.get_num_notifications_for_user(1), 0)
 
         results = self.callback.notification_timer_callback(self.timer_for_user)
 
@@ -85,7 +84,7 @@ class CallbackTests(TestCase):
         self.assertIsNone(results['reschedule_in_mins'])
 
         # assert we now have a notification
-        self.assertEquals(self.store.get_num_notifications_for_user(1), 1)
+        self.assertEqual(self.store.get_num_notifications_for_user(1), 1)
 
     def test_execute_scoped_callback(self):
         """
@@ -95,7 +94,7 @@ class CallbackTests(TestCase):
 
         # assert we have no notifications
         for user_id in range(self.timer_for_group.context['distribution_scope']['scope_context']['range']):
-            self.assertEquals(self.store.get_num_notifications_for_user(user_id), 0)
+            self.assertEqual(self.store.get_num_notifications_for_user(user_id), 0)
 
         results = self.callback.notification_timer_callback(self.timer_for_group)
 
@@ -106,7 +105,7 @@ class CallbackTests(TestCase):
 
         # assert we now have a notification
         for user_id in range(self.timer_for_group.context['distribution_scope']['scope_context']['range']):
-            self.assertEquals(self.store.get_num_notifications_for_user(user_id), 1)
+            self.assertEqual(self.store.get_num_notifications_for_user(user_id), 1)
 
     def test_bad_context(self):
         """

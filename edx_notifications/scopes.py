@@ -2,22 +2,24 @@
 File that manages how notification distribution scopes are handled
 """
 
-import types
+from __future__ import absolute_import
+
 import abc
-from django.db.models.query import ValuesQuerySet, ValuesListQuerySet
+import types
+
+import six
+from django.db.models.query import QuerySet
 
 _SCOPE_RESOLVERS = {}
 
 
-class NotificationUserScopeResolver(object):
+class NotificationUserScopeResolver(six.with_metaclass(abc.ABCMeta, object)):
     """
     Abstract interface that has one sole purpose
     to translate a scope_name, scope_context to
     a collection of user_ids as a list, function generator, or
     ValuesQuerySet/ValuesListQuerySet (only!!!)
     """
-
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def resolve(self, scope_name, scope_context, instance_context):
@@ -97,7 +99,7 @@ def resolve_user_scope(scope_name, scope_context):
         raise TypeError(err_msg)
 
     user_ids = None
-    for _, instance_info in _SCOPE_RESOLVERS[scope_name].iteritems():
+    for _, instance_info in six.iteritems(_SCOPE_RESOLVERS[scope_name]):
         instance = instance_info['instance']
         user_ids = instance.resolve(scope_name, scope_context, instance_info['instance_context'])
 
@@ -107,8 +109,7 @@ def resolve_user_scope(scope_name, scope_context):
 
     if (not isinstance(user_ids, list) and
             not isinstance(user_ids, types.GeneratorType) and
-            not isinstance(user_ids, ValuesListQuerySet) and
-            not isinstance(user_ids, ValuesQuerySet)):
+            not isinstance(user_ids, QuerySet)):
 
         err_msg = (
             'NotificationUserScopeResolver "{scope_name}" with context "{scope_context}" should return an instance '

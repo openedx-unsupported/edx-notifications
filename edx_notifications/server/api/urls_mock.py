@@ -3,19 +3,21 @@ All URL mappings for the API's which do not get mapped to Django REST Frameworks
 This is useful for when we need a UI tier to do a reverse on URL's where we don't need to import
 all of the backend
 """
-from django.conf.urls import patterns, url
+from __future__ import absolute_import
+
 from django.http import HttpResponseBadRequest
+from django.conf.urls import url
 
 from .url_regex import (
-    CONSUMER_NOTIFICATIONS_COUNT_REGEX,
-    CONSUMER_NOTIFICATION_DETAIL_REGEX,
-    CONSUMER_NOTIFICATIONS_MARK_NOTIFICATIONS_REGEX,
     CONSUMER_NOTIFICATIONS_REGEX,
+    CONSUMER_USER_PREFERENCES_REGEX,
+    CONSUMER_NOTIFICATION_DETAIL_REGEX,
+    CONSUMER_NOTIFICATIONS_COUNT_REGEX,
     CONSUMER_RENDERERS_TEMPLATES_REGEX,
-    CONSUMER_NOTIFICATION_DETAIL_NO_PARAM_REGEX,
     CONSUMER_USER_PREFERENCES_DETAIL_REGEX,
     CONSUMER_NOTIFICATIONS_PREFERENCES_REGEX,
-    CONSUMER_USER_PREFERENCES_REGEX,
+    CONSUMER_NOTIFICATION_DETAIL_NO_PARAM_REGEX,
+    CONSUMER_NOTIFICATIONS_MARK_NOTIFICATIONS_REGEX,
     CONSUMER_USER_PREFERENCES_DETAIL_NO_PARAM_REGEX,
     ADMIN_USERS_DELETE
 )
@@ -28,8 +30,7 @@ def mock_handler(request):  # pylint: disable=unused-argument
     return HttpResponseBadRequest()
 
 
-urlpatterns = patterns(  # pylint: disable=invalid-name
-    '',
+urlpatterns = [  # pylint: disable=invalid-name
     url(
         CONSUMER_NOTIFICATIONS_COUNT_REGEX,
         mock_handler,
@@ -85,4 +86,4 @@ urlpatterns = patterns(  # pylint: disable=invalid-name
         mock_handler,
         name='edx_notifications.admin.delete_user_notifications'
     ),
-)
+]

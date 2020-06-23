@@ -2,25 +2,25 @@
 Concrete MySQL implementation of the data provider interface
 """
 
-import copy
-import pylru
-import pytz
-from datetime import datetime
-from django.core.exceptions import ObjectDoesNotExist
-from django.db import IntegrityError
+from __future__ import absolute_import
 
-from edx_notifications.stores.store import BaseNotificationStoreProvider
-from edx_notifications.exceptions import (
-    ItemNotFoundError,
-    BulkOperationTooLarge,
-)
+import copy
+from datetime import datetime
+
+import pytz
+import pylru
+from django.db import IntegrityError
+from django.core.exceptions import ObjectDoesNotExist
+
 from edx_notifications import const
+from edx_notifications.exceptions import ItemNotFoundError, BulkOperationTooLarge
+from edx_notifications.stores.store import BaseNotificationStoreProvider
 from edx_notifications.stores.sql.models import (
-    SQLNotificationMessage,
     SQLNotificationType,
     SQLUserNotification,
-    SQLNotificationCallbackTimer,
+    SQLNotificationMessage,
     SQLNotificationPreference,
+    SQLNotificationCallbackTimer,
     SQLUserNotificationPreferences,
     SQLUserNotificationArchive
 )

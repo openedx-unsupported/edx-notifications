@@ -3,21 +3,21 @@ Defines the abstract interface for a class that can handle
 a callback when the timer expires
 """
 
-import logging
-import pytz
-import copy
-from datetime import datetime, timedelta
+from __future__ import absolute_import
 
+import copy
+import logging
+from datetime import datetime, timedelta
 from importlib import import_module
 
+import pytz
 from django.dispatch import receiver
-from edx_notifications.data import NotificationCallbackTimer
-from edx_notifications.exceptions import ItemNotFoundError
 
-from edx_notifications.stores.store import notification_store
 from edx_notifications import const
-
+from edx_notifications.data import NotificationCallbackTimer
 from edx_notifications.signals import perform_notification_scan, perform_timer_registrations
+from edx_notifications.exceptions import ItemNotFoundError
+from edx_notifications.stores.store import notification_store
 
 PURGE_NOTIFICATIONS_TIMER_NAME = 'purge-notifications-timer'
 
@@ -38,14 +38,14 @@ def poll_and_execute_timers(**kwargs):  # pylint: disable=unused-argument
     timers_not_executed = store.get_all_active_timers()
 
     for timer in timers_not_executed:
-        log.info('Executing timer: {timer}...'.format(timer=str(timer)))
+        log.info('Executing timer: %s...', str(timer))
 
         timer.executed_at = datetime.now(pytz.UTC)
         store.save_notification_timer(timer)
 
         try:
             module_path, _, name = timer.class_name.rpartition('.')
-            log.info('Creating TimerCallback at class_name "{class_name}"'.format(class_name=timer.class_name))
+            log.info('Creating TimerCallback at class_name "%s"', timer.class_name)
 
             class_ = getattr(import_module(module_path), name)
             handler = class_()
@@ -85,7 +85,7 @@ def poll_and_execute_timers(**kwargs):  # pylint: disable=unused-argument
                 timer.context.update(results['context_update'])
 
             store.save_notification_timer(timer)
-        except Exception, ex:  # pylint: disable=broad-except
+        except Exception as ex:  # pylint: disable=broad-except
             # generic error (possibly couldn't create class_name instance?)
             timer.err_msg = str(ex)
             timer.is_active = False

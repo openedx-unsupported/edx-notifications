@@ -2,21 +2,23 @@
 File containing link resolvers
 """
 
-from importlib import import_module
-import logging
+from __future__ import absolute_import
+
 import abc
+import logging
+from importlib import import_module
+
+import six
 
 from edx_notifications.data import NotificationMessage
 
 log = logging.getLogger(__name__)
 
 
-class BaseLinkResolver(object):
+class BaseLinkResolver(six.with_metaclass(abc.ABCMeta, object)):
     """
     The abstract base class that all link resolvers will need to implement
     """
-
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def resolve(self, msg_type_name, link_name, params, exact_match_only=False):
@@ -83,8 +85,8 @@ class MsgTypeToUrlLinkResolver(BaseLinkResolver):
             return None
 
         try:
-            return mapping.format(**params)  # pylint:disable=star-args
-        except KeyError, ex:
+            return mapping.format(**params)
+        except KeyError as ex:
             err_msg = (
                 'TypeToURLResolver: attempted to resolve link_name "{link_name}" '
                 'for msg_type "{msg_type}" with string "{format_string}" and '
@@ -138,7 +140,7 @@ class MsgTypeToUrlResolverMixin(object):
         """
 
         if msg.resolve_links:
-            for link_name, link_params in msg.resolve_links.iteritems():
+            for link_name, link_params in six.iteritems(msg.resolve_links):
                 resolved_link = self.resolve_msg_link(msg, link_name, link_params)
                 if resolved_link:
                     # copy the msg because we are going to alter it and we don't want to affect
@@ -173,7 +175,7 @@ class MsgTypeToUrlResolverMixin(object):
                 # now create an instance of the resolver
                 module_path, _, name = _class_name.rpartition('.')
                 class_ = getattr(import_module(module_path), name)
-                resolver = class_(config)  # pylint: disable=star-args
+                resolver = class_(config)
 
                 # put in our cache
                 self._cached_resolvers[resolver_name] = resolver

@@ -2,27 +2,28 @@
 Tests for the timer.py
 """
 
-from freezegun import freeze_time
-import pytz
+from __future__ import absolute_import
+
 from datetime import datetime, timedelta
+
+import pytz
+from freezegun import freeze_time
+from six.moves import range
 from django.test import TestCase
+
+from edx_notifications import startup
+from edx_notifications.data import NotificationType, NotificationMessage, NotificationCallbackTimer
+from edx_notifications.timer import poll_and_execute_timers
+from edx_notifications.scopes import register_user_scope_resolver
+from edx_notifications.callbacks import NotificationCallbackTimerHandler
+from edx_notifications.exceptions import ItemNotFoundError
+from edx_notifications.stores.store import notification_store
+from edx_notifications.lib.publisher import cancel_timed_notification, publish_timed_notification
+from edx_notifications.tests.test_scopes import TestListScopeResolver
 from edx_notifications.management.commands import background_notification_check
 
-from edx_notifications.stores.store import notification_store
-from edx_notifications.callbacks import NotificationCallbackTimerHandler
-from edx_notifications import startup
-from edx_notifications.data import (
-    NotificationMessage,
-    NotificationType,
-    NotificationCallbackTimer
-)
-from edx_notifications.tests.test_scopes import TestListScopeResolver
-from edx_notifications.scopes import register_user_scope_resolver
-from edx_notifications.lib.publisher import publish_timed_notification, cancel_timed_notification
-from edx_notifications.timer import poll_and_execute_timers
-from edx_notifications.exceptions import ItemNotFoundError
 
-
+# pylint: disable=useless-super-delegation
 class BadNotificationCallbackTimerHandler(NotificationCallbackTimerHandler):
     """
     Does bad things!
@@ -76,7 +77,7 @@ class TimerTests(TestCase):
         """
 
         with self.assertRaises(TypeError):
-            NotificationCallbackTimerHandler()
+            NotificationCallbackTimerHandler()  # pylint: disable=abstract-class-instantiated
 
     def test_must_implement_method(self):
         """
@@ -194,7 +195,7 @@ class TimedNotificationsTests(TestCase):
         """
 
         # assert we start have with no notifications
-        self.assertEquals(self.store.get_num_notifications_for_user(1), 0)
+        self.assertEqual(self.store.get_num_notifications_for_user(1), 0)
 
         # set up a timer that is due in the past
         timer = publish_timed_notification(
@@ -214,7 +215,7 @@ class TimedNotificationsTests(TestCase):
         self.assertIsNotNone(updated_timer.results)
 
         # assert we now have a notification due to the timer executing
-        self.assertEquals(self.store.get_num_notifications_for_user(1), 1)
+        self.assertEqual(self.store.get_num_notifications_for_user(1), 1)
 
         notifications = self.store.get_notifications_for_user(1)
         self.assertEqual(len(notifications), 1)
@@ -244,7 +245,7 @@ class TimedNotificationsTests(TestCase):
         """
 
         # assert we start have with no notifications
-        self.assertEquals(self.store.get_num_notifications_for_user(1), 0)
+        self.assertEqual(self.store.get_num_notifications_for_user(1), 0)
 
         # set up a timer that is due in the past
         timer = publish_timed_notification(
@@ -265,7 +266,7 @@ class TimedNotificationsTests(TestCase):
         self.assertIsNotNone(updated_timer.results['errors'])
 
         # should be no notifications
-        self.assertEquals(self.store.get_num_notifications_for_user(1), 0)
+        self.assertEqual(self.store.get_num_notifications_for_user(1), 0)
 
     def test_timed_broadcast(self):
         """
@@ -283,7 +284,7 @@ class TimedNotificationsTests(TestCase):
 
         # assert we start have with no notifications
         for user_id in range(timer.context['distribution_scope']['scope_context']['range']):
-            self.assertEquals(self.store.get_num_notifications_for_user(user_id), 0)
+            self.assertEqual(self.store.get_num_notifications_for_user(user_id), 0)
 
         poll_and_execute_timers()
 
@@ -295,7 +296,7 @@ class TimedNotificationsTests(TestCase):
 
         # assert we now have a notification
         for user_id in range(timer.context['distribution_scope']['scope_context']['range']):
-            self.assertEquals(self.store.get_num_notifications_for_user(user_id), 1)
+            self.assertEqual(self.store.get_num_notifications_for_user(user_id), 1)
 
     def test_wait_for_correct_time(self):
         """
@@ -335,7 +336,7 @@ class TimedNotificationsTests(TestCase):
         self.assertIsNone(updated_timer.err_msg)
 
         # assert we now have a notification due to the timer executing
-        self.assertEquals(self.store.get_num_notifications_for_user(1), 1)
+        self.assertEqual(self.store.get_num_notifications_for_user(1), 1)
 
     def test_cancel_timer(self):
         """

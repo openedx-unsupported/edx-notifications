@@ -2,11 +2,15 @@
 Base objects that data.py uses
 """
 
+from __future__ import absolute_import
+
+import copy
 import json
 import inspect
-import dateutil.parser
-import copy
 from datetime import datetime, timedelta
+
+import six
+import dateutil.parser
 from django.utils.translation import ugettext_lazy
 from freezegun.api import FakeDatetime
 
@@ -60,8 +64,6 @@ class TypedField(object):
         Initializer which takes in the type this field
         should be set it is set
         """
-        # from django.utils.functional import __proxy__
-        # self._expected_types.append(__proxy__)
 
         if not self._expected_types:
             raise TypeError(
@@ -101,8 +103,7 @@ class TypedField(object):
 
         value_type = type(value)
 
-        if value and value_type not in self._expected_types:
-
+        if value and value_type not in self._expected_types:  # pylint: disable=unsupported-membership-test
             raise TypeError(
                 (
                     "Field expected type of '{expected}' got '{got}'"
@@ -130,7 +131,7 @@ class StringField(TypedField):
     Specialized subclass of TypedField(unicode) as a convienence
     """
 
-    _expected_types = [unicode, str]
+    _expected_types = [six.text_type, str]
 
 
 class LazyField(TypedField):
@@ -138,7 +139,7 @@ class LazyField(TypedField):
     Specialized subclass of TypedField(unicode) as a convienence for Translations support
     """
 
-    _expected_types = [unicode, str, type(ugettext_lazy())]
+    _expected_types = [six.text_type, str, type(ugettext_lazy())]
 
 
 class IntegerField(TypedField):
@@ -146,7 +147,7 @@ class IntegerField(TypedField):
     Specialized subclass of TypedField(int) as a convienence
     """
 
-    _expected_types = [int, long]
+    _expected_types = list(six.integer_types)
 
 
 class BooleanField(TypedField):
@@ -190,18 +191,18 @@ class DictField(TypedField):
         return json.dumps(data, default=datetime_to_json)
 
     @classmethod
-    def from_json(cls, value):
+    def from_json(cls, _value):
         """
         Deserialize from json
         """
 
-        if not value:
+        if not _value:
             return None
 
-        _dict = json.loads(value)
+        _dict = json.loads(_value)
 
-        for key, value in _dict.iteritems():
-            if isinstance(value, basestring):
+        for key, value in six.iteritems(_dict):
+            if isinstance(value, six.string_types):
                 # This could be a datetime posing as a ISO8601 formatted string
                 # we so have to apply some heuristics here
                 # to see if we want to even attempt
@@ -269,7 +270,7 @@ class BaseDataObjectMetaClass(type):
     def __new__(mcs, name, bases, attrs):
         # Iterate over the TypedField attrs before they're bound to the class
         # so that we don't accidentally trigger any __get__ methods
-        for attr_name, attr in attrs.iteritems():
+        for attr_name, attr in six.iteritems(attrs):
             if isinstance(attr, TypedField):
                 attr.__name__ = attr_name
 
@@ -281,14 +282,10 @@ class BaseDataObjectMetaClass(type):
         return super(BaseDataObjectMetaClass, mcs).__new__(mcs, name, bases, attrs)
 
 
-class BaseDataObject(object):
+class BaseDataObject(six.with_metaclass(BaseDataObjectMetaClass, object)):
     """
     A base class for all Notification Data Objects
     """
-
-    # assign a metaclass so that all TypedFields in a BaseDataObject derviced class get a
-    # __name__ attribute set which is the attribute name in the containing object
-    __metaclass__ = BaseDataObjectMetaClass
 
     id = IntegerField(name='id', default=None)  # pylint: disable=invalid-name
 
@@ -298,7 +295,7 @@ class BaseDataObject(object):
         of attributes which have been explicitly declared in any subclass
         """
 
-        for key in kwargs.keys():
+        for key in kwargs:
             value = kwargs[key]
             if key in dir(self):
                 setattr(self, key, value)
@@ -361,7 +358,7 @@ class BaseDataObject(object):
         Dump out all of our fields
         """
 
-        return unicode(self.get_fields())
+        return six.text_type(self.get_fields())
 
     @classmethod
     def clone(cls, src):

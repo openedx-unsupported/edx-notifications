@@ -2,11 +2,11 @@
 Serializers (Django REST Framework) for Data Objects
 """
 
+from __future__ import absolute_import
+
 from rest_framework import serializers
 
-from edx_notifications.base_data import (
-    DictField
-)
+from edx_notifications.base_data import DictField
 
 
 class DictFieldSerializer(serializers.Field):
@@ -14,6 +14,7 @@ class DictFieldSerializer(serializers.Field):
     A specialized serializer for a dictionary field
     """
 
+    # pylint: disable=arguments-differ
     def to_representation(self, obj):
         """
         to json format

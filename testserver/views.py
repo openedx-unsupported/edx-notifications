@@ -2,47 +2,31 @@
 View handlers for HTML serving
 """
 
+from __future__ import absolute_import
+
 from datetime import datetime, timedelta
+
 import pytz
-from django.template import RequestContext, loader
-from django.http import (
-    HttpResponse,
-)
-
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout
-from django.views.decorators.csrf import csrf_protect
-from django.shortcuts import render_to_response
-from django.http import HttpResponseRedirect
 from django.conf import settings
+from django.http import HttpResponse, HttpResponseRedirect
+from django.template import loader
+from django.shortcuts import render, render_to_response
+from django.contrib.auth import logout
 from django.templatetags.static import static
+from django.views.decorators.csrf import csrf_protect
+from django.contrib.auth.decorators import login_required
 
+from edx_notifications import const
+from edx_notifications.data import NotificationMessage
+from edx_notifications.scopes import NotificationUserScopeResolver, register_user_scope_resolver
+from edx_notifications.digests import send_notifications_digest
+from edx_notifications.namespaces import NotificationNamespaceResolver, register_namespace_resolver
 from edx_notifications.lib.publisher import (
-    publish_notification_to_user,
     get_notification_type,
     get_all_notification_types,
+    publish_notification_to_user
 )
-
-from edx_notifications.data import (
-    NotificationMessage,
-)
-
-
-from edx_notifications.namespaces import (
-    NotificationNamespaceResolver,
-    register_namespace_resolver
-)
-
-
-from edx_notifications.scopes import (
-    NotificationUserScopeResolver
-)
-
-from edx_notifications.digests import send_notifications_digest
-
 from edx_notifications.server.web.utils import get_notifications_widget_context
-from edx_notifications import const
-from edx_notifications.scopes import register_user_scope_resolver
 
 from .forms import *
 
@@ -263,7 +247,7 @@ def index(request):
         'namespace': NAMESPACE,
     })
 
-    return HttpResponse(template.render(RequestContext(request, context_dict)))
+    return HttpResponse(template.render(context=context_dict, request=request))
 
 
 @csrf_protect
@@ -281,15 +265,14 @@ def register(request):
             raise Exception('Invalid registration form')
     else:
         form = RegistrationForm()
-        variables = RequestContext(
-            request, {
-                'form': form
-            }
-        )
+        variables = {
+            'form': form
+        }
 
-    return render_to_response(
-        'registration/register.html',
-        variables,
+    return render(
+        request=request,
+        template_name='registration/register.html',
+        context=variables,
     )
 
 def register_success(request):

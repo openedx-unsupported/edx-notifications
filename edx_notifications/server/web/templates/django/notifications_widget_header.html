@@ -1,9 +1,11 @@
-<script src="{{ STATIC_URL }}edx_notifications/js/models/counter_icon_model.js"></script>
-<script src="{{ STATIC_URL }}edx_notifications/js/models/user_notification_model.js"></script>
-<script src="{{ STATIC_URL }}edx_notifications/js/collections/notification_collection.js"></script>
+{% load static %}
+{% load i18n %}
 
-<script src="{{ STATIC_URL }}edx_notifications/js/views/counter_icon_view.js"></script>
-<script src="{{ STATIC_URL }}edx_notifications/js/views/notification_pane_view.js"></script>
+<script src="{% static 'edx_notifications/js/models/counter_icon_model.js' %}"></script>
+<script src="{% static 'edx_notifications/js/models/user_notification_model.js' %}"></script>
+<script src="{% static 'edx_notifications/js/collections/notification_collection.js' %}"></script>
+<script src="{% static 'edx_notifications/js/views/counter_icon_view.js' %}"></script>
+<script src="{% static 'edx_notifications/js/views/notification_pane_view.js' %}"></script>
 
 {% include 'django/notifications_widget_preferences_header.html' %}
 
@@ -20,12 +22,12 @@
                 <h2>Notifications</h2>
                 <div class="xns-actions">
                     <ul class="xns-tab-list">
-                        <li class="xns-unread-action active"><a  href="#">View unread</a></li>
-                        <li class="xns-all-action"><a href="#">View all</a></li>
-                        <li class="xns-mark-read-action"><a href="#">Mark as read</a></li>
+                        <li class="xns-unread-action active"><a  href="#">{% trans "View unread" %}</a></li>
+                        <li class="xns-all-action"><a href="#">{% trans "View all" %}</a></li>
+                        <li class="xns-mark-read-action"><a href="#">{% trans "Mark as read" %}</a></li>
                         <% if (typeof this.global_variables.hide_link_is_visible != 'undefined' &&
                         this.global_variables.hide_link_is_visible != 'False') { %>
-                            <li class="xns-hide-pane"><a href="#">Hide</a></li>
+                            <li class="xns-hide-pane"><a href="#">{% trans "Hide" %}</a></li>
                         <% } %>
                         <% if (typeof this.global_variables.notification_preference_tab_is_visible != 'undefined' &&
                         this.global_variables.notification_preference_tab_is_visible == 'True') { %>
@@ -38,11 +40,11 @@
                 <ul class="xns-items">
                     <% if (typeof grouped_user_notifications == 'undefined' || grouped_user_notifications.length == 0) { %>
                         <li class='xns-empty-list'>
-                            <p class="xns-no-notifications-msg xns-item">You have no unread notifications.</p>
+                            <p class="xns-no-notifications-msg xns-item">{% trans 'You have no unread notifications.' %}</p>
                         </li>
                     <% } else { %>
                         <% _.each(grouped_user_notifications, function(grouped_user_notification){ %>
-                            <h3 class="xns-group"><%= grouped_user_notification.group_title %></h3>
+                            <h3 class="xns-group"><%= gettext(grouped_user_notification.group_title) %></h3>
                             <% _.each(grouped_user_notification.messages, function(message){ %>
                                 <li class="xns-item" id="<%= message.msg.id %>">
                                     <% if (selected_pane == 'unread' && always_show_dates_on_unread) { %>

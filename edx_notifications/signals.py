@@ -2,8 +2,9 @@
 Django signals that can be raised by the Notification subsystem
 """
 
-from django.dispatch import Signal
+from __future__ import absolute_import
 
+from django.dispatch import Signal
 
 # Signal to all receivers that they should go register their NotificationTypes into
 # the subsystem

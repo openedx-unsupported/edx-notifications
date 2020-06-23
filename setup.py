@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
+from __future__ import absolute_import
+
 from setuptools import setup
+
 
 def is_requirement(line):
     """
@@ -34,7 +37,7 @@ def load_requirements(*requirements_paths):
 
 setup(
     name='edx-notifications',
-    version='0.9.0',
+    version='2.0.0',
     description='Notification subsystem for Open edX',
     long_description=open('README.md').read(),
     author='edX',
@@ -46,12 +49,18 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: GNU Affero General Public License v3',
         'Operating System :: OS Independent',
-        'Programming Language :: Python',
         'Framework :: Django',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
     ],
     packages=['edx_notifications'],
     dependency_links=[
     ],
-    install_requires=load_requirements('requirements.txt'),
-    tests_require=load_requirements('test_requirements.txt')
+    install_requires=load_requirements('requirements/base.txt'),
+    tests_require=load_requirements('requirements/testing.txt')
 )

@@ -3,9 +3,12 @@
 """
 Django settings file for local development purposes
 """
+from __future__ import absolute_import
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import sys
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 DEBUG=True
@@ -27,7 +30,6 @@ DATABASES = {
 USE_I18N = True
 USE_L10N = True
 
-
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -37,7 +39,6 @@ INSTALLED_APPS = (
     'rest_framework',
     'edx_notifications',
     'edx_notifications.server.web',
-    'django_nose',
 )
 
 REST_FRAMEWORK = {
@@ -55,33 +56,38 @@ if not TEST_MODE:
     })
 
 
-LANGUAGE_CODE = "en"
+js_info_dict = {
+    # 'packages': 'edx_notifications.server.web',
+ }
+LANGUAGE_CODE = 'en'
 LANGUAGE_COOKIE_NAME = "openedx-language-preference"
 LANGUAGES = (
     ('en', u'English '),
     ('ar', u'العربية'),  # Arabic
+    ('Ar-sa', u'Arabic'),  # Arabic Saudi Arabia
+    ('zh', u'中文(简体)'),
+    ('ES419', u'Latin Spanish'),
     ('es', u'Español'),
+    ('ja', u'Japanese'),
+    ('de', u'Deutsche'),
+    ('fr', u'Français'),
     ('nl', u'Dutch '),
     ('pt', u'Português'),
     ('zh-cn', u'中文(简体)'),
-    ('fr', u'Français'),
     ('jp', u'日本人'),
-    ('de', u'Deutsche'),
 )
-
 LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'locale'),
+    os.path.join(BASE_DIR, 'static_cache/locale'),
 ]
 
 MIDDLEWARE_CLASSES = (
-
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-
 )
 
 ROOT_URLCONF = 'edx_notifications.server.urls'

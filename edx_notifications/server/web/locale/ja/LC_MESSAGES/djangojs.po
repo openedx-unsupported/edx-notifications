@@ -1,0 +1,60 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-11-14 16:03+0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+
+#: static/edx_notifications/js/views/notification_pane_view.js:181
+msgid "Announcements"
+msgstr "お知らせ"
+
+#: static/edx_notifications/js/views/notification_pane_view.js:186
+msgid "Group Work"
+msgstr "グループワーク"
+
+#: static/edx_notifications/js/views/notification_pane_view.js:191
+msgid "Leaderboards"
+msgstr "スコアボード"
+
+#: static/edx_notifications/js/views/notification_pane_view.js:196
+msgid "Discussion"
+msgstr "検討事項"
+
+#: static/edx_notifications/js/views/notification_pane_view.js:201
+msgid "Other"
+msgstr ""
+
+#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
+msgid "You are now"
+msgstr "あなたは今"
+
+#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
+msgid "for"
+msgstr "に"
+
+#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
+msgid "in the cohort!"
+msgstr "グループで"
+
+#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
+msgid "Progress"
+msgstr "進度"
+
+#: static/edx_notifications/js/views/notification_pane_view.js:383
+msgid "Today at "
+msgstr "今日"

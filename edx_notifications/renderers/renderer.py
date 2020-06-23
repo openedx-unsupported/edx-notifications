@@ -9,9 +9,12 @@ Note that a NotificationRender can be associated with more than one
 NotificationType
 """
 
-import abc
+from __future__ import absolute_import
 
+import abc
 from importlib import import_module
+
+import six
 
 _RENDERERS = {}
 
@@ -56,7 +59,7 @@ def get_renderer_for_type(msg_type):
     return _RENDERERS.get(msg_type.renderer)
 
 
-class BaseNotificationRenderer(object):
+class BaseNotificationRenderer(six.with_metaclass(abc.ABCMeta, object)):
     """
     Abstract Base Class for NotificationRender types.
 
@@ -69,9 +72,6 @@ class BaseNotificationRenderer(object):
     NOTE: Renderers will be singletons, so please do not store state inside of your
     Renderers
     """
-
-    # don't allow instantiation of this class, it must be subclassed
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def can_render_format(self, render_format):

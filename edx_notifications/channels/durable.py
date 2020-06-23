@@ -4,17 +4,15 @@ that saves Notifications to a database for later
 retrieval
 """
 
+from __future__ import absolute_import
+
 import logging
 
 from edx_notifications import const
+from edx_notifications.data import UserNotification
+from edx_notifications.stores.store import notification_store
 from edx_notifications.channels.channel import BaseNotificationChannelProvider
 from edx_notifications.channels.link_resolvers import MsgTypeToUrlResolverMixin
-
-from edx_notifications.stores.store import notification_store
-
-from edx_notifications.data import (
-    UserNotification,
-)
 
 log = logging.getLogger(__name__)
 
