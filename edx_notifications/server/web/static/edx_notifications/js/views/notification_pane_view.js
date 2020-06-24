@@ -3,7 +3,7 @@ var NotificationPaneView = Backbone.View.extend({
     initialize: function(options){
         // Use i18n methods from mcka_apros namespace
         // for getting the right translations
-        this.enableMcki18nNamespace();
+        this.enableMcKi18nNamespace();
 
         this.global_variables = options.global_variables;
         this.view_templates = options.view_templates;
@@ -58,9 +58,7 @@ var NotificationPaneView = Backbone.View.extend({
 
         this.hydrate();
     },
-
-
-  enableMcki18nNamespace(){
+    enableMcKi18nNamespace: function(){
       var i18nNamespace = 'mcka_apros';
       if(i18nNamespace in window && window[i18nNamespace].gettext){
         i18nNamespace = window[i18nNamespace];
