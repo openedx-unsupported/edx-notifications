@@ -2,7 +2,7 @@
 Notification Consumer HTTP-based API enpoints
 """
 
-from __future__ import absolute_import
+
 
 import logging
 

@@ -2,7 +2,7 @@
 Abstract base class that all NotificationChannels must implement
 """
 
-from __future__ import absolute_import
+
 
 import abc
 import copy

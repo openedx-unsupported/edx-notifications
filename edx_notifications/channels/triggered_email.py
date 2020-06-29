@@ -2,7 +2,7 @@
 Implements a email notification channel
 that sends email to the users.
 """
-from __future__ import absolute_import
+
 
 import uuid
 import logging

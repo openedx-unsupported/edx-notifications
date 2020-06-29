@@ -2,7 +2,7 @@
 Django signals that can be raised by the Notification subsystem
 """
 
-from __future__ import absolute_import
+
 
 from django.dispatch import Signal
 

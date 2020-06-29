@@ -6,7 +6,7 @@ xBlock runtime service named 'notifications'. Be aware that adding
 any new methods here will also be exposed to xBlocks!!!!
 """
 
-from __future__ import absolute_import
+
 
 import copy
 import types

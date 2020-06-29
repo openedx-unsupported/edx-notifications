@@ -3,7 +3,7 @@ All URL mappings for the API's which do not get mapped to Django REST Frameworks
 This is useful for when we need a UI tier to do a reverse on URL's where we don't need to import
 all of the backend
 """
-from __future__ import absolute_import
+
 
 from django.http import HttpResponseBadRequest
 from django.urls import re_path

@@ -3,7 +3,7 @@ Notification types that will be used in common use cases for notifications aroun
 Group Projects
 """
 
-from __future__ import absolute_import
+
 
 import six
 from django.dispatch import receiver

@@ -2,7 +2,7 @@
 File containing link resolvers
 """
 
-from __future__ import absolute_import
+
 
 import abc
 import logging

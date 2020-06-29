@@ -2,7 +2,7 @@
 Django ORM models to support the Notification Store SQL backend
 """
 
-from __future__ import absolute_import
+
 
 from model_utils.models import TimeStampedModel
 from django.db import models

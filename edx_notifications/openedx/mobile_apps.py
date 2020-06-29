@@ -2,7 +2,7 @@
 Notification types that will be used in common use cases for mobile apps notifications
 """
 
-from __future__ import absolute_import
+
 
 from django.dispatch import receiver
 

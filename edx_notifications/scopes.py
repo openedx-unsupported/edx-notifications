@@ -2,7 +2,7 @@
 File that manages how notification distribution scopes are handled
 """
 
-from __future__ import absolute_import
+
 
 import abc
 import types

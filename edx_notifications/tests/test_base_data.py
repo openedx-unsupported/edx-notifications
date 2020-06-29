@@ -2,7 +2,7 @@
 Unit tests to exercise code implemented in data.py
 """
 
-from __future__ import absolute_import
+
 
 import six
 from django.test import TestCase

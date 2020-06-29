@@ -2,7 +2,7 @@
 Simple Subject/Body Underscore renderers
 """
 
-from __future__ import absolute_import
+
 
 import copy
 import json

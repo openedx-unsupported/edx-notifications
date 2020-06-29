@@ -2,7 +2,7 @@
 Django management command to remove duplicate notifications preferences.
 """
 
-from __future__ import absolute_import
+
 
 import logging
 

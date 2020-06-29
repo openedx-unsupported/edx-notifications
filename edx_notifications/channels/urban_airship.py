@@ -2,7 +2,7 @@
 NotificationChannelProvider to integrate with the Urban Airship mobile push
 notification services
 """
-from __future__ import absolute_import
+
 
 import json
 import logging

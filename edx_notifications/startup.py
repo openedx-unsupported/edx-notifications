@@ -3,7 +3,7 @@ File to support the startup of the Notification subsystem. This should be called
 at least once at the beginning of any process lifecycle
 """
 
-from __future__ import absolute_import
+
 
 from edx_notifications.timer import register_purge_notifications_timer  # pylint: disable=unused-import
 from edx_notifications.scopes import SingleUserScopeResolver, register_user_scope_resolver

@@ -2,7 +2,7 @@
 Any internal Timer callbacks
 """
 
-from __future__ import absolute_import
+
 
 import abc
 import logging

@@ -4,7 +4,7 @@ generic dictionaries from being passed around, plus this will help avoid any
 implicit database-specific bindings that come with any uses of ORMs.
 """
 
-from __future__ import absolute_import
+
 
 import copy
 
