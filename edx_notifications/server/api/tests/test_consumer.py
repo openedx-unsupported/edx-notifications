@@ -6,7 +6,7 @@
 All tests for the test_consumer.py
 """
 
-from __future__ import absolute_import
+
 
 import json
 

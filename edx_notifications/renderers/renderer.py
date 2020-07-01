@@ -9,7 +9,7 @@ Note that a NotificationRender can be associated with more than one
 NotificationType
 """
 
-from __future__ import absolute_import
+
 
 import abc
 from importlib import import_module

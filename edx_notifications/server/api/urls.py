@@ -1,7 +1,7 @@
 """
 All URL mappings for HTTP-based APIs
 """
-from __future__ import absolute_import
+
 
 from django.urls import re_path
 from rest_framework.urlpatterns import format_suffix_patterns

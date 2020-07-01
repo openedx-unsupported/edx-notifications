@@ -2,7 +2,7 @@
 Tests for the publisher.py and consumer.py methods
 """
 
-from __future__ import absolute_import
+
 
 from contracts import ContractNotRespected
 from six.moves import range

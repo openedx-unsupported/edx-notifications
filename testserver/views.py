@@ -2,7 +2,7 @@
 View handlers for HTML serving
 """
 
-from __future__ import absolute_import
+
 
 from datetime import datetime, timedelta
 

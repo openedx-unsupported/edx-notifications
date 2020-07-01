@@ -2,7 +2,7 @@
 Defines abstract class for the Notification Store data tier
 """
 
-from __future__ import absolute_import
+
 
 import abc
 from importlib import import_module

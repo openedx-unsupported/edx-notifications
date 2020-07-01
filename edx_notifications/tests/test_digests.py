@@ -2,7 +2,7 @@
 Unit tests for the digests.py file
 """
 
-from __future__ import absolute_import
+
 
 import datetime
 

@@ -3,7 +3,7 @@ Defines the abstract interface for a class that can handle
 a callback when the timer expires
 """
 
-from __future__ import absolute_import
+
 
 import copy
 import logging

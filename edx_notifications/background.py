@@ -2,7 +2,7 @@
 All code to support background Notification triggers
 """
 
-from __future__ import absolute_import
+
 
 # import edx_notifications.timer because it will register a signal receiver
 # and if that Python module is not loaded, it will not be hooked up

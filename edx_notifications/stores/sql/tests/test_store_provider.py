@@ -2,7 +2,7 @@
 Tests which exercise the MySQL test_data_provider
 """
 # pylint: disable=invalid-name
-from __future__ import absolute_import
+
 
 from datetime import datetime, timedelta
 

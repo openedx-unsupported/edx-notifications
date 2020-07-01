@@ -3,7 +3,6 @@
 """
 Django settings file for local development purposes
 """
-from __future__ import absolute_import
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os

@@ -2,7 +2,7 @@
 Tests for the callback.py
 """
 
-from __future__ import absolute_import
+
 
 from six.moves import range
 from django.test import TestCase
