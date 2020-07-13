@@ -3,8 +3,7 @@
 # Testing Packages
 coverage
 astroid
-django_nose
-nose
+pytest-django
 httpretty==0.9.7
 pycodestyle
 pylint
