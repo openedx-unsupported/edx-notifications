@@ -12,7 +12,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 DEBUG=True
 TEST_MODE=True
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 TEST_ROOT = "tests"
 TRANSACTIONS_MANAGED = {}
 USE_TZ = True

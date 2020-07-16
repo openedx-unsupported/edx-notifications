@@ -42,9 +42,9 @@ done
 #otherwise execute all tests
 echo "Running acceptance tests..."
 if [ "$1" != "" ]; then
-    nosetests testserver/test/acceptance/test_notifications.py:TestAddNotifications.$1
+    pytest testserver/test/acceptance/test_notifications.py:TestAddNotifications.$1
 else
-    nosetests testserver/test/acceptance
+    pytest testserver/test/acceptance
 fi
 
 # capture the exit code from the test.  Anything more than 0 indicates failed cases.
