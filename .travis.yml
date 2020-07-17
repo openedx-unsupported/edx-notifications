@@ -10,8 +10,7 @@ envs:
 
 script:
   - tox
-  - ./node_modules/gulp/bin/gulp.js test
-  - bash ./run_bokchoy_tests.sh
+  - make test
 
 addons:
   firefox: "46.0"
