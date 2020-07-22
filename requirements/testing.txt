@@ -58,11 +58,11 @@ sqlparse==0.3.1           # via -r requirements/base.txt, django
 sure==1.2.3               # via -r requirements/testing.in
 testfixtures==4.5.0       # via -r requirements/testing.in
 toml==0.10.1              # via pylint, tox
-tox==3.16.1               # via -r requirements/testing.in
+tox==3.17.1               # via -r requirements/testing.in
 typed-ast==1.4.1          # via astroid
 underscore.py==0.1.6      # via -r requirements/base.txt
 urllib3==1.25.9           # via -r requirements/base.txt, requests
-virtualenv==20.0.26       # via tox
+virtualenv==20.0.27       # via tox
 wcwidth==0.2.5            # via pytest
 wrapt==1.12.1             # via astroid
 zipp==1.2.0               # via importlib-metadata, importlib-resources
