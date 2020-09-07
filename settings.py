@@ -67,6 +67,7 @@ LANGUAGES = (
     ('de', u'German'),
     ('fr', u'french'),
     ('nl', u'Dutch '),
+    ('pl', u'Polskie'),
     ('pt', u'Português')
 )
 LOCALE_PATHS = [
