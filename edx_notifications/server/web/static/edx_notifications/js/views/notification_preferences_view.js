@@ -21,6 +21,7 @@ var NotificationPreferencesView = Backbone.View.extend({
             'pt': 'pt-br',
             'zh': 'zh-cn',
             'ko': 'ko-kr',
+            'pl': 'pl',
         };
         /* set up our collection */
         this.collection = new NotificationPreferencesCollection();
