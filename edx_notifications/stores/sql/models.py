@@ -8,6 +8,7 @@ from model_utils.models import TimeStampedModel
 from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete
+from django.utils.translation import ugettext_lazy as _
 
 from edx_notifications import const
 from edx_notifications.data import (
@@ -48,7 +49,7 @@ class SQLNotificationType(models.Model):
         """
 
         return NotificationType(
-            name=self.name,
+            name=_(self.name),
             renderer=self.renderer,
             renderer_context=DictField.from_json(self.renderer_context)
         )
@@ -123,13 +124,26 @@ class SQLNotificationMessage(TimeStampedModel):
             deliver_no_earlier_than=self.deliver_no_earlier_than,
             expires_at=self.expires_at,
             expires_secs_after_read=self.expires_secs_after_read,
-            payload=DictField.from_json(self.payload),  # special case, dict<-->JSON string
+            payload=self.translate_payload_title
+            (DictField.from_json(self.payload)),  # special case, dict<-->JSON string
             created=self.created,
             resolve_links=DictField.from_json(self.resolve_links),  # special case, dict<-->JSON string
             object_id=self.object_id
         )
 
         return msg
+
+    def translate_payload_title(self, payload):
+        """
+        translate a the title of any announcement to the current course language
+        :param payload:
+        :return:
+        """
+        if payload and 'notification_type' in payload and payload['notification_type'] == "courseannouncement":
+            announcement_date = payload['announcement_date']
+            title = _('Announcement on {annoucement_date}').format(annoucement_date=announcement_date)   # pylint: disable=line-too-long, no-member
+            payload['title'] = title
+        return payload
 
     @classmethod
     def from_data_object(cls, msg):
@@ -285,9 +299,9 @@ class SQLNotificationPreference(models.Model):
         """
 
         return NotificationPreference(
-            name=self.name,
-            display_name=self.display_name,
-            display_description=self.display_description,
+            name=_(self.name),
+            display_name=_(self.display_name),
+            display_description=_(self.display_description),
             default_value=self.default_value
         )
 
@@ -340,7 +354,7 @@ class SQLUserNotificationPreferences(TimeStampedModel):
         return UserNotificationPreferences(
             user_id=self.user_id,
             preference=self.preference.to_data_object(),  # pylint: disable=no-member,
-            value=self.value
+            value=_(self.value)
         )
 
     @classmethod
