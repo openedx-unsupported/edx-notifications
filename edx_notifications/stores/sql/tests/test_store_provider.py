@@ -9,7 +9,6 @@ from datetime import datetime, timedelta
 import mock
 import pytz
 from freezegun import freeze_time
-from six.moves import range
 from django.test import TestCase
 from django.utils.translation import ugettext as getext
 from django.utils.translation import ugettext_lazy as _

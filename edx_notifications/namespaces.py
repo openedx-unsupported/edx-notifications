@@ -6,12 +6,11 @@ Methods regarding how namespaces are managed
 
 import abc
 
-import six
 
 _NAMESPACE_RESOLVER = None
 
 
-class NotificationNamespaceResolver(six.with_metaclass(abc.ABCMeta, object)):
+class NotificationNamespaceResolver(metaclass=abc.ABCMeta):
     """
     Abstract interface that provides and interface
     for the Notification subsystem to get more

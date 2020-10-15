@@ -7,7 +7,6 @@ Defines abstract class for the Notification Store data tier
 import abc
 from importlib import import_module
 
-import six
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
@@ -60,7 +59,7 @@ def reset_notification_store():
     _STORE_PROVIDER = None
 
 
-class BaseNotificationStoreProvider(six.with_metaclass(abc.ABCMeta, object)):
+class BaseNotificationStoreProvider(metaclass=abc.ABCMeta):
     """
     The base abstract class for all notifications data providers, such as MySQL/Django-ORM backed.
 

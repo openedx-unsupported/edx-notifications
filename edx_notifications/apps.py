@@ -1,7 +1,6 @@
 """
 Configuration for edx_notifications Django app
 """
-from __future__ import absolute_import
 
 import logging
 

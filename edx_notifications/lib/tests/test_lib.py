@@ -5,7 +5,6 @@ Tests for the publisher.py and consumer.py methods
 
 
 from contracts import ContractNotRespected
-from six.moves import range
 from django.test import TestCase
 from django.contrib.auth.models import User
 
@@ -319,8 +318,7 @@ class TestPublisherLibrary(TestCase):
             """
             Just spit our an generator that goes from 1 to 100
             """
-            for user_id in range(1, 100):
-                yield user_id
+            yield from range(1, 100)
 
         # now send to more than our internal chunking size
         bulk_publish_notification_to_users(

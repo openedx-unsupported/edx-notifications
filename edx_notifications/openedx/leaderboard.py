@@ -30,21 +30,21 @@ def register_notification_types(sender, **kwargs):  # pylint: disable=unused-arg
 
     register_notification_type(
         NotificationType(
-            name=u'open-edx.lms.leaderboard.progress.rank-changed',
+            name='open-edx.lms.leaderboard.progress.rank-changed',
             renderer='edx_notifications.openedx.leaderboard.LeaderboardRankChangedRenderer',
         )
     )
 
     register_notification_type(
         NotificationType(
-            name=u'open-edx.lms.leaderboard.gradebook.rank-changed',
+            name='open-edx.lms.leaderboard.gradebook.rank-changed',
             renderer='edx_notifications.openedx.leaderboard.LeaderboardRankChangedRenderer',
         )
     )
 
     register_notification_type(
         NotificationType(
-            name=u'open-edx.lms.leaderboard.engagement.rank-changed',
+            name='open-edx.lms.leaderboard.engagement.rank-changed',
             renderer='edx_notifications.openedx.leaderboard.LeaderboardRankChangedRenderer',
         )
     )

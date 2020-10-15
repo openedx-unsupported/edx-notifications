@@ -8,7 +8,6 @@ import abc
 import copy
 from importlib import import_module
 
-import six
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
@@ -28,7 +27,7 @@ def _init_channel_providers():
     if not config:
         raise ImproperlyConfigured("Settings not configured with NOTIFICATION_CHANNEL_PROVIDERS!")
 
-    for key, channel_config in six.iteritems(config):
+    for key, channel_config in config.items():
         if 'class' not in channel_config or 'options' not in channel_config:
             msg = (
                 "Misconfigured NOTIFICATION_CHANNEL_PROVIDERS settings, "
@@ -167,7 +166,7 @@ def reset_notification_channels():
     _CHANNEL_PROVIDERS_TYPE_MAPS.clear()
 
 
-class BaseNotificationChannelProvider(six.with_metaclass(abc.ABCMeta, object)):
+class BaseNotificationChannelProvider(metaclass=abc.ABCMeta):
     """
     The abstract base class that all NotificationChannelProviders
     need to implement

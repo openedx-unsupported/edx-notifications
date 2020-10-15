@@ -7,13 +7,12 @@ File that manages how notification distribution scopes are handled
 import abc
 import types
 
-import six
 from django.db.models.query import QuerySet
 
 _SCOPE_RESOLVERS = {}
 
 
-class NotificationUserScopeResolver(six.with_metaclass(abc.ABCMeta, object)):
+class NotificationUserScopeResolver(metaclass=abc.ABCMeta):
     """
     Abstract interface that has one sole purpose
     to translate a scope_name, scope_context to
@@ -99,7 +98,7 @@ def resolve_user_scope(scope_name, scope_context):
         raise TypeError(err_msg)
 
     user_ids = None
-    for _, instance_info in six.iteritems(_SCOPE_RESOLVERS[scope_name]):
+    for _, instance_info in _SCOPE_RESOLVERS[scope_name].items():
         instance = instance_info['instance']
         user_ids = instance.resolve(scope_name, scope_context, instance_info['instance_context'])
 
