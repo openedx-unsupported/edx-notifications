@@ -24,7 +24,7 @@ class BadNotificationNamespaceResolver(NotificationNamespaceResolver):
         """
         Bad resolution
         """
-        super(BadNotificationNamespaceResolver, self).resolve(namespace, instance_context)
+        super().resolve(namespace, instance_context)
 
 
 class TestNamespaces(TestCase):
