@@ -72,7 +72,7 @@ urlpatterns = [  # pylint: disable=invalid-name
         consumer_views.UserPreferenceDetail.as_view(),
         name='edx_notifications.consumer.user_preferences.detail.no_param'
     ),
-    url(
+    re_path(
         ADMIN_USERS_DELETE,
         admin_views.DeleteUsersData.as_view(),
         name='edx_notifications.admin.delete_users_data'
