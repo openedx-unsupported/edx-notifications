@@ -354,7 +354,7 @@ def with_inline_css(html_without_css):
         css_filepath = finders.AppDirectoriesFinder().find(const.NOTIFICATION_DIGEST_EMAIL_CSS)
 
     if css_filepath:
-        with open(css_filepath, "r") as _file:
+        with open(css_filepath) as _file:
             css_content = _file.read()
 
         # insert style tag in the html and run pyliner.

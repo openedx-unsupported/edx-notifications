@@ -4,7 +4,6 @@ Tests for the callback.py
 
 
 
-from six.moves import range
 from django.test import TestCase
 
 from edx_notifications.data import NotificationType, NotificationMessage, NotificationCallbackTimer

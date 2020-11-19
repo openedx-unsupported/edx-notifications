@@ -96,7 +96,7 @@ class BadChannel(BaseNotificationChannelProvider):
         """
         This will raise an error
         """
-        raise super(BadChannel, self).dispatch_notification_to_user(
+        raise super().dispatch_notification_to_user(
             user_id,
             msg,
             channel_context=channel_context
@@ -107,7 +107,7 @@ class BadChannel(BaseNotificationChannelProvider):
         Perform a bulk dispatch of the notification message to
         all user_ids that will be enumerated over in user_ids.
         """
-        raise super(BadChannel, self).bulk_dispatch_notification(
+        raise super().bulk_dispatch_notification(
             user_ids,
             msg,
             channel_context=channel_context
@@ -117,7 +117,7 @@ class BadChannel(BaseNotificationChannelProvider):
         """
         Generates the appropriate link given a msg, a link_name, and params
         """
-        raise super(BadChannel, self).resolve_msg_link(
+        raise super().resolve_msg_link(
             msg,
             link_name,
             params,

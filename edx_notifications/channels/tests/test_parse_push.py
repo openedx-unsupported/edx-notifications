@@ -7,7 +7,7 @@ Unit tests for parse_push.py
 from datetime import datetime, timedelta
 
 import pytz
-from mock import patch
+from unittest.mock import patch
 from django.test import TestCase
 from parse_rest.core import ParseError
 

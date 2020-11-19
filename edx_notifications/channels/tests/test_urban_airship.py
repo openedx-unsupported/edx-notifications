@@ -3,7 +3,7 @@ Test cases for UA API
 """
 
 
-from mock import patch
+from unittest.mock import patch
 from django.test import TestCase
 from testserver.views import CANNED_TEST_PAYLOAD
 

@@ -1,5 +1,4 @@
 #!/usr/bin/bash
-# -*- coding: utf-8 -*
 """
 Django settings for edx_notifications test project.
 For more information on this file, see

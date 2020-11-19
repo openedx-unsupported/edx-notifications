@@ -1,5 +1,3 @@
-
-
 from bok_choy.promise import EmptyPromise
 from selenium.webdriver import ActionChains
 from bok_choy.page_object import PageObject
@@ -33,10 +31,10 @@ class LoggedInHomePage(PageObject):
             'Notification type drop down not found',
             timeout=default_timeout
         )
-        self.q(css='select[name="notification_type"] option[value="{}"]'.format(notification_type)).first.click()
+        self.q(css=f'select[name="notification_type"] option[value="{notification_type}"]').first.click()
         EmptyPromise(
             lambda:
-            self.q(css='select[name="notification_type"] option[value="{}"]'.format(notification_type)).selected,
+            self.q(css=f'select[name="notification_type"] option[value="{notification_type}"]').selected,
             "selected notification type is not correct",
             timeout=default_timeout
         ).fulfill()
@@ -213,9 +211,9 @@ class LoggedInHomePage(PageObject):
             'Notification type drop down not found',
             timeout=20
         )
-        self.q(css='select[name="namespace"] option[value="{}"]'.format(namespace)).first.click()
+        self.q(css=f'select[name="namespace"] option[value="{namespace}"]').first.click()
         EmptyPromise(
-            lambda: self.q(css='select[name="namespace"] option[value="{}"]'.format(namespace)).selected,
+            lambda: self.q(css=f'select[name="namespace"] option[value="{namespace}"]').selected,
             "selected notification type is not correct",
             timeout=20
         ).fulfill()

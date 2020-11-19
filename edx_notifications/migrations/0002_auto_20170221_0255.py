@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 from django.db import models, migrations
 
 
@@ -13,6 +10,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterUniqueTogether(
             name='sqlusernotificationpreferences',
-            unique_together=set([('user_id', 'preference')]),
+            unique_together={('user_id', 'preference')},
         ),
     ]
