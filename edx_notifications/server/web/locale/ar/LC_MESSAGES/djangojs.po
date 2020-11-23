@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-11-14 16:03+0500\n"
+"POT-Creation-Date: 2020-11-23 13:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,46 +19,118 @@ msgstr ""
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 
-#: static/edx_notifications/js/views/notification_pane_view.js:181
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:197
 msgid "Announcements"
 msgstr "إعلانات"
+
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:202
+msgid "Group Work"
+msgstr "العمل الجماعي"
+
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:207
+msgid "Leaderboards"
+msgstr "لوحات المتسابقين"
+
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:212
+msgid "Discussion"
+msgstr "النقاش"
+
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:217
+msgid "Other"
+msgstr "أخرى"
+
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:399
+msgid "Today at "
+msgstr "اليوم"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/cohorted_comment_added.underscore:8
+msgid "responded:"
+msgstr ""
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/cohorted_thread_added.underscore:7
+msgid "posted:"
+msgstr ""
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
+msgid "Your response to"
+msgstr ""
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
+#, javascript-format
+msgid "was upvoted %s time"
+msgid_plural "was upvoted %s times"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_flagged.underscore:4
+msgid "has flagged a post entitled"
+msgstr ""
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
+msgid "Your post"
+msgstr ""
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/reply_to_thread.underscore:4
+msgid "responded to your post in"
+msgstr ""
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
+#, javascript-format
+msgid "was followed %s time"
+msgid_plural "was followed %s times"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/file_uploaded.underscore:4
+msgid "uploaded a file"
+msgstr ""
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/grades_posted.underscore:1
+msgid "Grade(s) are"
+msgstr ""
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/grades_posted.underscore:1
+msgid "posted"
+msgstr ""
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/stage_due.underscore:1
+msgid "due"
+msgstr ""
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/stage_open.underscore:1
+msgid "are"
+msgstr ""
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/stage_open.underscore:1
+msgid "open"
+msgstr ""
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
+msgid "You are now"
+msgstr "أنت الآن"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
+msgid "for"
+msgstr "في"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
+msgid "in the cohort!"
+msgstr "!على مستوى المجموعة"
 
 #: static/edx_notifications/templates/renderers/course_announcements/new_announcement.underscore:2
 msgid "Announcement"
 msgstr "إعلان"
 
-#: static/edx_notifications/js/views/notification_pane_view.js:186
-msgid "Group Work"
-msgstr "العمل الجماعي"
-
-#: static/edx_notifications/js/views/notification_pane_view.js:191
-msgid "Leaderboards"
-msgstr "لوحات المتسابقين"
-
-#: static/edx_notifications/js/views/notification_pane_view.js:196
-msgid "Discussion"
-msgstr "النقاش"
-
-#: static/edx_notifications/js/views/notification_pane_view.js:201
-msgid "Other"
-msgstr "أخرى"
-
-#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
-msgid "You are now"
-msgstr "أنت الآن"
-
-#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
-msgid "for"
-msgstr "في"
-
-#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
-msgid "in the cohort!"
-msgstr "!على مستوى المجموعة"
-
 #: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
 msgid "Progress"
 msgstr "التقدم المحرز"
-
-#: static/edx_notifications/js/views/notification_pane_view.js:383
-msgid "Today at "
-msgstr "اليوم"

@@ -1,1 +1,1 @@
-<span class='xns-title'><%= activity_name %></span>: <%= stage %> are <span class='xns-alert'>open</span>
+<span class='xns-title'><%= activity_name %></span>: <%= stage %> <%- gettext("are") %> <span class='xns-alert'><%- gettext("open") %></span>
