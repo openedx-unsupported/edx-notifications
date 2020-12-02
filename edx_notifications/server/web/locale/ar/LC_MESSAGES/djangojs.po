@@ -3,7 +3,6 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -41,79 +40,79 @@ msgstr "أخرى"
 
 #: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:399
 msgid "Today at "
-msgstr "اليوم"
+msgstr "اليوم في"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/cohorted_comment_added.underscore:8
 msgid "responded:"
-msgstr ""
+msgstr "تمت الاستجابة:"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/cohorted_thread_added.underscore:7
 msgid "posted:"
-msgstr ""
+msgstr "تم النشر:"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
 msgid "Your response to"
-msgstr ""
+msgstr "الاستجابة إلى"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
 #, javascript-format
 msgid "was upvoted %s time"
 msgid_plural "was upvoted %s times"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
-msgstr[5] ""
+msgstr[0] "تم التأييد ⁦%s⁩ مرات"
+msgstr[1] "تم التأييد ⁦%s⁩ مرات"
+msgstr[2] "تم التأييد ⁦%s⁩ مرات"
+msgstr[3] "تم التأييد ⁦%s⁩ مرات"
+msgstr[4] "تم التأييد ⁦%s⁩ مرات"
+msgstr[5] "تم التأييد ⁦%s⁩ مرات"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_flagged.underscore:4
 msgid "has flagged a post entitled"
-msgstr ""
+msgstr "قام بوضع علامة على منشور بعنوان"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
 msgid "Your post"
-msgstr ""
+msgstr "منشورك"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/reply_to_thread.underscore:4
 msgid "responded to your post in"
-msgstr ""
+msgstr "تمت الاستجابة إلى منشورك في"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
 #, javascript-format
 msgid "was followed %s time"
 msgid_plural "was followed %s times"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
-msgstr[4] ""
-msgstr[5] ""
+msgstr[0] "تمت المتابعة ⁦%s⁩مرات"
+msgstr[1] "تمت المتابعة ⁦%s⁩مرات"
+msgstr[2] "تمت المتابعة ⁦%s⁩مرات"
+msgstr[3] "تمت المتابعة ⁦%s⁩مرات"
+msgstr[4] "تمت المتابعة ⁦%s⁩مرات"
+msgstr[5] "تمت المتابعة ⁦%s⁩مرات"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/file_uploaded.underscore:4
 msgid "uploaded a file"
-msgstr ""
+msgstr "تم تحميل ملف"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/grades_posted.underscore:1
 msgid "Grade(s) are"
-msgstr ""
+msgstr "الدرجة (الدرجات) هي"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/grades_posted.underscore:1
 msgid "posted"
-msgstr ""
+msgstr "تم النشر"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/stage_due.underscore:1
 msgid "due"
-msgstr ""
+msgstr "الاستحقاق"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/stage_open.underscore:1
 msgid "are"
-msgstr ""
+msgstr "يكون"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/stage_open.underscore:1
 msgid "open"
-msgstr ""
+msgstr "مفتوح"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
 msgid "You are now"
@@ -125,7 +124,7 @@ msgstr "في"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
 msgid "in the cohort!"
-msgstr "!على مستوى المجموعة"
+msgstr "على مستوى المجموعة!"
 
 #: static/edx_notifications/templates/renderers/course_announcements/new_announcement.underscore:2
 msgid "Announcement"

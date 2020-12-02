@@ -4,6 +4,7 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
+msgid ""
 msgstr ""
 "Project-Id-Version: edx-notifications\n"
 "POT-Creation-Date: 2017-06-08 14:59+0000\n"
