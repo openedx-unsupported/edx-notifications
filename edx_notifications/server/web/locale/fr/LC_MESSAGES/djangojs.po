@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-23 13:25+0000\n"
+"POT-Creation-Date: 2020-12-04 11:40+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,11 +55,14 @@ msgstr "Votre réponse à"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
-#, javascript-format
-msgid "was upvoted %s time"
-msgid_plural "was upvoted %s times"
-msgstr[0] "a été aimée %s fois"
-msgstr[1] "a été aimée %s fois."
+msgid "was upvoted"
+msgstr "a été aimée"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
+msgid "times"
+msgstr "fois"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_flagged.underscore:4
 msgid "has flagged a post entitled"
@@ -75,11 +78,8 @@ msgid "responded to your post in"
 msgstr "a répondu à votre publication dans"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
-#, javascript-format
-msgid "was followed %s time"
-msgid_plural "was followed %s times"
-msgstr[0] "a été suivi %s fois"
-msgstr[1] "a été suivi %s fois."
+msgid "was followed"
+msgstr "a été suivi"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/file_uploaded.underscore:4
 msgid "uploaded a file"

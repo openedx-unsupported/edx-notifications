@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: edx-notifications\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-23 13:28+0000\n"
+"POT-Creation-Date: 2020-12-04 11:51+0000\n"
 "PO-Revision-Date: 2017-06-08 15:04+0000\n"
 "Language-Team: Korean (Korea)\n"
 "Language: ko_KR\n"
@@ -54,10 +54,14 @@ msgstr "다음에 대한 응답:"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
-#, javascript-format
-msgid "was upvoted %s time"
-msgid_plural "was upvoted %s times"
-msgstr[0] "이(가) %s번 추천됨"
+msgid "was upvoted"
+msgstr "이(가) 추천됨"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
+msgid "times"
+msgstr "번"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_flagged.underscore:4
 msgid "has flagged a post entitled"
@@ -73,10 +77,8 @@ msgid "responded to your post in"
 msgstr "이(가) 다음에서 내 게시글에 응답함:"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
-#, javascript-format
-msgid "was followed %s time"
-msgid_plural "was followed %s times"
-msgstr[0] "이(가) %s번 팔로우됨"
+msgid "was followed"
+msgstr "이(가) 팔로우됨"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/file_uploaded.underscore:4
 msgid "uploaded a file"

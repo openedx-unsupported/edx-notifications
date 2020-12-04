@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-23 13:27+0000\n"
+"POT-Creation-Date: 2020-12-04 11:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,10 +55,14 @@ msgstr "あなたの回答"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
-#, javascript-format
-msgid "was upvoted %s time"
-msgid_plural "was upvoted %s times"
-msgstr[0] "に%s票の賛成票が入りました"
+msgid "was upvoted"
+msgstr "票の賛成票が入りました"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
+msgid "times"
+msgstr "は"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_flagged.underscore:4
 msgid "has flagged a post entitled"
@@ -74,10 +78,8 @@ msgid "responded to your post in"
 msgstr "があなたの次の投稿に回答しました。"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
-#, javascript-format
-msgid "was followed %s time"
-msgid_plural "was followed %s times"
-msgstr[0] "は%s回フォローされました"
+msgid "was followed"
+msgstr "回フォローされました"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/file_uploaded.underscore:4
 msgid "uploaded a file"

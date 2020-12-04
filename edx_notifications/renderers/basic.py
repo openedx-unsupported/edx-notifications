@@ -108,8 +108,7 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
 
         _payload.update({
             '__display_created': created_str,
-            'gettext': gettext,
-            'ngettext': ngettext
+            'gettext': gettext
         })
 
         return self.underscore_template(_payload)

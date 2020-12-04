@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-11-23 13:16+0000\n"
+"POT-Creation-Date: 2020-12-04 11:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,15 +56,14 @@ msgstr "الاستجابة إلى"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
-#, javascript-format
-msgid "was upvoted %s time"
-msgid_plural "was upvoted %s times"
-msgstr[0] "تم التأييد ⁦%s⁩ مرات"
-msgstr[1] "تم التأييد ⁦%s⁩ مرات"
-msgstr[2] "تم التأييد ⁦%s⁩ مرات"
-msgstr[3] "تم التأييد ⁦%s⁩ مرات"
-msgstr[4] "تم التأييد ⁦%s⁩ مرات"
-msgstr[5] "تم التأييد ⁦%s⁩ مرات"
+msgid "was upvoted"
+msgstr "تم التأييد"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
+msgid "times"
+msgstr "مرات"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_flagged.underscore:4
 msgid "has flagged a post entitled"
@@ -80,15 +79,8 @@ msgid "responded to your post in"
 msgstr "تمت الاستجابة إلى منشورك في"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
-#, javascript-format
-msgid "was followed %s time"
-msgid_plural "was followed %s times"
-msgstr[0] "تمت المتابعة ⁦%s⁩مرات"
-msgstr[1] "تمت المتابعة ⁦%s⁩مرات"
-msgstr[2] "تمت المتابعة ⁦%s⁩مرات"
-msgstr[3] "تمت المتابعة ⁦%s⁩مرات"
-msgstr[4] "تمت المتابعة ⁦%s⁩مرات"
-msgstr[5] "تمت المتابعة ⁦%s⁩مرات"
+msgid "was followed"
+msgstr "تمت المتابعة"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/file_uploaded.underscore:4
 msgid "uploaded a file"
