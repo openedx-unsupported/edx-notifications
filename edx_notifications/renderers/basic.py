@@ -10,7 +10,7 @@ import json
 from underscore import _ as us
 from django.contrib.staticfiles import finders
 from django.templatetags.static import static
-from django.utils.translation import gettext
+from django.utils.translation import gettext, ngettext
 
 from edx_notifications.const import RENDER_FORMAT_HTML, RENDER_FORMAT_JSON
 from edx_notifications.renderers.renderer import BaseNotificationRenderer
@@ -108,7 +108,8 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
 
         _payload.update({
             '__display_created': created_str,
-            'gettext': gettext
+            'gettext': gettext,
+            'ngettext': ngettext
         })
 
         return self.underscore_template(_payload)

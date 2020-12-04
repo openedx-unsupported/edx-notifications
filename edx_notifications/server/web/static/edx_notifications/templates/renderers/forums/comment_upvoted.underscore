@@ -1,4 +1,4 @@
 <div class='xns-date'>
     <%= __display_created %>
 </div>
-<%- gettext("Your response to") %> <span class='xns-title'><%=thread_title%></span> <%- interpolate(ngettext("was upvoted %s time", "was upvoted %s times", <%=num_upvotes%>), <%=num_upvotes%>) %>
+<%- gettext("Your response to") %> <span class='xns-title'><%=thread_title%></span> <%- ngettext("was upvoted %s time", "was upvoted %s times", num_upvotes) % num_upvotes %>
