@@ -4,5 +4,5 @@
 </div>
 
 <div class='xns-excerpt'>
-    <span class='xns-username'><%= action_username %></span> posted: <%= excerpt %>
+    <span class='xns-username'><%= action_username %></span> <%- gettext("posted:") %> <%= excerpt %>
 </div>

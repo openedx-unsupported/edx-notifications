@@ -5,118 +5,121 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: edx-notifications\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-04 11:37+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2020-12-04 11:51+0000\n"
+"PO-Revision-Date: 2017-06-08 15:04+0000\n"
+"Language-Team: Korean (Korea)\n"
+"Language: ko_KR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:197
 msgid "Announcements"
-msgstr "Anuncios"
+msgstr "공지사항"
 
 #: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:202
 msgid "Group Work"
-msgstr "Trabajo en grupo"
+msgstr "그룹 과제"
 
 #: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:207
 msgid "Leaderboards"
-msgstr "Tableros de calificaciones"
+msgstr "리더보드"
 
 #: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:212
 msgid "Discussion"
-msgstr "Debates"
+msgstr "토론"
 
 #: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:217
 msgid "Other"
-msgstr "Otro"
+msgstr "기타"
 
 #: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:399
 msgid "Today at "
-msgstr "Hoy a las "
+msgstr "시간(오늘):"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/cohorted_comment_added.underscore:8
 msgid "responded:"
-msgstr "respondió:"
+msgstr "응답:"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/cohorted_thread_added.underscore:7
 msgid "posted:"
-msgstr "publicó:"
+msgstr "게시:"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
 msgid "Your response to"
-msgstr "Su respuesta a"
+msgstr "다음에 대한 응답:"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
 msgid "was upvoted"
-msgstr "recibió aprobación"
+msgstr "이(가) 추천됨"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
 msgid "times"
-msgstr "veces"
+msgstr "번"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_flagged.underscore:4
 msgid "has flagged a post entitled"
-msgstr "ha marcado una publicación titulada"
+msgstr "이(가) 다음 제목의 게시글을 신고함:"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
 msgid "Your post"
-msgstr "Su publicación"
+msgstr "내 게시글"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/reply_to_thread.underscore:4
 msgid "responded to your post in"
-msgstr "respondió a su publicación en"
+msgstr "이(가) 다음에서 내 게시글에 응답함:"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
 msgid "was followed"
-msgstr "recibió seguidores"
+msgstr "이(가) 팔로우됨"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/file_uploaded.underscore:4
 msgid "uploaded a file"
-msgstr "actualizó un archivo"
+msgstr "파일을 업로드함"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/grades_posted.underscore:1
 msgid "Grade(s) are"
-msgstr "Las calificaciones"
+msgstr "등급:"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/grades_posted.underscore:1
 msgid "posted"
-msgstr "se publican"
+msgstr "게시됨"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/stage_due.underscore:1
 msgid "due"
-msgstr "vencen"
+msgstr "만료됨"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/stage_open.underscore:1
 msgid "are"
-msgstr "son"
+msgstr ":"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/stage_open.underscore:1
 msgid "open"
-msgstr "estarán disponibles"
+msgstr "열림"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
 msgid "You are now"
-msgstr "Ahora es"
+msgstr "현재:"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
 msgid "for"
-msgstr "en"
+msgstr "대상:"
 
 #: edx_notifications/server/web/static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
 msgid "in the cohort!"
-msgstr "en el grupo."
+msgstr "(집단 내)"
+
+#: static/edx_notifications/templates/renderers/course_announcements/new_announcement.underscore:2
+msgid "Announcement"
+msgstr "공지사항"
 
 #: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
 msgid "Progress"
-msgstr "Avance"
+msgstr "진도율"

@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-11-14 16:03+0500\n"
+"POT-Creation-Date: 2020-12-04 11:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,43 +17,106 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-
-#: static/edx_notifications/js/views/notification_pane_view.js:181
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:197
 msgid "Announcements"
-msgstr "お知らせ"
+msgstr "告知"
 
-#: static/edx_notifications/js/views/notification_pane_view.js:186
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:202
 msgid "Group Work"
 msgstr "グループワーク"
 
-#: static/edx_notifications/js/views/notification_pane_view.js:191
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:207
 msgid "Leaderboards"
-msgstr "スコアボード"
+msgstr "リーダーボード"
 
-#: static/edx_notifications/js/views/notification_pane_view.js:196
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:212
 msgid "Discussion"
-msgstr "検討事項"
+msgstr "ディスカッション"
 
-#: static/edx_notifications/js/views/notification_pane_view.js:201
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:217
 msgid "Other"
-msgstr ""
+msgstr "その他"
 
-#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:399
+msgid "Today at "
+msgstr "今日 "
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/cohorted_comment_added.underscore:8
+msgid "responded:"
+msgstr "回答済み："
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/cohorted_thread_added.underscore:7
+msgid "posted:"
+msgstr "投稿済み："
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
+msgid "Your response to"
+msgstr "あなたの回答"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
+msgid "was upvoted"
+msgstr "票の賛成票が入りました"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
+msgid "times"
+msgstr "は"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_flagged.underscore:4
+msgid "has flagged a post entitled"
+msgstr "が投稿に資格ありのフラグを付けました"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
+msgid "Your post"
+msgstr "あなたの投稿"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/reply_to_thread.underscore:4
+msgid "responded to your post in"
+msgstr "があなたの次の投稿に回答しました。"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
+msgid "was followed"
+msgstr "回フォローされました"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/file_uploaded.underscore:4
+msgid "uploaded a file"
+msgstr "がファイルをアップロードしました"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/grades_posted.underscore:1
+msgid "Grade(s) are"
+msgstr "成績："
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/grades_posted.underscore:1
+msgid "posted"
+msgstr "投稿済み"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/stage_due.underscore:1
+msgid "due"
+msgstr "期日："
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/stage_open.underscore:1
+msgid "are"
+msgstr "は"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/stage_open.underscore:1
+msgid "open"
+msgstr "オープンです"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
 msgid "You are now"
-msgstr "あなたは今"
+msgstr "あなたは今コホートで"
 
-#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
 msgid "for"
-msgstr "に"
+msgstr "位（"
 
-#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
 msgid "in the cohort!"
-msgstr "グループで"
+msgstr "）です。"
 
 #: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
 msgid "Progress"
 msgstr "進度"
-
-#: static/edx_notifications/js/views/notification_pane_view.js:383
-msgid "Today at "
-msgstr "今日"
