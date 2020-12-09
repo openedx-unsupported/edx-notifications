@@ -5,5 +5,5 @@
 </div>
 
 <div class='xns-excerpt'>
-    <span class='xns-username'><%= action_username %></span> responded: <%= excerpt %>
+    <span class='xns-username'><%= action_username %></span> <%- gettext("responded:") %> <%= excerpt %>
 </div>

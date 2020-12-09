@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-11-14 16:03+0500\n"
+"POT-Creation-Date: 2020-12-04 12:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,42 +16,106 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: static/edx_notifications/js/views/notification_pane_view.js:181
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:197
 msgid "Announcements"
 msgstr "公告"
 
-#: static/edx_notifications/js/views/notification_pane_view.js:186
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:202
 msgid "Group Work"
-msgstr "群组工作"
+msgstr "小组作业"
 
-#: static/edx_notifications/js/views/notification_pane_view.js:191
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:207
 msgid "Leaderboards"
 msgstr "排行榜"
 
-#: static/edx_notifications/js/views/notification_pane_view.js:196
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:212
 msgid "Discussion"
 msgstr "讨论"
 
-#: static/edx_notifications/js/views/notification_pane_view.js:201
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:217
 msgid "Other"
-msgstr ""
+msgstr "其他"
 
-#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:399
+msgid "Today at "
+msgstr "今天 "
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/cohorted_comment_added.underscore:8
+msgid "responded:"
+msgstr "回复："
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/cohorted_thread_added.underscore:7
+msgid "posted:"
+msgstr "发布："
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
+msgid "Your response to"
+msgstr "您的回复"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
+msgid "was upvoted"
+msgstr "个赞"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
+msgid "times"
+msgstr "获得了"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_flagged.underscore:4
+msgid "has flagged a post entitled"
+msgstr "已标记了一个帖子（标题为"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
+msgid "Your post"
+msgstr "您的帖子"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/reply_to_thread.underscore:4
+msgid "responded to your post in"
+msgstr "回复了您的帖子"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
+msgid "was followed"
+msgstr "个关注"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/file_uploaded.underscore:4
+msgid "uploaded a file"
+msgstr "已上传一个文件"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/grades_posted.underscore:1
+msgid "Grade(s) are"
+msgstr "评分为"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/grades_posted.underscore:1
+msgid "posted"
+msgstr "发布"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/stage_due.underscore:1
+msgid "due"
+msgstr "截止日期"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/stage_open.underscore:1
+msgid "are"
+msgstr "为"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/stage_open.underscore:1
+msgid "open"
+msgstr "打开"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
 msgid "You are now"
 msgstr "您目前在"
 
-#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
 msgid "for"
 msgstr "对于"
 
-#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
 msgid "in the cohort!"
-msgstr "在小组中 !"
+msgstr "在群组中 !"
 
 #: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
 msgid "Progress"
 msgstr "进度"
-
-#: static/edx_notifications/js/views/notification_pane_view.js:383
-msgid "Today at "
-msgstr "今天"

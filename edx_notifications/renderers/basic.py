@@ -10,6 +10,7 @@ import json
 from underscore import _ as us
 from django.contrib.staticfiles import finders
 from django.templatetags.static import static
+from django.utils.translation import gettext
 
 from edx_notifications.const import RENDER_FORMAT_HTML, RENDER_FORMAT_JSON
 from edx_notifications.renderers.renderer import BaseNotificationRenderer
@@ -106,7 +107,8 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
         created_str = msg.created.strftime("%B %d, %Y") + ' at ' + msg.created.strftime("%H:%M%p") + ' GMT'
 
         _payload.update({
-            '__display_created': created_str
+            '__display_created': created_str,
+            'gettext': gettext
         })
 
         return self.underscore_template(_payload)
