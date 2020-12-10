@@ -2,7 +2,7 @@
 Unit tests for the resolvers.py file
 """
 
-from __future__ import absolute_import
+
 
 from django.test import TestCase
 
@@ -20,7 +20,7 @@ class BadLinkResolver(BaseLinkResolver):
         """
         Simply call into our parent which show throw exception
         """
-        return super(BadLinkResolver, self).resolve(msg_type_name, link_name, params, exact_match_only=exact_match_only)
+        return super().resolve(msg_type_name, link_name, params, exact_match_only=exact_match_only)
 
 
 class BaseLinkResolverTests(TestCase):

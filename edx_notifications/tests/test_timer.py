@@ -2,13 +2,12 @@
 Tests for the timer.py
 """
 
-from __future__ import absolute_import
+
 
 from datetime import datetime, timedelta
 
 import pytz
 from freezegun import freeze_time
-from six.moves import range
 from django.test import TestCase
 
 from edx_notifications import startup
@@ -33,7 +32,7 @@ class BadNotificationCallbackTimerHandler(NotificationCallbackTimerHandler):
         """
         Does nothing
         """
-        super(BadNotificationCallbackTimerHandler, self).notification_timer_callback(timer)
+        super().notification_timer_callback(timer)
 
 
 class NullNotificationCallbackTimerHandler(NotificationCallbackTimerHandler):

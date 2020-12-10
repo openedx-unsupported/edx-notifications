@@ -6,13 +6,12 @@
 All tests for the test_consumer.py
 """
 
-from __future__ import absolute_import
+
 
 import json
 
-from six.moves import range
 from django.test.client import Client
-from django.core.urlresolvers import NoReverseMatch, reverse
+from django.urls import NoReverseMatch, reverse
 
 from edx_notifications import const
 from edx_notifications.data import NotificationType, NotificationMessage, NotificationPreference
@@ -43,7 +42,7 @@ class ConsumerAPITests(LoggedInTestCase):
         )
         register_notification_type(self.msg_type)
 
-        super(ConsumerAPITests, self).setUp()
+        super().setUp()
 
     def test_no_anonymous_access(self):
         """

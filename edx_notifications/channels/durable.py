@@ -4,7 +4,7 @@ that saves Notifications to a database for later
 retrieval
 """
 
-from __future__ import absolute_import
+
 
 import logging
 

@@ -1,31 +1,17 @@
 -r base.txt # Core dependencies for this package
 
 # Testing Packages
-coverage==4.4
-astroid==1.5.3
-django_nose==1.4.5
-nose==1.3.7
-httpretty==0.9.6
-pep8==1.5.7
-pylint==1.7.6
-pep257==0.3.2
+coverage
+astroid
+pytest-django
+httpretty==0.9.7
+pycodestyle
+pylint
+pydocstyle
 mock==1.0.1
-testfixtures==6.4.3
-bok-choy==0.9.0
-sure==1.4.11
-ddt==1.2.0
-selenium==3.14.0
-tox==3.7.0
-configparser==3.5.0
-filelock==3.0.10
-futures==3.2.0 ; python_version == "2.7"
-isort==4.3.4
-lazy-object-proxy==1.3.1
-lazy==1.1
-pathlib2==2.3.3
-pillow==5.4.1
-pluggy==0.8.1
-py==1.7.0
-scandir==1.9.0
-virtualenv==16.2.0
-wrapt==1.10.5
+testfixtures==4.5.0
+bok-choy==0.6.2
+sure==1.2.3
+ddt==0.8.0
+selenium==2.53.1
+tox

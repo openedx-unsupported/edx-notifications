@@ -2,7 +2,7 @@
 Simple Subject/Body Underscore renderers
 """
 
-from __future__ import absolute_import
+
 
 import copy
 import json
@@ -65,7 +65,7 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
     underscore_template_name = None
     underscore_template = None
 
-    def __init__(self, template_name=None):
+    def __init__(self, template_name=None):  # pylint: disable=super-init-not-called
         """
         Initializer
         """
@@ -98,7 +98,7 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
                 ).format(url_path=template_url_path)
                 raise Exception(err_msg)
 
-            with open(underscore_filepath, "r") as _file:
+            with open(underscore_filepath) as _file:
                 template_string = _file.read()
                 self.underscore_template = us.template(template_string)
 

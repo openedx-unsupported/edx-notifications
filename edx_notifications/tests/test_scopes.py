@@ -2,9 +2,8 @@
 All tests regarding scopes.py
 """
 
-from __future__ import absolute_import
 
-from six.moves import range
+
 from django.test import TestCase
 from django.contrib.auth.models import User
 
@@ -28,7 +27,7 @@ class TestListScopeResolver(NotificationUserScopeResolver):
         """
 
         if scope_name == 'list_scope':
-            return [num for num in range(scope_context['range'])]
+            return list(range(scope_context['range']))
 
         if scope_name == 'badtype_scope':
             return 1
@@ -51,8 +50,7 @@ class TestGeneratorScopeResolver(NotificationUserScopeResolver):
                 """
                 To test handling of generator
                 """
-                for user_id in range(scope_context['range']):
-                    yield user_id
+                yield from range(scope_context['range'])
 
             return _scope_generator()
 
@@ -71,7 +69,7 @@ class DjangoORMResolver(NotificationUserScopeResolver):
 
         if scope_name == 'values_list_query_set':
             return User.objects.values_list('id', flat=True).all()  # pylint: disable=no-member
-        elif scope_name == 'values_query_set':
+        if scope_name == 'values_query_set':
             return User.objects.values('id').all()  # pylint: disable=no-member
         return None
 
@@ -86,7 +84,7 @@ class BadTestScopeResolver(NotificationUserScopeResolver):
         """
         Should fail
         """
-        super(BadTestScopeResolver, self).resolve(scope_name, scope_context, instance_context)
+        super().resolve(scope_name, scope_context, instance_context)
 
 
 class ScopesTests(TestCase):
@@ -116,7 +114,7 @@ class ScopesTests(TestCase):
 
         self.assertIsNotNone(user_ids)
         self.assertEqual(len(user_ids), 5)
-        self.assertEqual(user_ids, [num for num in range(5)])
+        self.assertEqual(user_ids, list(range(5)))
 
         user_ids = resolve_user_scope('generator_scope', {'range': 10})
 
@@ -126,7 +124,7 @@ class ScopesTests(TestCase):
             compare.append(user_id)
 
         # generators dont support len()
-        self.assertEqual(compare, [num for num in range(10)])
+        self.assertEqual(compare, list(range(10)))
 
     def test_no_resolve(self):
         """
@@ -193,7 +191,7 @@ class ScopesTests(TestCase):
         """
 
         users = resolve_user_scope('values_list_query_set', {})
-        users_list = [user for user in users]
+        users_list = list(users)
         self.assertEqual(len(users_list), 1)
         self.assertEqual(users_list[0], self.test_user.id)
 

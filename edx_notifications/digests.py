@@ -1,7 +1,7 @@
 """
 Create and register a new NotificationCallbackTimerHandler
 """
-from __future__ import absolute_import
+
 
 import os
 import copy
@@ -9,13 +9,11 @@ import uuid
 import logging
 import datetime
 from itertools import groupby
+from urllib import parse
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 
-import six.moves.urllib.error  # pylint: disable=import-error
-import six.moves.urllib.parse  # pylint: disable=import-error
-import six.moves.urllib.request  # pylint: disable=import-error
 import pytz
 import pynliner
 from django.dispatch import receiver
@@ -354,7 +352,7 @@ def with_inline_css(html_without_css):
         css_filepath = finders.AppDirectoriesFinder().find(const.NOTIFICATION_DIGEST_EMAIL_CSS)
 
     if css_filepath:
-        with open(css_filepath, "r") as _file:
+        with open(css_filepath) as _file:
             css_content = _file.read()
 
         # insert style tag in the html and run pyliner.
@@ -524,7 +522,7 @@ def get_group_rendering(group_data):
         if click_link and not click_link.startswith('http'):
             click_link = const.NOTIFICATION_EMAIL_CLICK_LINK_URL_FORMAT.format(
                 url_path=click_link,
-                encoded_url_path=six.moves.urllib.parse.quote(click_link),
+                encoded_url_path=parse.quote(click_link),
                 user_msg_id=user_msg.id,
                 msg_id=user_msg.msg.id,
                 hostname=const.NOTIFICATION_APP_HOSTNAME

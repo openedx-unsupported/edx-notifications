@@ -2,7 +2,7 @@
 Tests for the Django management command force_purge
 """
 
-from __future__ import absolute_import
+
 
 from datetime import datetime, timedelta
 

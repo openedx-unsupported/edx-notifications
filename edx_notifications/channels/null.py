@@ -4,7 +4,7 @@ This can be used when a system does not want to actually transmit a particular
 NotificationType
 """
 
-from __future__ import absolute_import
+
 
 from edx_notifications.channels.channel import BaseNotificationChannelProvider
 

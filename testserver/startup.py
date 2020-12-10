@@ -2,7 +2,7 @@
 One time initialization of the Notification subsystem
 """
 
-from __future__ import absolute_import
+
 
 import logging
 
