@@ -9,13 +9,11 @@ import uuid
 import logging
 import datetime
 from itertools import groupby
+from urllib import parse
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 
-import six.moves.urllib.error
-import six.moves.urllib.parse
-import six.moves.urllib.request  # pylint: disable=import-error
 import pytz
 import pynliner
 from django.dispatch import receiver
@@ -233,7 +231,6 @@ def send_notifications_digest(from_timestamp, to_timestamp, preference_name, sub
 
     # Get a collection of all namespaces
     namespaces = notification_store().get_all_namespaces(from_timestamp, to_timestamp)
-
     # Loop over all namespaces
     for namespace in namespaces:
         digests_sent += send_notifications_namespace_digest(
@@ -328,6 +325,7 @@ def send_notifications_namespace_digest(namespace, from_timestamp, to_timestamp,
                 'Sending digest email from namespace "%s" to user_id = %s at email %s...',
                 namespace, user_id, email
             )
+
             digests_sent += _send_user_digest(
                 namespace_info,
                 from_timestamp,
@@ -354,7 +352,7 @@ def with_inline_css(html_without_css):
         css_filepath = finders.AppDirectoriesFinder().find(const.NOTIFICATION_DIGEST_EMAIL_CSS)
 
     if css_filepath:
-        with open(css_filepath, "r") as _file:
+        with open(css_filepath) as _file:
             css_content = _file.read()
 
         # insert style tag in the html and run pyliner.
@@ -524,7 +522,7 @@ def get_group_rendering(group_data):
         if click_link and not click_link.startswith('http'):
             click_link = const.NOTIFICATION_EMAIL_CLICK_LINK_URL_FORMAT.format(
                 url_path=click_link,
-                encoded_url_path=six.moves.urllib.parse.quote(click_link),
+                encoded_url_path=parse.quote(click_link),
                 user_msg_id=user_msg.id,
                 msg_id=user_msg.msg.id,
                 hostname=const.NOTIFICATION_APP_HOSTNAME

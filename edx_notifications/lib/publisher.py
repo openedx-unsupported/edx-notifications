@@ -13,7 +13,6 @@ import types
 import logging
 import datetime
 
-import six
 import pytz
 from contracts import contract
 from django.db.models.query import QuerySet
@@ -27,10 +26,6 @@ from edx_notifications.channels.channel import get_notification_channel
 from edx_notifications.renderers.renderer import register_renderer
 
 log = logging.getLogger(__name__)
-
-
-if six.PY3:
-    basestring = str  # pylint: disable=invalid-name,redefined-builtin
 
 
 @contract(msg_type=NotificationType)
@@ -53,7 +48,7 @@ def register_notification_type(msg_type):
     register_renderer(msg_type.renderer)
 
 
-@contract(type_name=basestring)
+@contract(type_name=str)
 def get_notification_type(type_name):
     """
     Returns the NotificationType registered by type_name
@@ -219,7 +214,7 @@ def bulk_publish_notification_to_scope(scope_name, scope_context, msg, exclude_u
     )
 
 
-@contract(msg=NotificationMessage, send_at=datetime.datetime, scope_name=basestring, scope_context=dict)
+@contract(msg=NotificationMessage, send_at=datetime.datetime, scope_name=str, scope_context=dict)
 def publish_timed_notification(msg, send_at, scope_name, scope_context, timer_name=None,
                                ignore_if_past_due=False, timer_context=None):  # pylint: disable=too-many-arguments
     """
@@ -303,7 +298,7 @@ def publish_timed_notification(msg, send_at, scope_name, scope_context, timer_na
     return saved_timer
 
 
-@contract(timer_name=basestring)
+@contract(timer_name=str)
 def cancel_timed_notification(timer_name, exception_on_not_found=True):
     """
     Cancels a previously published timed notification

@@ -44,7 +44,7 @@ class ParsePushNotificationChannelProvider(BaseNotificationChannelProvider):
         self.application_id = application_id
         self.rest_api_key = rest_api_key
 
-        super(ParsePushNotificationChannelProvider, self).__init__(
+        super().__init__(
             name=name,
             display_name=display_name,
             display_description=display_description,

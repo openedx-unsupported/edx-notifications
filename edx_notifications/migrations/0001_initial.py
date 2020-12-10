@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 import model_utils.fields
 import django.utils.timezone
 from django.db import models, migrations

@@ -1,12 +1,12 @@
 # Django/Framework Packages
 django<2.3
-django-model-utils==2.3.1
+django-model-utils==4.0.0
 python-dateutil
-requests==2.22.0
+requests==2.23.0
 pylru==1.0.6
-djangorestframework==3.11.0
-PyContracts==1.7.1
+djangorestframework==3.9.4
+PyContracts==1.8.12
 underscore.py==0.1.6
 pynliner==0.8.0
 git+https://github.com/milesrichardson/ParsePy.git
-freezegun>=0.1.11
+freezegun>=0.3.12

@@ -1,8 +1,5 @@
-
-
 from unittest import skipUnless
 
-import six
 from pages import password, user_name, user_email
 from pages.home_page import HomePage
 from pages.login_page import LoginPage
@@ -56,7 +53,7 @@ class TestAddNotifications(WebAppTest):
         """
         Initialize all page objects
         """
-        super(TestAddNotifications, self).setUp()
+        super().setUp()
         self.browser.maximize_window()
         self.home_page = HomePage(self.browser)
         self.registration_page = RegistrationPage(self.browser)
@@ -210,7 +207,7 @@ class TestAddNotifications(WebAppTest):
         And a relevant message for the added notification type should be visible in unread notification tab
         """
         self.login()
-        for key, value in six.iteritems(self.notification_dict):
+        for key, value in self.notification_dict.items():
             self.logged_in_home_page.select_notification_type(key)
             self.logged_in_home_page.add_notification()
             self.logged_in_home_page.show_notifications_container()
@@ -232,7 +229,7 @@ class TestAddNotifications(WebAppTest):
         And a relevant message for the added notification type should be visible in view all notification tab
         """
         self.login()
-        for key, value in six.iteritems(self.short_notification_dict):
+        for key, value in self.short_notification_dict.items():
             self.logged_in_home_page.select_notification_type(key)
             self.logged_in_home_page.add_notification()
             self.logged_in_home_page.show_notifications_container()

@@ -1,0 +1,68 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2018-11-29 17:12+0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: const.py:103
+msgid "Announcements"
+msgstr "Anuncios"
+
+#: const.py:108
+msgid "Group Work"
+msgstr "Trabajo en grupo"
+
+#: const.py:113
+msgid "Leaderboards"
+msgstr "Tableros de calificaciones"
+
+#: const.py:118
+msgid "Discussion"
+msgstr "Debates"
+
+#: const.py:123
+msgid "Other"
+msgstr ""
+
+#: digests.py:200
+msgid "Receive daily email"
+msgstr "Recibir a diario por correo electrónico"
+
+#: digests.py:201
+msgid ""
+"This setting will cause a daily digest of all notifications to be sent to "
+"your registered email address"
+msgstr ""
+"Esta configuración le permite seleccionar que todas las notificaciones se "
+"envíen a diario a la dirección de correo electrónico registrada."
+
+#: digests.py:210
+msgid "Receive weekly email"
+msgstr "Recibir una vez semana por correo electrónico"
+
+#: digests.py:211
+msgid ""
+"This setting will cause a weekly digest of all notifications to be sent to "
+"your registered email address"
+msgstr ""
+"Esta configuración le permite seleccionar que todas las notificacionesse "
+"envíen una vez por semana a la dirección de correo electrónico registrada."
+
+#: stores/sql/models.py:145
+#, python-brace-format
+msgid "Announcement on {annoucement_date}"
+msgstr "anuncio el {annoucement_date}"

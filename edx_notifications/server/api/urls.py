@@ -6,8 +6,7 @@ All URL mappings for HTTP-based APIs
 from django.urls import re_path
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from edx_notifications.server.api import consumer as consumer_views
-
+from edx_notifications.server.api import consumer as consumer_views, admin as admin_views
 from .url_regex import (
     CONSUMER_NOTIFICATIONS_REGEX,
     CONSUMER_USER_PREFERENCES_REGEX,
@@ -18,7 +17,8 @@ from .url_regex import (
     CONSUMER_NOTIFICATIONS_PREFERENCES_REGEX,
     CONSUMER_NOTIFICATION_DETAIL_NO_PARAM_REGEX,
     CONSUMER_NOTIFICATIONS_MARK_NOTIFICATIONS_REGEX,
-    CONSUMER_USER_PREFERENCES_DETAIL_NO_PARAM_REGEX
+    CONSUMER_USER_PREFERENCES_DETAIL_NO_PARAM_REGEX,
+    ADMIN_USERS_DELETE
 )
 
 urlpatterns = [  # pylint: disable=invalid-name
@@ -71,6 +71,11 @@ urlpatterns = [  # pylint: disable=invalid-name
         CONSUMER_USER_PREFERENCES_DETAIL_NO_PARAM_REGEX,
         consumer_views.UserPreferenceDetail.as_view(),
         name='edx_notifications.consumer.user_preferences.detail.no_param'
+    ),
+    re_path(
+        ADMIN_USERS_DELETE,
+        admin_views.DeleteUsersData.as_view(),
+        name='edx_notifications.admin.delete_users_data'
     ),
 
 ]

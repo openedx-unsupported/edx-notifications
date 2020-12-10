@@ -6,7 +6,6 @@ Notification Consumer HTTP-based API enpoints
 
 import logging
 
-import six
 from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
@@ -33,8 +32,8 @@ LOG = logging.getLogger("api")
 FILTER_PARAMETER_NAMES = [
     ('read', bool),
     ('unread', bool),
-    ('namespace', six.text_type),
-    ('msg_type', six.text_type),
+    ('namespace', str),
+    ('msg_type', str),
 ]
 
 OPTIONS_PARAMETER_NAMES = [
@@ -79,7 +78,7 @@ def _get_parameters_from_request(request, allowed_parameters):
                     raise ValueError(
                         "Passed in expected bool '{val}' does not map to True or False".format(val=str_val)
                     )
-            elif filter_type in (str, six.text_type):
+            elif filter_type in (str, str):
                 value = str_val
             else:
                 raise ValueError('Unknown parameter type {name}'.format(name=filter_type))
@@ -333,7 +332,7 @@ class RendererTemplatesList(AuthenticatedAPIView):
 
         result_dict = {}
 
-        for class_name, renderer in six.iteritems(get_all_renderers()):
+        for class_name, renderer in get_all_renderers().items():
             if renderer.can_render_format(const.RENDER_FORMAT_HTML):
                 result_dict[class_name] = renderer.get_template_path(const.RENDER_FORMAT_HTML)
 

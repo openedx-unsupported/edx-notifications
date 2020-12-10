@@ -4,7 +4,6 @@ Assortment of helper utility methods
 
 
 
-import six
 from django.urls import reverse
 from django.templatetags.static import static
 
@@ -24,11 +23,11 @@ class RecursiveDictionary(dict):
         {'foo': {'baz': 36, 'bar': 42}}
         """
         try:
-            iterator = six.iteritems(other)
+            iterator = other.items()
         except AttributeError:
             iterator = other
         self.iter_rec_update(iterator)
-        self.iter_rec_update(six.iteritems(third))
+        self.iter_rec_update(third.items())
 
     def iter_rec_update(self, iterator):
         """

@@ -7,12 +7,10 @@ that sends email to the users.
 import uuid
 import logging
 import datetime
+from urllib import parse
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-import six.moves.urllib.error
-import six.moves.urllib.parse
-import six.moves.urllib.request  # pylint: disable=import-error
 import pytz
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
@@ -89,7 +87,7 @@ class TriggeredEmailChannelProvider(MsgTypeToUrlResolverMixin, BaseNotificationC
             if resolve_links and not click_link.startswith('http'):
                 click_link = const.NOTIFICATION_EMAIL_CLICK_LINK_URL_FORMAT.format(
                     url_path=click_link,
-                    encoded_url_path=six.moves.urllib.parse.quote(click_link),
+                    encoded_url_path=parse.quote(click_link),
                     user_msg_id=user_msg.id,
                     msg_id=user_msg.msg.id,
                     hostname=const.NOTIFICATION_APP_HOSTNAME

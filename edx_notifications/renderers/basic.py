@@ -98,7 +98,7 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
                 ).format(url_path=template_url_path)
                 raise Exception(err_msg)
 
-            with open(underscore_filepath, "r") as _file:
+            with open(underscore_filepath) as _file:
                 template_string = _file.read()
                 self.underscore_template = us.template(template_string)
 

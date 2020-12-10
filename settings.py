@@ -1,5 +1,4 @@
 #!/usr/bin/bash
-# -*- coding: utf-8 -*
 """
 Django settings file for local development purposes
 """
@@ -24,6 +23,9 @@ DATABASES = {
         'NAME': '{}/db/notifications.db'.format(TEST_ROOT)
     },
 }
+
+USE_I18N = True
+USE_L10N = True
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -55,20 +57,23 @@ js_info_dict = {
     # 'packages': 'edx_notifications.server.web',
  }
 LANGUAGE_CODE = 'en'
+LANGUAGE_COOKIE_NAME = "openedx-language-preference"
 LANGUAGES = (
-    ('en', u'English '),
-    ('ar', u'العربية'),  # Arabic
-    ('Ar-sa', u'Arabic'),  # Arabic Saudi Arabia
-    ('zh', u'中文(简体)'),
-    ('ES419', u'Latin Spanish'),
-    ('es', u'Español'),
-    ('ja', u'Japanese'),
-    ('ko', u'한국어 (대한민국)'),  # Korean (Korea)
-    ('de', u'German'),
-    ('fr', u'french'),
-    ('nl', u'Dutch '),
-    ('pl', u'Polskie'),
-    ('pt', u'Português')
+    ('en', 'English '),
+    ('ar', 'العربية'),  # Arabic
+    ('Ar-sa', 'Arabic'),  # Arabic Saudi Arabia
+    ('zh', '中文(简体)'),
+    ('ES419', 'Latin Spanish'),
+    ('es', 'Español'),
+    ('ja', 'Japanese'),
+    ('ko', '한국어 (대한민국)'),  # Korean (Korea)
+    ('de', 'German'),
+    ('fr', 'french'),
+    ('nl', 'Dutch '),
+    ('pl', 'Polskie'),
+    ('pt', 'Português'),
+    ('zh-cn', '中文(简体)'),
+    ('jp', '日本人'),
 )
 LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'locale'),
@@ -77,6 +82,7 @@ LOCALE_PATHS = [
 
 MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
