@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-11-14 16:03+0500\n"
+"POT-Creation-Date: 2020-12-04 11:26+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,46 +18,110 @@ msgstr ""
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 
-#: static/edx_notifications/js/views/notification_pane_view.js:181
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:197
 msgid "Announcements"
 msgstr "إعلانات"
+
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:202
+msgid "Group Work"
+msgstr "العمل الجماعي"
+
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:207
+msgid "Leaderboards"
+msgstr "لوحات المتسابقين"
+
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:212
+msgid "Discussion"
+msgstr "النقاش"
+
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:217
+msgid "Other"
+msgstr "أخرى"
+
+#: edx_notifications/server/web/static/edx_notifications/js/views/notification_pane_view.js:399
+msgid "Today at "
+msgstr "اليوم في"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/cohorted_comment_added.underscore:8
+msgid "responded:"
+msgstr "تمت الاستجابة:"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/cohorted_thread_added.underscore:7
+msgid "posted:"
+msgstr "تم النشر:"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
+msgid "Your response to"
+msgstr "الاستجابة إلى"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
+msgid "was upvoted"
+msgstr "تم التأييد"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/comment_upvoted.underscore:4
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
+msgid "times"
+msgstr "مرات"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_flagged.underscore:4
+msgid "has flagged a post entitled"
+msgstr "قام بوضع علامة على منشور بعنوان"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/post_upvoted.underscore:4
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
+msgid "Your post"
+msgstr "منشورك"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/reply_to_thread.underscore:4
+msgid "responded to your post in"
+msgstr "تمت الاستجابة إلى منشورك في"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/forums/thread_followed.underscore:4
+msgid "was followed"
+msgstr "تمت المتابعة"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/file_uploaded.underscore:4
+msgid "uploaded a file"
+msgstr "تم تحميل ملف"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/grades_posted.underscore:1
+msgid "Grade(s) are"
+msgstr "الدرجة (الدرجات) هي"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/grades_posted.underscore:1
+msgid "posted"
+msgstr "تم النشر"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/stage_due.underscore:1
+msgid "due"
+msgstr "الاستحقاق"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/stage_open.underscore:1
+msgid "are"
+msgstr "يكون"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/group_project/stage_open.underscore:1
+msgid "open"
+msgstr "مفتوح"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
+msgid "You are now"
+msgstr "أنت الآن"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
+msgid "for"
+msgstr "في"
+
+#: edx_notifications/server/web/static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:1
+msgid "in the cohort!"
+msgstr "على مستوى المجموعة!"
 
 #: static/edx_notifications/templates/renderers/course_announcements/new_announcement.underscore:2
 msgid "Announcement"
 msgstr "إعلان"
 
-#: static/edx_notifications/js/views/notification_pane_view.js:186
-msgid "Group Work"
-msgstr "العمل الجماعي"
-
-#: static/edx_notifications/js/views/notification_pane_view.js:191
-msgid "Leaderboards"
-msgstr "لوحات المتسابقين"
-
-#: static/edx_notifications/js/views/notification_pane_view.js:196
-msgid "Discussion"
-msgstr "النقاش"
-
-#: static/edx_notifications/js/views/notification_pane_view.js:201
-msgid "Other"
-msgstr "أخرى"
-
-#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
-msgid "You are now"
-msgstr "أنت الآن"
-
-#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
-msgid "for"
-msgstr "في"
-
-#: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
-msgid "in the cohort!"
-msgstr "!على مستوى المجموعة"
-
 #: static/edx_notifications/templates/renderers/leaderboard/rank_changed.underscore:3
 msgid "Progress"
 msgstr "التقدم المحرز"
-
-#: static/edx_notifications/js/views/notification_pane_view.js:383
-msgid "Today at "
-msgstr "اليوم"
