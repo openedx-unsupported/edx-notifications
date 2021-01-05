@@ -1,5 +1,4 @@
 #!/usr/bin/bash
-# -*- coding: utf-8 -*
 """
 Django settings for edx_notifications test project.
 For more information on this file, see
@@ -9,7 +8,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-from __future__ import absolute_import
+
 
 import os
 import sys
@@ -39,7 +38,6 @@ INSTALLED_APPS = (
     'rest_framework',
     'edx_notifications',
     'edx_notifications.server.web',
-    'django_nose',
 )
 
 js_info_dict = {
@@ -68,7 +66,7 @@ js_info_dict = {
 #     os.path.join(BASE_DIR, 'locale'),
 # ]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -110,6 +108,7 @@ TEMPLATES = [
             'debug': True,
             'context_processors': [
                 'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages'
             ],
             'loaders': [
                 'django.template.loaders.filesystem.Loader',

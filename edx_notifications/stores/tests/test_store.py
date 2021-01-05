@@ -2,7 +2,7 @@
 Exercises tests on the base_store_provider file
 """
 
-from __future__ import absolute_import
+
 
 from django.test import TestCase
 from django.test.utils import override_settings
@@ -29,110 +29,110 @@ class BadImplementationStoreProvider(BaseNotificationStoreProvider):
         """
         Fake implementation of method which calls base class, which should throw NotImplementedError
         """
-        super(BadImplementationStoreProvider, self).purge_expired_notifications(purge_read_messages_older_than,
+        super().purge_expired_notifications(purge_read_messages_older_than,
                                                                                 purge_unread_messages_older_than)
 
     def get_all_user_preferences_for_user(self, user_id):
         """
         Fake implementation of method which calls base class, which should throw NotImplementedError
         """
-        super(BadImplementationStoreProvider, self).get_all_user_preferences_for_user(user_id)
+        super().get_all_user_preferences_for_user(user_id)
 
     def save_notification_preference(self, notification_preference):
         """
         Fake implementation of method which calls base class, which should throw NotImplementedError
         """
-        super(BadImplementationStoreProvider, self).save_notification_preference(notification_preference)
+        super().save_notification_preference(notification_preference)
 
     def get_notification_preference(self, name):
         """
         Fake implementation of method which calls base class, which should throw NotImplementedError
         """
-        super(BadImplementationStoreProvider, self).get_notification_preference(name)
+        super().get_notification_preference(name)
 
     def get_all_user_preferences_with_name(self, name, value, offset=0, size=None):
         """
         Fake implementation of method which calls base class, which should throw NotImplementedError
         """
-        super(BadImplementationStoreProvider, self).get_all_user_preferences_with_name(name, value, offset, size)
+        super().get_all_user_preferences_with_name(name, value, offset, size)
 
     def get_user_preference(self, user_id, name):
         """
         Fake implementation of method which calls base class, which should throw NotImplementedError
         """
-        super(BadImplementationStoreProvider, self).get_user_preference(user_id, name)
+        super().get_user_preference(user_id, name)
 
     def get_all_notification_preferences(self):
         """
         Fake implementation of method which calls base class, which should throw NotImplementedError
         """
-        super(BadImplementationStoreProvider, self).get_all_notification_preferences()
+        super().get_all_notification_preferences()
 
     def set_user_preference(self, user_preference):
         """
         Fake implementation of method which calls base class, which should throw NotImplementedError
         """
-        super(BadImplementationStoreProvider, self).set_user_preference(user_preference)
+        super().set_user_preference(user_preference)
 
     def get_notification_message_by_id(self, msg_id, options=None):
         """
         Fake implementation of method which calls base class, which should throw NotImplementedError
         """
-        super(BadImplementationStoreProvider, self).get_notification_message_by_id(msg_id, options=options)
+        super().get_notification_message_by_id(msg_id, options=options)
 
     def save_notification_message(self, msg):
         """
         Fake implementation of method which calls base class, which should throw NotImplementedError
         """
-        super(BadImplementationStoreProvider, self).save_notification_message(msg)
+        super().save_notification_message(msg)
 
     def save_user_notification(self, user_msg):
         """
         Fake implementation of method which calls base class, which should throw NotImplementedError
         """
-        super(BadImplementationStoreProvider, self).save_user_notification(user_msg)
+        super().save_user_notification(user_msg)
 
     def bulk_create_user_notification(self, user_msgs):
         """
         Fake implementation
         """
-        super(BadImplementationStoreProvider, self).bulk_create_user_notification(user_msgs)
+        super().bulk_create_user_notification(user_msgs)
 
     def get_notification_type(self, name):
         """
         Fake implementation of method which calls base class, which should throw NotImplementedError
         """
-        super(BadImplementationStoreProvider, self).get_notification_type(name)
+        super().get_notification_type(name)
 
     def get_all_notification_types(self):
         """
         Fake implementation of method which calls base class, which should throw NotImplementedError
         """
-        super(BadImplementationStoreProvider, self).get_all_notification_types()
+        super().get_all_notification_types()
 
     def save_notification_type(self, msg_type):
         """
         Saves a new notification type, note that we do not support updates
         """
-        super(BadImplementationStoreProvider, self).save_notification_type(msg_type)
+        super().save_notification_type(msg_type)
 
     def get_num_notifications_for_user(self, user_id, filters=None):
         """
         Saves a new notification type, note that we do not support updates
         """
-        super(BadImplementationStoreProvider, self).get_num_notifications_for_user(user_id, filters=filters)
+        super().get_num_notifications_for_user(user_id, filters=filters)
 
     def get_notification_for_user(self, user_id, msg_id):
         """
         Get a single UserNotification for the user_id/msg_id pair
         """
-        super(BadImplementationStoreProvider, self).get_notification_for_user(user_id, msg_id)
+        super().get_notification_for_user(user_id, msg_id)
 
     def get_notifications_for_user(self, user_id, filters=None, options=None):
         """
         Saves a new notification type, note that we do not support updates
         """
-        super(BadImplementationStoreProvider, self).get_notifications_for_user(
+        super().get_notifications_for_user(
             user_id,
             filters=filters,
             options=options
@@ -142,7 +142,7 @@ class BadImplementationStoreProvider(BaseNotificationStoreProvider):
         """
         Marks all notifications for user (with any filtering criteria) as read
         """
-        super(BadImplementationStoreProvider, self).mark_user_notifications_read(
+        super().mark_user_notifications_read(
             user_id,
             filters=filters,
         )
@@ -152,13 +152,13 @@ class BadImplementationStoreProvider(BaseNotificationStoreProvider):
         Will save (create or update) a NotificationCallbackTimer in the
         StorageProvider
         """
-        super(BadImplementationStoreProvider, self).save_notification_timer(None)
+        super().save_notification_timer(None)
 
     def get_notification_timer(self, name):
         """
         Will return a single NotificationCallbackTimer
         """
-        super(BadImplementationStoreProvider, self).get_notification_timer(None)
+        super().get_notification_timer(None)
 
     def get_all_active_timers(self, until_time=None, include_executed=False):
         """
@@ -167,13 +167,13 @@ class BadImplementationStoreProvider(BaseNotificationStoreProvider):
         If until_time is not passed in, then we will use our
         current system time
         """
-        super(BadImplementationStoreProvider, self).get_all_active_timers(until_time=until_time)
+        super().get_all_active_timers(until_time=until_time)
 
     def get_all_namespaces(self, start_datetime=None, end_datetime=None):
         """
         This will return all unique namespaces that have been used
         """
-        super(BadImplementationStoreProvider, self).get_all_namespaces()
+        super().get_all_namespaces()
 
 
 class TestBaseNotificationDataProvider(TestCase):

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from __future__ import absolute_import
+
 
 from setuptools import setup
 
@@ -22,6 +22,7 @@ def is_requirement(line):
         line.startswith('git+')
     )
 
+
 def load_requirements(*requirements_paths):
     """
     Load all requirements from the specified requirements files.
@@ -37,7 +38,7 @@ def load_requirements(*requirements_paths):
 
 setup(
     name='edx-notifications',
-    version='2.0.1',
+    version='3.0.0',
     description='Notification subsystem for Open edX',
     long_description=open('README.md').read(),
     author='edX',
@@ -51,12 +52,9 @@ setup(
         'Operating System :: OS Independent',
         'Framework :: Django',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
     ],
     packages=['edx_notifications'],
     dependency_links=[

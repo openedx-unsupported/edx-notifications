@@ -3,9 +3,8 @@ Notification types that will be used in common use cases for notifications aroun
 Group Projects
 """
 
-from __future__ import absolute_import
 
-import six
+
 from django.dispatch import receiver
 
 from edx_notifications.data import NotificationType
@@ -13,20 +12,20 @@ from edx_notifications.signals import perform_type_registrations
 from edx_notifications.lib.publisher import register_notification_type
 from edx_notifications.renderers.basic import UnderscoreStaticFileRenderer
 
-GROUP_PROJECT_V1_NOTIFICATION_PREFIX = u'open-edx.xblock.group-project'
-GROUP_PROJECT_V2_NOTIFICATION_PREFIX = u'open-edx.xblock.group-project-v2'
+GROUP_PROJECT_V1_NOTIFICATION_PREFIX = 'open-edx.xblock.group-project'
+GROUP_PROJECT_V2_NOTIFICATION_PREFIX = 'open-edx.xblock.group-project-v2'
 
 GROUP_PROJECT_RENDERER_PREFIX = 'edx_notifications.openedx.group_project'
 
 
-class NotificationMessageTypes(object):
+class NotificationMessageTypes:
     """
     Message type constants
     """
-    STAGE_OPEN = u'stage-open'
-    STAGE_DUE = u'stage-due'
-    FILE_UPLOADED = u'file-uploaded'
-    GRADES_POSTED = u'grades-posted'
+    STAGE_OPEN = 'stage-open'
+    STAGE_DUE = 'stage-due'
+    FILE_UPLOADED = 'file-uploaded'
+    GRADES_POSTED = 'grades-posted'
 
 
 class GroupProjectFileUploadedRenderer(UnderscoreStaticFileRenderer):
@@ -71,10 +70,10 @@ def register_notification_types(sender, **kwargs):  # pylint: disable=unused-arg
         NotificationMessageTypes.GRADES_POSTED: 'GroupProjectGradesPostedRenderer',
     }
 
-    for message_type, renderer in six.iteritems(mapping):
+    for message_type, renderer in mapping.items():
         register_notification_type(
             NotificationType(
-                name=u"{prefix}.{type}".format(prefix=GROUP_PROJECT_V1_NOTIFICATION_PREFIX, type=message_type),
+                name="{prefix}.{type}".format(prefix=GROUP_PROJECT_V1_NOTIFICATION_PREFIX, type=message_type),
                 renderer="{prefix}.{renderer}".format(prefix=GROUP_PROJECT_RENDERER_PREFIX, renderer=renderer),
             )
         )
@@ -82,7 +81,7 @@ def register_notification_types(sender, **kwargs):  # pylint: disable=unused-arg
         # GP v2 can reuse GP v1 renderers
         register_notification_type(
             NotificationType(
-                name=u"{prefix}.{type}".format(prefix=GROUP_PROJECT_V2_NOTIFICATION_PREFIX, type=message_type),
+                name="{prefix}.{type}".format(prefix=GROUP_PROJECT_V2_NOTIFICATION_PREFIX, type=message_type),
                 renderer="{prefix}.{renderer}".format(prefix=GROUP_PROJECT_RENDERER_PREFIX, renderer=renderer),
             )
         )

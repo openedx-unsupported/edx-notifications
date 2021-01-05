@@ -1,5 +1,4 @@
 #!/usr/bin/bash
-# -*- coding: utf-8 -*
 """
 Django settings for edx_notifications test project.
 For more information on this file, see
@@ -9,7 +8,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-from __future__ import absolute_import
+
 
 import os
 
@@ -38,29 +37,28 @@ INSTALLED_APPS = (
     'rest_framework',
     'edx_notifications',
     'edx_notifications.server.web',
-    'django_nose',
 )
 
 LANGUAGE_CODE = "en"
 LANGUAGE_COOKIE_NAME = "openedx-language-preference"
 LANGUAGES = (
-    ('en', u'English '),
-    ('ar', u'العربية'),  # Arabic
-    ('es', u'Español'),
-    ('nl', u'Dutch '),
-    ('pt', u'Português'),
-    ('zh-ch', u'中文(简体)'),
-    ('zh-cn', u'中文(简体)'),
-    ('fr', u'Français'),
-    ('jp', u'日本人'),
-    ('de', u'Deutsche'),
+    ('en', 'English '),
+    ('ar', 'العربية'),  # Arabic
+    ('es', 'Español'),
+    ('nl', 'Dutch '),
+    ('pt', 'Português'),
+    ('zh-ch', '中文(简体)'),
+    ('zh-cn', '中文(简体)'),
+    ('fr', 'Français'),
+    ('jp', '日本人'),
+    ('de', 'Deutsche'),
 )
 
 LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'locale'),
 ]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -98,6 +96,7 @@ TEMPLATES = [
             'debug': True,
             'context_processors': [
                 'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages'
             ],
             'loaders': [
                 'django.template.loaders.filesystem.Loader',

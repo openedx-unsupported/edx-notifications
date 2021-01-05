@@ -3,7 +3,7 @@ Run these tests @ Devstack:
     rake fasttest_lms[common/djangoapps/api_manager/management/commands/tests/test_migrate_orgdata.py]
 """
 
-from __future__ import absolute_import
+
 
 from datetime import datetime, timedelta
 

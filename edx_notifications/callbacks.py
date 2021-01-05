@@ -2,12 +2,11 @@
 Any internal Timer callbacks
 """
 
-from __future__ import absolute_import
+
 
 import abc
 import logging
 
-import six
 
 from edx_notifications.scopes import resolve_user_scope
 from edx_notifications.exceptions import ItemNotFoundError
@@ -21,7 +20,7 @@ from edx_notifications.lib.publisher import (
 log = logging.getLogger(__name__)
 
 
-class NotificationCallbackTimerHandler(six.with_metaclass(abc.ABCMeta, object)):
+class NotificationCallbackTimerHandler(metaclass=abc.ABCMeta):
     """
     Interface for timer callbacks
     """

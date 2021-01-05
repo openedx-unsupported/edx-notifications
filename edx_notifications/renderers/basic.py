@@ -2,7 +2,7 @@
 Simple Subject/Body Underscore renderers
 """
 
-from __future__ import absolute_import
+
 
 import copy
 import json
@@ -10,7 +10,7 @@ import json
 from underscore import _ as us
 from django.contrib.staticfiles import finders
 from django.templatetags.static import static
-from django.utils.translation import gettext
+from django.utils.translation import gettext, ngettext
 
 from edx_notifications.const import RENDER_FORMAT_HTML, RENDER_FORMAT_JSON
 from edx_notifications.renderers.renderer import BaseNotificationRenderer
@@ -65,7 +65,7 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
     underscore_template_name = None
     underscore_template = None
 
-    def __init__(self, template_name=None):
+    def __init__(self, template_name=None):  # pylint: disable=super-init-not-called
         """
         Initializer
         """
@@ -98,7 +98,7 @@ class UnderscoreStaticFileRenderer(BaseNotificationRenderer):
                 ).format(url_path=template_url_path)
                 raise Exception(err_msg)
 
-            with open(underscore_filepath, "r") as _file:
+            with open(underscore_filepath) as _file:
                 template_string = _file.read()
                 self.underscore_template = us.template(template_string)
 

@@ -2,7 +2,7 @@
 Unit tests for namespaces.py
 """
 
-from __future__ import absolute_import
+
 
 from django.test import TestCase
 
@@ -24,7 +24,7 @@ class BadNotificationNamespaceResolver(NotificationNamespaceResolver):
         """
         Bad resolution
         """
-        super(BadNotificationNamespaceResolver, self).resolve(namespace, instance_context)
+        super().resolve(namespace, instance_context)
 
 
 class TestNamespaces(TestCase):

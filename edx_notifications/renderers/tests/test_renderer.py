@@ -2,7 +2,7 @@
 Tests for renderer.py
 """
 
-from __future__ import absolute_import
+
 
 import json
 import datetime
@@ -28,19 +28,19 @@ class TestBadRenderer(BaseNotificationRenderer):
         Returns (True/False) whether this renderer provides renderings
         into the requested format.
         """
-        super(TestBadRenderer, self).can_render_format(render_format)
+        super().can_render_format(render_format)
 
     def render(self, msg, render_format, lang):
         """
         This basic renderer just returns the subject in the Msg payload
         """
-        super(TestBadRenderer, self).render(msg, render_format, lang)
+        super().render(msg, render_format, lang)
 
     def get_template_path(self, render_format):
         """
         Return a path to where a client can get the template
         """
-        super(TestBadRenderer, self).get_template_path(render_format)
+        super().get_template_path(render_format)
 
 
 class TestUnderscoreStaticFileRenderer(UnderscoreStaticFileRenderer):
