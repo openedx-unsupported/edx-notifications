@@ -33,8 +33,8 @@ LOG = logging.getLogger("api")
 FILTER_PARAMETER_NAMES = [
     ('read', bool),
     ('unread', bool),
-    ('namespace', six.text_type),
-    ('msg_type', six.text_type),
+    ('namespace', str),
+    ('msg_type', str),
 ]
 
 OPTIONS_PARAMETER_NAMES = [
@@ -77,12 +77,12 @@ def _get_parameters_from_request(request, allowed_parameters):
                     value = False
                 else:
                     raise ValueError(
-                        "Passed in expected bool '{val}' does not map to True or False".format(val=str_val)
+                        f"Passed in expected bool '{str_val}' does not map to True or False"
                     )
-            elif filter_type in (str, six.text_type):
+            elif filter_type in (str, str):
                 value = str_val
             else:
-                raise ValueError('Unknown parameter type {name}'.format(name=filter_type))
+                raise ValueError(f'Unknown parameter type {filter_type}')
 
             params[filter_name] = value
 
@@ -333,7 +333,7 @@ class RendererTemplatesList(AuthenticatedAPIView):
 
         result_dict = {}
 
-        for class_name, renderer in six.iteritems(get_all_renderers()):
+        for class_name, renderer in get_all_renderers().items():
             if renderer.can_render_format(const.RENDER_FORMAT_HTML):
                 result_dict[class_name] = renderer.get_template_path(const.RENDER_FORMAT_HTML)
 

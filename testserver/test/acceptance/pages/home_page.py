@@ -1,5 +1,3 @@
-
-
 from bok_choy.page_object import PageObject
 
 from . import base_url, default_timeout

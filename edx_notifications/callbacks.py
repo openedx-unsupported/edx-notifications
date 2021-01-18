@@ -21,7 +21,7 @@ from edx_notifications.lib.publisher import (
 log = logging.getLogger(__name__)
 
 
-class NotificationCallbackTimerHandler(six.with_metaclass(abc.ABCMeta, object)):
+class NotificationCallbackTimerHandler(metaclass=abc.ABCMeta):
     """
     Interface for timer callbacks
     """

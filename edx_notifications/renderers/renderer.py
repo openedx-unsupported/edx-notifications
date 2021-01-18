@@ -59,7 +59,7 @@ def get_renderer_for_type(msg_type):
     return _RENDERERS.get(msg_type.renderer)
 
 
-class BaseNotificationRenderer(six.with_metaclass(abc.ABCMeta, object)):
+class BaseNotificationRenderer(metaclass=abc.ABCMeta):
     """
     Abstract Base Class for NotificationRender types.
 

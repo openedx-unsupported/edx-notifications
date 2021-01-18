@@ -29,8 +29,7 @@ from edx_notifications.renderers.renderer import register_renderer
 log = logging.getLogger(__name__)
 
 
-if six.PY3:
-    basestring = str  # pylint: disable=invalid-name,redefined-builtin
+basestring = str  # pylint: disable=invalid-name,redefined-builtin
 
 
 @contract(msg_type=NotificationType)
@@ -271,7 +270,7 @@ def publish_timed_notification(msg, send_at, scope_name, scope_context, timer_na
     msg.deliver_no_earlier_than = send_at
     saved_msg = store.save_notification_message(msg)
 
-    _timer_name = timer_name if timer_name else 'notification-dispatch-timer-{_id}'.format(_id=saved_msg.id)
+    _timer_name = timer_name if timer_name else f'notification-dispatch-timer-{saved_msg.id}'
 
     log_msg = (
         'Publishing timed Notification named "{timer_name}" to scope name "{scope_name}" and scope '

@@ -1,9 +1,7 @@
 language: python
 
 python:
-  - 3.5
-  - 3.8
-
+  - '3.8'
 envs:
   - TOXENV=django22
   - TOXENV=quality
@@ -13,24 +11,24 @@ script:
   - make test
 
 addons:
-  firefox: "46.0"
+  firefox: '46.0'
 
 services:
   - xvfb
 
 before_install:
-  - "export DISPLAY=:99.0"
+  - export DISPLAY=:99.0
 
 install:
-    - npm install
-    - "pip install -r requirements/base.txt"
-    - "pip install -r requirements/testing.txt"
-    - "pip install coveralls==1.1"
+  - npm install
+  - pip install -r requirements/base.txt
+  - pip install -r requirements/testing.txt
+  - pip install coveralls==1.1
 
 after_success: coveralls
 
 branches:
-    only:
-      - master
-      - cdodge/mcka-master
-      - cdodge/notification-digest
+  only:
+    - master
+    - cdodge/mcka-master
+    - cdodge/notification-digest

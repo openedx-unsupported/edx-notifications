@@ -82,7 +82,7 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
                 obj = SQLNotificationMessage.objects.get(id=msg.id)
                 obj.load_from_data_object(msg)
             except ObjectDoesNotExist:
-                msg = "Could not SQLNotificationMessage with ID {_id}".format(_id=msg.id)
+                msg = f"Could not SQLNotificationMessage with ID {msg.id}"
                 raise ItemNotFoundError()
         else:
             obj = SQLNotificationMessage.from_data_object(msg)
@@ -225,7 +225,7 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         # make sure passed in limit is allowed
         # as we don't want to blow up the query too large here
         if limit > const.NOTIFICATION_MAX_LIST_SIZE:
-            raise ValueError('Max limit is {limit}'.format(limit=limit))
+            raise ValueError(f'Max limit is {limit}')
 
         return query[offset:offset + limit]
 
@@ -329,7 +329,7 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
                 obj = SQLUserNotification.objects.get(id=user_msg.id)
                 obj.load_from_data_object(user_msg)
             except ObjectDoesNotExist:
-                msg = "Could not find SQLUserNotification with ID {_id}".format(_id=user_msg.id)
+                msg = f"Could not find SQLUserNotification with ID {user_msg.id}"
                 raise ItemNotFoundError(msg)
         else:
             obj = SQLUserNotification.from_data_object(user_msg)
@@ -509,7 +509,7 @@ class SQLNotificationStoreProvider(BaseNotificationStoreProvider):
         # make sure passed in size is allowed
         # as we don't want to blow up the query too large here
         if size > const.USER_PREFERENCE_MAX_LIST_SIZE:
-            raise ValueError('Max limit is {size}'.format(size=size))
+            raise ValueError(f'Max limit is {size}')
 
         if size is None:
             size = const.USER_PREFERENCE_MAX_LIST_SIZE

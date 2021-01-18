@@ -53,7 +53,7 @@ class BaseDataObjectTests(TestCase):
 
         # test string-ifying the BaseDataObject
         self.assertEqual(str(obj), str(fields))
-        self.assertEqual(six.text_type(obj), six.text_type(fields))
+        self.assertEqual(str(obj), str(fields))
 
     def test_field_descriptor_get(self):
         """
@@ -200,12 +200,12 @@ class BaseDataObjectTests(TestCase):
         Make sure we can't set a bad value on an enum field
         """
         obj = DataObjectWithTypedFields()
-        obj.test_enum_field = u'foo'  # this is OK
+        obj.test_enum_field = 'foo'  # this is OK
 
         obj = DataObjectWithTypedFields()
         # this should not be OK
         with self.assertRaises(ValueError):
-            obj.test_enum_field = u'bad'
+            obj.test_enum_field = 'bad'
 
     def test_data_object_equality(self):
         """

@@ -1,5 +1,4 @@
 #!/usr/bin/bash
-# -*- coding: utf-8 -*
 """
 Django settings file for local development purposes
 """
@@ -21,7 +20,7 @@ SECRET_KEY='SHHHHHH'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': '{}/db/notifications.db'.format(TEST_ROOT)
+        'NAME': f'{TEST_ROOT}/db/notifications.db'
     },
 }
 
@@ -56,19 +55,19 @@ js_info_dict = {
  }
 LANGUAGE_CODE = 'en'
 LANGUAGES = (
-    ('en', u'English '),
-    ('ar', u'العربية'),  # Arabic
-    ('Ar-sa', u'Arabic'),  # Arabic Saudi Arabia
-    ('zh', u'中文(简体)'),
-    ('ES419', u'Latin Spanish'),
-    ('es', u'Español'),
-    ('ja', u'Japanese'),
-    ('ko', u'한국어 (대한민국)'),  # Korean (Korea)
-    ('de', u'German'),
-    ('fr', u'french'),
-    ('nl', u'Dutch '),
-    ('pl', u'Polskie'),
-    ('pt', u'Português')
+    ('en', 'English '),
+    ('ar', 'العربية'),  # Arabic
+    ('Ar-sa', 'Arabic'),  # Arabic Saudi Arabia
+    ('zh', '中文(简体)'),
+    ('ES419', 'Latin Spanish'),
+    ('es', 'Español'),
+    ('ja', 'Japanese'),
+    ('ko', '한국어 (대한민국)'),  # Korean (Korea)
+    ('de', 'German'),
+    ('fr', 'french'),
+    ('nl', 'Dutch '),
+    ('pl', 'Polskie'),
+    ('pt', 'Português')
 )
 LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'locale'),

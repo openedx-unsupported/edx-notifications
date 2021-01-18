@@ -10,7 +10,6 @@ All tests for the test_consumer.py
 
 import json
 
-from six.moves import range
 from django.test.client import Client
 from django.urls import NoReverseMatch, reverse
 
@@ -43,7 +42,7 @@ class ConsumerAPITests(LoggedInTestCase):
         )
         register_notification_type(self.msg_type)
 
-        super(ConsumerAPITests, self).setUp()
+        super().setUp()
 
     def test_no_anonymous_access(self):
         """

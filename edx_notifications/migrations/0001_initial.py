@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-
 import model_utils.fields
 import django.utils.timezone
 from django.db import models, migrations
@@ -137,10 +134,10 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='sqlusernotificationarchive',
-            unique_together=set([('user_id', 'msg')]),
+            unique_together={('user_id', 'msg')},
         ),
         migrations.AlterUniqueTogether(
             name='sqlusernotification',
-            unique_together=set([('user_id', 'msg')]),
+            unique_together={('user_id', 'msg')},
         ),
     ]

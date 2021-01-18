@@ -4,7 +4,6 @@ All tests regarding scopes.py
 
 
 
-from six.moves import range
 from django.test import TestCase
 from django.contrib.auth.models import User
 
@@ -51,8 +50,7 @@ class TestGeneratorScopeResolver(NotificationUserScopeResolver):
                 """
                 To test handling of generator
                 """
-                for user_id in range(scope_context['range']):
-                    yield user_id
+                yield from range(scope_context['range'])
 
             return _scope_generator()
 
@@ -86,7 +84,7 @@ class BadTestScopeResolver(NotificationUserScopeResolver):
         """
         Should fail
         """
-        super(BadTestScopeResolver, self).resolve(scope_name, scope_context, instance_context)
+        super().resolve(scope_name, scope_context, instance_context)
 
 
 class ScopesTests(TestCase):

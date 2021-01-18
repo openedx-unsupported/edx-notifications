@@ -6,10 +6,9 @@ Tests which exercise the MySQL test_data_provider
 
 from datetime import datetime, timedelta
 
-import mock
+from unittest import mock
 import pytz
 from freezegun import freeze_time
-from six.moves import range
 from django.test import TestCase
 
 from edx_notifications import const
