@@ -2,7 +2,7 @@
 NotificationChannelProvider to integrate with the Parse mobile push notification services
 """
 
-from __future__ import absolute_import
+
 
 import logging
 
@@ -44,7 +44,7 @@ class ParsePushNotificationChannelProvider(BaseNotificationChannelProvider):
         self.application_id = application_id
         self.rest_api_key = rest_api_key
 
-        super(ParsePushNotificationChannelProvider, self).__init__(
+        super().__init__(
             name=name,
             display_name=display_name,
             display_description=display_description,

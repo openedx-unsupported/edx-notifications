@@ -1,9 +1,9 @@
 """
 All URL mappings for HTTP-based APIs
 """
-from __future__ import absolute_import
 
-from django.conf.urls import url
+
+from django.urls import re_path
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from edx_notifications.server.api import consumer as consumer_views, admin as admin_views
@@ -22,57 +22,57 @@ from .url_regex import (
 )
 
 urlpatterns = [  # pylint: disable=invalid-name
-    url(
+    re_path(
         CONSUMER_NOTIFICATIONS_COUNT_REGEX,
         consumer_views.NotificationCount.as_view(),
         name='edx_notifications.consumer.notifications.count'
     ),
-    url(
+    re_path(
         CONSUMER_NOTIFICATION_DETAIL_REGEX,
         consumer_views.NotificationDetail.as_view(),
         name='edx_notifications.consumer.notifications.detail'
     ),
-    url(
+    re_path(
         CONSUMER_NOTIFICATION_DETAIL_NO_PARAM_REGEX,
         consumer_views.NotificationDetail.as_view(),
         name='edx_notifications.consumer.notifications.detail.no_param'
     ),
-    url(
+    re_path(
         CONSUMER_NOTIFICATIONS_MARK_NOTIFICATIONS_REGEX,
         consumer_views.MarkNotificationsAsRead.as_view(),
         name='edx_notifications.consumer.notifications.mark_notifications_as_read'
     ),
-    url(
+    re_path(
         CONSUMER_NOTIFICATIONS_REGEX,
         consumer_views.NotificationsList.as_view(),
         name='edx_notifications.consumer.notifications'
     ),
-    url(
+    re_path(
         CONSUMER_RENDERERS_TEMPLATES_REGEX,
         consumer_views.RendererTemplatesList.as_view(),
         name='edx_notifications.consumer.renderers.templates'
     ),
-    url(
+    re_path(
         CONSUMER_NOTIFICATIONS_PREFERENCES_REGEX,
         consumer_views.NotificationPreferenceList.as_view(),
         name='edx_notifications.consumer.notification_preferences'
     ),
-    url(
+    re_path(
         CONSUMER_USER_PREFERENCES_REGEX,
         consumer_views.UserPreferenceList.as_view(),
         name='edx_notifications.consumer.user_preferences'
     ),
-    url(
+    re_path(
         CONSUMER_USER_PREFERENCES_DETAIL_REGEX,
         consumer_views.UserPreferenceDetail.as_view(),
         name='edx_notifications.consumer.user_preferences.detail'
     ),
-    url(
+    re_path(
         CONSUMER_USER_PREFERENCES_DETAIL_NO_PARAM_REGEX,
         consumer_views.UserPreferenceDetail.as_view(),
         name='edx_notifications.consumer.user_preferences.detail.no_param'
     ),
-    url(
+    re_path(
         ADMIN_USERS_DELETE,
         admin_views.DeleteUsersData.as_view(),
         name='edx_notifications.admin.delete_users_data'

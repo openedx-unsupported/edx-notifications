@@ -2,20 +2,19 @@
 File containing link resolvers
 """
 
-from __future__ import absolute_import
+
 
 import abc
 import logging
 from importlib import import_module
 
-import six
 
 from edx_notifications.data import NotificationMessage
 
 log = logging.getLogger(__name__)
 
 
-class BaseLinkResolver(six.with_metaclass(abc.ABCMeta, object)):
+class BaseLinkResolver(metaclass=abc.ABCMeta):
     """
     The abstract base class that all link resolvers will need to implement
     """
@@ -105,7 +104,7 @@ class MsgTypeToUrlLinkResolver(BaseLinkResolver):
             return None
 
 
-class MsgTypeToUrlResolverMixin(object):
+class MsgTypeToUrlResolverMixin:
     """
     Helper mix-in class to share logic when channels need to use
     similar link resolvers
@@ -140,7 +139,7 @@ class MsgTypeToUrlResolverMixin(object):
         """
 
         if msg.resolve_links:
-            for link_name, link_params in six.iteritems(msg.resolve_links):
+            for link_name, link_params in msg.resolve_links.items():
                 resolved_link = self.resolve_msg_link(msg, link_name, link_params)
                 if resolved_link:
                     # copy the msg because we are going to alter it and we don't want to affect

@@ -2,9 +2,8 @@
 Helpers for the HTTP APIs
 """
 
-from __future__ import absolute_import
 
-import six
+
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import SessionAuthentication
@@ -24,7 +23,7 @@ class AuthenticatedAPIView(APIView):
         Helper to make sure we have valid post parameters names being passed in
         """
 
-        for key, value in six.iteritems(request.data):
+        for key, value in request.data.items():
 
             # check parameter name
             if key not in self._allowed_post_parameters:

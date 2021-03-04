@@ -3,10 +3,10 @@ All URL mappings for the API's which do not get mapped to Django REST Frameworks
 This is useful for when we need a UI tier to do a reverse on URL's where we don't need to import
 all of the backend
 """
-from __future__ import absolute_import
+
 
 from django.http import HttpResponseBadRequest
-from django.conf.urls import url
+from django.urls import re_path
 
 from .url_regex import (
     CONSUMER_NOTIFICATIONS_REGEX,
@@ -31,52 +31,52 @@ def mock_handler(request):  # pylint: disable=unused-argument
 
 
 urlpatterns = [  # pylint: disable=invalid-name
-    url(
+    re_path(
         CONSUMER_NOTIFICATIONS_COUNT_REGEX,
         mock_handler,
         name='edx_notifications.consumer.notifications.count'
     ),
-    url(
+    re_path(
         CONSUMER_NOTIFICATION_DETAIL_REGEX,
         mock_handler,
         name='edx_notifications.consumer.notifications.detail'
     ),
-    url(
+    re_path(
         CONSUMER_NOTIFICATION_DETAIL_NO_PARAM_REGEX,
         mock_handler,
         name='edx_notifications.consumer.notifications.detail.no_param'
     ),
-    url(
+    re_path(
         CONSUMER_NOTIFICATIONS_MARK_NOTIFICATIONS_REGEX,
         mock_handler,
         name='edx_notifications.consumer.notifications.mark_notifications_as_read'
     ),
-    url(
+    re_path(
         CONSUMER_NOTIFICATIONS_REGEX,
         mock_handler,
         name='edx_notifications.consumer.notifications'
     ),
-    url(
+    re_path(
         CONSUMER_RENDERERS_TEMPLATES_REGEX,
         mock_handler,
         name='edx_notifications.consumer.renderers.templates'
     ),
-    url(
+    re_path(
         CONSUMER_NOTIFICATIONS_PREFERENCES_REGEX,
         mock_handler,
         name='edx_notifications.consumer.notification_preferences'
     ),
-    url(
+    re_path(
         CONSUMER_USER_PREFERENCES_REGEX,
         mock_handler,
         name='edx_notifications.consumer.user_preferences'
     ),
-    url(
+    re_path(
         CONSUMER_USER_PREFERENCES_DETAIL_REGEX,
         mock_handler,
         name='edx_notifications.consumer.user_preferences.detail'
     ),
-    url(
+    re_path(
         CONSUMER_USER_PREFERENCES_DETAIL_NO_PARAM_REGEX,
         mock_handler,
         name='edx_notifications.consumer.user_preferences.detail.no_param'

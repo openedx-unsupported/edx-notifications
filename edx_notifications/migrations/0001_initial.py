@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
-
 import model_utils.fields
 import django.utils.timezone
 from django.db import models, migrations
@@ -93,7 +90,7 @@ class Migration(migrations.Migration):
                 ('user_id', models.IntegerField(db_index=True)),
                 ('read_at', models.DateTimeField(null=True, db_index=True)),
                 ('user_context', models.TextField(null=True)),
-                ('msg', models.ForeignKey(to='edx_notifications.SQLNotificationMessage')),
+                ('msg', models.ForeignKey(to='edx_notifications.SQLNotificationMessage', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['-created'],
@@ -109,7 +106,7 @@ class Migration(migrations.Migration):
                 ('user_id', models.IntegerField(db_index=True)),
                 ('read_at', models.DateTimeField(null=True, db_index=True)),
                 ('user_context', models.TextField(null=True)),
-                ('msg', models.ForeignKey(to='edx_notifications.SQLNotificationMessage')),
+                ('msg', models.ForeignKey(to='edx_notifications.SQLNotificationMessage', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['-created'],
@@ -124,7 +121,7 @@ class Migration(migrations.Migration):
                 ('modified', model_utils.fields.AutoLastModifiedField(default=django.utils.timezone.now, verbose_name='modified', editable=False)),
                 ('user_id', models.IntegerField(db_index=True)),
                 ('value', models.CharField(max_length=255)),
-                ('preference', models.ForeignKey(to='edx_notifications.SQLNotificationPreference')),
+                ('preference', models.ForeignKey(to='edx_notifications.SQLNotificationPreference', on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'edx_notifications_usernotificationpreferences',
@@ -133,7 +130,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='sqlnotificationmessage',
             name='msg_type',
-            field=models.ForeignKey(to='edx_notifications.SQLNotificationType'),
+            field=models.ForeignKey(to='edx_notifications.SQLNotificationType', on_delete=models.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='sqlusernotificationarchive',

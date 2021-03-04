@@ -16,6 +16,8 @@ var NotificationPaneView = Backbone.View.extend({
             'nl': 'nl-nl',
             'pt': 'pt-br',
             'zh': 'zh-cn',
+            'ko': 'ko-kr',
+            'pl': 'pl',
         };
         var self = this;
 

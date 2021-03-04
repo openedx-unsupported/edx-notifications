@@ -2,7 +2,7 @@
 Django ORM models to support the Notification Store SQL backend
 """
 
-from __future__ import absolute_import
+
 
 from model_utils.models import TimeStampedModel
 from django.db import models
@@ -36,7 +36,7 @@ class SQLNotificationType(models.Model):
     # any context to pass into the above renderer
     renderer_context = models.TextField(null=True)
 
-    class Meta(object):
+    class Meta:
         """
         ORM metadata about this class
         """
@@ -84,7 +84,7 @@ class SQLNotificationMessage(TimeStampedModel):
     namespace = models.CharField(max_length=128, db_index=True, null=True)
 
     # Notification type
-    msg_type = models.ForeignKey(SQLNotificationType, db_index=True)
+    msg_type = models.ForeignKey(SQLNotificationType, db_index=True, on_delete=models.CASCADE)
 
     # from which identity
     from_user_id = models.IntegerField(null=True)
@@ -103,7 +103,7 @@ class SQLNotificationMessage(TimeStampedModel):
 
     object_id = models.CharField(max_length=255, db_index=True, null=True)
 
-    class Meta(object):
+    class Meta:
         """
         ORM metadata about this class
         """
@@ -185,13 +185,13 @@ class SQLUserNotificationArchive(TimeStampedModel):
 
     user_id = models.IntegerField(db_index=True)
 
-    msg = models.ForeignKey(SQLNotificationMessage, db_index=True)
+    msg = models.ForeignKey(SQLNotificationMessage, db_index=True, on_delete=models.CASCADE)
 
     read_at = models.DateTimeField(null=True, db_index=True)
 
     user_context = models.TextField(null=True)
 
-    class Meta(object):
+    class Meta:
         """
         ORM metadata about this class
         """
@@ -208,13 +208,13 @@ class SQLUserNotification(TimeStampedModel):
 
     user_id = models.IntegerField(db_index=True)
 
-    msg = models.ForeignKey(SQLNotificationMessage, db_index=True)
+    msg = models.ForeignKey(SQLNotificationMessage, db_index=True, on_delete=models.CASCADE)
 
     read_at = models.DateTimeField(null=True, db_index=True)
 
     user_context = models.TextField(null=True)
 
-    class Meta(object):
+    class Meta:
         """
         ORM metadata about this class
         """
@@ -265,7 +265,7 @@ class SQLNotificationChannel(models.Model):
     SMS, iOS Push Notifications, etc.
     """
 
-    class Meta(object):
+    class Meta:
         """
         ORM metadata about this class
         """
@@ -277,7 +277,7 @@ class SQLNotificationPreference(models.Model):
     """
     Notification preference
     """
-    class Meta(object):
+    class Meta:
         """
         ORM metadata about this class
         """
@@ -331,7 +331,7 @@ class SQLUserNotificationPreferences(TimeStampedModel):
     User specific mappings of Notifications to Channel, to reflect user preferences
     """
 
-    class Meta(object):
+    class Meta:
         """
         ORM metadata about this class
         """
@@ -342,7 +342,7 @@ class SQLUserNotificationPreferences(TimeStampedModel):
     user_id = models.IntegerField(db_index=True)
 
     # Notification preference
-    preference = models.ForeignKey(SQLNotificationPreference, db_index=True)
+    preference = models.ForeignKey(SQLNotificationPreference, db_index=True, on_delete=models.CASCADE)
 
     value = models.CharField(max_length=255)
 
@@ -381,7 +381,7 @@ class SQLNotificationCallbackTimer(TimeStampedModel):
     SQL implementation for NotificationCallbackTimer
     """
 
-    class Meta(object):
+    class Meta:
         """
         ORM metadata about this class
         """

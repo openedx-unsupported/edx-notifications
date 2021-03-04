@@ -47,6 +47,7 @@ Thumbs.db
 Desktop.ini
 
 # Test Artifacts
+.tox
 .coverage
 nosetests.xml
 reports/

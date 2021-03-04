@@ -1,9 +1,7 @@
 #!/usr/bin/bash
-# -*- coding: utf-8 -*
 """
 Django settings file for local development purposes
 """
-from __future__ import absolute_import
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
@@ -13,7 +11,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 DEBUG=True
 TEST_MODE=True
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 TEST_ROOT = "tests"
 TRANSACTIONS_MANAGED = {}
 USE_TZ = True
@@ -62,26 +59,28 @@ js_info_dict = {
 LANGUAGE_CODE = 'en'
 LANGUAGE_COOKIE_NAME = "openedx-language-preference"
 LANGUAGES = (
-    ('en', u'English '),
-    ('ar', u'العربية'),  # Arabic
-    ('Ar-sa', u'Arabic'),  # Arabic Saudi Arabia
-    ('zh', u'中文(简体)'),
-    ('ES419', u'Latin Spanish'),
-    ('es', u'Español'),
-    ('ja', u'Japanese'),
-    ('de', u'Deutsche'),
-    ('fr', u'Français'),
-    ('nl', u'Dutch '),
-    ('pt', u'Português'),
-    ('zh-cn', u'中文(简体)'),
-    ('jp', u'日本人'),
+    ('en', 'English '),
+    ('ar', 'العربية'),  # Arabic
+    ('Ar-sa', 'Arabic'),  # Arabic Saudi Arabia
+    ('zh', '中文(简体)'),
+    ('ES419', 'Latin Spanish'),
+    ('es', 'Español'),
+    ('ja', 'Japanese'),
+    ('ko', '한국어 (대한민국)'),  # Korean (Korea)
+    ('de', 'German'),
+    ('fr', 'french'),
+    ('nl', 'Dutch '),
+    ('pl', 'Polskie'),
+    ('pt', 'Português'),
+    ('zh-cn', '中文(简体)'),
+    ('jp', '日本人'),
 )
 LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'locale'),
     os.path.join(BASE_DIR, 'static_cache/locale'),
 ]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
