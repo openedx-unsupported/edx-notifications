@@ -81,7 +81,7 @@ urlpatterns = [  # pylint: disable=invalid-name
         mock_handler,
         name='edx_notifications.consumer.user_preferences.detail.no_param'
     ),
-    url(
+    re_path(
         ADMIN_USERS_DELETE,
         mock_handler,
         name='edx_notifications.admin.delete_user_notifications'

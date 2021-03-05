@@ -10,8 +10,8 @@ pylint
 pydocstyle
 mock==1.0.1
 testfixtures==4.5.0
-bok-choy==0.6.2
+bok-choy==1.1.1
 sure==1.2.3
 ddt==0.8.0
-selenium==2.53.1
+selenium==3.14.0
 tox
