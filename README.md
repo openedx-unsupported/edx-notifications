@@ -1,6 +1,7 @@
-edx-notifications [![Build Status](https://travis-ci.com/edx/edx-notifications.svg?branch=master)](https://travis-ci.com/edx/edx-notifications) [![Coverage Status](https://img.shields.io/coveralls/edx/edx-notifications.svg)](https://coveralls.io/r/edx/edx-notifications?branch=master)
-
+edx-notifications
 ========================
+[![Build Status](https://travis-ci.com/edx/edx-notifications.svg?branch=master)](https://travis-ci.com/edx/edx-notifications) [![Coverage Status](https://img.shields.io/coveralls/edx/edx-notifications.svg)](https://coveralls.io/r/edx/edx-notifications?branch=master)
+
 
 This is the development repository for the Open edX Notification subsystem. This repository is a work in progress.
 
