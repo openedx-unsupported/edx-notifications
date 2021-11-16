@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - master
-      - cdodge/mcka-master
-      - cdodge/notification-digest
   pull_request:
     branches:
       - '**'
