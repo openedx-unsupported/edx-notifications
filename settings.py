@@ -23,7 +23,7 @@ DATABASES = {
         'NAME': f'{TEST_ROOT}/db/notifications.db'
     },
 }
-
+b2 = 1
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
