@@ -1,0 +1,54 @@
+name: Bok Choy Tests
+
+on:
+  push:
+    branches:
+     - master
+  pull_request:
+
+jobs:
+  run_tests:
+    name: Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+        python-version: [3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: setup python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Set display to virtual frame buffer
+      run: export DISPLAY=:99.0
+
+    - name: Set up test environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install xvfb gettext
+        wget https://github.com/mozilla/geckodriver/releases/download/v0.25.0/geckodriver-v0.25.0-linux64.tar.gz
+        mkdir geckodriver
+        tar -xzf geckodriver-v0.25.0-linux64.tar.gz -C geckodriver
+        export PATH=$PATH:$PWD/geckodriver
+        export BOKCHOY_HEADLESS=true
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements/base.txt
+        pip install -r requirements/testing.txt
+
+    - name: Install Firefox 61.0
+      run: |
+        sudo apt-get purge firefox
+        wget "https://ftp.mozilla.org/pub/firefox/releases/46.0/linux-x86_64/en-US/firefox-46.0.tar.bz2"
+        tar -xjf firefox-46.0.tar.bz2
+        sudo mv firefox /opt/firefox
+        sudo ln -s /opt/firefox/firefox /usr/bin/firefox
+    
+    - name: Run Acceptance tests
+      run: xvfb-run --server-args=-ac -- make test-bokchoy
+      env:
+        BOKCHOY_HEADLESS: true

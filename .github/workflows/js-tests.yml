@@ -1,0 +1,29 @@
+name: Node CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  run_tests:
+    name: Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04]
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12
+
+    - name: Install npm dependencies
+      run: npm install
+    
+    - name: Run Js tests
+      run: make test-js 
