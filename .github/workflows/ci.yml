@@ -28,18 +28,12 @@ jobs:
         pip install -r requirements/base.txt
         pip install -r requirements/testing.txt
     
-    - name: Run Pytest
-      if: matrix.python-version == '3.8' && matrix.toxenv=='django22'
-      run: make test-python
-
-    - name: Run Quality Tests
-      if: matrix.python-version == '3.8' && matrix.toxenv=='quality'
+    - name: Run tox
       env:
         TOXENV: ${{ matrix.toxenv }}
       run: tox
 
     - name: Run Coverage
-      if: matrix.python-version == '3.8' && matrix.toxenv=='quality'
       uses: codecov/codecov-action@v2
       with:
         fail_ci_if_error: true
