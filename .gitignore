@@ -59,3 +59,5 @@ acceptance_tests/*.png
 node_modules/
 
 testserver/local_settings.py
+
+venv/

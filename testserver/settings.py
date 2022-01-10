@@ -85,7 +85,7 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle',
     ),
     'DEFAULT_THROTTLE_RATES': {
-        'user': '10/sec',
+        'user': '100/sec',
     }
 }
 
@@ -175,7 +175,9 @@ NOTIFICATION_CLICK_LINK_URL_MAPS = {
     # msg type 'open-edx.edx_notifications.lib.tests.test_publisher'
     # to /path/to/{param1}/url/{param2} with param subsitutations
     # that are passed in with the message
-    'testserver.*': '/resolved_path/{param1}/url/{param2}',
+    'open-edx.edx_notifications.lib.tests.test_publisher': '/path/to/{param1}/url/{param2}',
+    'open-edx.edx_notifications.lib.tests.*': '/alternate/path/to/{param1}/url/{param2}',
+    'open-edx-edx_notifications.lib.*': '/third/way/to/get/to/{param1}/url/{param2}',
 }
 
 # list all known channel providers
@@ -217,7 +219,18 @@ NOTIFICATION_CHANNEL_PROVIDERS = {
     'null': {
         'class': 'edx_notifications.channels.null.NullNotificationChannel',
         'options': {}
-    }
+    },
+    'parse-push': {
+        'class': 'edx_notifications.channels.parse_push.ParsePushNotificationChannelProvider',
+        'options': {
+            'application_id': 'test_id',
+            'rest_api_key': 'test_rest_api_key',
+        }
+    },
+    'urban-airship': {
+        'class': 'edx_notifications.channels.urban_airship.UrbanAirshipNotificationChannelProvider',
+        'options': {}
+    },
 }
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -258,6 +271,10 @@ NOTIFICATION_BRANDED_DEFAULT_LOGO = 'img/edx-openedx-logo-tag.png'
 #NOTIFICATION_DIGEST_EMAIL_CSS = 'css/email_digests.css'
 
 NOTIFICATION_SITE_NAME = "http://localhost:8000/"
+
+# Constants to set how long (in days) old READ and UNREAD notifications can remain in the system before being purged.
+NOTIFICATION_PURGE_READ_OLDER_THAN_DAYS = 30
+NOTIFICATION_PURGE_UNREAD_OLDER_THAN_DAYS = 60
 
 try:
     from local_settings import *
