@@ -1,5 +1,5 @@
 .PHONY: clean test upgrade quality requirements quality-python test-js test-python \
-		install-js test-bokchoy
+		install-js test-bokchoy check_keywords
 
 # Generates a help message. Borrowed from https://github.com/pydanny/cookiecutter-djangopackage.
 help: ## display this help message
@@ -53,3 +53,6 @@ test-bokchoy:	## run tests using bokchoy
 	bash ./run_bokchoy_tests.sh
 
 test: test-js test-python test-bokchoy ## run tests
+
+check_keywords: ## Scan the Django models in all installed apps in this project for restricted field names
+	python manage.py check_reserved_keywords --override_file db_keyword_overrides.yml
