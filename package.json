@@ -13,7 +13,7 @@
     "karma-firefox-launcher": "latest",
     "jasmine-core": "latest",
     "karma-jasmine": "latest",
-    "karma-jasmine-jquery": "latest",
+    "karma-jasmine-jquery-2": "latest",
     "karma-phantomjs-launcher": "latest",
     "sinon": "<8.0.0",
     "karma-sinon": "latest",
