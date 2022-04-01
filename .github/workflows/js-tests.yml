@@ -13,6 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-20.04]
+        node: [12, 16]
 
     steps:
     - uses: actions/checkout@v2
@@ -20,7 +21,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v1
       with:
-        node-version: 12
+        node-version: ${{ matrix.node }}
 
     - name: Install npm dependencies
       run: npm install

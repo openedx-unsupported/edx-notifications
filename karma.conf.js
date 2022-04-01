@@ -18,7 +18,7 @@ module.exports = function(config) {
     //plugins required for running the karma tests
     plugins:[
         'karma-jasmine',
-        'karma-jasmine-jquery',
+        'karma-jasmine-jquery-2',
         'karma-firefox-launcher',
         'karma-phantomjs-launcher',
         'karma-chrome-launcher',
