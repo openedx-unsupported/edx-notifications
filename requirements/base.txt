@@ -26,4 +26,4 @@ six==1.15.0               # via parse-rest, python-dateutil
 soupsieve==2.1            # via beautifulsoup4
 sqlparse==0.4.1           # via django
 underscore.py==0.1.6      # via -r requirements/base.in
-urllib3==1.25.11          # via requests
+urllib3==1.26.5          # via requests
