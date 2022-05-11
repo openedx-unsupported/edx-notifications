@@ -3,7 +3,7 @@ edx-notifications
 [![Build Status](https://github.com/edx/edx-notifications/workflows/Python%20CI/badge.svg?branch=master)](https://github.com/edx/edx-notifications/actions?query=workflow%3A%22Python+CI%22)
 [![Coverage Status](https://img.shields.io/coveralls/edx/edx-notifications.svg)](https://coveralls.io/r/edx/edx-notifications?branch=master)
 
-This is the development repository for the Open edX Notification subsystem. This repository is a work in progress.
+This is the development repository for the Open edX Notification subsystem. This repository is unsupported and archived. For more details, please see https://github.com/openedx/edx-notifications/issues/253
 
 
 
